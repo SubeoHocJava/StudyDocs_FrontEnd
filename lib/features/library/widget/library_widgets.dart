@@ -1,0 +1,75 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+class SearchInput extends StatelessWidget {
+  final TextEditingController? controller;
+  final VoidCallback? onSearch;
+
+  const SearchInput({super.key, this.controller, this.onSearch});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 300,
+        child: SearchBar(
+          controller: controller,
+          hintText: 'Tìm kiếm các khóa học bài giảng tài liệu',
+          trailing: <Widget>[
+            Tooltip(
+              message: 'Search',
+              child: IconButton(
+                onPressed: onSearch,
+                icon: Image.asset(
+                  "assets/icons/search-icon.png",
+                  width: 20,
+                  height: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UploadFileButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const UploadFileButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Center(
+        child: SizedBox(
+          width: 300,
+          height: 200,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              fixedSize: const Size(100, 100),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/icons/upload.png"),
+                const SizedBox(height: 8),
+                const Text(
+                  "Đăng tải tài liệu bài giảng khóa học đề thi...",
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
