@@ -3,35 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../model/Document.dart';
 
 class StoredDocument extends StatelessWidget {
-  final List<Document> documents = [
-    Document(
-      title: "Tài liệu Flutter",
-      subject: "Lập trình di động",
-      school: "ĐH Công nghệ",
-      pages: 120,
-      date: "2025-08-01",
-      likes: 45,
-      comments: 10,
-    ),
-    Document(
-      title: "Tài liệu Java",
-      subject: "Lập trình hướng đối tượng",
-      school: "ĐH Bách Khoa",
-      pages: 200,
-      date: "2025-08-10",
-      likes: 60,
-      comments: 15,
-    ),
-    Document(
-      title: "Tài liệu Kotlin",
-      subject: "Lập trình Android",
-      school: "ĐH Khoa Học Tự Nhiên",
-      pages: 150,
-      date: "2025-08-20",
-      likes: 35,
-      comments: 8,
-    ),
-  ];
+  final List<Document>documents;
+ const StoredDocument(this.documents);
 
 
 
@@ -48,8 +21,8 @@ class StoredDocument extends StatelessWidget {
           ),
         ),
         ListView.builder(
-          shrinkWrap: true, // 👈 quan trọng
-          physics: NeverScrollableScrollPhysics(), // 👈 tránh scroll riêng
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: documents.length,
           itemBuilder: (context, index) {
             return Padding(
@@ -59,7 +32,7 @@ class StoredDocument extends StatelessWidget {
               ),
               child: MonoDocument(
                 document: documents[index],
-              ), // 👉 dùng widget MonoSubject
+              ),
             );
           },
         ),
@@ -79,18 +52,19 @@ class MonoDocument extends StatelessWidget {
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
+        // color: Colors.green.shade50,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(
-            "assets/icons/upload.png",
-            width: 40,
-            height: 40,
+            "assets/icons/temp_image.jpg",
+            width: 100,
+            height: 125,
           ),
-          SizedBox(width: 12),
+          SizedBox(width: 25),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

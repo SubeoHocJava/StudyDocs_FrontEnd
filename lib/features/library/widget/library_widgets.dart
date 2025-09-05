@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class SearchInput extends StatelessWidget {
   final TextEditingController? controller;
@@ -50,6 +51,7 @@ class UploadFileButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.headerBg,
               fixedSize: const Size(100, 100),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

@@ -1,37 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:studydocs/core/constants/app_colors.dart';
 import '../../../model/Document.dart';
 
 class RecentlyUpload extends StatelessWidget {
-  final List<Document> documents = [
-    Document(
-      title: "Tài liệu Flutter",
-      subject: "Lập trình di động",
-      school: "ĐH Công nghệ",
-      pages: 120,
-      date: "2025-08-01",
-      likes: 45,
-      comments: 10,
-    ),
-    Document(
-      title: "Tài liệu Java",
-      subject: "Lập trình hướng đối tượng",
-      school: "ĐH Bách Khoa",
-      pages: 200,
-      date: "2025-08-10",
-      likes: 60,
-      comments: 15,
-    ),
-    Document(
-      title: "Tài liệu Kotlin",
-      subject: "Lập trình Android",
-      school: "ĐH Khoa Học Tự Nhiên",
-      pages: 150,
-      date: "2025-08-20",
-      likes: 35,
-      comments: 8,
-    ),
-  ];
+
+  final List<Document>documents;
+   RecentlyUpload(this.documents);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +21,7 @@ class RecentlyUpload extends StatelessWidget {
           ),
         ),
         Container(
-          height: 300,
+          height: 175,
           child: ListView.builder(
             scrollDirection: Axis.horizontal, // 👈 cuộn ngang
             itemCount: documents.length,
@@ -72,17 +46,17 @@ class MonoDocument extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 200,
+          width: 100,
           margin: EdgeInsets.all(12),
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blueAccent),
+            border: Border.all(color: AppColors.headerBg),
           ),
           child: Image.asset(
             "assets/icons/search-icon.png",
-            width: 150,
-            height: 200,
+            width: 75,
+            height: 90,
           ),
         ),
         Text(document.title),

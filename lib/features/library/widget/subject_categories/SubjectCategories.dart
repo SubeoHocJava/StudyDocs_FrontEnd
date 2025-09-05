@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-
+import 'package:studydocs/core/constants/app_colors.dart';
 class SubjectCategories extends StatelessWidget {
-  final List<String> items = [
-    "Khoá học Flutter",
-    "Khoá học Java",
-    "Khoá học Kotlin",
-  ];
+
+  final List<String>categories;
+  const SubjectCategories(this.categories, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class SubjectCategories extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: items.length,
+          itemCount: categories.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.symmetric(
@@ -30,7 +28,7 @@ class SubjectCategories extends StatelessWidget {
                 horizontal: 16.0,
               ),
               child: MonoSubject(
-                name: items[index],
+                name: categories[index],
               ), // 👉 dùng widget MonoSubject
             );
           },
@@ -50,9 +48,9 @@ class MonoSubject extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.grey,
+        color: AppColors.headerBg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey)),
+        border: Border.all(color: AppColors.headerBg)),
       child: Row(
         children: [Icon(Icons.folder), SizedBox(width: 8), Text(name)],
       ),
