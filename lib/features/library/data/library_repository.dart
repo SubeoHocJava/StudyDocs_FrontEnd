@@ -41,4 +41,9 @@ class LibraryRepository {
   getCategorieDemo() {
     return categories;
   }
+  // Tìm kiếm tài liệu
+  searchDocument(String keyword) {
+    final List<Document> res=[documents.first];
+    return res;
+  }
 }

@@ -14,8 +14,9 @@ class LibraryLoading extends LibraryState{
 class LibraryLoaded extends LibraryState {
   final List<Document> documents;
   final List<String> categories;
+  final filePick;
 
-  const LibraryLoaded(this.documents, this.categories);
+  const LibraryLoaded(this.documents, this.categories, this.filePick);
 
   @override
   List<Object?> get props => [documents, categories];

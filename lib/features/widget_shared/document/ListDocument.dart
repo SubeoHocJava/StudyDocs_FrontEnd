@@ -32,13 +32,13 @@ class ListDocument extends StatelessWidget{
 }
 class MonoDocumentInList extends StatelessWidget {
   final Document document;
-
   const MonoDocumentInList({super.key, required this.document});
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return Container(
-      padding: EdgeInsets.all(12),
+      width: screenWidth*0.9,
+      padding: EdgeInsets.all(screenWidth*0.05),
       margin: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         // color: Colors.green.shade50,
@@ -50,10 +50,10 @@ class MonoDocumentInList extends StatelessWidget {
         children: [
           Image.asset(
             "assets/icons/temp_image.jpg",
-            width: 100,
-            height: 125,
+            width: screenWidth * 0.3,
+            height: screenWidth * 0.3,
           ),
-          SizedBox(width: 25),
+          SizedBox(width: 4,),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,6 @@ class MonoDocumentInList extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 4),
-
                 // like and comment
                 Row(
                   children: [

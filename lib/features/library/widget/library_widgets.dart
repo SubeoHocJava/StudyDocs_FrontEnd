@@ -10,9 +10,10 @@ class SearchInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return Center(
       child: SizedBox(
-        width: 300,
+        width: screenWidth * 0.8,//80% width
         child: SearchBar(
           controller: controller,
           hintText: 'Tìm kiếm các khóa học bài giảng tài liệu',
@@ -37,16 +38,17 @@ class SearchInput extends StatelessWidget {
 
 class UploadFileButton extends StatelessWidget {
   final VoidCallback onPressed;
-
-  const UploadFileButton({super.key, required this.onPressed});
+  final String? file;
+  const UploadFileButton({super.key, required this.onPressed,  this.file });
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return Container(
       margin: const EdgeInsets.all(16),
       child: Center(
         child: SizedBox(
-          width: 300,
+          width: screenWidth *0.8,//80% width
           height: 200,
           child: ElevatedButton(
             onPressed: onPressed,
@@ -62,10 +64,10 @@ class UploadFileButton extends StatelessWidget {
               children: [
                 Image.asset("assets/icons/upload.png"),
                 const SizedBox(height: 8),
-                const Text(
-                  "Đăng tải tài liệu bài giảng khóa học đề thi...",
-                  textAlign: TextAlign.center,
-                ),
+                   Text(
+                     file ?? "Đăng tải tài liệu bài giảng khóa học đề thi...",
+                     textAlign: TextAlign.center,
+                   )
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/data/library_repository.dart';
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
@@ -12,9 +13,9 @@ import '../features/library/widget/subject_categories/SubjectCategories.dart';
 
 class LibraryScreen extends StatelessWidget {
 
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return BlocProvider(
       create:
           (_) =>
@@ -32,13 +33,18 @@ class LibraryScreen extends StatelessWidget {
                   children: [
                     SearchInput(
                       onSearch: () {
+                        context.read<LibraryBloc>().add(SearchDocument("keyword"));
                         print("Search tapped");
                       },
+
                     ),
                     UploadFileButton(
                       onPressed: () {
+                        context.read<LibraryBloc>().add(PickDocument());
                         print("Upload tapped");
                       },
+                      file: state.filePick?.name,
+
                     ),
                     SubjectCategories(state.categories),
                     RecentlyUpload(state.documents),

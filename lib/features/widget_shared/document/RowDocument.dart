@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
 import '../../model/Document.dart';
-import 'ListDocument.dart';
 
 class RowDocument extends StatelessWidget {
   final List<Document> documents;
@@ -33,11 +30,12 @@ class MonoDocumentInRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width; //screen size
     return Column(
       children: [
         Container(
           width: 100,
-          margin: EdgeInsets.only(left: 12,bottom: 5,top: 5,right: 12),
+          margin: EdgeInsets.only(left: 12, bottom: 5, top: 5, right: 12),
           padding: EdgeInsets.all(5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),

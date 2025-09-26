@@ -7,6 +7,7 @@ class SubjectCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,8 +46,10 @@ class MonoSubject extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return Container(
-      padding: EdgeInsets.all(8),
+      width: screenWidth*0.8,
+      padding: EdgeInsets.all(screenWidth*0.05),
       decoration: BoxDecoration(
         color: AppColors.headerBg,
         borderRadius: BorderRadius.circular(8),
