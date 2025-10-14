@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:studydocs/features/model/File.dart';
 
 abstract class UploadFileState extends Equatable {
   const UploadFileState();
@@ -14,7 +15,7 @@ class UploadFileInitial extends UploadFileState {}
 class UploadFileLoading extends UploadFileState {}
 
 class UploadFileLoaded extends UploadFileState {
-  final List<File> file;
+  final List<MyFile> file;
   final String subject;
 
   const UploadFileLoaded(this.file, this.subject);

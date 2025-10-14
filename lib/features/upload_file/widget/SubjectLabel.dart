@@ -21,7 +21,41 @@ class SubjectLabel extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => {},
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        // Tạo một TextEditingController để lấy dữ liệu nhập vào
+                        TextEditingController _controller = TextEditingController();
+
+                        return AlertDialog(
+                          title: Text("Chỉnh sửa thông tin"),
+                          content: TextField(
+                            controller: _controller,
+                            decoration: InputDecoration(
+                              labelText: "Nhập dữ liệu",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Đóng dialog
+                              },
+                              child: Text("Hủy"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                print("Giá trị nhập: ${_controller.text}");
+                                Navigator.of(context).pop(); // Đóng dialog sau khi lưu
+                              },
+                              child: Text("Lưu"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   child: Text(
                     "Chỉnh sửa",
                     style: TextStyle(
@@ -30,18 +64,8 @@ class SubjectLabel extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                )
               ],
-            ),
-            TextField(
-              decoration: InputDecoration(
-                labelText: "Môn học: ", // nhãn
-                hintText: "Tìm theo tên hoạc mã môn học", // gợi ý
-                border: OutlineInputBorder(
-                  // viền
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
             ),
           ],
         ),
