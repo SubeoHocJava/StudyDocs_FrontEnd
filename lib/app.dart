@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/screens/library_screen.dart';
 
 import 'features/profile/presentation/profile_page.dart';
 
@@ -10,19 +11,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'StudyDocs',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
 
       // màn hình đầu tiên khi mở app
       initialRoute: '/',
 
       routes: {
         '/': (context) => const HomePage(),
-        '/profile': (context) {
-          // Giả sử ta truyền userId = 1
-          return const ProfilePage(userId: 1);
-        },
+        '/profile': (context) => const ProfilePage(userId: 1),
+        '/library': (context) => LibraryScreen(), // thêm LibraryScreen
       },
     );
   }
@@ -36,12 +33,23 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("StudyDocs Home")),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Điều hướng sang ProfilePage
-            Navigator.pushNamed(context, '/profile');
-          },
-          child: const Text("Đi tới Profile"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: const Text("Đi tới Profile"),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/library');
+              },
+              child: const Text("Đi tới Library"),
+            ),
+          ],
         ),
       ),
     );
