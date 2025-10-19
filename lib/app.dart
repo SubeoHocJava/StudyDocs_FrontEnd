@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/screens/library_screen.dart';
 
-import 'features/profile/presentation/profile_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -18,7 +17,6 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/': (context) => const HomePage(),
-        '/profile': (context) => const ProfilePage(userId: 1),
         '/library': (context) => LibraryScreen(), // thêm LibraryScreen
       },
     );

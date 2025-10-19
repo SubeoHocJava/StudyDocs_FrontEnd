@@ -20,7 +20,8 @@ class SubjectLibraryScreen extends StatelessWidget {
               SubjectLibraryBloc(SubjectLibraryRepository())
                 ..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
       child: Scaffold(
-        body: BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
+        body:
+        BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
           builder: (context, state) {
             if (state is SubjectLibraryLoading) {
               return Center(child: CircularProgressIndicator());
