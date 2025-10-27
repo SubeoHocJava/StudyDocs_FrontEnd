@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/presentation/home.dart';
-import 'features/profile/presentation/profile_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,15 +20,7 @@ class MyApp extends StatelessWidget {
             themeMode: themeController.mode,
 
             // màn hình đầu tiên khi mở app
-            initialRoute: '/',
-
-            routes: {
-              '/': (context) => const HomePage(),
-              '/profile': (context) {
-                // Giả sử ta truyền userId = 1
-                return const ProfilePage(userId: 1);
-              },
-            },
+            home: const HomePage(),
           );
         },
       ),
