@@ -14,16 +14,16 @@ class AppTheme {
   static ThemeData _baseLight() {
     final base = ThemeData.light(useMaterial3: true);
     return base.copyWith(
-      scaffoldBackgroundColor: AppColors.scaffold,
+      scaffoldBackgroundColor: AppColors.white,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.headerBg,
-        foregroundColor: AppColors.headerFg,
+        backgroundColor: AppColors.headerBackground,
+        foregroundColor: AppColors.headerForeground,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: AppColors.headerFg),
+        iconTheme: IconThemeData(color: AppColors.headerForeground),
       ),
       colorScheme: base.colorScheme.copyWith(
-        primary: AppColors.headerFg,
+        primary: AppColors.headerForeground,
         secondary: AppColors.profileSchool,
       ),
       textTheme: GoogleFonts.montserratTextTheme(base.textTheme),
@@ -34,7 +34,7 @@ class AppTheme {
     final base = ThemeData.dark(useMaterial3: true);
     return base.copyWith(
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.headerFg,
+        backgroundColor: AppColors.headerForeground,
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
