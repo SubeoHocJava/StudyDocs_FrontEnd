@@ -4,6 +4,8 @@ import '../logic/docs_bloc.dart';
 import '../logic/docs_state.dart';
 import '../logic/docs_event.dart';
 import 'docs_detail_screen.dart';
+import '../../../core/constants/app_icons.dart';
+import '../../../core/constants/app_colors.dart';
 
 class DocsScreen extends StatelessWidget {
   const DocsScreen({super.key});
@@ -58,17 +60,17 @@ class DocsScreen extends StatelessWidget {
 
                     Row(
                       children: [
-                        const Icon(Icons.folder, size: 20),
+                        Image.asset(AppAssets.folder, width: 20, height: 20),
                         const SizedBox(width: 6),
-                        Text(doc["course"]),
+                        Expanded(child: Text(doc["course"])),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.school, size: 20),
+                        Image.asset(AppAssets.school, width: 20, height: 20),
                         const SizedBox(width: 6),
-                        Text(doc["school"]),
+                        Expanded(child: Text(doc["school"])),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -78,20 +80,21 @@ class DocsScreen extends StatelessWidget {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () {},
-                          icon: const Icon(Icons.download),
+                          icon: Image.asset(AppAssets.download, width: 20, height: 20),
                           label: const Text("Tải về"),
-                        ),
-                        ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                            state.isSaved ? const Color(0xFFFFD700) : Colors.grey,
-                            foregroundColor:
-                            state.isSaved ? Colors.black : Colors.white,
+                            backgroundColor: AppColors.followerBg,
+                            foregroundColor: Colors.white,
                           ),
+                        ),
+                        IconButton(
                           onPressed: () =>
                               context.read<DocsBloc>().add(ToggleSave()),
-                          icon: const Icon(Icons.bookmark),
-                          label: Text(state.isSaved ? "Đã lưu" : "Lưu"),
+                          icon: Image.asset(
+                            state.isSaved ? AppAssets.saved : AppAssets.unsaved,
+                            width: 20,
+                            height: 20,
+                          ),
                         ),
                       ],
                     ),

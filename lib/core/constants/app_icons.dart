@@ -19,6 +19,7 @@ class AppAssets {
   // Actions
   static const download   = '$_base/download.png';
   static const saved      = '$_base/saved.png';
+  static const unsaved      = '$_base/unsaved.png';
   static const cmt        = '$_base/cmt.png';
   static const like       = '$_base/like.png';
 

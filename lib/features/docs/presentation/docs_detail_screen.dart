@@ -3,9 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../logic/docs_bloc.dart';
 import '../logic/docs_state.dart';
 import '../logic/docs_event.dart';
+import '../../../core/constants/app_icons.dart';
+import '../../../core/constants/app_colors.dart';
 
-class DocsDetailScreen extends StatelessWidget {
+class DocsDetailScreen extends StatefulWidget {
   const DocsDetailScreen({super.key});
+
+  @override
+  _DocsDetailScreenState createState() => _DocsDetailScreenState();
+}
+
+class _DocsDetailScreenState extends State<DocsDetailScreen> {
+  int _currentPage = 0;
+  final int _commentsPerPage = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +28,13 @@ class DocsDetailScreen extends StatelessWidget {
             }
             if (state is DocsLoaded) {
               final doc = state.docDetails;
+              final comments = doc["comments"] as List<dynamic>;
+              final totalPages = (comments.length / _commentsPerPage).ceil();
+              final startIndex = _currentPage * _commentsPerPage;
+              final endIndex = (startIndex + _commentsPerPage) > comments.length
+                  ? comments.length
+                  : startIndex + _commentsPerPage;
+              final paginatedComments = comments.sublist(startIndex, endIndex);
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -49,9 +66,9 @@ class DocsDetailScreen extends StatelessWidget {
                     // course
                     Row(
                       children: [
-                        const Icon(Icons.folder, size: 20),
+                        Image.asset(AppAssets.folder, width: 20, height: 20),
                         const SizedBox(width: 6),
-                        Text(doc["course"]),
+                        Expanded(child: Text(doc["course"])),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -59,9 +76,9 @@ class DocsDetailScreen extends StatelessWidget {
                     // school
                     Row(
                       children: [
-                        const Icon(Icons.school, size: 20),
+                        Image.asset(AppAssets.school, width: 20, height: 20),
                         const SizedBox(width: 6),
-                        Text(doc["school"]),
+                        Expanded(child: Text(doc["school"])),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -72,21 +89,21 @@ class DocsDetailScreen extends StatelessWidget {
                       children: [
                         ElevatedButton.icon(
                           onPressed: () {},
-                          icon: const Icon(Icons.download),
+                          icon: Image.asset(AppAssets.download, width: 20, height: 20),
                           label: const Text("Tải về"),
-                        ),
-                        ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: state.isSaved
-                                ? const Color(0xFFFFD700)
-                                : Colors.grey,
-                            foregroundColor:
-                            state.isSaved ? Colors.black : Colors.white,
+                            backgroundColor: AppColors.followerBg,
+                            foregroundColor: Colors.white,
                           ),
+                        ),
+                        IconButton(
                           onPressed: () =>
                               context.read<DocsBloc>().add(ToggleSave()),
-                          icon: const Icon(Icons.bookmark),
-                          label: Text(state.isSaved ? "Đã lưu" : "Lưu"),
+                          icon: Image.asset(
+                            state.isSaved ? AppAssets.saved : AppAssets.unsaved,
+                            width: 20,
+                            height: 20,
+                          ),
                         ),
                       ],
                     ),
@@ -94,13 +111,14 @@ class DocsDetailScreen extends StatelessWidget {
 
                     // Năm học
                     Text("Năm học: ${doc["year"]}"),
-                    const SizedBox(height: 12),
+                    //const SizedBox(height: 12),
 
-                    // Đăng tải bởi (avatar + tên + school)
+                    Text("Đăng tải bởi:"),
+                    // Đăng tải bởi (avatar + tên + school bên dưới)
                     ListTile(
-                      leading: const CircleAvatar(
+                      leading: CircleAvatar(
                         radius: 22,
-                        child: Icon(Icons.person),
+                        backgroundImage: AssetImage(AppAssets.avt),
                       ),
                       title: Text(
                         doc["uploader"],
@@ -109,7 +127,21 @@ class DocsDetailScreen extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),
-                      subtitle: Text(doc["school"]),
+                      subtitle: Row(
+                        children: [
+                          Image.asset(AppAssets.school, width: 16, height: 16),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              doc["school"],
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),
@@ -120,14 +152,15 @@ class DocsDetailScreen extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                              horizontal: 42, vertical: 8),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.thumb_up_alt_outlined, size: 18),
+                              Image.asset(AppAssets.like, width: 18, height: 18),
                               const SizedBox(width: 6),
                               Text("${doc["likes"]}"),
                             ],
@@ -136,14 +169,18 @@ class DocsDetailScreen extends StatelessWidget {
                         const SizedBox(width: 20),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                              horizontal: 42, vertical: 8),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.thumb_down_alt_outlined, size: 18),
+                              Transform.scale(
+                                scaleY: -1,
+                                child: Image.asset(AppAssets.like, width: 18, height: 18),
+                              ),
                               const SizedBox(width: 6),
                               Text("${doc["dislikes"]}"),
                             ],
@@ -153,17 +190,28 @@ class DocsDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
+                    // PDF
+                    Container(
+                      height: 420,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: const Center(child: Text("PDF full ở đây")),
+                    ),
+                    const SizedBox(height: 20),
+
                     const Divider(),
                     const Text(
                       "Bình luận",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 12),
 
-                    // Comment list với bo góc
-                    ...List.generate(doc["comments"].length, (i) {
-                      final c = doc["comments"][i];
+                    // Comment list với phân trang
+                    ...List.generate(paginatedComments.length, (i) {
+                      final c = paginatedComments[i];
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(12),
@@ -175,9 +223,9 @@ class DocsDetailScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const CircleAvatar(
+                            CircleAvatar(
                               radius: 18,
-                              child: Icon(Icons.person, size: 20),
+                              backgroundImage: AssetImage(AppAssets.avt),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
@@ -198,6 +246,36 @@ class DocsDetailScreen extends StatelessWidget {
                         ),
                       );
                     }),
+
+                    // Điều hướng phân trang
+                    if (comments.length > _commentsPerPage)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: _currentPage > 0
+                                ? () {
+                              setState(() {
+                                _currentPage--;
+                              });
+                            }
+                                : null,
+                            child: const Text("Trước"),
+                          ),
+                          Text("Trang ${_currentPage + 1}/$totalPages"),
+                          ElevatedButton(
+                            onPressed: _currentPage < totalPages - 1
+                                ? () {
+                              setState(() {
+                                _currentPage++;
+                              });
+                            }
+                                : null,
+                            child: const Text("Sau"),
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 20),
 
                     // Khung nhập bình luận + nút gửi tách rời
                     Row(
@@ -227,18 +305,6 @@ class DocsDetailScreen extends StatelessWidget {
                           child: const Text("Gửi"),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // PDF
-                    Container(
-                      height: 420,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Center(child: Text("PDF full ở đây")),
                     ),
                   ],
                 ),
