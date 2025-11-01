@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
-import 'features/home/presentation/home.dart';
+import 'features/home/presentation/home_screen.dart';
+import 'features/home/logic/home_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -20,7 +22,10 @@ class MyApp extends StatelessWidget {
             themeMode: themeController.mode,
 
             // màn hình đầu tiên khi mở app
-            home: const HomePage(),
+            home: BlocProvider(
+              create: (context) => createHomeBloc(),
+              child: const HomePage(),
+            ),
           );
         },
       ),
