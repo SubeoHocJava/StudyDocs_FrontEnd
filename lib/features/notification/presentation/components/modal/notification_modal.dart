@@ -29,7 +29,10 @@ class NotificationModal extends StatelessWidget {
             size: sizes.clampedButtonIconSize,
             onPressed: () {
               context.read<NotificationBloc>().add(MarkAllAsReadEvent());
-              Navigator.pop(context);
+              // Pop after this frame to avoid re-entrancy issues
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pop(context);
+              });
             },
           ),
           NotificationModalAction(

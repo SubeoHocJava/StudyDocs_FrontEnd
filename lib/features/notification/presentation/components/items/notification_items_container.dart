@@ -39,16 +39,21 @@ class _NotificationItemsContainerState extends State<NotificationItemsContainer>
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(), // để không bị cuộn lồng nhau
-      itemCount: widget.notifications.length,
-      itemBuilder: (context, index) {
-        final item = widget.notifications[index];
-        return NotificationItem(
-          notification: item,
-          onCheck: _handleCheck,
-        );
-      },
+    return SizedBox(
+      // Set a height that will shrink to fit the content
+      height: widget.notifications.length * 100.0, // Assuming each item is roughly 100 pixels high
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(), // để không bị cuộn lồng nhau
+        itemCount: widget.notifications.length,
+        itemBuilder: (context, index) {
+          final item = widget.notifications[index];
+          return NotificationItem(
+            notification: item,
+            onCheck: _handleCheck,
+          );
+        },
+      ),
     );
   }
 

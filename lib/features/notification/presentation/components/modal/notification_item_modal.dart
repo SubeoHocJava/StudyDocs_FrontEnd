@@ -43,7 +43,10 @@ class NotificationItemModal extends StatelessWidget {
                   context.read<NotificationBloc>().add(
                     MarkAsReadEvent(notification.id),
                   );
-                  Navigator.pop(context);
+                  // Schedule pop after frame to avoid re-entrancy during device updates
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pop(context);
+                  });
                 },
               ),
               NotificationModalAction(
@@ -54,7 +57,9 @@ class NotificationItemModal extends StatelessWidget {
                   context.read<NotificationBloc>().add(
                     DeleteNotificationEvent(notification.id, DeleteType.soft),
                   );
-                  Navigator.pop(context);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pop(context);
+                  });
                 },
               ),
             ],

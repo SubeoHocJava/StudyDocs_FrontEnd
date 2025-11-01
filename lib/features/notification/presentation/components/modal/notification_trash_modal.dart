@@ -29,7 +29,9 @@ class NotificationTrashModal extends StatelessWidget {
             size: sizes.clampedButtonIconSize,
             onPressed: () {
               context.read<NotificationBloc>().add(MarkAllAsReadEvent());
-              Navigator.pop(context);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pop(context);
+              });
             },
           ),
           NotificationModalAction(

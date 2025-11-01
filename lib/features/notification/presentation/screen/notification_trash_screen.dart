@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
 import 'package:studydocs/features/notification/domain/api/notification_api.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
@@ -21,7 +22,7 @@ class NotificationTrashScreen extends StatelessWidget {
       NotificationBloc(NotificationRepository(NotificationApi()))
         ..add(LoadNotificationEvent(DateTime.now(), true)),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Notifications')),
+        appBar: const Header(),
         body: BlocBuilder<NotificationBloc, NotificationState>(
           builder: (context, state) {
             if (state is NotificationLoadingState) {
