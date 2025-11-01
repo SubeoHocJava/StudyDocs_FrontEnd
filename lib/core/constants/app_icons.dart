@@ -21,7 +21,10 @@ class AppAssets {
   static const saved      = '$_base/saved.png';
   static const cmt        = '$_base/cmt.png';
   static const like       = '$_base/like.png';
-
+  // Notification
+  static const markAsRead = '$_base/mark_as_read.png';
+  static const moreHoriz = '$_base/more_horiz.png';
+  static const bin = '$_base/bin.png';
   // Khác
   static const folder     = '$_base/folder.png';
   static const school     = '$_base/school.png';

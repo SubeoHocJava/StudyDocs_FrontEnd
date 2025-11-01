@@ -19,4 +19,6 @@ class AppColors {
   // Document item
   static const docTitleBorder = Color(0xFF000F4C);
   static const docSmallText = Color(0xFF7A7A7A);
+  //Notification
+  static const notificationUnread = Color(0xFFE6EAFA);
 }
