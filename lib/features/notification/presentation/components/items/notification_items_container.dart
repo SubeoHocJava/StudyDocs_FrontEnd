@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/models/notification.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 
 import 'notification_item.dart';
 
+/// Container chứa và quản lý danh sách các notification
+/// - Sử dụng ListView.builder để tối ưu hiệu năng với danh sách dài
+/// - Quản lý trạng thái checkbox của các items (cho chế độ trash)
+/// - Vô hiệu hóa scroll để tránh conflict với scroll chính
 class NotificationItemsContainer extends StatefulWidget {
   final List<AppNotification> notifications;
   final Function(List<String>)? onCheckedIdsChanged;
@@ -31,20 +35,22 @@ class _NotificationItemsContainerState extends State<NotificationItemsContainer>
     });
   }
 
+  // Container quản lý danh sách notification và trạng thái checkbox.
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: widget.notifications
-          .map(
-            (item) => NotificationItem(
-              notification: item,
-              onCheck: _handleCheck,
-            ),
-          )
-          .toList(),
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(), // để không bị cuộn lồng nhau
+      itemCount: widget.notifications.length,
+      itemBuilder: (context, index) {
+        final item = widget.notifications[index];
+        return NotificationItem(
+          notification: item,
+          onCheck: _handleCheck,
+        );
+      },
     );
   }
+
 }
 

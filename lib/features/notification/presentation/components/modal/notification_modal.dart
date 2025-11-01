@@ -8,6 +8,10 @@ import 'notification_modal_layout.dart';
 import 'parts/helpers/notification_modal_size_helper.dart';
 import 'parts/notification_modal_action.dart';
 
+/// Modal chính cho trang notifications (hiển thị khi nhấn nút "...")
+/// - Action "Đánh dấu tất cả đã đọc": cập nhật trạng thái tất cả notifications
+/// - Action "Thông báo đã xóa": chuyển đến trang thùng rác
+/// Sử dụng BLoC để quản lý các thao tác với notifications
 class NotificationModal extends StatelessWidget {
   const NotificationModal({super.key});
 

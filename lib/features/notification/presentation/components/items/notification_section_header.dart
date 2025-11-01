@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Header hiển thị phân loại thời gian cho nhóm notification
+/// - Ví dụ: "Hôm nay", "Trước đó"
+/// - Font size responsive theo chiều rộng màn hình
+/// - Padding chuẩn để phân tách các section
 class NotificationSectionHeader extends StatelessWidget {
   final String time;
 

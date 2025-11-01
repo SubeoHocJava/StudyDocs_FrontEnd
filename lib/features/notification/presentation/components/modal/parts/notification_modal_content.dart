@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/models/notification.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 import 'package:studydocs/features/notification/presentation/components/items/parts/notification_type_icon.dart';
 
+/// Widget hiển thị nội dung chi tiết của notification trong modal
+/// - Icon loại notification (lớn hơn trong list)
+/// - Nội dung đầy đủ (không giới hạn số dòng)
+/// - Divider phân cách với phần actions
+/// Kích thước (icon, font) được điều chỉnh theo màn hình
 class NotificationModalContent extends StatelessWidget {
   final AppNotification notification;
   final double iconSize;

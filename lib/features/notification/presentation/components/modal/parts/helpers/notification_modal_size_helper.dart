@@ -1,3 +1,5 @@
+// Tính toán kích thước cho modal (icon, button, font) theo kích thước màn hình.
+// Mục đích: giữ tỉ lệ hợp lý giữa các thành phần trong modal trên điện thoại/tablet.
 class NotificationModalSizeHelper {
   static NotificationModalSizes calculate(double screenWidth) {
     // reuse breakpoints similar to layout helper; clamp values for extremes

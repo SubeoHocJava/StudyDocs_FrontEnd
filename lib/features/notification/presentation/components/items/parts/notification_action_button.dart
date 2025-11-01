@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/features/notification/models/notification.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 import 'package:studydocs/features/notification/presentation/components/modal/notification_item_modal.dart';
 
+/// Widget hiển thị nút tương tác cho mỗi notification:
+/// - Nếu notification chưa bị xóa: hiển thị nút "..." để mở modal actions
+/// - Nếu đã bị xóa (trong trash): hiển thị checkbox để chọn nhiều mục
 class NotificationActionButton extends StatelessWidget {
   final AppNotification notification;
   final bool isChecked;
@@ -11,7 +14,8 @@ class NotificationActionButton extends StatelessWidget {
   const NotificationActionButton({
     super.key,
     required this.notification,
-    required this.onCheckChanged, required this.isChecked,
+    required this.onCheckChanged,
+    required this.isChecked,
   });
 
   void _showModal(BuildContext context) {
@@ -26,6 +30,7 @@ class NotificationActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Nếu thông báo chưa bị xóa: hiển thị nút mở modal action
     if (notification.deletedAt == null) {
       return IconButton(
         onPressed: () => _showModal(context),
@@ -33,6 +38,7 @@ class NotificationActionButton extends StatelessWidget {
       );
     }
 
+    // Nếu trong trang 'trash' (deletedAt != null): cho phép chọn nhiều mục
     return Checkbox(
       value: isChecked,
       onChanged: (value) => onCheckChanged(value ?? false),

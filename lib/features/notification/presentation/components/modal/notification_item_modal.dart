@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
-import 'package:studydocs/features/notification/models/notification.dart';
 
 import 'notification_modal_layout.dart';
 import 'parts/helpers/notification_modal_size_helper.dart';
 import 'parts/notification_modal_action.dart';
 import 'parts/notification_modal_content.dart';
 
+/// Modal hiển thị chi tiết một notification và các action có thể thực hiện
+/// - Hiển thị nội dung đầy đủ của notification
+/// - Các action: đánh dấu đã đọc, xóa thông báo
+/// - Sử dụng NotificationModalLayout để căn chỉnh và responsive
 class NotificationItemModal extends StatelessWidget {
   final AppNotification notification;
 

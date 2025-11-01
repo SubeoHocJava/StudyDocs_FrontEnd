@@ -1,3 +1,6 @@
+// Helper này chuẩn hoá các giá trị layout (padding, spacing, kích thước icon, font)
+// theo breakpoint (small/medium/large) để các widget notification hiển thị
+// nhất quán trên nhiều kích thước màn hình.
 class NotificationLayoutHelper {
   /// Calculate layout values based on available width.
   /// Uses simple breakpoints (small, medium, large) so components

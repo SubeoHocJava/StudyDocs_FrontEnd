@@ -76,6 +76,8 @@ class AppNotification {
   }
 
   String formatDeletedTime() {
+    // Trả về ngày xóa theo format dd/MM/yyyy; nếu deletedAt null trả chuỗi rỗng
+    if (deletedAt == null) return '';
     return "${deletedAt!.day.toString().padLeft(2, '0')}/${deletedAt!.month.toString().padLeft(2, '0')}/${deletedAt!.year}";
   }
 }

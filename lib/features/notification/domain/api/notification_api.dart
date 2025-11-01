@@ -1,5 +1,7 @@
-import '../models/notification.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 
+// Đây là API mock trả dữ liệu mẫu trong giai đoạn phát triển.
+// Khi tích hợp backend thật, triển khai các phương thức để gọi HTTP.
 class NotificationApi {
   Future<void> markAsRead(String notificationId) async {}
 

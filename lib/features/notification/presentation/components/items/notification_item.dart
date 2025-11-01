@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/features/notification/models/notification.dart';
+import 'package:studydocs/features/notification/data/model/notification.dart';
 
 import 'parts/helpers/notification_layout_helper.dart';
 import 'parts/helpers/notification_press_state_mixin.dart';
@@ -9,6 +9,11 @@ import 'parts/notification_metadata.dart';
 import 'parts/notification_text.dart';
 import 'parts/notification_type_icon.dart';
 
+/// Widget hiển thị một thông báo trong danh sách
+/// - Responsive theo chiều rộng màn hình (padding, icon, font)
+/// - Hiệu ứng press state khi tương tác
+/// - Hiển thị background khác biệt cho thông báo chưa đọc
+/// - Tự động layout: icon - nội dung - action button
 class NotificationItem extends StatefulWidget {
   final AppNotification notification;
   final void Function(String id, bool isChecked) onCheck;
@@ -32,6 +37,10 @@ class _NotificationItemState extends State<NotificationItem>
     if (!isRead) return AppColors.notificationUnread;
     return null;
   }
+
+  // Widget chính cho 1 item notification.
+  // - Dùng LayoutBuilder để lấy maxWidth và tính kích thước qua helper.
+  // - AnimatedContainer để hiển thị hiệu ứng khi nhấn.
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

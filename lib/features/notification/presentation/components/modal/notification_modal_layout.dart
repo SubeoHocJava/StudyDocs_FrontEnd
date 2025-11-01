@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+/// Layout cơ sở cho tất cả các modal notification
+/// - Tạo container với chiều rộng full màn hình
+/// - Thêm indicator bar ở trên cùng (thanh kéo)
+/// - Hỗ trợ scroll nếu nội dung dài
+/// - Padding và constraints chuẩn cho modal bottom sheet
 class NotificationModalLayout extends StatelessWidget {
   final Widget child;
 

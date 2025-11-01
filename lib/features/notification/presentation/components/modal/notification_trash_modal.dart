@@ -8,6 +8,10 @@ import 'notification_modal_layout.dart';
 import 'parts/helpers/notification_modal_size_helper.dart';
 import 'parts/notification_modal_action.dart';
 
+/// Modal cho trang thùng rác (notifications đã xóa)
+/// - Action "Khôi phục thông báo": đưa notification về trạng thái bình thường
+/// - Action "Xóa vĩnh viễn": xóa hoàn toàn khỏi hệ thống
+/// Hiển thị khi người dùng chọn các notifications trong thùng rác
 class NotificationTrashModal extends StatelessWidget {
   const NotificationTrashModal({super.key});
 

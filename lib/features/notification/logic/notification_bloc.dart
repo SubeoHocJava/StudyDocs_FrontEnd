@@ -1,13 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/notification/data/notification_repository.dart';
+import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
 import 'package:studydocs/features/notification/logic/notification_state.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 
+// BLoC xử lý logic liên quan đến notifications: load, mark as read, delete.
+// Tầng này nhận các Event, gọi Repository và emit State tương ứng cho UI.
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final NotificationRepository repository;
 
   NotificationBloc(this.repository) : super(NotificationInitialState()) {
-    /// Load notification
+    // Load notification
     on<LoadNotificationEvent>((event, emit) async {
       emit(NotificationLoadingState());
       try {
@@ -17,11 +19,12 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         );
         emit(NotificationLoadedState(notifications));
       } catch (e) {
+        // emit error để UI có thể hiển thị thông báo lỗi
         emit(NotificationErrorState(e.toString()));
       }
     });
 
-    /// Mark as read
+    // Mark as read (cập nhật cục bộ sau khi gọi API thành công)
     on<MarkAsReadEvent>((event, emit) async {
       if (state is NotificationLoadedState) {
         final currentState = state as NotificationLoadedState;
@@ -41,7 +44,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       }
     });
 
-    /// Mark all as read
+    // Mark all as read
     on<MarkAllAsReadEvent>((event, emit) async {
       if (state is NotificationLoadedState) {
         final currentState = state as NotificationLoadedState;
@@ -61,7 +64,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       }
     });
 
-    /// Delete
+    // Delete notification (soft/hard)
     on<DeleteNotificationEvent>((event, emit) async {
       if (state is NotificationLoadedState) {
         final currentState = state as NotificationLoadedState;
