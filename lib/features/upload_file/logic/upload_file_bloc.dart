@@ -1,11 +1,11 @@
 import "dart:io";
 
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:studydocs/features/model/File.dart";
 import "package:studydocs/features/upload_file/data/upload_file_repository.dart";
 import "package:studydocs/features/upload_file/logic/upload_file_event.dart";
 
 
+import "../../library/data/model/File.dart";
 import "upload_file_state.dart";
 
 /// UploadFileBloc quản lý logic load/update dữ liệu

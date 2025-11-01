@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:studydocs/features/model/Document.dart';
 
-import '../../widget_shared/document/RowDocument.dart';
+
+import '../../../../core/widgets/document/RowDocument.dart';
+import '../../../library/data/model/Document.dart';
+
 
 class UploadDocument extends StatelessWidget {
   final List<Document> docs;

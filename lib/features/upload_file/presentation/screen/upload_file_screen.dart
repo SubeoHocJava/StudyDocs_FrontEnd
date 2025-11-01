@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/library/widget/library_widgets.dart';
 
-import '../features/model/File.dart';
-import '../features/upload_file/data/upload_file_repository.dart';
-import '../features/upload_file/logic/upload_file_bloc.dart';
-import '../features/upload_file/logic/upload_file_event.dart';
-import '../features/upload_file/logic/upload_file_state.dart';
-import '../features/upload_file/widget/ListFile.dart';
-import '../features/upload_file/widget/MoreDetail.dart';
-import '../features/upload_file/widget/SchoolLabel.dart';
-import '../features/upload_file/widget/SubjectLabel.dart';
+
+import '../../../library/data/model/File.dart';
+import '../../../library/presentation/widget/library_widgets.dart';
+
+import '../../data/upload_file_repository.dart';
+import '../../logic/upload_file_bloc.dart';
+import '../../logic/upload_file_event.dart';
+import '../../logic/upload_file_state.dart';
+import '../widget/ListFile.dart';
+import '../widget/MoreDetail.dart';
+import '../widget/SchoolLabel.dart';
+import '../widget/SubjectLabel.dart';
+
 
 class UploadFileScreen extends StatelessWidget {
   @override

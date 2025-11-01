@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../model/File.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../library/data/model/File.dart';
+
 
 class FileUploadLabel extends StatelessWidget {
   final List<MyFile> files;
