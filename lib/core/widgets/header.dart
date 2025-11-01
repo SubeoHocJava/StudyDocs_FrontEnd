@@ -24,7 +24,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       height: kToolbarHeight,
       decoration: const BoxDecoration(
-        color: AppColors.headerBg,
+        color: AppColors.headerBackground,
       ),
       child: SafeArea(
         child: Padding(
@@ -33,7 +33,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
             children: [
               AppIconButton(
                 iconData: Icons.menu,
-                color: AppColors.headerFg,
+                color: AppColors.headerForeground,
                 onPressed: onMenuTap ?? () {},
                 size: 24,
               ),
@@ -66,8 +66,8 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                   ElevatedButton(
                     onPressed: onLoginTap ?? () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.headerFg,
-                      foregroundColor: AppColors.headerBg,
+                      backgroundColor: AppColors.headerForeground,
+                      foregroundColor: AppColors.headerBackground,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -90,7 +90,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                   // Sun/brightness icon
                   AppIconButton(
                     iconData: Icons.wb_sunny_outlined,
-                    color: AppColors.headerFg,
+                    color: AppColors.headerForeground,
                     onPressed: () => theme.toggle(),
                     size: 24,
                   ),

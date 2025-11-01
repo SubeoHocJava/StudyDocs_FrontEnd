@@ -11,10 +11,10 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.headerBg,
+        color: AppColors.headerBackground,
         border: Border(
           top: BorderSide(
-            color: AppColors.headerBg,
+            color: AppColors.headerBackground,
             width: 0.5,
           ),
         ),
