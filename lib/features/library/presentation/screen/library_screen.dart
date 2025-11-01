@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/data/library_repository.dart';
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
-import '../features/library/logic/LibraryState.dart';
-import '../features/library/logic/library_bloc.dart';
-import '../features/library/widget/library_widgets.dart';
-import '../features/library/widget/recently_upload/recently_upload.dart';
-import '../features/library/widget/stored_document/stored_document.dart';
-import '../features/library/widget/subject_categories/SubjectCategories.dart';
+import '../../logic/LibraryState.dart';
+import '../../logic/library_bloc.dart';
+import '../widget/library_widgets.dart';
+import '../widget/recently_upload/recently_upload.dart';
+import '../widget/stored_document/stored_document.dart';
+import '../widget/subject_categories/SubjectCategories.dart';
+
 
 class LibraryScreen extends StatelessWidget {
 

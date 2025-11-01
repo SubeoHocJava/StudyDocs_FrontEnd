@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
-import '../../model/Document.dart';
-import '../../widget_shared/document/ListDocument.dart';
+import '../../../../core/widgets/document/ListDocument.dart';
+import '../../../library/data/model/Document.dart';
+
 
 class StorageDocument extends StatelessWidget{
   final List<Document> documents = [

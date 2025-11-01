@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/widgets/header.dart';
-import 'package:studydocs/features/subject_library/widget/most_liked_docs.dart';
 
-import '../features/library/widget/stored_document/stored_document.dart';
-import '../features/subject_library/data/subject_library_repository.dart';
-import '../features/subject_library/logic/subject_library_bloc.dart';
-import '../features/subject_library/logic/subject_library_event.dart';
-import '../features/subject_library/logic/subject_library_state.dart';
-import '../features/subject_library/widget/title.dart';
-import '../features/subject_library/widget/uploaded_document.dart';
+import '../../../library/presentation/widget/stored_document/stored_document.dart';
+import '../../data/subject_library_repository.dart';
+import '../../logic/subject_library_bloc.dart';
+import '../../logic/subject_library_event.dart';
+import '../../logic/subject_library_state.dart';
+import '../widget/most_liked_docs.dart';
+import '../widget/title.dart';
+import '../widget/uploaded_document.dart';
+
 
 class SubjectLibraryScreen extends StatelessWidget {
   @override

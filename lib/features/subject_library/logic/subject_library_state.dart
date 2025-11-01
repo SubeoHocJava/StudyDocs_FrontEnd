@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/features/model/Document.dart';
+
+import '../../library/data/model/Document.dart';
+
 
 abstract class SubjectLibraryState extends Equatable {
   const SubjectLibraryState();

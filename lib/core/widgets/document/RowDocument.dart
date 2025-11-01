@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../model/Document.dart';
+import '../../../features/library/data/model/Document.dart';
+
 
 class RowDocument extends StatelessWidget {
   final List<Document> documents;

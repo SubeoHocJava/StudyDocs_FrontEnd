@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/widget_shared/document/ListDocument.dart';
+import '../../../../../core/widgets/document/ListDocument.dart';
+import '../../../data/model/Document.dart';
 
-import '../../../model/Document.dart';
 
 class StoredDocument extends StatelessWidget {
   final List<Document>documents;

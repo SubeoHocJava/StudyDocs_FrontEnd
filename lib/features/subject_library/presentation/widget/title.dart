@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/library/widget/library_widgets.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
+import '../../../library/presentation/widget/library_widgets.dart';
 
 class TitleSubjectLibrary extends StatelessWidget {
   final SubjectLibraryLoaded state;

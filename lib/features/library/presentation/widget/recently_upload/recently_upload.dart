@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/features/widget_shared/document/RowDocument.dart';
-import '../../../model/Document.dart';
-import '../../../widget_shared/document/ListDocument.dart';
+import '../../../../../core/widgets/document/RowDocument.dart';
+import '../../../data/model/Document.dart';
+
 
 class RecentlyUpload extends StatelessWidget {
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/screens/library_screen.dart';
+import 'package:studydocs/features/library/presentation/screen/library_screen.dart';
 
 
 class MyApp extends StatelessWidget {

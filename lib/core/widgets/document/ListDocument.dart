@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../model/Document.dart';
+import '../../../features/library/data/model/Document.dart';
+
 
 class ListDocument extends StatelessWidget{
   final List<Document>documents;

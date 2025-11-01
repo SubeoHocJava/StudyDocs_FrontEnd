@@ -1,4 +1,6 @@
-import '../../model/Document.dart';
+
+
+import '../../library/data/model/Document.dart';
 
 class SubjectLibraryRepository{
   final List<Document> documents = [
