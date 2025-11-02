@@ -53,7 +53,7 @@ class UploadFileButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.headerBg,
+              backgroundColor: AppColors.headerBackground,
               fixedSize: const Size(100, 100),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

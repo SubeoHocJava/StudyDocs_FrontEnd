@@ -40,9 +40,9 @@ class MonoFile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.05),
       decoration: BoxDecoration(
-        color: AppColors.headerBg,
+        color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.headerBg),
+        border: Border.all(color: AppColors.headerBackground),
       ),
       child:Row(
         children: [

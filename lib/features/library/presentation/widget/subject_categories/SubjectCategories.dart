@@ -51,9 +51,9 @@ class MonoSubject extends StatelessWidget {
       width: screenWidth*0.8,
       padding: EdgeInsets.all(screenWidth*0.05),
       decoration: BoxDecoration(
-        color: AppColors.headerBg,
+        color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.headerBg)),
+        border: Border.all(color: AppColors.headerBackground)),
       child: Row(
         children: [Icon(Icons.folder), SizedBox(width: 8), Text(name)],
       ),
