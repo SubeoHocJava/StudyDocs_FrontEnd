@@ -6,50 +6,100 @@ import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final VoidCallback? onUserTap;
+  final VoidCallback? onMenuTap;
   final VoidCallback? onLogoTap;
+  final VoidCallback? onLoginTap;
 
   const Header({
     super.key,
-    this.title = 'StudyDocs',
-    this.onUserTap,
+    this.onMenuTap,
     this.onLogoTap,
+    this.onLoginTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = context.read<ThemeController>();
-    return AppBar(
-      backgroundColor: AppColors.headerBg,
-      centerTitle: true,
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: AppColors.headerFg,
-          fontWeight: FontWeight.w700,
+    
+    return Container(
+      height: kToolbarHeight,
+      decoration: const BoxDecoration(
+        color: AppColors.headerBackground,
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 9.0),
+          child: Row(
+            children: [
+              AppIconButton(
+                iconData: Icons.menu,
+                color: AppColors.headerForeground,
+                onPressed: onMenuTap ?? () {},
+                size: 24,
+              ),
+              
+              const SizedBox(width: 12),
+              
+              GestureDetector(
+                onTap: onLogoTap ?? () {},
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Logo image
+                    Image.asset(
+                      AppAssets.logo,
+                      width: 60,
+                      height: 60,
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Login button and sun icon on the right
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Login button
+                  ElevatedButton(
+                    onPressed: onLoginTap ?? () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.headerForeground,
+                      foregroundColor: AppColors.headerBackground,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                    child: const Text('Đăng nhập'),
+                  ),
+                  
+                  const SizedBox(width: 8),
+                  
+                  // Sun/brightness icon
+                  AppIconButton(
+                    iconData: Icons.wb_sunny_outlined,
+                    color: AppColors.headerForeground,
+                    onPressed: () => theme.toggle(),
+                    size: 24,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      leading: AppIconButton(
-        assetPath: AppAssets.user,
-        color: AppColors.headerFg,
-        onPressed: onUserTap ?? () {},
-        size: 22,
-      ),
-      actions: [
-        AppIconButton(
-          assetPath: AppAssets.logo,
-          color: AppColors.headerFg,
-          onPressed: onLogoTap ?? () {},
-          size: 22,
-        ),
-        AppIconButton(
-          assetPath: AppAssets.sun,
-          color: AppColors.headerFg,
-          onPressed: () => theme.toggle(),
-          size: 22,
-        ),
-      ],
     );
   }
 
