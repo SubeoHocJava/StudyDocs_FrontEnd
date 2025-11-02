@@ -23,8 +23,7 @@ class NotificationModalAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final sizes = NotificationModalSizeHelper.calculate(screenWidth);
+    final sizes = NotificationModalSizeHelper.calculate(context);
     
     return TextButton.icon(
       onPressed: onPressed,

@@ -21,8 +21,7 @@ class NotificationItemModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final sizes = NotificationModalSizeHelper.calculate(screenWidth);
+    final sizes = NotificationModalSizeHelper.calculate(context);
 
     return NotificationModalLayout(
       child: Column(

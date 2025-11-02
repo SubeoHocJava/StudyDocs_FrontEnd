@@ -1,37 +1,36 @@
-// Helper này chuẩn hoá các giá trị layout (padding, spacing, kích thước icon, font)
-// theo breakpoint (small/medium/large) để các widget notification hiển thị
-// nhất quán trên nhiều kích thước màn hình.
+import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+
+/// Helper để tính toán các giá trị layout cho notification components
+/// sử dụng ResponsiveHelper để đảm bảo tính nhất quán
 class NotificationLayoutHelper {
-  /// Calculate layout values based on available width.
-  /// Uses simple breakpoints (small, medium, large) so components
-  /// scale consistently across screen sizes.
-  static NotificationLayoutValues calculate(double maxWidth) {
-    if (maxWidth >= 720) {
-      return const NotificationLayoutValues(
-        horizontalPadding: 24,
-        verticalPadding: 16,
-        spacing: 16,
-        iconSize: 56,
-        fontSize: 16,
-      );
-    } else if (maxWidth >= 360) {
-      return const NotificationLayoutValues(
-        horizontalPadding: 16,
-        verticalPadding: 12,
-        spacing: 12,
-        iconSize: 48,
-        fontSize: 14,
-      );
-    } else {
-      // small phones
-      return const NotificationLayoutValues(
-        horizontalPadding: 12,
-        verticalPadding: 8,
-        spacing: 8,
-        iconSize: 40,
-        fontSize: 13,
-      );
-    }
+  /// Tính toán các giá trị layout dựa trên ResponsiveHelper
+  static NotificationLayoutValues calculate(BuildContext context) {
+    final responsive = ResponsiveHelper(context);
+    
+    return NotificationLayoutValues(
+      horizontalPadding: responsive.responsiveValue(
+        mobile: 16.0,
+        tablet: 24.0,
+        desktop: 32.0,
+      ),
+      verticalPadding: responsive.responsiveValue(
+        mobile: 12.0,
+        tablet: 16.0,
+        desktop: 20.0,
+      ),
+      spacing: responsive.responsiveValue(
+        mobile: 12.0,
+        tablet: 16.0,
+        desktop: 20.0,
+      ),
+      iconSize: responsive.responsiveValue(
+        mobile: 48.0,
+        tablet: 56.0,
+        desktop: 64.0,
+      ),
+      fontSize: responsive.fontSize(14.0),
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 
 /// Layout cơ sở cho tất cả các modal notification
 /// - Tạo container với chiều rộng full màn hình
@@ -12,23 +13,23 @@ class NotificationModalLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final responsive = ResponsiveHelper(context);
     return SafeArea(
       child: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: screenWidth,
-            minWidth: screenWidth,
+            maxWidth: responsive.width,
+            minWidth: responsive.width,
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            padding: responsive.defaultPadding,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: screenWidth * 0.15,
+                  width: responsive.widthPercent(15),
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: EdgeInsets.only(bottom: responsive.isMobile ? 12 : 16),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 0, 15, 76),
                     borderRadius: BorderRadius.circular(2),

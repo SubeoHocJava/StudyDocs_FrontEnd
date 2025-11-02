@@ -1,30 +1,26 @@
-// Tính toán kích thước cho modal (icon, button, font) theo kích thước màn hình.
-// Mục đích: giữ tỉ lệ hợp lý giữa các thành phần trong modal trên điện thoại/tablet.
+import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+
+/// Helper để tính toán kích thước cho modal components
+/// sử dụng ResponsiveHelper để đảm bảo tính nhất quán
 class NotificationModalSizeHelper {
-  static NotificationModalSizes calculate(double screenWidth) {
-    // reuse breakpoints similar to layout helper; clamp values for extremes
-    if (screenWidth >= 720) {
-      return const NotificationModalSizes(
-        iconSize: 80,
-        buttonIconSize: 64,
-        fontSize: 18,
-        textSize: 18,
-      );
-    } else if (screenWidth >= 360) {
-      return const NotificationModalSizes(
-        iconSize: 56,
-        buttonIconSize: 48,
-        fontSize: 16,
-        textSize: 16,
-      );
-    } else {
-      return const NotificationModalSizes(
-        iconSize: 44,
-        buttonIconSize: 40,
-        fontSize: 14,
-        textSize: 14,
-      );
-    }
+  static NotificationModalSizes calculate(BuildContext context) {
+    final responsive = ResponsiveHelper(context);
+    
+    return NotificationModalSizes(
+      iconSize: responsive.responsiveValue(
+        mobile: 56.0,
+        tablet: 72.0,
+        desktop: 80.0,
+      ),
+      buttonIconSize: responsive.responsiveValue(
+        mobile: 48.0,
+        tablet: 56.0,
+        desktop: 64.0,
+      ),
+      fontSize: responsive.fontSize(16.0),
+      textSize: responsive.fontSize(16.0),
+    );
   }
 }
 

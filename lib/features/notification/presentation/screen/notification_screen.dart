@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
-import 'package:studydocs/features/notification/domain/api/notification_api.dart';
+import 'package:studydocs/features/notification/data/data_source/notification_data_source.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 import 'package:studydocs/features/notification/logic/notification_helper.dart';
@@ -20,7 +20,7 @@ class NotificationScreen extends StatelessWidget {
     return BlocProvider(
       create:
           (_) =>
-              NotificationBloc(NotificationRepository(NotificationApi()))
+              NotificationBloc(NotificationRepository(NotificationDataSource()))
                 ..add(LoadNotificationEvent(DateTime.now(), true)),
       child: Scaffold(
         appBar: const Header(),

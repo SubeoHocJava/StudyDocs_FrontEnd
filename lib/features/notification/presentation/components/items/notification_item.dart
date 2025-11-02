@@ -47,9 +47,9 @@ class _NotificationItemState extends State<NotificationItem>
       onTapDown: (_) => handlePressDown(),
       onTapUp: (_) => handlePressUp(),
       onTapCancel: handlePressCancel,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final layout = NotificationLayoutHelper.calculate(constraints.maxWidth);
+      child: Builder(
+        builder: (context) {
+          final layout = NotificationLayoutHelper.calculate(context);
           final backgroundColor = _getBackgroundColor(isPressed, widget.notification.isRead);
 
           return AnimatedContainer(
