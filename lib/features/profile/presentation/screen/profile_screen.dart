@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../library/logic/LibraryEvent.dart';
+
 import '../widget/BasicInfor.dart';
 import '../widget/Statistical.dart';
 import '../widget/StoreageDocument.dart';
+import '../widget/UploadDocument.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -27,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               BasicInfor(),
               Statistical(),
-
+              UpLoadDocument(),
               StorageDocument(),
             ],
           ),
