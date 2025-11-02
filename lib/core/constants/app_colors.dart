@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Header
-  static const headerBg = Color(0xFFE6EAFA);
-  static const headerFg = Color(0xFF0505C4);
+  // Primary Palette (xanh dương đậm, thương hiệu chính)
+  static const Color primary = Color(0xFF0505C4);
+  static const Color primaryLight = Color(0xFFE6EAFA);
 
-  // Nền trong app
-  static const scaffold = Color(0xFFFFFFFF);
+  // Secondary Palette (xanh ngọc & tím nhạt — màu nhấn phụ)
+  static const Color secondaryTeal = Color(0xFF00C0CD);
+  static const Color secondaryBlue = Color(0xFF7A94FF);
 
-  // ProfileText
-  static const profileName = Color(0xFF000F4C);
-  static const profileSchool = Color(0xFF7A94FF);
+  // Neutral Palette (trắng, đen, xám)
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
+  static const Color gray = Color(0xFF7A7A7A);
+  static const Color navy = Color(0xFF000F4C); // Xanh navy đậm
 
-  // Follow chips
-  static const followerBg = Color(0xFF00C0CD);
-  static const followingBg = Color(0xFF7A94FF);
+  // Semantic aliases (dễ đọc, dùng cho component cụ thể)
+  static const Color headerBackground = primaryLight;
+  static const Color headerForeground = primary;
 
-  // Document item
-  static const docTitleBorder = Color(0xFF000F4C);
-  static const docSmallText = Color(0xFF7A7A7A);
+  static const Color profileName = navy;
+  static const Color profileSchool = secondaryBlue;
+
+  static const Color docTitleBorder = navy;
+  static const Color docSmallText = gray;
+
+  static const Color followerChip = secondaryTeal;
+  static const Color followingChip = secondaryBlue;
   //Notification
   static const notificationUnread = Color(0xFFE6EAFA);
 }
