@@ -83,7 +83,7 @@ class DocsScreen extends StatelessWidget {
                           icon: Image.asset(AppAssets.download, width: 20, height: 20),
                           label: const Text("Tải về"),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.followerBg,
+                            backgroundColor: AppColors.secondaryTeal,
                             foregroundColor: Colors.white,
                           ),
                         ),
