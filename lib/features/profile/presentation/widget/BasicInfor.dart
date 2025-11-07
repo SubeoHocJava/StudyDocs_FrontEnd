@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studydocs/features/profile/presentation/widget/UpdateInforDialog.dart';
 
 
 class BasicInfor extends StatelessWidget {
+  const BasicInfor({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -12,7 +15,9 @@ class BasicInfor extends StatelessWidget {
         Align(
           alignment: Alignment.topRight,
           child: TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              _showUpdateForm(context);
+            },
             icon: const Icon(Icons.edit, size: 18),
             label: const Text(
               "Cập nhật thông tin",
@@ -50,3 +55,15 @@ class BasicInfor extends StatelessWidget {
     );
   }
 }
+
+void _showUpdateForm(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return UpdateInforDialog();
+    },
+  );
+}
+
+
+

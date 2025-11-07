@@ -32,15 +32,15 @@ class DocItemVertical extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // thumbnail giả
-            Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.headerBg,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerFg),
-            ),
+            // Container(
+            //   height: 80,
+            //   decoration: BoxDecoration(
+            //     color: AppColors.headerBg,
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   alignment: Alignment.center,
+            //   child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerFg),
+            // ),
             const SizedBox(height: 8),
             Text(
               title,
@@ -66,10 +66,10 @@ class DocItemVertical extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                AppIconButton(assetPath: AppAssets.like,     onPressed: null, size: 20),
-                AppIconButton(assetPath: AppAssets.cmt,      onPressed: null, size: 20),
-                AppIconButton(assetPath: AppAssets.download, onPressed: null, size: 20),
-                AppIconButton(assetPath: AppAssets.saved,    onPressed: null, size: 20),
+                // AppIconButton(assetPath: AppAssets.like,     onPressed: null, size: 20),
+                // AppIconButton(assetPath: AppAssets.cmt,      onPressed: null, size: 20),
+                // AppIconButton(assetPath: AppAssets.download, onPressed: null, size: 20),
+                // AppIconButton(assetPath: AppAssets.saved,    onPressed: null, size: 20),
               ],
             ),
           ],
