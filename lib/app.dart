@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:studydocs/features/home/presentation/home.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/home/logic/home_bloc.dart';
+import 'features/home/presentation/home_screen.dart';
+import 'features/home/presentation/bloc/home_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

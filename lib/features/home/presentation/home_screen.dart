@@ -5,7 +5,7 @@ import '../../../core/widgets/bottom_nav.dart';
 import '../../../core/widgets/document_horizontal.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/responsive_helper.dart';
-import '../logic/home_bloc.dart';
+import 'bloc/home_bloc.dart';
 import '../domain/entity/document_entity.dart';
 import 'component/home_banner.dart';
 
