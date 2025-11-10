@@ -1,9 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../domain/entity/document_entity.dart';
-import '../../domain/usecase/get_documents_usecase.dart';
-import '../../data/reponsitory/home_repository.dart';
-import '../../data/datasource/home_data_source.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/home_remote_datasource.dart';
+import 'package:studydocs/features/home/domain/repository/impl/home_repository_impl.dart';
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
+import 'package:studydocs/features/home/domain/usecase/get_documents_usecase.dart';
 
 // Events
 abstract class HomeEvent extends Equatable {
@@ -200,17 +201,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 }
 
-// Factory function to create HomeBloc with dependencies
 HomeBloc createHomeBloc() {
-  final dataSource = HomeDataSourceImpl();
-  final repository = HomeRepositoryImpl(dataSource: dataSource);
-  final getDocumentsUseCase = GetDocumentsUseCase(repository: repository);
-  final getPopularDocumentsUseCase =
-      GetPopularDocumentsUseCase(repository: repository);
-  final getRecentDocumentsUseCase =
-      GetRecentDocumentsUseCase(repository: repository);
-  final searchDocumentsUseCase =
-      SearchDocumentsUseCase(repository: repository);
+  // Khởi tạo DioClient
+  final dioClient = DioClient();
+
+  // Data layer
+  final remoteDataSource = HomeRemoteDataSourceImpl(
+    dioClient: dioClient,
+  );
+
+  final repository = HomeRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+  );
+
+  // Domain layer - UseCases
+  final getDocumentsUseCase = GetDocumentsUseCase(
+    repository: repository,
+  );
+  final getPopularDocumentsUseCase = GetPopularDocumentsUseCase(
+    repository: repository,
+  );
+  final getRecentDocumentsUseCase = GetRecentDocumentsUseCase(
+    repository: repository,
+  );
+  final searchDocumentsUseCase = SearchDocumentsUseCase(
+    repository: repository,
+  );
 
   return HomeBloc(
     getDocumentsUseCase: getDocumentsUseCase,
