@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../domain/entity/document_entity.dart';
-import '../domain/usecase/get_documents_usecase.dart';
-import '../data/reponsitory/home_repository.dart';
-import '../data/data_source/home_data_source.dart';
+import '../../domain/entity/document_entity.dart';
+import '../../domain/usecase/get_documents_usecase.dart';
+import '../../data/reponsitory/home_repository.dart';
+import '../../data/datasource/home_data_source.dart';
 
 // Events
 abstract class HomeEvent extends Equatable {

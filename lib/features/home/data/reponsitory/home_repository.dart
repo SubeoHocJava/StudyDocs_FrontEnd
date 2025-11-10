@@ -1,5 +1,5 @@
 import '../../domain/entity/document_entity.dart';
-import '../data_source/home_data_source.dart';
+import '../datasource/home_data_source.dart';
 
 abstract class HomeRepository {
   Future<List<DocumentEntity>> getDocuments();
