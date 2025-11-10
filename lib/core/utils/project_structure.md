@@ -55,7 +55,7 @@ studydocs_frontend/
 
 ---
 
-## ⚙️ Kiến trúc BLoC + Clean Architecture
+## ⚙Kiến trúc BLoC + Clean Architecture
 
 Luồng dữ liệu:
 ```
@@ -64,6 +64,31 @@ UI → Event → Bloc → Repository → DataSource → API/DB
 và ngược lại:
 ```
 API/DB → DataSource → Repository → Bloc → UI (State)
+```
+
+Luồng dữ liệu chi tiết:
+```
+UI (Screen)
+↓ dispatch event
+Bloc
+↓ call
+UseCases (Domain)
+↓ call
+Repository Interface (Domain)
+↓ implements
+RepositoryImpl (Data)
+↓ call
+RemoteDataSource (Data)
+↓ uses
+DioClient (Core)
+↓ HTTP request
+API Server
+↓ JSON response
+DocumentModel.fromJson()
+↓ convert
+DocumentEntity
+↓ emit state
+UI updates
 ```
 
 Ưu điểm:
