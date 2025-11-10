@@ -1,5 +1,5 @@
 import '../entity/document_entity.dart';
-import '../../data/reponsitory/home_repository.dart';
+import '../repository/home_repository.dart';
 
 class GetDocumentsUseCase {
   final HomeRepository repository;
@@ -40,4 +40,3 @@ class SearchDocumentsUseCase {
     return await repository.searchDocuments(query);
   }
 }
-
