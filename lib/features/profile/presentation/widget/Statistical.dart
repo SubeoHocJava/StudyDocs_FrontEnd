@@ -4,7 +4,8 @@ class Statistical extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
+    const num_follow_me=1;//số người theo dõi tôi
+    const num_me_follow=1;//số người tôi đang theo dõi
     return Container(
       width: double.infinity,
       child: Center(
@@ -27,7 +28,7 @@ class Statistical extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "12 người theo dõi",
+                    num_follow_me.toString()+" người theo dõi",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -52,7 +53,7 @@ class Statistical extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Đang theo dõi 56 người",
+                    "Đang theo dõi "+num_me_follow.toString()+ " người",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),

@@ -8,10 +8,12 @@ class BasicInfor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const image="";
+    const name="";
+    const school="";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center, // căn giữa phần nội dung
       children: [
-        // button update profile
         Align(
           alignment: Alignment.topRight,
           child: TextButton.icon(
@@ -35,7 +37,7 @@ class BasicInfor extends StatelessWidget {
         // avatar
         const SizedBox(height: 10),
         Image.asset(
-          "assets/icons/avt.png",
+          image,
           width: 120,
           height: 120,
           fit: BoxFit.cover,
@@ -43,12 +45,12 @@ class BasicInfor extends StatelessWidget {
         const SizedBox(height: 8),
         // name
         const Text(
-          "Subeo xém đáng yêu",
+          name,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         // school
         const Text(
-          "Trường Đại học Nông Lâm",
+          school,
           style: TextStyle(fontSize: 15, color: Colors.blueAccent),
         ),
       ],
