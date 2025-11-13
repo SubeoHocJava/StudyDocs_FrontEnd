@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:studydocs/features/profile/presentation/screen/profile_screen.dart';
+import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
 import 'core/theme/app_theme.dart';
-import 'features/home/presentation/home_screen.dart';
+
 import 'features/home/logic/home_bloc.dart';
+import 'features/home/presentation/home.dart';
+import 'features/subject_library/presentation/screen/subject_library_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,7 +28,7 @@ class MyApp extends StatelessWidget {
             // màn hình đầu tiên khi mở app
             home: BlocProvider(
               create: (context) => createHomeBloc(),
-              child: const HomePage(),
+              child:  ProfileScreen(),
             ),
           );
         },
