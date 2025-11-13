@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:studydocs/data/model/document_model.dart';
 
 class DocumentEntity extends Equatable {
   final String id;
@@ -65,5 +66,34 @@ class DocumentEntity extends Equatable {
         fileUrl,
         fileType,
       ];
+
+  // Convert Model → Entity
+  static DocumentEntity fromModel(DocumentModel model) {
+    return DocumentEntity(
+      id: model.id,
+      title: model.title,
+      description: model.description,
+      author: model.author,
+      authorId: model.authorId,
+      thumbnailUrl: model.thumbnailUrl,
+      category: model.category,
+      institution: model.institution,
+      pageCount: model.pageCount,
+      academicYear: model.academicYear,
+      viewCount: model.viewCount,
+      downloadCount: model.downloadCount,
+      likesCount: model.likesCount,
+      commentsCount: model.commentsCount,
+      rating: model.rating,
+      createdAt: model.createdAt != null
+          ? DateTime.tryParse(model.createdAt!)  // Convert String → DateTime
+          : null,
+      updatedAt: model.updatedAt != null
+          ? DateTime.tryParse(model.updatedAt!)
+          : null,
+      fileUrl: model.fileUrl,
+      fileType: model.fileType,
+    );
+  }
 }
 

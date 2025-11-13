@@ -27,4 +27,9 @@ class AppColors {
 
   static const Color docTitleBorder = navy;
   static const Color docSmallText = gray;
+
+  static const Color followerChip = secondaryTeal;
+  static const Color followingChip = secondaryBlue;
+  //Notification
+  static const notificationUnread = Color(0xFFE6EAFA);
 }
