@@ -7,4 +7,12 @@ class AppAssets {
   static const like = '$_base/like.png';
   static const download = '$_base/download.png';
   static const bin = '$_base/bin.png';
+
+  static const folder   = '$_base/folder.png';
+  static const school   = '$_base/school.png';
+
+  static const saved     = '$_base/saved.png';
+  static const unsaved   = '$_base/unsaved.png';
+
+  static const avt       = '$_base/avatar.png';
 }
