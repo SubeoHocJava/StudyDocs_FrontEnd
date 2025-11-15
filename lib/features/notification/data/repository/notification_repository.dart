@@ -1,5 +1,5 @@
-import 'package:studydocs/features/notification/data/data_source/notification_data_source.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/datasource/notification_remote_source.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 
 // Repository làm nhiệm vụ tách rời tầng dữ liệu khỏi BLoC/UI.

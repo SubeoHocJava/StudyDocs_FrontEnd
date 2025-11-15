@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
-import 'package:studydocs/features/notification/data/data_source/notification_data_source.dart';
+import 'package:studydocs/data/datasource/notification_remote_source.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 import 'package:studydocs/features/notification/logic/notification_helper.dart';

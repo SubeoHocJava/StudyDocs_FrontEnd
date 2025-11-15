@@ -1,11 +1,36 @@
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/model/notification.dart';
+
+abstract interface class NotificationDataSource {
+  Future<List<AppNotification>> getNotifications(
+    DateTime createdAt,
+    bool isDeleted,
+  );
+
+  Future<void> markAsRead(String notificationId);
+
+  Future<void> softDelete(String notificationId);
+
+  Future<void> hardDelete(String notificationId);
+
+  Future<void> markAllAsRead();
+}
 
 // Đây là API mock trả dữ liệu mẫu trong giai đoạn phát triển.
 // Khi tích hợp backend thật, triển khai các phương thức để gọi HTTP.
-class NotificationDataSource {
+class NotificationDataSourceImpl implements NotificationDataSource {
+  final DioClient dioClient;
+
+  NotificationDataSourceImpl({required this.dioClient});
+
+  @override
   Future<void> markAsRead(String notificationId) async {}
 
-  Future<List<AppNotification>> getNotifications(DateTime createdAt,bool isDeleted) async {
+  @override
+  Future<List<AppNotification>> getNotifications(
+    DateTime createdAt,
+    bool isDeleted,
+  ) async {
     return [
       AppNotification(
         id: "1",
@@ -58,9 +83,12 @@ class NotificationDataSource {
     ];
   }
 
+  @override
   Future<void> softDelete(String notificationId) async {}
 
+  @override
   Future<void> hardDelete(String notificationId) async {}
 
+  @override
   Future<void> markAllAsRead() async {}
 }

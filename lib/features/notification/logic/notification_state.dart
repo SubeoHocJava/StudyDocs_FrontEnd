@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 // States cho NotificationBloc — biểu diễn các trạng thái UI khác nhau.
 abstract class NotificationState extends Equatable {

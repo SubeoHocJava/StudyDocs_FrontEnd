@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 import 'package:studydocs/features/notification/presentation/components/modal/notification_item_modal.dart';
 
 /// Widget hiển thị nút tương tác cho mỗi notification:
