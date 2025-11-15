@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 
 /// UseCase: Chuyển notification vào thùng rác (soft delete)
 class SoftDeleteNotificationParams {
@@ -8,7 +8,7 @@ class SoftDeleteNotificationParams {
 }
 
 class SoftDeleteNotificationUseCase {
-  final NotificationRepository repository;
+  final NotificationRepositoryImpl repository;
 
   SoftDeleteNotificationUseCase(this.repository);
 

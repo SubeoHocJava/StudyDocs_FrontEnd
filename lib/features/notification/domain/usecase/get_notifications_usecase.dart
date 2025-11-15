@@ -1,5 +1,5 @@
 import 'package:studydocs/data/model/notification.dart';
-import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 
 /// UseCase: Lấy danh sách notification
 /// Input: [GetNotificationsParams] chứa thời gian tạo và isDeleted flag
@@ -12,7 +12,7 @@ class GetNotificationsParams {
 }
 
 class GetNotificationsUseCase {
-  final NotificationRepository repository;
+  final NotificationRepositoryImpl repository;
 
   GetNotificationsUseCase(this.repository);
 

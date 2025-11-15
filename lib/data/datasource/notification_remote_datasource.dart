@@ -19,6 +19,7 @@ abstract interface class NotificationDataSource {
 // Đây là API mock trả dữ liệu mẫu trong giai đoạn phát triển.
 // Khi tích hợp backend thật, triển khai các phương thức để gọi HTTP.
 class NotificationDataSourceImpl implements NotificationDataSource {
+  final String path = "/api/v1/notifications";
   final DioClient dioClient;
 
   NotificationDataSourceImpl({required this.dioClient});
@@ -90,5 +91,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   Future<void> hardDelete(String notificationId) async {}
 
   @override
-  Future<void> markAllAsRead() async {}
+  Future<void> markAllAsRead() async {
+    dioClient.post(path);
+  }
 }

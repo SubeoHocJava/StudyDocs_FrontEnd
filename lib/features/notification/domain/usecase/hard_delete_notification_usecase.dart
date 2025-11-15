@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 
 /// UseCase: Xóa vĩnh viễn notification (hard delete)
 class HardDeleteNotificationParams {
@@ -8,7 +8,7 @@ class HardDeleteNotificationParams {
 }
 
 class HardDeleteNotificationUseCase {
-  final NotificationRepository repository;
+  final NotificationRepositoryImpl repository;
 
   HardDeleteNotificationUseCase(this.repository);
 

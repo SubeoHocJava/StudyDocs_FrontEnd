@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/notification/data/repository/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 import 'package:studydocs/features/notification/domain/usecase/get_notifications_usecase.dart';
 import 'package:studydocs/features/notification/domain/usecase/mark_as_read_usecase.dart';
 import 'package:studydocs/features/notification/domain/usecase/mark_all_as_read_usecase.dart';
@@ -12,7 +12,7 @@ import 'package:studydocs/features/notification/logic/notification_event.dart';
 // load danh sách, đánh dấu đã đọc, đánh dấu tất cả đã đọc, xóa mềm/xóa cứng.
 // Nhận Event từ UI, gọi repository thông qua usecase và emit State tương ứng.
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  final NotificationRepository repository;
+  final NotificationRepositoryImpl repository;
 
   NotificationBloc(this.repository) : super(NotificationInitialState()) {
 

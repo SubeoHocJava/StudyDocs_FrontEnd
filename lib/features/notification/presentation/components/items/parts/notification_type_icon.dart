@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/data/model/notification_type.dart';
+import 'package:studydocs/features/notification/domain/model/notification_type.dart';
 
 /// Widget hiển thị avatar tròn với icon tương ứng loại notification
 /// - Lấy màu nền và icon từ NotificationTypeStore theo type
