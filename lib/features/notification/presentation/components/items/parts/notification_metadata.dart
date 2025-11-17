@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 /// Widget hiển thị thông tin phụ của notification:
 /// - Thời gian tạo (tự động cập nhật mỗi phút)

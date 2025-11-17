@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 import 'parts/helpers/notification_layout_helper.dart';
 import 'parts/helpers/notification_press_state_mixin.dart';
