@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 
 class SearchInput extends StatelessWidget {
   final TextEditingController? controller;
@@ -10,10 +10,11 @@ class SearchInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;//screen size
+    final responsive = context.responsive;
+
     return Center(
       child: SizedBox(
-        width: screenWidth * 0.8,//80% width
+        width: responsive.widthPercent(responsive.isMobile ? 80 : 60),
         child: SearchBar(
           controller: controller,
           hintText: 'Tìm kiếm các khóa học bài giảng tài liệu',
@@ -24,8 +25,8 @@ class SearchInput extends StatelessWidget {
                 onPressed: onSearch,
                 icon: Image.asset(
                   "assets/icons/search-icon.png",
-                  width: 20,
-                  height: 20,
+                  width: responsive.fontSize(18),
+                  height: responsive.fontSize(18),
                 ),
               ),
             ),
@@ -39,22 +40,27 @@ class SearchInput extends StatelessWidget {
 class UploadFileButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String? file;
-  const UploadFileButton({super.key, required this.onPressed,  this.file });
+
+  const UploadFileButton({
+    super.key,
+    required this.onPressed,
+    this.file,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;//screen size
+    final responsive = context.responsive;
+
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(responsive.isMobile ? 12 : 16),
       child: Center(
         child: SizedBox(
-          width: screenWidth *0.8,//80% width
-          height: 200,
+          width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
+          // height: responsive.heightPercent(30),
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.headerBackground,
-              fixedSize: const Size(100, 100),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -62,12 +68,17 @@ class UploadFileButton extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("assets/icons/upload.png"),
-                const SizedBox(height: 8),
-                   Text(
-                     file ?? "Đăng tải tài liệu bài giảng khóa học đề thi...",
-                     textAlign: TextAlign.center,
-                   )
+                Image.asset(
+                  "assets/icons/upload.png",
+                  width: responsive.fontSize(100),
+                  height: responsive.fontSize(100),
+                ),
+                SizedBox(height: responsive.heightPercent(1)),
+                Text(
+                  file ?? "Đăng tải tài liệu bài giảng khóa học đề thi...",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: responsive.fontSize(14)),
+                ),
               ],
             ),
           ),
@@ -76,4 +87,3 @@ class UploadFileButton extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/core/widgets/bottom_nav.dart';
+import 'package:studydocs/core/widgets/header.dart';
 
 import '../../../library/presentation/widget/stored_document/stored_document.dart';
 import '../../data/subject_library_repository.dart';
@@ -15,34 +18,87 @@ class SubjectLibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (_) =>
-              SubjectLibraryBloc(SubjectLibraryRepository())
-                ..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
+      create: (context) => SubjectLibraryBloc(SubjectLibraryRepository())
+        ..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
       child: Scaffold(
-        body:
-        BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
+        appBar: Header(),
+        body: BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
           builder: (context, state) {
+            print('Current SubjectLibraryState: $state');
+
             if (state is SubjectLibraryLoading) {
               return Center(child: CircularProgressIndicator());
-            } else if (state is SubjectLibraryLoaded) {
+            }
+
+            if (state is SubjectLibraryLoaded) {
+              final responsive = context.responsive;
+
               return SingleChildScrollView(
+                padding: responsive.screenPadding, // responsive padding toàn trang
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TitleSubjectLibrary(state),
-                    UploadDocument(state.uploaded_docs),
-                    MostLikeDocs(state.the_most_liked_docs),
-                    StoredDocument(state.documents),
+                    // Tiêu đề responsive
+                    TitleSubjectLibrary(
+                      state,
+                      fontSize: responsive.fontSize(22),
+                    ),
+
+                    SizedBox(height: responsive.heightPercent(2)),
+
+                    // Tài liệu đã upload
+                    UploadDocument(
+                      state.uploaded_docs,
+                      crossAxisCount: responsive.getGridColumnCount(
+                        mobile: 2,
+                        tablet: 3,
+                        desktop: 4,
+                      ),
+                      cardWidth: responsive.getCardWidth(
+                        columns: responsive.getGridColumnCount(
+                          mobile: 2,
+                          tablet: 3,
+                          desktop: 4,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: responsive.heightPercent(3)),
+
+                    // Tài liệu được thích nhiều nhất
+                    MostLikeDocs(
+                      state.the_most_liked_docs,
+                      crossAxisCount: responsive.getGridColumnCount(
+                        mobile: 2,
+                        tablet: 3,
+                        desktop: 5,
+                      ),
+                    ),
+
+                    SizedBox(height: responsive.heightPercent(3)),
+
+                    // Tài liệu đã lưu
+                    StoredDocument(
+                      state.documents,
+                      crossAxisCount: responsive.getGridColumnCount(
+                        mobile: 2,
+                        tablet: 3,
+                        desktop: 5,
+                      ),
+                    ),
                   ],
                 ),
               );
-            } else if (state is SubjectLibraryError) {
+            }
+
+            if (state is SubjectLibraryError) {
               return Center(child: Text(state.message));
             }
-            return Center(child: Text("Chưa có dữ liệu"));
+
+            return Center(child: Text("Chưa có dữ liệu trang subject"));
           },
         ),
+        bottomNavigationBar: BottomNav(currentIndex: 4, onTap: (int value) {  },),
       ),
     );
   }

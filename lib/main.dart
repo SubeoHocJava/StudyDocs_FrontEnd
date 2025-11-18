@@ -13,7 +13,7 @@ void main() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ProfileScreen(),
+      home: MyApp(),
     ),
   );
 }

@@ -1,75 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 
 class MoreDetail extends StatelessWidget {
+  const MoreDetail({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; // screen size
+    final responsive = context.responsive;
+
     return Center(
       child: Container(
-        width: screenWidth * 0.8,
+        width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch, // căn full width
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Tên tài liệu
             Text(
               "Tên tài liệu",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: responsive.fontSize(18),
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            SizedBox(height: responsive.heightPercent(1)),
             TextField(
               decoration: InputDecoration(
-                labelText: "Tên tài liệu ",
-                hintText: "Tìm theo tên hoạc mã môn học",
+                hintText: "Nhập tên ngắn gọn và đúng nội dung",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: responsive.heightPercent(2)),
+
+            // Năm học
             Text(
               "Năm học",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: responsive.fontSize(18),
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            SizedBox(height: responsive.heightPercent(1)),
             TextField(
               decoration: InputDecoration(
-                labelText: "Năm học: ",
-                hintText: "Tìm theo tên hoạc mã môn học",
+                hintText: "Chọn năm học",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
-            SizedBox(height: 16), // 👈 khoảng cách 16px
+            SizedBox(height: responsive.heightPercent(2)),
+
+            // Mô tả
             Text(
               "Mô tả",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: responsive.fontSize(18),
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            SizedBox(height: responsive.heightPercent(1)),
             TextField(
-              maxLines: null, // hoặc 5 nếu muốn giới hạn
+              maxLines: 4,
               decoration: InputDecoration(
-                labelText: "Mô tả: ",
-                hintText: "Tìm theo tên hoạc mã môn học",
+                hintText: "Mô tả ngắn gọn về tài liệu nhưng đầy đủ thông tin cần thiết",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: responsive.heightPercent(2)),
+
+            // Button
             Align(
-              alignment: Alignment.center, // hoặc Alignment.center
+              alignment: Alignment.center,
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  minimumSize: Size(120, 70),
-                  // width, height
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  minimumSize: Size(
+                    responsive.widthPercent(30),
+                    responsive.heightPercent(15),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: responsive.widthPercent(5),
+                    vertical: responsive.heightPercent(1),
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: Text(
                   "Xác nhận",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: responsive.fontSize(16),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

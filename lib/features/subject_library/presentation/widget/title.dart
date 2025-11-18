@@ -1,43 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
 import '../../../library/presentation/widget/library_widgets.dart';
 
 class TitleSubjectLibrary extends StatelessWidget {
   final SubjectLibraryLoaded state;
-  const TitleSubjectLibrary( this.state);
-
-  // const TitleSubjectLibrary(SubjectLibraryLoaded state);
+  final double fontSize; // fontSize base
+  const TitleSubjectLibrary(this.state, {required this.fontSize, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final responsive = context.responsive;
+
     return Container(
-      margin: EdgeInsets.all(16),
+      margin: EdgeInsets.all(responsive.isMobile ? 8 : responsive.isTablet ? 16 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Tên trường
           Text(
             "Trường đại học nông lâm TP. Hồ Chí Minh",
             style: TextStyle(
-              fontSize: 15,
+              fontSize: responsive.fontSize(fontSize), // responsive font
               fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),
           ),
+
+          SizedBox(height: responsive.heightPercent(1)),
+
+          // Ngành học
           Text(
             "Công nghệ phần mềm",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: responsive.fontSize(fontSize + 5), // lớn hơn một chút
+              fontWeight: FontWeight.bold,
+            ),
           ),
+
+          SizedBox(height: responsive.heightPercent(2)),
+
+          // Row icon + search
           Row(
             children: [
-              Icon(Icons.file_present, size: 16),
-              Text("46"),
-              SizedBox(width: 16),
-              Icon(Icons.people, size: 16),
-              Text("46"),
-              SizedBox(width: 16),
+              Icon(Icons.file_present, size: responsive.fontSize(16)),
+              SizedBox(width: responsive.widthPercent(2)),
+              Text("46", style: TextStyle(fontSize: responsive.fontSize(14))),
+
+              SizedBox(width: responsive.widthPercent(4)),
+
+              Icon(Icons.people, size: responsive.fontSize(16)),
+              SizedBox(width: responsive.widthPercent(2)),
+              Text("46", style: TextStyle(fontSize: responsive.fontSize(14))),
+
+              SizedBox(width: responsive.widthPercent(4)),
+
+              // Search box responsive
               SizedBox(
-                width: 200,   // chiều rộng
-                height: 40,   // chiều cao
+                width: responsive.widthPercent(responsive.isMobile ? 50 : responsive.isTablet ? 30 : 20),
+                height: responsive.heightPercent(5),
                 child: SearchInput(
                   onSearch: () {
                     print("Search tapped");

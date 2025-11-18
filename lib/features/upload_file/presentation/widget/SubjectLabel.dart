@@ -1,33 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 
 class SubjectLabel extends StatelessWidget {
+  const SubjectLabel({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; //screen size
+    final responsive = context.responsive;
+
     return Center(
       child: Container(
-        width: screenWidth * 0.8,
+        width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.folder),
-                SizedBox(width: 16),
+                Icon(Icons.folder, size: responsive.fontSize(20)),
+                SizedBox(width: responsive.widthPercent(2)),
                 Expanded(
                   child: Text(
                     "Môn học",
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: responsive.fontSize(18),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
+                    TextEditingController _controller = TextEditingController();
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        // Tạo một TextEditingController để lấy dữ liệu nhập vào
-                        TextEditingController _controller = TextEditingController();
-
                         return AlertDialog(
                           title: Text("Chỉnh sửa thông tin"),
                           content: TextField(
@@ -39,15 +45,13 @@ class SubjectLabel extends StatelessWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Đóng dialog
-                              },
+                              onPressed: () => Navigator.of(context).pop(),
                               child: Text("Hủy"),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 print("Giá trị nhập: ${_controller.text}");
-                                Navigator.of(context).pop(); // Đóng dialog sau khi lưu
+                                Navigator.of(context).pop();
                               },
                               child: Text("Lưu"),
                             ),
@@ -59,12 +63,12 @@ class SubjectLabel extends StatelessWidget {
                   child: Text(
                     "Chỉnh sửa",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: responsive.fontSize(14),
                       color: Colors.blueAccent,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ],

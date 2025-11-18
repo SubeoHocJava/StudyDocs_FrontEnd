@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/data/library_repository.dart';
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
+import '../../../../core/widgets/bottom_nav.dart';
 import '../../logic/LibraryState.dart';
 import '../../logic/library_bloc.dart';
 import '../widget/library_widgets.dart';
@@ -15,13 +17,13 @@ class LibraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;//screen size
     return BlocProvider(
       create:
           (_) =>
               LibraryBloc(LibraryRepository())
                 ..add(LoadDocumentByKeyWord("keyword")),
       child: Scaffold(
+        appBar: Header(),
         body: BlocBuilder<LibraryBloc, LibraryState>(
           builder: (context, state) {
             if (state is LibraryLoading) {
@@ -43,12 +45,12 @@ class LibraryScreen extends StatelessWidget {
                         context.read<LibraryBloc>().add(PickDocument());
                         print("Upload tapped");
                       },
-                      file: state.filePick?.name,
+                      file: state.filePick?.name
 
                     ),
                     SubjectCategories(state.categories),
                     RecentlyUpload(state.documents),
-                    StoredDocument(state.documents),
+                    StoredDocument(state.documents, crossAxisCount: 0,),
                   ],
                 ),
               );
@@ -58,7 +60,9 @@ class LibraryScreen extends StatelessWidget {
             return Center(child: Text("Chưa có dữ liệu"));
           },
         ),
+      bottomNavigationBar: BottomNav(currentIndex: 1, onTap: (int value) {  },),
       ),
+
     );
   }
 }

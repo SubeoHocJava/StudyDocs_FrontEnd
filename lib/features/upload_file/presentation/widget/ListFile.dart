@@ -1,8 +1,8 @@
+
 import 'package:flutter/material.dart';
-
-import '../../../../core/constants/app_colors.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../library/data/model/File.dart';
-
 
 class FileUploadLabel extends StatelessWidget {
   final List<MyFile> files;
@@ -11,20 +11,25 @@ class FileUploadLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; //screen size
+    final responsive = context.responsive;
+
     return Center(
-      child: Container(
-        height: 100,
-        width: screenWidth * 0.8,
-        child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: files.length,
-          itemBuilder: (context, index) {
-            final file = files[index];
-            return MonoFile(file: file);
-          },
-        ),
-      ),
+      child:
+            Container(
+                height:files.length* 50, // responsive height per item
+                width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: files.length,
+                  itemBuilder: (context, index) {
+                    final file = files[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
+                      child: MonoFile(file: file),
+                    );
+                  },
+                ),
+              )
     );
   }
 }
@@ -36,25 +41,27 @@ class MonoFile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; //screen size
+    final responsive = context.responsive;
+
     return Container(
-      padding: EdgeInsets.all(screenWidth * 0.05),
+      padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
       decoration: BoxDecoration(
         color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.headerBackground),
       ),
-      child:Row(
+      child: Row(
         children: [
-          Icon(Icons.file_present),
-          SizedBox(width: 8),
+          Icon(Icons.file_present, size: responsive.fontSize(18)),
+          SizedBox(width: responsive.widthPercent(2)),
           Expanded(
             child: Text(
               file.fileName,
-              overflow: TextOverflow.ellipsis, // 👈 để tránh tràn chữ
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: responsive.fontSize(14)),
             ),
           ),
-          Icon(Icons.cancel),
+          Icon(Icons.cancel, size: responsive.fontSize(18)),
         ],
       ),
     );

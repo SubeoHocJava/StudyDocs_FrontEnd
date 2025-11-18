@@ -1,60 +1,81 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../../core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../features/library/data/model/Document.dart';
 
+class ListDocument extends StatelessWidget {
+  final List<Document> documents;
+  final int crossAxisCount;
+  final double cardWidth;
 
-class ListDocument extends StatelessWidget{
-  final List<Document>documents;
-  const ListDocument(this.documents);
+  const ListDocument(
+      this.documents, {
+        required this.crossAxisCount,
+        required this.cardWidth,
+        super.key,
+      });
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-   return ListView.builder(
-     shrinkWrap: true,
-     physics: NeverScrollableScrollPhysics(),
-     itemCount: documents.length,
-     itemBuilder: (context, index) {
-       return Padding(
-         padding: const EdgeInsets.symmetric(
-           vertical: 4.0,
-           horizontal: 16.0,
-         ),
-         child: MonoDocumentInList(
-           document: documents[index],
-         ),
-       );
-     },
-   );
+    final responsive = context.responsive;
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: documents.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: responsive.heightPercent(1),
+            horizontal: responsive.isMobile ? 12 : 16,
+          ),
+          child: MonoDocumentInList(
+            document: documents[index],
+            cardWidth: cardWidth,
+            cardHeight: responsive.heightPercent(25),
+          ),
+        );
+      },
+    );
   }
-  
 }
+
 class MonoDocumentInList extends StatelessWidget {
   final Document document;
-  const MonoDocumentInList({super.key, required this.document});
+  final double cardWidth;
+  final double cardHeight;
+
+  const MonoDocumentInList({
+    super.key,
+    required this.document,
+    required this.cardWidth,
+    required this.cardHeight,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;//screen size
+    final responsive = context.responsive;
+
     return Container(
-      width: screenWidth*0.9,
-      padding: EdgeInsets.all(screenWidth*0.05),
-      margin: EdgeInsets.symmetric(vertical: 4),
+      width: cardWidth,
+      padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
+      margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
       decoration: BoxDecoration(
-        // color: Colors.green.shade50,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Image
           Image.asset(
             "assets/icons/temp_image.jpg",
-            width: screenWidth * 0.3,
-            height: screenWidth * 0.3,
+            width: cardWidth * 0.35,
+            height: cardHeight * 0.6,
+            fit: BoxFit.cover,
           ),
-          SizedBox(width: 4,),
+          SizedBox(width: responsive.widthPercent(2)),
+          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,53 +83,69 @@ class MonoDocumentInList extends StatelessWidget {
                 // Title
                 Text(
                   document.title,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: responsive.fontSize(14),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: responsive.heightPercent(0.5)),
 
-                // subject
+                // Subject
                 Row(
                   children: [
-                    Icon(Icons.folder, size: 16, color: Colors.blue),
-                    SizedBox(width: 4),
-                    Text(document.subject),
+                    Icon(Icons.folder, size: responsive.fontSize(14), color: Colors.blue),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text(
+                      document.subject,
+                      style: TextStyle(fontSize: responsive.fontSize(12)),
+                    ),
                   ],
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: responsive.heightPercent(0.5)),
 
-                // school
+                // School
                 Row(
                   children: [
-                    Image.asset("assets/icons/school.png", width: 16, height: 16),
-                    SizedBox(width: 4),
-                    Text(document.school),
+                    Image.asset(
+                      "assets/icons/school.png",
+                      width: responsive.fontSize(14),
+                      height: responsive.fontSize(14),
+                    ),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text(
+                      document.school,
+                      style: TextStyle(fontSize: responsive.fontSize(12)),
+                    ),
                   ],
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: responsive.heightPercent(0.5)),
 
-                // page and date
+                // Page and Date
                 Row(
                   children: [
-                    Icon(Icons.file_open_rounded, size: 16),
-                    SizedBox(width: 4),
-                    Text("${document.pages} trang"), // ✅ int -> String
-                    SizedBox(width: 12),
-                    Icon(Icons.calendar_today, size: 16),
-                    SizedBox(width: 4),
-                    Text(document.date),
+                    Icon(Icons.file_open_rounded, size: responsive.fontSize(14)),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text("${document.pages} trang", style: TextStyle(fontSize: responsive.fontSize(12))),
+                    SizedBox(width: responsive.widthPercent(2)),
+                    Icon(Icons.calendar_today, size: responsive.fontSize(14)),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text(document.date, style: TextStyle(fontSize: responsive.fontSize(12))),
                   ],
                 ),
-                SizedBox(height: 4),
-                // like and comment
+                SizedBox(height: responsive.heightPercent(0.5)),
+
+                // Likes and Comments
                 Row(
                   children: [
-                    Icon(Icons.favorite, size: 16, color: Colors.red),
-                    SizedBox(width: 4),
-                    Text("${document.likes}"), // ✅ int -> String
-                    SizedBox(width: 12),
-                    Icon(Icons.comment, size: 16, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text("${document.comments}"), // ✅ int -> String
+                    Icon(Icons.favorite, size: responsive.fontSize(14), color: Colors.red),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text("${document.likes}", style: TextStyle(fontSize: responsive.fontSize(12))),
+                    SizedBox(width: responsive.widthPercent(2)),
+                    Icon(Icons.comment, size: responsive.fontSize(14), color: Colors.grey),
+                    SizedBox(width: responsive.widthPercent(1)),
+                    Text("${document.comments}", style: TextStyle(fontSize: responsive.fontSize(12))),
                   ],
                 ),
               ],

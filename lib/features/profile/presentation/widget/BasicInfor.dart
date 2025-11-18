@@ -1,59 +1,96 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/features/profile/presentation/widget/UpdateInforDialog.dart';
-
 
 class BasicInfor extends StatelessWidget {
   const BasicInfor({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const image="";
-    const name="";
-    const school="";
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center, // căn giữa phần nội dung
-      children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: TextButton.icon(
-            onPressed: () {
-              _showUpdateForm(context);
-            },
-            icon: const Icon(Icons.edit, size: 18),
-            label: const Text(
-              "Cập nhật thông tin",
-              style: TextStyle(fontSize: 13),
-            ),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              minimumSize: const Size(0, 36), // chiều cao nhỏ gọn
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+    final responsive = context.responsive;
+
+    const image = "icons/avt.png";
+    const name = "";
+    const school = "";
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: responsive.widthPercent(5),
+        vertical: responsive.heightPercent(2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          /// ================= TOP RIGHT EDIT BUTTON =================
+          Align(
+            alignment: Alignment.topRight,
+            child: TextButton.icon(
+              onPressed: () => _showUpdateForm(context),
+              icon: Icon(Icons.edit, size: responsive.fontSize(16)),
+              label: Text(
+                "Cập nhật thông tin",
+                style: TextStyle(fontSize: responsive.fontSize(13)),
+              ),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: responsive.widthPercent(2),
+                  vertical: responsive.heightPercent(1),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
-        ),
-        // avatar
-        const SizedBox(height: 10),
-        Image.asset(
-          image,
-          width: 120,
-          height: 120,
-          fit: BoxFit.cover,
-        ),
-        const SizedBox(height: 8),
-        // name
-        const Text(
-          name,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        // school
-        const Text(
-          school,
-          style: TextStyle(fontSize: 15, color: Colors.blueAccent),
-        ),
-      ],
+
+          SizedBox(height: responsive.heightPercent(1)),
+
+          /// ================= AVATAR =================
+          Container(
+            width: responsive.widthPercent(30),
+            height: responsive.widthPercent(30),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: image.isNotEmpty
+                  ? DecorationImage(
+                image: AssetImage(image),
+                fit: BoxFit.cover,
+              )
+                  : null,
+              color: Colors.grey.shade300,
+            ),
+            child: image.isEmpty
+                ? Icon(
+              Icons.person,
+              size: responsive.widthPercent(20),
+              color: Colors.grey.shade700,
+            )
+                : null,
+          ),
+
+          SizedBox(height: responsive.heightPercent(1.5)),
+
+          /// ================= NAME =================
+          Text(
+            name.isNotEmpty ? name : "Tên chưa cập nhật",
+            style: TextStyle(
+              fontSize: responsive.fontSize(18),
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          /// ================= SCHOOL =================
+          Text(
+            school.isNotEmpty ? school : "Chưa có trường học",
+            style: TextStyle(
+              color: Colors.blueAccent,
+              fontSize: responsive.fontSize(15),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -61,11 +98,6 @@ class BasicInfor extends StatelessWidget {
 void _showUpdateForm(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) {
-      return UpdateInforDialog();
-    },
+    builder: (context) => UpdateInforDialog(),
   );
 }
-
-
-

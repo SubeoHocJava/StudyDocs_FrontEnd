@@ -1,78 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+
 
 class Statistical extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    const num_follow_me=1;//số người theo dõi tôi
-    const num_me_follow=1;//số người tôi đang theo dõi
+    final responsive = context.responsive;
+
+    const numFollowMe = 1;
+    const numMeFollow = 1;
+
+    // responsive width theo thiết bị
+    final leftWidth = responsive.responsiveValue(
+      mobile: responsive.widthPercent(30),
+      tablet: responsive.widthPercent(25),
+      desktop: responsive.widthPercent(20),
+    );
+
+    final rightWidth = responsive.responsiveValue(
+      mobile: responsive.widthPercent(35),
+      tablet: responsive.widthPercent(28),
+      desktop: responsive.widthPercent(22),
+    );
+
+    final dividerHeight = responsive.responsiveValue(
+      mobile: 50.0,
+      tablet: 60.0,
+      desktop: 70.0,
+    );
+
     return Container(
       width: double.infinity,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: screenWidth * 0.3,
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      bottomLeft: Radius.circular(12),
-                    ),
-                    color: Colors.greenAccent,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    num_follow_me.toString()+" người theo dõi",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+      padding: responsive.defaultPadding,
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // LEFT BLOCK
+              Container(
+                width: leftWidth,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Colors.greenAccent,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
                   ),
                 ),
-                SizedBox(width: 2),
-                // 🔹 Đường line ở giữa
-                Container(
-                  width: 2,
-                  height: 60,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 2),
-                Container(
-                  width: screenWidth * 0.4,
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
-                    color: Colors.blue,
+                alignment: Alignment.center,
+                child: Text(
+                  "$numFollowMe người theo dõi",
+                  style: TextStyle(
+                    fontSize: responsive.fontSize(14),
+                    fontWeight: FontWeight.bold,
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Đang theo dõi "+num_me_follow.toString()+ " người",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ],
-            ),
+              ),
 
-            SizedBox(height: 20),
-            ActivityStatistics(),
-          ],
-        ),
+              // DIVIDER
+              Container(
+                width: 2,
+                height: dividerHeight,
+                color: Colors.black,
+              ),
+
+              // RIGHT BLOCK
+              Container(
+                width: rightWidth,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(12),
+                    bottomRight: Radius.circular(12),
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Đang theo dõi $numMeFollow người",
+                  style: TextStyle(
+                    fontSize: responsive.fontSize(14),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          const ActivityStatistics(),
+        ],
       ),
     );
   }
 }
 
 class ActivityStatistics extends StatelessWidget {
+  const ActivityStatistics({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center();
+    return Text(
+      "Chưa có dữ liệu hoạt động",
+      style: TextStyle(
+        fontSize: context.responsive.fontSize(14),
+        color: Colors.grey,
+      ),
+    );
   }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
-
+import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
 import '../../../library/data/model/Document.dart';
 
-
-
-class UpLoadDocument extends StatelessWidget{
+class UpLoadDocument extends StatelessWidget {
   final List<Document> documents = [
     Document(
       title: "Tài liệu Flutter",
@@ -35,20 +33,47 @@ class UpLoadDocument extends StatelessWidget{
       comments: 8,
     ),
   ];
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
+    final responsive = context.responsive;
+
+    // Số cột theo thiết bị
+    final crossAxisCount = responsive.getGridColumnCount(
+      mobile: 1,
+      tablet: 2,
+      desktop: 3,
+    );
+
+    // Card width theo số cột
+    final cardWidth = responsive.getCardWidth(
+      columns: crossAxisCount,
+      spacing: 12,
+      padding: 16,
+    );
+
+    return Padding(
+      padding: responsive.screenPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             "Tài liệu bạn tải lên",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: responsive.fontSize(20),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        RowDocument(documents)
-      ],
+          const SizedBox(height: 12),
+
+          /// 🔥 RowDocument đã scale theo ResponsiveHelper
+          RowDocument(
+            documents,
+            crossAxisCount: crossAxisCount,
+            cardWidth: cardWidth,
+          ),
+        ],
+      ),
     );
   }
 }
