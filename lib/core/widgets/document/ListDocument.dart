@@ -6,12 +6,10 @@ import '../../../features/library/data/model/Document.dart';
 class ListDocument extends StatelessWidget {
   final List<Document> documents;
   final int crossAxisCount;
-  final double cardWidth;
 
   const ListDocument(
       this.documents, {
         required this.crossAxisCount,
-        required this.cardWidth,
         super.key,
       });
 
@@ -31,8 +29,6 @@ class ListDocument extends StatelessWidget {
           ),
           child: MonoDocumentInList(
             document: documents[index],
-            cardWidth: cardWidth,
-            cardHeight: responsive.heightPercent(25),
           ),
         );
       },
@@ -42,22 +38,21 @@ class ListDocument extends StatelessWidget {
 
 class MonoDocumentInList extends StatelessWidget {
   final Document document;
-  final double cardWidth;
-  final double cardHeight;
+
 
   const MonoDocumentInList({
     super.key,
     required this.document,
-    required this.cardWidth,
-    required this.cardHeight,
   });
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+     double with_container=responsive.isMobile ? responsive.widthPercent(90):500;
 
     return Container(
-      width: cardWidth,
+      width: with_container,
+      height: responsive.isMobile? responsive.heightPercent(25):200,
       padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
       margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
       decoration: BoxDecoration(
@@ -65,13 +60,13 @@ class MonoDocumentInList extends StatelessWidget {
         border: Border.all(color: Colors.grey),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Image
           Image.asset(
             "assets/icons/temp_image.jpg",
-            width: cardWidth * 0.35,
-            height: cardHeight * 0.6,
+            width: responsive.isMobile? responsive.widthPercent(30):200,
+            height: responsive.isMobile? responsive.widthPercent(30):200,
             fit: BoxFit.cover,
           ),
           SizedBox(width: responsive.widthPercent(2)),
@@ -95,14 +90,25 @@ class MonoDocumentInList extends StatelessWidget {
                 // Subject
                 Row(
                   children: [
-                    Icon(Icons.folder, size: responsive.fontSize(14), color: Colors.blue),
+                    Icon(
+                      Icons.folder,
+                      size: responsive.fontSize(14),
+                      color: Colors.blue,
+                    ),
                     SizedBox(width: responsive.widthPercent(1)),
-                    Text(
-                      document.subject,
-                      style: TextStyle(fontSize: responsive.fontSize(12)),
+                    Flexible(
+                      child: Text(
+                        document.subject,
+                        style: TextStyle(fontSize: responsive.fontSize(12)),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
                     ),
                   ],
                 ),
+
+
                 SizedBox(height: responsive.heightPercent(0.5)),
 
                 // School
@@ -114,26 +120,35 @@ class MonoDocumentInList extends StatelessWidget {
                       height: responsive.fontSize(14),
                     ),
                     SizedBox(width: responsive.widthPercent(1)),
-                    Text(
-                      document.school,
-                      style: TextStyle(fontSize: responsive.fontSize(12)),
+                    Flexible(
+                      child: Text(
+                        document.school,
+                        style: TextStyle(fontSize: responsive.fontSize(12)),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: responsive.heightPercent(0.5)),
 
                 // Page and Date
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: responsive.widthPercent(2),     // khoảng cách ngang
+                  runSpacing: responsive.heightPercent(1), // khoảng cách giữa các dòng
                   children: [
                     Icon(Icons.file_open_rounded, size: responsive.fontSize(14)),
-                    SizedBox(width: responsive.widthPercent(1)),
-                    Text("${document.pages} trang", style: TextStyle(fontSize: responsive.fontSize(12))),
-                    SizedBox(width: responsive.widthPercent(2)),
+                    Text("${document.pages} trang",
+                        style: TextStyle(fontSize: responsive.fontSize(12))),
+
                     Icon(Icons.calendar_today, size: responsive.fontSize(14)),
-                    SizedBox(width: responsive.widthPercent(1)),
-                    Text(document.date, style: TextStyle(fontSize: responsive.fontSize(12))),
+                    Text(document.date,
+                        style: TextStyle(fontSize: responsive.fontSize(12))),
                   ],
                 ),
+
                 SizedBox(height: responsive.heightPercent(0.5)),
 
                 // Likes and Comments

@@ -18,8 +18,8 @@ class Statistical extends StatelessWidget {
     );
 
     final rightWidth = responsive.responsiveValue(
-      mobile: responsive.widthPercent(35),
-      tablet: responsive.widthPercent(28),
+      mobile: responsive.widthPercent(40),
+      tablet: responsive.widthPercent(35),
       desktop: responsive.widthPercent(22),
     );
 

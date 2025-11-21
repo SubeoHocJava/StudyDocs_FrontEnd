@@ -46,7 +46,7 @@ class StorageDocument extends StatelessWidget{
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        ListDocument(documents, crossAxisCount: 0, cardWidth: 0,)
+        ListDocument(documents, crossAxisCount: 0)
       ],
     );
   }

@@ -35,7 +35,9 @@ class SubjectCategories extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                 vertical: responsive.heightPercent(0.5),
               ),
-              child: MonoSubject(name: categories[index]),
+              child: Center(
+                child: MonoSubject(name: categories[index]),
+              )
             );
           },
         ),
@@ -53,8 +55,8 @@ class MonoSubject extends StatelessWidget {
     final responsive = context.responsive;
 
     return Container(
-      width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
-      padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
+      width: responsive.widthPercent(responsive.isMobile ? 85 : 80),
+      padding: EdgeInsets.all(responsive.isMobile ? 10 : 12),
       decoration: BoxDecoration(
         color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(8),

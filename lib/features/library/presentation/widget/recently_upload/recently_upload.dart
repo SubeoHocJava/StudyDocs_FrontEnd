@@ -29,11 +29,11 @@ class RecentlyUpload extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: responsive.heightPercent(25), // chiều cao của list
+          height: responsive.isMobile ? 200 : 250, // chiều cao của list
           child: RowDocument(
             documents,
-            crossAxisCount: responsive.getGridColumnCount(mobile: 2, tablet: 3, desktop: 4),
-            cardWidth: responsive.widthPercent(responsive.isMobile ? 60 : 30), // responsive width card
+            crossAxisCount: responsive.getGridColumnCount(mobile: 3, tablet: 4, desktop: 5),
+            cardWidth: responsive.isMobile ? 100 : 150, // responsive width card
           ),
         ),
       ],

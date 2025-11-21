@@ -40,9 +40,9 @@ class UpLoadDocument extends StatelessWidget {
 
     // Số cột theo thiết bị
     final crossAxisCount = responsive.getGridColumnCount(
-      mobile: 1,
-      tablet: 2,
-      desktop: 3,
+      mobile: 3,
+      tablet: 4,
+      desktop: 5,
     );
 
     // Card width theo số cột

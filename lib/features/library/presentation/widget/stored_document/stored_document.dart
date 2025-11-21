@@ -40,7 +40,6 @@ class StoredDocument extends StatelessWidget {
         ListDocument(
           documents,
           crossAxisCount: columns,
-          cardWidth: responsive.getCardWidth(columns: columns),
         ),
       ],
     );
