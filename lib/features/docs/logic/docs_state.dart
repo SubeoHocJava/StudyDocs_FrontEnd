@@ -4,6 +4,8 @@ abstract class DocsState extends Equatable {
   const DocsState();
   @override
   List<Object?> get props => [];
+
+  bool get isSaved => false;
 }
 
 class DocsInitial extends DocsState {}
