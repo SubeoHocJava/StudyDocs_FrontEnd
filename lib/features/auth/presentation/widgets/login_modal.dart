@@ -99,7 +99,7 @@ class _LoginModalState extends State<LoginModal> {
                               style: TextStyle(
                                 fontSize: isTabletLayout ? 22 : 20,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.headerFg,
+                                color: AppColors.headerForeground,
                               ),
                               textAlign: TextAlign.center,
                             ),

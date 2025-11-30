@@ -35,11 +35,11 @@ class DocItemVertical extends StatelessWidget {
             Container(
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.headerBg,
+                color: AppColors.headerBackground,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
-              child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerFg),
+              child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerForeground),
             ),
             const SizedBox(height: 8),
             Text(

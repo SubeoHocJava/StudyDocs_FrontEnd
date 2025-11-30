@@ -27,7 +27,7 @@ class RegisterLink extends StatelessWidget {
               child: Text(
                 'Tạo tài khoản tại đây',
                 style: TextStyle(
-                  color: AppColors.headerFg,
+                  color: AppColors.headerForeground,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   decoration: TextDecoration.underline,

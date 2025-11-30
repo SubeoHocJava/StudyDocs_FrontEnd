@@ -34,7 +34,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         content: Text(
           'Đã gửi hướng dẫn đặt lại mật khẩu tới ${_emailController.text}',
         ),
-        backgroundColor: AppColors.headerFg,
+        backgroundColor: AppColors.headerForeground,
       ),
     );
 

@@ -22,7 +22,7 @@ class GoogleLoginButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          backgroundColor: AppColors.scaffold,
+          backgroundColor: AppColors.headerForeground,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -32,20 +32,20 @@ class GoogleLoginButton extends StatelessWidget {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: AppColors.headerFg,
+                color: AppColors.headerForeground,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.g_mobiledata,
                 color: Colors.white,
-                size: 16,
+                size: 20,
               ),
             ),
             const SizedBox(width: 12),
             Text(
               'Đăng nhập bằng Google',
               style: TextStyle(
-                color: AppColors.headerFg,
+                color: AppColors.headerBackground,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

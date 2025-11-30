@@ -19,7 +19,7 @@ class ForgotPasswordLink extends StatelessWidget {
         child: Text(
           'Quên mật khẩu',
           style: TextStyle(
-            color: AppColors.headerFg,
+            color: AppColors.headerForeground,
             fontSize: 14,
             fontWeight: FontWeight.w500,
             decoration: TextDecoration.underline,

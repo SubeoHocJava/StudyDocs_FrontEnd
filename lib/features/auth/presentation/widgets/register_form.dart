@@ -162,7 +162,7 @@ class _RegisterFormState extends State<RegisterForm> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.headerFg, width: 2),
+        borderSide: BorderSide(color: AppColors.headerForeground, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,

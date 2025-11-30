@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
+import '../../features/auth/presentation/widgets/login_modal.dart';
 
 class Header extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
@@ -16,6 +17,16 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
     this.onLogoTap,
     this.onLoginTap,
   });
+
+  void _showLoginModal(BuildContext context) {
+    // Hiển thị dialog đăng nhập với hiệu ứng chuẩn Material.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const LoginModal(),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +75,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   // Login button
                   ElevatedButton(
-                    onPressed: onLoginTap ?? () {},
+                    onPressed: onLoginTap ?? () => _showLoginModal(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.headerForeground,
                       foregroundColor: AppColors.headerBackground,
