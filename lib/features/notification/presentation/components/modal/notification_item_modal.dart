@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 
@@ -15,7 +16,7 @@ import 'parts/notification_modal_content.dart';
 /// - Các action: đánh dấu đã đọc, xóa thông báo
 /// - Sử dụng NotificationModalLayout để căn chỉnh và responsive
 class NotificationItemModal extends StatelessWidget {
-  final AppNotification notification;
+  final NotificationEntity notification;
 
   const NotificationItemModal({super.key, required this.notification});
 

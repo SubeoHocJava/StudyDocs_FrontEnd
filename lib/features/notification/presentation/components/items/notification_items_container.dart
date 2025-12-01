@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 
 import 'notification_item.dart';
 
@@ -8,7 +8,7 @@ import 'notification_item.dart';
 /// - Quản lý trạng thái checkbox của các items (cho chế độ trash)
 /// - Vô hiệu hóa scroll để tránh conflict với scroll chính
 class NotificationItemsContainer extends StatefulWidget {
-  final List<AppNotification> notifications;
+  final List<NotificationEntity> notifications;
   final Function(List<String>)? onCheckedIdsChanged;
 
   const NotificationItemsContainer({

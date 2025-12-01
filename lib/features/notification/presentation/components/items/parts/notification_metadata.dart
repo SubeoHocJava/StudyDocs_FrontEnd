@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 
 /// Widget hiển thị thông tin phụ của notification:
 /// - Thời gian tạo (tự động cập nhật mỗi phút)
 /// - Nếu là notification đã xóa: hiển thị thêm badge "Đã xóa ngày..."
 /// Sử dụng Timer để tự động refresh thời gian hiển thị
 class NotificationMetadata extends StatefulWidget {
-  final AppNotification notification;
+  final NotificationEntity notification;
 
   const NotificationMetadata({
     super.key,

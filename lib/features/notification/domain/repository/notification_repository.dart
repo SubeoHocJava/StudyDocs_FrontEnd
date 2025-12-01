@@ -1,7 +1,7 @@
 import 'package:studydocs/data/model/notification.dart';
 
 abstract interface class NotificationRepository {
-  Future<List<AppNotification>> getNotifications(
+  Future<List<Notification>> getNotifications(
     DateTime createAt,
     bool isDeleted,
   );

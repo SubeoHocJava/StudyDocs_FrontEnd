@@ -2,7 +2,7 @@ import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/model/notification.dart';
 
 abstract interface class NotificationDataSource {
-  Future<List<AppNotification>> getNotifications(
+  Future<List<Notification>> getNotifications(
     DateTime createdAt,
     bool isDeleted,
   );
@@ -28,12 +28,12 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   Future<void> markAsRead(String notificationId) async {}
 
   @override
-  Future<List<AppNotification>> getNotifications(
+  Future<List<Notification>> getNotifications(
     DateTime createdAt,
     bool isDeleted,
   ) async {
     return [
-      AppNotification(
+      Notification(
         id: "1",
         sender: "Hệ thống",
         subject: "Cập nhật phiên bản",
@@ -43,7 +43,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
         type: "like",
         createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
       ),
-      AppNotification(
+      Notification(
         id: "2",
         sender: "Admin",
         subject: "Khuyến mãi đặc biệt",
@@ -52,7 +52,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
         type: "download",
         createdAt: DateTime.now().subtract(const Duration(hours: 2)),
       ),
-      AppNotification(
+      Notification(
         id: "3",
         sender: "Người dùng A",
         subject: "Tin nhắn mới",
@@ -61,7 +61,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
         type: "message",
         createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
       ),
-      AppNotification(
+      Notification(
         id: "4",
         sender: "Hệ thống",
         subject: "Bảo trì",
@@ -71,7 +71,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
         deletedAt: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
       ),
-      AppNotification(
+      Notification(
         id: "5",
         sender: "Shop ABC",
         subject: "Đơn hàng của bạn",

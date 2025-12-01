@@ -1,9 +1,9 @@
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 
 /// UseCase: Lấy danh sách notification
 /// Input: [GetNotificationsParams] chứa thời gian tạo và isDeleted flag
-/// Output: Future`<List<AppNotification>>`
+/// Output: Future`<List<NotificationEntity>>`
 class GetNotificationsParams {
   final DateTime createAt;
   final bool isDeleted;
@@ -16,7 +16,7 @@ class GetNotificationsUseCase {
 
   GetNotificationsUseCase(this.repository);
 
-  Future<List<AppNotification>> call(GetNotificationsParams params) async {
-    return await repository.getNotifications(params.createAt, params.isDeleted);
+  Future<List<NotificationEntity>> call(GetNotificationsParams params) async {
+    return await repository.getNotifications(params.createAt, params.isDeleted).then((value) => value.map((e) => NotificationEntity.fromModel(e)).toList());
   }
 }

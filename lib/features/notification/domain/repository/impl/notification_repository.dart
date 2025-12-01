@@ -12,7 +12,7 @@ class NotificationRepositoryImpl implements NotificationRepository{
   NotificationRepositoryImpl(this.notificationDataSource);
 
   @override
-  Future<List<AppNotification>> getNotifications(
+  Future<List<Notification>> getNotifications(
     DateTime createAt,
     bool isDeleted,
   ) async {

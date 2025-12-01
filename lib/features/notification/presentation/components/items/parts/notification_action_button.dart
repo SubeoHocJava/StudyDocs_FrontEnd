@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 import 'package:studydocs/features/notification/presentation/components/modal/notification_item_modal.dart';
 
 /// Widget hiển thị nút tương tác cho mỗi notification:
 /// - Nếu notification chưa bị xóa: hiển thị nút "..." để mở modal actions
 /// - Nếu đã bị xóa (trong trash): hiển thị checkbox để chọn nhiều mục
 class NotificationActionButton extends StatelessWidget {
-  final AppNotification notification;
+  final NotificationEntity notification;
   final bool isChecked;
   final void Function(bool) onCheckChanged;
 

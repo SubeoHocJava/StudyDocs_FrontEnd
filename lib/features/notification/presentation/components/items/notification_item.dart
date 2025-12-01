@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 
 import 'parts/helpers/notification_layout_helper.dart';
 import 'parts/helpers/notification_press_state_mixin.dart';
@@ -15,7 +15,7 @@ import 'parts/notification_type_icon.dart';
 /// - Hiển thị background khác biệt cho thông báo chưa đọc
 /// - Tự động layout: icon - nội dung - action button
 class NotificationItem extends StatefulWidget {
-  final AppNotification notification;
+  final NotificationEntity notification;
   final void Function(String id, bool isChecked) onCheck;
 
   const NotificationItem({

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
 import 'package:studydocs/features/notification/presentation/components/items/parts/notification_type_icon.dart';
 
 /// Widget hiển thị nội dung chi tiết của notification trong modal
@@ -8,7 +9,7 @@ import 'package:studydocs/features/notification/presentation/components/items/pa
 /// - Divider phân cách với phần actions
 /// Kích thước (icon, font) được điều chỉnh theo màn hình
 class NotificationModalContent extends StatelessWidget {
-  final AppNotification notification;
+  final NotificationEntity notification;
   final double iconSize;
   final double fontSize;
 
