@@ -1,13 +1,18 @@
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import '../../../library/data/model/File.dart';
+
+import '../../logic/upload_file_bloc.dart';
+import '../../logic/upload_file_event.dart';
+
 
 class FileUploadLabel extends StatelessWidget {
-  final List<MyFile> files;
+  final List<PlatformFile> files;
 
-  const FileUploadLabel({super.key, required this.files});
+  const FileUploadLabel( {super.key, required this.files});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,7 @@ class FileUploadLabel extends StatelessWidget {
                     final file = files[index];
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
-                      child: MonoFile(file: file),
+                      child: MonoFile(file: file,index:index),
                     );
                   },
                 ),
@@ -35,9 +40,9 @@ class FileUploadLabel extends StatelessWidget {
 }
 
 class MonoFile extends StatelessWidget {
-  final MyFile file;
-
-  const MonoFile({super.key, required this.file});
+  final PlatformFile file;
+  final int index;
+  const MonoFile({super.key, required this.file,  required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +61,19 @@ class MonoFile extends StatelessWidget {
           SizedBox(width: responsive.widthPercent(2)),
           Expanded(
             child: Text(
-              file.fileName,
+              file.name,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: responsive.fontSize(14)),
             ),
           ),
-          Icon(Icons.cancel, size: responsive.fontSize(18)),
+          IconButton(
+            icon: Icon(Icons.cancel, size: responsive.fontSize(18)),
+            onPressed: () {
+              context.read<UploadFileBloc>().add(RemovePickDocument(index));
+              print("Cancel pressed");
+            },
+          )
+
         ],
       ),
     );

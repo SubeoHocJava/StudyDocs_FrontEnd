@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/upload_file/data/impl/upload_file_repository_implement.dart';
 
 import '../../../../core/widgets/bottom_nav.dart';
 import '../../../../core/widgets/header.dart';
 import '../../../library/data/model/File.dart';
 import '../../../library/presentation/widget/library_widgets.dart';
-
 import '../../data/upload_file_repository.dart';
 import '../../logic/upload_file_bloc.dart';
 import '../../logic/upload_file_event.dart';
@@ -20,18 +20,11 @@ class UploadFileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-
-    List<MyFile> files = [
-      MyFile(
-        fileName: "document1.pdf",
-        filePath: "/storage/emulated/0/Download/document1.pdf",
-      ),
-    ];
-
     return BlocProvider(
-      create: (_) =>
-      UploadFileBloc(UploadFileRepository())
-        ..add(UploadFileLoadDocumentByKeyWord("keyword")),
+      create:
+          (_) =>
+              UploadFileBloc(UpLoadFileRepositoryImpl())
+                ..add(UploadFileLoadDocumentByKeyWord("keyword")),
       child: Scaffold(
         appBar: Header(),
         body: BlocBuilder<UploadFileBloc, UploadFileState>(
@@ -46,18 +39,18 @@ class UploadFileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       UploadFileButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<UploadFileBloc>().add(PickDocument());
+                          print("Upload tapped");
+                        },
+
                       ),
                       SizedBox(height: responsive.heightPercent(2)),
-                      FileUploadLabel(
-                        files: files,
-                      ),
+                      FileUploadLabel(files:state.file),
                       SizedBox(),
-                      SchoolLabel(
-                      ),
+                      SchoolLabel(school:state.school),
                       SizedBox(height: responsive.heightPercent(2)),
-                      SubjectLabel(
-                      ),
+                      SubjectLabel(subject:state.subject),
                       SizedBox(height: responsive.heightPercent(2)),
                       MoreDetail(),
                     ],
@@ -67,11 +60,10 @@ class UploadFileScreen extends StatelessWidget {
             } else if (state is UploadFileError) {
               return Center(child: Text(state.message));
             }
-
             return const Center(child: Text("Chưa có dữ liệu"));
           },
         ),
-        bottomNavigationBar: BottomNav(currentIndex: 0, onTap: (int value) {  },),
+        bottomNavigationBar: BottomNav(currentIndex: 0, onTap: (int value) {}),
       ),
     );
   }

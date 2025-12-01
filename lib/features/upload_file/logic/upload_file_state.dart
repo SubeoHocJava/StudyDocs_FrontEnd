@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../library/data/model/File.dart';
 
@@ -12,18 +13,22 @@ abstract class UploadFileState extends Equatable {
   List<Object?> get props => [];
 }
 
-class UploadFileInitial extends UploadFileState {}
+class UploadFileInitial extends UploadFileState {
+  @override
+  List<Object?> get props => [];
+}
 
 class UploadFileLoading extends UploadFileState {}
 
 class UploadFileLoaded extends UploadFileState {
-  final List<MyFile> file;
+  final List<PlatformFile> file;
   final String subject;
+  final String school;
 
-  const UploadFileLoaded(this.file, this.subject);
+  const UploadFileLoaded(this.file, this.subject,this.school);
 
   @override
-  List<Object?> get props => [file, subject];
+  List<Object?> get props => [file, subject,school];
 }
 
 class UploadFileError extends UploadFileState {

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
+import '../../logic/upload_file_bloc.dart';
+import '../../logic/upload_file_event.dart';
+
 class SubjectLabel extends StatelessWidget {
-  const SubjectLabel({super.key});
+  final String subject;
+
+  const SubjectLabel({super.key, required this.subject});
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +36,13 @@ class SubjectLabel extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
+                    final bloc = context.read<UploadFileBloc>();
                     TextEditingController _controller = TextEditingController();
                     showDialog(
                       context: context,
-                      builder: (BuildContext context) {
+                      builder: (BuildContext dialogContext) {
                         return AlertDialog(
-                          title: Text("Chỉnh sửa thông tin"),
+                          title: Text("Chỉnh sửa môn học"),
                           content: TextField(
                             controller: _controller,
                             decoration: InputDecoration(
@@ -45,13 +52,15 @@ class SubjectLabel extends StatelessWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
+                              onPressed: () => Navigator.of(dialogContext).pop(),
                               child: Text("Hủy"),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                print("Giá trị nhập: ${_controller.text}");
-                                Navigator.of(context).pop();
+                                bloc.add(
+                                  EditSubjectLabel(_controller.text),
+                                ); // dùng bloc đã lưu
+                                Navigator.of(dialogContext).pop();
                               },
                               child: Text("Lưu"),
                             ),
@@ -67,6 +76,18 @@ class SubjectLabel extends StatelessWidget {
                       color: Colors.blueAccent,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  subject,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: responsive.fontSize(16),
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],

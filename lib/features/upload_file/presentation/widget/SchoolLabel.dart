@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
+import '../../logic/upload_file_bloc.dart';
+import '../../logic/upload_file_event.dart';
+
 class SchoolLabel extends StatelessWidget {
-  const SchoolLabel({super.key});
+  final String school;
+  const SchoolLabel({super.key, required this.school});
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-
+    print(school);
     return Center(
       child: Container(
         width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
@@ -29,7 +34,40 @@ class SchoolLabel extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    final bloc = context.read<UploadFileBloc>();
+                    TextEditingController _controller = TextEditingController();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext dialogContext) {
+                        return AlertDialog(
+                          title: Text("Chỉnh sửa trường học"),
+                          content: TextField(
+                            controller: _controller,
+                            decoration: InputDecoration(
+                              labelText: "Nhập dữ liệu",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(dialogContext).pop(),
+                              child: Text("Hủy"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                bloc.add(
+                                  EditSchoolLabel(_controller.text),
+                                ); //
+                                Navigator.of(dialogContext).pop();
+                              },
+                              child: Text("Lưu"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   child: Text(
                     "Chỉnh sửa",
                     style: TextStyle(
@@ -45,7 +83,7 @@ class SchoolLabel extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "Trường đại học nông lâm",
+                 school,
                   style: TextStyle(
                     color: Colors.blue,
                     fontSize: responsive.fontSize(16),
