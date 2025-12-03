@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/model/api_response.dart';
 import 'package:studydocs/data/model/notification.dart';
 
 abstract interface class NotificationDataSource {
@@ -18,7 +16,6 @@ abstract interface class NotificationDataSource {
   Future<void> markAllAsRead();
 }
 
-
 class NotificationDataSourceImpl implements NotificationDataSource {
   final String path = "/notifications";
   final DioClient dioClient;
@@ -26,42 +23,37 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   NotificationDataSourceImpl({required this.dioClient});
 
   @override
-  Future<void> markAsRead(String notificationId) async {}
-
-  @override
   Future<List<Notification>> getNotifications(
     DateTime receivedAt,
     bool isDeleted,
   ) async {
-    final response = await dioClient.get(
-      "notifications",
-      queryParameters: {
-        "isDeleted": isDeleted,
-        "limit": 10
-      },
+    final apiResponse = await dioClient.get(
+      path,
+      queryParameters: {"isDeleted": isDeleted, "limit": 10},
     );
-    dynamic responseData = response.data;
-    if (responseData is String) {
-      responseData = jsonDecode(responseData);
-    }
-    final apiResponse = ApiResponse.fromJson(
-      responseData,
-      (data) => (data as List?)
-              ?.map((item) => Notification.fromJson(item))
-              .toList() ??
-          [],
-    );
-    return apiResponse.data;
+    final list = apiResponse.data as List;
+
+    return list.map((e) => Notification.fromJson(e)).toList();
   }
 
   @override
-  Future<void> softDelete(String notificationId) async {}
+  Future<void> softDelete(String notificationId) async {
+    dioClient.delete("$path/$notificationId/soft");
+  }
 
   @override
-  Future<void> hardDelete(String notificationId) async {}
+  Future<void> hardDelete(String notificationId) async {
+    dioClient.delete("$path/$notificationId/hard");
+
+  }
+
+  @override
+  Future<void> markAsRead(String notificationId) async {
+    dioClient.patch("$path/$notificationId/read");
+  }
 
   @override
   Future<void> markAllAsRead() async {
-    dioClient.post(path);
+    dioClient.patch("$path/read-all");
   }
 }

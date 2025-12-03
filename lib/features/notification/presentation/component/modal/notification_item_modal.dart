@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/data/model/notification.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
@@ -42,7 +41,6 @@ class NotificationItemModal extends StatelessWidget {
                   context.read<NotificationBloc>().add(
                     MarkAsReadEvent(notification.id),
                   );
-                  // Schedule pop after frame to avoid re-entrancy during device updates
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.pop(context);
                   });

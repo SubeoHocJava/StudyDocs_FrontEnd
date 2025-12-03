@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 
 import '../helpers/notification_layout_helper.dart';
 import '../helpers/notification_press_state_mixin.dart';
@@ -168,7 +170,7 @@ class _NotificationMetadataState extends State<_NotificationMetadata> {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: marginDelete,
-      runSpacing: 4.0, // Add some vertical spacing for wrapped items
+      runSpacing: 4.0,
       children: [
         Text(
           widget.notification.formattedCreatedTime(),
@@ -207,18 +209,21 @@ class _NotificationActionButton extends StatelessWidget {
   });
 
   void _showModal(BuildContext context) {
+    final notificationBloc = context.read<NotificationBloc>();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => NotificationItemModal(notification: notification),
+      builder: (context) => BlocProvider.value(
+        value: notificationBloc,
+        child: NotificationItemModal(notification: notification),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Nếu thông báo chưa bị xóa: hiển thị nút mở modal action
     if (notification.deletedAt == null) {
       return IconButton(
         onPressed: () => _showModal(context),

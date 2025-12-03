@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:studydocs/data/model/api_response.dart';
 import '../constants/api_constants.dart';
 import 'api_interceptor.dart';
 
@@ -22,37 +25,62 @@ class DioClient {
     _dio.interceptors.add(ApiInterceptor());
 
     // Logging (chỉ dùng trong development)
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      error: true,
-    ));
+    _dio.interceptors.add(
+      LogInterceptor(requestBody: true, responseBody: true, error: true),
+    );
   }
 
   Dio get dio => _dio;
 
   // Helper methods
-  Future<Response> get(
-      String path, {
-        Map<String, dynamic>? queryParameters,
-      }) async {
+  Future<ApiResponse> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
-      return await _dio.get(path, queryParameters: queryParameters);
+      return fromResponse(
+        await _dio.get(path, queryParameters: queryParameters),
+      );
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
 
-  Future<Response> post(
+  Future<ApiResponse> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return fromResponse(
+        await _dio.post(path, data: data, queryParameters: queryParameters),
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<ApiResponse> patch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return fromResponse(
+        await _dio.patch(path, data: data, queryParameters: queryParameters),
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+  Future<ApiResponse> delete(
       String path, {
         dynamic data,
         Map<String, dynamic>? queryParameters,
       }) async {
     try {
-      return await _dio.post(
-        path,
-        data: data,
-        queryParameters: queryParameters,
+      return fromResponse(
+        await _dio.delete(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
       throw _handleError(e);
@@ -66,13 +94,19 @@ class DioClient {
       case DioExceptionType.receiveTimeout:
         return Exception('Connection timeout');
       case DioExceptionType.badResponse:
-        return Exception(
-          'Server error: ${error.response?.statusCode}',
-        );
+        return Exception('Server error: ${error.response?.statusCode}');
       case DioExceptionType.cancel:
         return Exception('Request cancelled');
       default:
         return Exception('Network error: ${error.message}');
     }
+  }
+
+  Future<ApiResponse> fromResponse(Response response) async {
+    dynamic responseData = response.data;
+    if (responseData is String) {
+      responseData = jsonDecode(responseData);
+    }
+    return ApiResponse.fromJson(responseData);
   }
 }

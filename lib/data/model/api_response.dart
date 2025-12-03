@@ -12,14 +12,12 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-      Map<String, dynamic> json,
-      T Function(dynamic) fromJsonT,
-      ) {
+      Map<String, dynamic> json) {
     return ApiResponse(
       statusCode: json['statusCode'],
       errorCode: json['errorCode'] != null ? json['errorCode'] as int : null,
       traceId: json['traceId'] ?? '',
-      data: fromJsonT(json['data']),
+      data: json['data'],
     );
   }
 }
