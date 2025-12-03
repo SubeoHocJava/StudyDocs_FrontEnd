@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Header hiển thị tiêu đề tài liệu và icon mở rộng/thu gọn
 class DocHeader extends StatelessWidget {
   final String title;
-  final bool isDetail;
+  final bool isDetail;       // true = đang ở chế độ xem chi tiết
   final VoidCallback? onTapArrow;
 
   const DocHeader({
@@ -17,6 +18,7 @@ class DocHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Tiêu đề tài liệu
         Expanded(
           child: Text(
             title,
@@ -26,9 +28,17 @@ class DocHeader extends StatelessWidget {
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
+
+        // Icon thu gọn / mở rộng
         IconButton(
-          tooltip: isDetail ? 'Thu gọn về tài liệu sơ bộ' : 'Xem chi tiết',
-          icon: Icon(isDetail ? Icons.arrow_drop_up : Icons.arrow_drop_down_circle_outlined),
+          tooltip: isDetail
+              ? 'Thu gọn về tài liệu sơ bộ'
+              : 'Xem chi tiết',
+          icon: Icon(
+            isDetail
+                ? Icons.arrow_drop_up
+                : Icons.arrow_drop_down_circle_outlined,
+          ),
           onPressed: onTapArrow,
         ),
       ],
