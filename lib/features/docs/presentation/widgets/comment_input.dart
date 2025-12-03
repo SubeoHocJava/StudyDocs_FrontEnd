@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Widget nhập bình luận, hiện đang là Stateless nhưng không có controller.
+// -> Không lấy được nội dung người dùng nhập (cần controller nếu muốn gửi comment).
 class CommentInput extends StatelessWidget {
-  final VoidCallback? onSend;
+  final VoidCallback? onSend; // Callback nhấn nút "Gửi", nhưng KHÔNG nhận nội dung text.
 
   const CommentInput({super.key, this.onSend});
 
@@ -11,6 +13,7 @@ class CommentInput extends StatelessWidget {
       children: [
         Expanded(
           child: TextField(
+            // ⚠️ Thiếu controller => không thể lấy text khi nhấn nút Gửi.
             decoration: InputDecoration(
               hintText: "Bạn nghĩ gì về tài liệu này...",
               border: OutlineInputBorder(
@@ -28,7 +31,7 @@ class CommentInput extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          onPressed: onSend,
+          onPressed: onSend, // ⚠️ Chỉ gọi callback, không gửi nội dung comment.
           child: const Text("Gửi"),
         ),
       ],
