@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
-/// Helper để tính toán các giá trị layout cho notification components
+/// Helper để tính toán các giá trị layout cho notification component
 /// sử dụng ResponsiveHelper để đảm bảo tính nhất quán
 class NotificationLayoutHelper {
   /// Tính toán các giá trị layout dựa trên ResponsiveHelper

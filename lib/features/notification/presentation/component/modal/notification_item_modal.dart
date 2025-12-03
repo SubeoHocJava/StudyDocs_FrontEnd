@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/data/model/notification.dart';
-import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
+import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 
 import 'notification_modal_layout.dart';
-import 'parts/helpers/notification_modal_size_helper.dart';
-import 'parts/notification_modal_action.dart';
-import 'parts/notification_modal_content.dart';
+import '../helpers/notification_modal_size_helper.dart';
+import '../shared/notification_shared.dart';
 
 /// Modal hiển thị chi tiết một notification và các action có thể thực hiện
 /// - Hiển thị nội dung đầy đủ của notification
@@ -27,7 +26,7 @@ class NotificationItemModal extends StatelessWidget {
     return NotificationModalLayout(
       child: Column(
         children: [
-          NotificationModalContent(
+          _NotificationModalContent(
             notification: notification,
             iconSize: sizes.clampedIconSize,
             fontSize: sizes.clampedFontSize,
@@ -66,6 +65,49 @@ class NotificationItemModal extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Widget hiển thị nội dung chi tiết của notification trong modal
+/// - Icon loại notification (lớn hơn trong list)
+/// - Nội dung đầy đủ (không giới hạn số dòng)
+/// - Divider phân cách với phần actions
+/// Kích thước (icon, font) được điều chỉnh theo màn hình
+class _NotificationModalContent extends StatelessWidget {
+  final NotificationEntity notification;
+  final double iconSize;
+  final double fontSize;
+
+  const _NotificationModalContent({
+    required this.notification,
+    required this.iconSize,
+    required this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: NotificationTypeIcon(
+              type: notification.type,
+              size: iconSize,
+            ),
+          ),
+        ),
+        Text(
+          notification.body,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: fontSize),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Divider(height: 1),
+        ),
+      ],
     );
   }
 }

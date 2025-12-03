@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
+import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 
 /// UseCase: Lấy danh sách notification

@@ -5,8 +5,8 @@ import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 
 import 'notification_modal_layout.dart';
-import 'parts/helpers/notification_modal_size_helper.dart';
-import 'parts/notification_modal_action.dart';
+import '../helpers/notification_modal_size_helper.dart';
+import '../shared/notification_shared.dart';
 
 /// Modal cho trang thùng rác (notifications đã xóa)
 /// - Action "Khôi phục thông báo": đưa notification về trạng thái bình thường

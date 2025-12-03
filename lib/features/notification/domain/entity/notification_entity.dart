@@ -4,26 +4,26 @@ class NotificationEntity {
   final String id;
   final String sender;
   final String subject;
-  final String content;
+  final String body;
   bool isRead;
   final String type;
-  final DateTime createdAt;
+  final DateTime receivedAt;
   final DateTime? deletedAt;
 
   NotificationEntity({
     required this.id,
     required this.sender,
     required this.subject,
-    required this.content,
+    required this.body,
     this.isRead = false,
     required this.type,
-    required this.createdAt,
+    required this.receivedAt,
     this.deletedAt,
   });
 
   String timeAgo() {
     final now = DateTime.now();
-    final diff = now.difference(createdAt);
+    final diff = now.difference(receivedAt);
 
     if (diff.inSeconds < 5) {
       return "Vừa xong";
@@ -41,7 +41,7 @@ class NotificationEntity {
   String formattedCreatedTime() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final createdDay = DateTime(createdAt.year, createdAt.month, createdAt.day);
+    final createdDay = DateTime(receivedAt.year, receivedAt.month, receivedAt.day);
     final yesterday = today.subtract(const Duration(days: 1));
 
     if (createdDay == today) {
@@ -49,9 +49,9 @@ class NotificationEntity {
     } else if (createdDay == yesterday) {
       return "Hôm qua";
     } else {
-      return "${createdAt.day.toString().padLeft(2, '0')}/"
-          "${createdAt.month.toString().padLeft(2, '0')}/"
-          "${createdAt.year}";
+      return "${receivedAt.day.toString().padLeft(2, '0')}/"
+          "${receivedAt.month.toString().padLeft(2, '0')}/"
+          "${receivedAt.year}";
     }
   }
 
@@ -59,25 +59,25 @@ class NotificationEntity {
     String? id,
     String? sender,
     String? subject,
-    String? content,
+    String? body,
     bool? isRead,
     String? type,
-    DateTime? createdAt,
+    DateTime? receivedAt,
     DateTime? deletedAt
   }) {
     return NotificationEntity(
       id: id ?? this.id,
       sender: sender ?? this.sender,
       subject: subject ?? this.subject,
-      content: content ?? this.content,
+      body: body ?? this.body,
       isRead: isRead ?? this.isRead,
       type: type ?? this.type,
-      createdAt: createdAt ?? this.createdAt,
+      receivedAt: receivedAt ?? this.receivedAt,
       deletedAt: deletedAt
     );
   }
   static NotificationEntity fromModel(Notification model){
-    return  NotificationEntity(id: model.id, sender: model.sender, subject: model.subject, content: model.content, type: model.type, createdAt: model.createdAt);
+    return  NotificationEntity(id: model.id, sender: model.sender, subject: model.subject, body: model.body, type: model.type, receivedAt: model.receivedAt);
   }
 
   String formatDeletedTime() {

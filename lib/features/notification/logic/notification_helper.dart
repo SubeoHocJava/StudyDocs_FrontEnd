@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
+import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 
 // Helper nhỏ để gom nhóm thông báo theo thời gian (hôm nay / trước đó).
 // Dùng trong UI để hiển thị section header tương ứng.
@@ -15,7 +15,7 @@ class NotificationHelper {
     final agoNotification = <NotificationEntity>[];
     final now = DateTime.now();
     for (final notification in notifications) {
-      if (isSameDate(now, notification.createdAt)) {
+      if (isSameDate(now, notification.receivedAt)) {
         todayNotifications.add(notification);
       } else {
         agoNotification.add(notification);

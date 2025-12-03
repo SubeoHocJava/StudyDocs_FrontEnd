@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import '../../../../core/constants/app_icons.dart';
 
 // Lưu cấu hình mỗi loại notification (mã type, màu nền avatar, đường dẫn icon).
-// Thực tế: khi mở rộng, thêm entry vào map `types` để hỗ trợ loại mới.
 class NotificationTypeStore {
   static NotificationType like = NotificationType(
     "LIKE",

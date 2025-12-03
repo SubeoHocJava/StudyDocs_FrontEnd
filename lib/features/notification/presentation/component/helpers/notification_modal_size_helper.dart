@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
-/// Helper để tính toán kích thước cho modal components
+/// Helper để tính toán kích thước cho modal component
 /// sử dụng ResponsiveHelper để đảm bảo tính nhất quán
 class NotificationModalSizeHelper {
   static NotificationModalSizes calculate(BuildContext context) {

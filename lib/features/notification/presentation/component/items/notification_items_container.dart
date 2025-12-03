@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/domain/model/notification_entity.dart';
+import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 
 import 'notification_item.dart';
 
@@ -40,11 +40,10 @@ class _NotificationItemsContainerState extends State<NotificationItemsContainer>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // Set a height that will shrink to fit the content
-      height: widget.notifications.length * 100.0, // Assuming each item is roughly 100 pixels high
+      height: widget.notifications.length * 100.0,
       child: ListView.builder(
         shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(), // để không bị cuộn lồng nhau
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: widget.notifications.length,
         itemBuilder: (context, index) {
           final item = widget.notifications[index];
