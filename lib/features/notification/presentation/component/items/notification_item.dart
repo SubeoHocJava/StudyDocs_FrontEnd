@@ -165,7 +165,10 @@ class _NotificationMetadataState extends State<_NotificationMetadata> {
     final timeFontSize = (screenWidth * 0.03).clamp(10.0, 16.0);
     final marginDelete = (screenWidth * 0.02).clamp(6.0, 16.0);
 
-    return Row(
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: marginDelete,
+      runSpacing: 4.0, // Add some vertical spacing for wrapped items
       children: [
         Text(
           widget.notification.formattedCreatedTime(),
@@ -173,7 +176,7 @@ class _NotificationMetadataState extends State<_NotificationMetadata> {
         ),
         if (widget.notification.deletedAt != null)
           Container(
-            margin: EdgeInsets.only(left: marginDelete),
+            // margin: EdgeInsets.only(left: marginDelete), // Removed, handled by spacing
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),

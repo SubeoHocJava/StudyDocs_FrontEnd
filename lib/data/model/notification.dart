@@ -18,4 +18,20 @@ class Notification {
     required this.receivedAt,
     this.deletedAt,
   });
+
+  factory Notification.fromJson(Map<String, dynamic> json) {
+    return Notification(
+      id: json['id'] ?? '',
+      sender: json['senderName'] ?? '',
+      subject: json['subject'] ?? '',
+      body: json['body'] ?? '',
+      isRead: json['isRead'] ?? false,
+      type: json['type'] ?? 'SYSTEM',
+      receivedAt: json['receivedAt'] != null
+          ? DateTime.parse(json['receivedAt'])
+          : DateTime.now(),
+      deletedAt:
+          json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
+    );
+  }
 }
