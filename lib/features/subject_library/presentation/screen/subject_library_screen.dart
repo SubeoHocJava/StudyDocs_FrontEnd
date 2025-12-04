@@ -29,10 +29,8 @@ class SubjectLibraryScreen extends StatelessWidget {
             if (state is SubjectLibraryLoading) {
               return Center(child: CircularProgressIndicator());
             }
-
             if (state is SubjectLibraryLoaded) {
               final responsive = context.responsive;
-
               return SingleChildScrollView(
                 padding: responsive.screenPadding, // responsive padding toàn trang
                 child: Column(
@@ -56,9 +54,9 @@ class SubjectLibraryScreen extends StatelessWidget {
                       ),
                       cardWidth: responsive.getCardWidth(
                         columns: responsive.getGridColumnCount(
-                          mobile: 2,
-                          tablet: 3,
-                          desktop: 4,
+                          mobile: 3,
+                          tablet: 4,
+                          desktop: 5,
                         ),
                       ),
                     ),
@@ -69,8 +67,8 @@ class SubjectLibraryScreen extends StatelessWidget {
                     MostLikeDocs(
                       state.the_most_liked_docs,
                       crossAxisCount: responsive.getGridColumnCount(
-                        mobile: 2,
-                        tablet: 3,
+                        mobile: 3,
+                        tablet: 4,
                         desktop: 5,
                       ),
                     ),

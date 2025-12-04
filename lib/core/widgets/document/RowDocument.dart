@@ -69,8 +69,8 @@ class MonoDocumentInRow extends StatelessWidget {
           ),
           child: Image.asset(
             "assets/icons/search-icon.png",
-            width: cardWidth * 0.9,
-            height: cardHeight * 0.9,
+            width: cardWidth * 0.8,
+            height: cardHeight * 0.8,
             fit: BoxFit.contain,
           ),
         ),

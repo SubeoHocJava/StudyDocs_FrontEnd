@@ -19,10 +19,25 @@ class LoadProfile extends ProfileEvent {
 
 /// Sự kiện update profile
 class UpdateProfile extends ProfileEvent {
-  final Map<String, dynamic> data;
+  final String userName;
+  final String fullName;
+  final String email;
+  final String phoneNumber;
+  final String? gender;
+  final DateTime? birthDate;
+  final String address;
 
-  const UpdateProfile(this.data);
+  const UpdateProfile( {
+    required this.userName,
+    required this.fullName,
+    required this.email,
+    required this.phoneNumber,
+    this.gender,
+    this.birthDate,
+    required this.address,
+  });
 
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props =>
+      [userName, fullName, email, phoneNumber, gender, birthDate, address];
 }

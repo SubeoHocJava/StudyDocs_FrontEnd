@@ -11,6 +11,10 @@ class TitleSubjectLibrary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final school=state.school;
+    final subject=state.subject;
+    final num_docs=state.num_docs;
+    final num_friends=state.num_docs;
 
     return Container(
       margin: EdgeInsets.all(responsive.isMobile ? 8 : responsive.isTablet ? 16 : 24),
@@ -19,7 +23,7 @@ class TitleSubjectLibrary extends StatelessWidget {
         children: [
           // Tên trường
           Text(
-            "Trường đại học nông lâm TP. Hồ Chí Minh",
+           school,
             style: TextStyle(
               fontSize: responsive.fontSize(fontSize), // responsive font
               fontWeight: FontWeight.bold,
@@ -31,7 +35,7 @@ class TitleSubjectLibrary extends StatelessWidget {
 
           // Ngành học
           Text(
-            "Công nghệ phần mềm",
+           subject,
             style: TextStyle(
               fontSize: responsive.fontSize(fontSize + 5), // lớn hơn một chút
               fontWeight: FontWeight.bold,
@@ -45,13 +49,13 @@ class TitleSubjectLibrary extends StatelessWidget {
             children: [
               Icon(Icons.file_present, size: responsive.fontSize(16)),
               SizedBox(width: responsive.widthPercent(2)),
-              Text("46", style: TextStyle(fontSize: responsive.fontSize(14))),
+              Text(num_docs.toString(), style: TextStyle(fontSize: responsive.fontSize(14))),
 
               SizedBox(width: responsive.widthPercent(4)),
 
               Icon(Icons.people, size: responsive.fontSize(16)),
               SizedBox(width: responsive.widthPercent(2)),
-              Text("46", style: TextStyle(fontSize: responsive.fontSize(14))),
+              Text(num_friends.toString(), style: TextStyle(fontSize: responsive.fontSize(14))),
 
               SizedBox(width: responsive.widthPercent(4)),
 

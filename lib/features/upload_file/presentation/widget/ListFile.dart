@@ -67,7 +67,7 @@ class MonoFile extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.cancel, size: responsive.fontSize(18)),
+            icon: Icon(Icons.delete_forever, size: responsive.fontSize(18),),
             onPressed: () {
               context.read<UploadFileBloc>().add(RemovePickDocument(index));
               print("Cancel pressed");

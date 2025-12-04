@@ -24,7 +24,7 @@ class UploadFileScreen extends StatelessWidget {
       create:
           (_) =>
               UploadFileBloc(UpLoadFileRepositoryImpl())
-                ..add(UploadFileLoadDocumentByKeyWord("keyword")),
+                ..add(UploadFileLoadDocumentByKeyWord("keyword")) ..add(PickDocument()),
       child: Scaffold(
         appBar: Header(),
         body: BlocBuilder<UploadFileBloc, UploadFileState>(

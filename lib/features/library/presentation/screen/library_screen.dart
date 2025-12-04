@@ -5,6 +5,10 @@ import 'package:studydocs/features/library/data/library_repository.dart';
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
 import '../../../../core/widgets/bottom_nav.dart';
+import '../../../upload_file/data/impl/upload_file_repository_implement.dart';
+import '../../../upload_file/logic/upload_file_bloc.dart';
+import '../../../upload_file/logic/upload_file_event.dart';
+import '../../../upload_file/presentation/screen/upload_file_screen.dart';
 import '../../logic/LibraryState.dart';
 import '../../logic/library_bloc.dart';
 import '../widget/library_widgets.dart';
@@ -41,10 +45,18 @@ class LibraryScreen extends StatelessWidget {
 
                     ),
                     UploadFileButton(
-                      onPressed: () {
-                        context.read<LibraryBloc>().add(PickDocument());
-                        print("Upload tapped");
-                      },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider(
+                                create: (_) => UploadFileBloc(UpLoadFileRepositoryImpl())
+                                  ..add(UploadFileLoadDocumentByKeyWord("keyword")),
+                                child: UploadFileScreen(),
+                              ),
+                            ),
+                          );
+                        },
                       file: state.filePick?.name
 
                     ),

@@ -34,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      BasicInfor(),
+                      BasicInfor(state:state),
                       Statistical(),
                       UpLoadDocument(),
                       StorageDocument(),

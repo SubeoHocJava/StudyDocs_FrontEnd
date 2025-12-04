@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/profile/logic/profile_bloc.dart';
+import 'package:studydocs/features/profile/logic/profile_state.dart';
 import 'package:studydocs/features/profile/presentation/widget/UpdateInforDialog.dart';
 
 class BasicInfor extends StatelessWidget {
-  const BasicInfor({super.key});
+  final ProfileLoaded state;
+  const BasicInfor({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-
-    const image = "icons/avt.png";
-    const name = "";
-    const school = "";
+    var image = "icons/avt.png";
+    var name = state.fullName;
+    var school = state.school;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -96,8 +99,9 @@ class BasicInfor extends StatelessWidget {
 }
 
 void _showUpdateForm(BuildContext context) {
+  final bloc=context.read<ProfileBloc>();
   showDialog(
     context: context,
-    builder: (context) => UpdateInforDialog(),
+    builder: (context) => UpdateInforDialog(bloc: bloc),
   );
 }
