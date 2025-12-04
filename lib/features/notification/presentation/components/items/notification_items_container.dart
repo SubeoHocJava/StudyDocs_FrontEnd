@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 import 'notification_item.dart';
 

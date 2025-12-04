@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/data/model/notification.dart';
+import 'package:studydocs/data/model/notification.dart';
 
 // Helper nhỏ để gom nhóm thông báo theo thời gian (hôm nay / trước đó).
 // Dùng trong UI để hiển thị section header tương ứng.
