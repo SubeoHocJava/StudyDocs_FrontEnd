@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../domain/entity/document_entity.dart';
 
-// Thông tin người tải tài liệu: avatar + tên + trường
 class UploaderInfo extends StatelessWidget {
   final DocumentEntity doc;
 
@@ -10,34 +9,47 @@ class UploaderInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero, // Gọn hơn, tránh dư khoảng cách
+    final bool isSmall = MediaQuery.of(context).size.width < 380;
 
-      leading: CircleAvatar(
-        radius: 22,
-        backgroundImage: AssetImage(AppAssets.avt), // Avatar mặc định
-      ),
-
-      // Tên uploader
-      title: Text(
-        doc.uploader,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-
-      // Hiển thị trường đại học
-      subtitle: Row(
-        children: [
-          Image.asset(AppAssets.school, width: 16, height: 16),
-          const SizedBox(width: 6),
-
-          Expanded(
-            child: Text(
-              doc.school,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: isSmall ? 18 : 22,
+          backgroundImage: AssetImage(AppAssets.avt),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                doc.uploader,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: isSmall ? 14 : 16,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Row(
+                children: [
+                  Image.asset(AppAssets.school, width: 14, height: 14),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      doc.school,
+                      style: TextStyle(fontSize: isSmall ? 12 : 13, color: Colors.grey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

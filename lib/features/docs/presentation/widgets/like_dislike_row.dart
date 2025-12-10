@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_icons.dart';
 import '../../domain/entity/document_entity.dart';
+import '../../../../core/constants/app_icons.dart';
 
-// Hiển thị số lượt thích & không thích
 class LikeDislikeRow extends StatelessWidget {
   final DocumentEntity doc;
 
@@ -10,41 +9,44 @@ class LikeDislikeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Dùng Flexible để tránh bị tràn hàng (overflow)
-        Flexible(child: _buildLikeDislikeItem(doc.likes, false)),
-        const SizedBox(width: 20),
-        Flexible(child: _buildLikeDislikeItem(doc.dislikes, true)),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isSmallScreen = constraints.maxWidth < 380;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildButton(doc.likes, false, isSmallScreen),
+            const SizedBox(width: 16),
+            _buildButton(doc.dislikes, true, isSmallScreen),
+          ],
+        );
+      },
     );
   }
 
-  // Tạo widget Like/Dislike
-  Widget _buildLikeDislikeItem(int count, bool isDislike) {
+  Widget _buildButton(int count, bool isDislike, bool isSmallScreen) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 42, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 20 : 36,
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Co lại đúng size cần thiết
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Nếu là dislike → xoay icon 180 độ
           if (isDislike)
             Transform.scale(
-              scaleY: -1, // Lật icon theo chiều dọc
+              scaleY: -1,
               child: Image.asset(AppAssets.like, width: 18, height: 18),
             )
           else
             Image.asset(AppAssets.like, width: 18, height: 18),
-
           const SizedBox(width: 6),
-
-          // Hiển thị count
-          Text("$count"),
+          Text("$count", style: const TextStyle(fontSize: 14)),
         ],
       ),
     );

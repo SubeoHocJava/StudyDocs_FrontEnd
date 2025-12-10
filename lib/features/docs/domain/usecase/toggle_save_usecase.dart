@@ -1,6 +1,5 @@
 import '../repository/docs_repository.dart';
 
-/// Use Case: đổi trạng thái lưu tài liệu.
 class ToggleSaveUseCase {
   final DocsRepository repository;
 

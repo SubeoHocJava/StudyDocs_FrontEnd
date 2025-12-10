@@ -1,10 +1,9 @@
-import '../entity/document_entity.dart';
+import '../../../docs/domain/entity/document_entity.dart';
 
-/// Repository trừu tượng cho module Documents.
 abstract class DocsRepository {
-  /// Lấy chi tiết tài liệu
   Future<DocumentEntity> getDocumentDetails();
-
-  /// Lưu hoặc bỏ lưu tài liệu
   Future<void> toggleSave();
+  Future<void> downloadDocument();
+  Future<void> toggleLike({required bool isLike}); // true = like, false = dislike
+  Future<void> postComment(String text);
 }

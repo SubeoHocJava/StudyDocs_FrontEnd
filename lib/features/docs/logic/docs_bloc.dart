@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
 import 'docs_event.dart';
@@ -29,7 +30,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
     emit(DocsLoading());
     try {
       final doc = await getDocumentUseCase();
-      emit(DocsLoaded(doc));
+      emit(DocsLoaded(doc as DocumentEntity));
     } catch (e) {
       emit(DocsError(e.toString()));
     }

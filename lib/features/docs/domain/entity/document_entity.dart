@@ -8,6 +8,8 @@ class DocumentEntity {
   final int dislikes;
   final List<CommentEntity> comments;
   final bool isSaved;
+  final int pages;
+  final String fileSize;
 
   DocumentEntity({
     required this.title,
@@ -19,6 +21,8 @@ class DocumentEntity {
     required this.dislikes,
     required this.comments,
     this.isSaved = false,
+    required this.pages,
+    required this.fileSize,
   });
 }
 

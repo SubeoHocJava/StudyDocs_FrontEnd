@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../logic/docs_bloc.dart';
 import '../../logic/docs_state.dart';
 import '../../domain/entity/document_entity.dart';
 import '../widgets/doc_header.dart';
 import '../widgets/doc_info_row.dart';
 import '../widgets/doc_actions.dart';
+import '../widgets/like_dislike_row.dart';
 import '../widgets/pdf_preview_thumbnail.dart';
+import '../widgets/uploader_info.dart';
 import 'docs_detail_screen.dart';
 import '../../../../core/constants/app_icons.dart';
 
-/// Màn home hiển thị preview tài liệu.
-/// Từ đây nhấn → sang DocsDetailScreen.
 class DocsScreen extends StatelessWidget {
   const DocsScreen({super.key});
+
+  void _openDetail(BuildContext context) {
+    final docsBloc = context.read<DocsBloc>();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: docsBloc,
+          child: const DocsDetailScreen(),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,31 +50,29 @@ class DocsScreen extends StatelessWidget {
 
             final doc = state.docDetails;
 
-            /// Layout: wide → chia đôi, mobile → full cột
             return SingleChildScrollView(
               padding: EdgeInsets.all(size.width * 0.04),
               child: isWide
                   ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Cột thông tin (bên trái)
                   Expanded(
                     flex: 5,
-                    child: _buildInfoColumn(context, doc, state, isWide: true),
+                    child: _buildInfoColumn(context, doc, state),
                   ),
                   const SizedBox(width: 20),
-
-                  /// PDF preview (bên phải)
                   Expanded(
                     flex: 5,
                     child: PdfPreviewThumbnail(
                       onTap: () => _openDetail(context),
                       isFullSize: false,
+                      pages: doc.pages,
+                      fileSize: doc.fileSize,
                     ),
                   ),
                 ],
               )
-                  : _buildInfoColumn(context, doc, state, isWide: false),
+                  : _buildInfoColumn(context, doc, state),
             );
           },
         ),
@@ -68,60 +80,65 @@ class DocsScreen extends StatelessWidget {
     );
   }
 
-  /// Cột chứa header + info + actions
-  Widget _buildInfoColumn(
-      BuildContext context,
-      DocumentEntity doc,
-      DocsLoaded state, {
-        required bool isWide,
-      }) {
+  Widget _buildInfoColumn(BuildContext context, DocumentEntity doc, DocsLoaded state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// Header + điều hướng vào màn chi tiết
-        DocHeader(
-          title: doc.title,
-          isDetail: false,
-          onTapArrow: () => _openDetail(context),
-        ),
-
+        DocHeader(title: doc.title),
         const SizedBox(height: 12),
-
-        /// Môn học – trường học
         DocInfoRow(text: doc.course, iconPath: AppAssets.folder),
         const SizedBox(height: 6),
         DocInfoRow(text: doc.school, iconPath: AppAssets.school),
-
+        const SizedBox(height: 6),
+        Text(
+          "${doc.pages} trang • ${doc.fileSize}",
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+        ),
         const SizedBox(height: 16),
-
-        /// Save – Share – Report
         DocActions(state: state),
-
         const SizedBox(height: 20),
-
-        /// Mobile: hiển thị PDF bên dưới info
-        if (!isWide)
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: PdfPreviewThumbnail(
-              onTap: () => _openDetail(context),
-              isFullSize: false,
+        Text("Năm học: ${doc.year}"),
+        const SizedBox(height: 12),
+        const Text("Đăng tải bởi:", style: TextStyle(fontWeight: FontWeight.w500)),
+        UploaderInfo(doc: doc),
+        const SizedBox(height: 12),
+        LikeDislikeRow(doc: doc),
+        const SizedBox(height: 20),
+        if (MediaQuery.of(context).size.width <= 600)
+          PdfPreviewThumbnail(
+            onTap: () => _openDetail(context),
+            isFullSize: false,
+            pages: doc.pages,
+            fileSize: doc.fileSize,
+          ),
+        const SizedBox(height: 20),
+        if (MediaQuery.of(context).size.width <= 600)
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                final docsBloc = context.read<DocsBloc>();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider.value(
+                      value: docsBloc,
+                      child: const DocsDetailScreen(),
+                    ),
+                  ),
+                );
+              },
+              child: const Text(
+                "Xem thêm",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ),
       ],
-    );
-  }
-
-  /// Điều hướng sang màn chi tiết.
-  /// BlocProvider.value → giữ nguyên instance DocsBloc.
-  void _openDetail(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: BlocProvider.of<DocsBloc>(context),
-          child: const DocsDetailScreen(),
-        ),
-      ),
     );
   }
 }
