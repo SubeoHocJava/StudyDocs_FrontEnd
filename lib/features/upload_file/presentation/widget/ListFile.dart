@@ -21,7 +21,7 @@ class FileUploadLabel extends StatelessWidget {
     return Center(
       child:
             Container(
-                height:files.length* 50, // responsive height per item
+                height:files.length* 60, // responsive height per item
                 width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
@@ -49,7 +49,7 @@ class MonoFile extends StatelessWidget {
     final responsive = context.responsive;
 
     return Container(
-      padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
+      padding: EdgeInsets.all(responsive.isMobile ? 1 : 2),
       decoration: BoxDecoration(
         color: AppColors.headerBackground,
         borderRadius: BorderRadius.circular(8),
@@ -67,7 +67,7 @@ class MonoFile extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.delete_forever, size: responsive.fontSize(18),),
+            icon: Icon(Icons.delete_forever, size: responsive.fontSize(18),color: Colors.red,),
             onPressed: () {
               context.read<UploadFileBloc>().add(RemovePickDocument(index));
               print("Cancel pressed");

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
+import '../../logic/profile_state.dart';
+
 
 class Statistical extends StatelessWidget {
+  final ProfileLoaded state;
+  const Statistical({super.key,  required this.state});
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;

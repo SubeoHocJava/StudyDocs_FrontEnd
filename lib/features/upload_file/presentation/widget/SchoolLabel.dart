@@ -12,7 +12,6 @@ class SchoolLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    print(school);
     return Center(
       child: Container(
         width: responsive.widthPercent(responsive.isMobile ? 80 : 160),

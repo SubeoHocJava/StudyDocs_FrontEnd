@@ -5,6 +5,8 @@ import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_state.dart';
 import 'package:studydocs/features/profile/presentation/widget/UpdateInforDialog.dart';
 
+import 'SettingBoard.dart';
+
 class BasicInfor extends StatelessWidget {
   final ProfileLoaded state;
   const BasicInfor({super.key, required this.state});
@@ -28,10 +30,10 @@ class BasicInfor extends StatelessWidget {
           Align(
             alignment: Alignment.topRight,
             child: TextButton.icon(
-              onPressed: () => _showUpdateForm(context),
-              icon: Icon(Icons.edit, size: responsive.fontSize(16)),
+              onPressed: () => _showSettingBoard(context),
+              icon: Icon(Icons.settings, size: responsive.fontSize(16)),
               label: Text(
-                "Cập nhật thông tin",
+                "Cài đặt",
                 style: TextStyle(fontSize: responsive.fontSize(13)),
               ),
               style: TextButton.styleFrom(
@@ -97,7 +99,13 @@ class BasicInfor extends StatelessWidget {
     );
   }
 }
-
+void _showSettingBoard(BuildContext context){
+  final bloc=context.read<ProfileBloc>();
+  showDialog(
+    context: context,
+    builder: (context) => SettingBoard(bloc: bloc),
+  );
+}
 void _showUpdateForm(BuildContext context) {
   final bloc=context.read<ProfileBloc>();
   showDialog(

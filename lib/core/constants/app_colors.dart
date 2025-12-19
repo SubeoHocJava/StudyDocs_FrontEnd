@@ -4,7 +4,7 @@ class AppColors {
   // Primary Palette (xanh dương đậm, thương hiệu chính)
   static const Color primary = Color(0xFF0505C4);
   static const Color primaryLight = Color(0xFFE6EAFA);
-
+  
   // Secondary Palette (xanh ngọc & tím nhạt — màu nhấn phụ)
   static const Color secondaryTeal = Color(0xFF00C0CD);
   static const Color secondaryBlue = Color(0xFF7A94FF);
@@ -32,4 +32,7 @@ class AppColors {
   // static const Color followingChip = secondaryBlue;
   //Notification
   static const notificationUnread = Color(0xFFE6EAFA);
+
+
+
 }

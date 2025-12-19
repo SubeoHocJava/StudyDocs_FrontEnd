@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/header.dart';
+import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
 
 
 import '../../../../core/widgets/bottom_nav.dart';
-import '../../data/profile_repository.dart';
 import '../../logic/profile_bloc.dart';
 import '../../logic/profile_event.dart';
 import '../../logic/profile_state.dart';
@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider( create: (_) => ProfileBloc(ProfileRepository())..add(LoadProfile(0)),child: Scaffold(
+    return BlocProvider( create: (_) => ProfileBloc(ProfileRepositoryImpl())..add(LoadProfile(0)),child: Scaffold(
       appBar: Header(),
       body:
       BlocBuilder<ProfileBloc, ProfileState>(
@@ -35,9 +35,9 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       BasicInfor(state:state),
-                      Statistical(),
-                      UpLoadDocument(),
-                      StorageDocument(),
+                      Statistical(state:state),
+                      UpLoadDocument(state:state),
+                      StorageDocument(state:state),
                     ],
                   ),
                 ),

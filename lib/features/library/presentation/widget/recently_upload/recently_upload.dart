@@ -32,7 +32,6 @@ class RecentlyUpload extends StatelessWidget {
           height: responsive.isMobile ? 200 : 250, // chiều cao của list
           child: RowDocument(
             documents,
-            crossAxisCount: responsive.getGridColumnCount(mobile: 3, tablet: 4, desktop: 5),
             cardWidth: responsive.isMobile ? 100 : 150, // responsive width card
           ),
         ),

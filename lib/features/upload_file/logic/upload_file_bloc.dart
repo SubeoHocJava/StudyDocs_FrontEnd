@@ -1,16 +1,17 @@
 import "package:file_picker/file_picker.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:studydocs/features/upload_file/data/upload_file_repository.dart";
 import "package:studydocs/features/upload_file/logic/upload_file_event.dart";
+import "../domain/usecase/upload_file_usecase.dart";
 import "upload_file_state.dart";
 
 class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
-  final UploadFileRepository repository;
+  final UploadFileUseCase uploadFileUseCase;
 
   /// Lưu lại state Loaded gần nhất để revert khi cancel
   UploadFileLoaded? lastLoadedState;
 
-  UploadFileBloc(this.repository) : super(UploadFileInitial()) {
+  UploadFileBloc({required this.uploadFileUseCase})
+      : super(UploadFileInitial()) {
     // ============================
     // Load Document By Keyword
     // ============================
@@ -146,10 +147,26 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         emit(newState);
       }
     });
-    on<SendFormUpload>((event,emit){
+    on<SendFormUpload>((event, emit) async {
       if (state is UploadFileLoaded) {
         final current = state as UploadFileLoaded;
-        repository.upload(current.file,current.school,current.subject,event.fileName,event.year,event.description);
+
+        emit(UploadFileLoading());
+
+        final success = await uploadFileUseCase(
+          filePath: current.file.first.path ?? "",
+          school: current.school,
+          subject: current.subject,
+          fileName: event.fileName ,
+          year: event.year ,
+          description: event.description ,
+        );
+
+        if (success) {
+          emit(UploadFileSuccess());
+        } else {
+          emit(UploadFileError("Upload failed"));
+        }
       }
     });
   }

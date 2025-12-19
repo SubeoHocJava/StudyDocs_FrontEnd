@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/data/library_repository.dart';
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
+import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
 
 import '../../../../core/widgets/bottom_nav.dart';
-import '../../../upload_file/data/impl/upload_file_repository_implement.dart';
+import '../../../upload_file/domain/data/impl/upload_file_repository_implement.dart';
+import '../../../upload_file/domain/usecase/upload_file_usecase.dart';
 import '../../../upload_file/logic/upload_file_bloc.dart';
 import '../../../upload_file/logic/upload_file_event.dart';
 import '../../../upload_file/presentation/screen/upload_file_screen.dart';
@@ -50,7 +52,9 @@ class LibraryScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => BlocProvider(
-                                create: (_) => UploadFileBloc(UpLoadFileRepositoryImpl())
+                                create: (_) => UploadFileBloc(uploadFileUseCase: UploadFileUseCase(
+                                  repository: UpLoadFileRepositoryImpl(),
+                                ))
                                   ..add(UploadFileLoadDocumentByKeyWord("keyword")),
                                 child: UploadFileScreen(),
                               ),
@@ -62,7 +66,7 @@ class LibraryScreen extends StatelessWidget {
                     ),
                     SubjectCategories(state.categories),
                     RecentlyUpload(state.documents),
-                    StoredDocument(state.documents, crossAxisCount: 0,),
+                    StoredDocument(state.documents.cast<DocumentEntity>(), crossAxisCount: 0,),
                   ],
                 ),
               );

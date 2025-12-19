@@ -21,3 +21,47 @@ class FindDocument extends SubjectLibraryEvent{
   @override
   List<Object?> get props => [keyword];
 }
+
+//
+// 2️⃣ Like / Unlike document
+//
+class SubjectLibraryLikeDocument extends SubjectLibraryEvent {
+  final String documentId;
+  const SubjectLibraryLikeDocument(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+//
+// 3️⃣ Mở phần comment của document
+//
+class SubjectLibraryOpenComments extends SubjectLibraryEvent {
+  final String documentId;
+  const SubjectLibraryOpenComments(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+//
+// 4️⃣ Download document
+//
+class SubjectLibraryDownloadDocument extends SubjectLibraryEvent {
+  final String documentId;
+  const SubjectLibraryDownloadDocument(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+//
+// 5️⃣ Đánh dấu (bookmark / save) document
+//
+class SubjectLibraryBookmarkDocument extends SubjectLibraryEvent {
+  final String documentId;
+  const SubjectLibraryBookmarkDocument(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}

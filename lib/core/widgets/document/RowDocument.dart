@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../features/library/data/model/Document.dart';
 
 class RowDocument extends StatelessWidget {
   final List<Document> documents;
-  final int crossAxisCount;
   final double cardWidth;
 
   const RowDocument(
       this.documents, {
-        required this.crossAxisCount,
         required this.cardWidth,
         super.key,
       });
@@ -18,8 +17,8 @@ class RowDocument extends StatelessWidget {
   Widget build(BuildContext context) {
     final responsive = context.responsive;
 
-    // Tính cardHeight dựa trên tỷ lệ 2:3 (width:height = 2:3)
-    final cardHeight = cardWidth*55/45 ;
+
+    final cardHeight = cardWidth ;
 
     return SizedBox(
       height: cardHeight + responsive.heightPercent(10), // thêm khoảng trống cho title
@@ -65,7 +64,7 @@ class MonoDocumentInRow extends StatelessWidget {
           padding: EdgeInsets.all(responsive.isMobile ? 4 : 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black87),
+            border: Border.all(color: AppColors.navy),
           ),
           child: Image.asset(
             "assets/icons/search-icon.png",
@@ -81,6 +80,8 @@ class MonoDocumentInRow extends StatelessWidget {
             document.title,
             style: TextStyle(
               fontSize: responsive.fontSize(14),
+              fontWeight: FontWeight.bold,
+              color: AppColors.profileName,
             ),
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,

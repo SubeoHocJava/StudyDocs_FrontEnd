@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
 import '../../../library/presentation/widget/library_widgets.dart';
+import '../../logic/subject_library_bloc.dart';
+import '../../logic/subject_library_event.dart';
 
 class TitleSubjectLibrary extends StatelessWidget {
   final SubjectLibraryLoaded state;
@@ -61,15 +64,21 @@ class TitleSubjectLibrary extends StatelessWidget {
 
               // Search box responsive
               SizedBox(
-                width: responsive.widthPercent(responsive.isMobile ? 50 : responsive.isTablet ? 30 : 20),
-                height: responsive.heightPercent(5),
+                width: responsive.widthPercent( 60 ),
+                height: 40,
                 child: SearchInput(
                   onSearch: () {
-                    print("Search tapped");
+                   context.read<SubjectLibraryBloc>().add(SubjectLibraryLoadDocumentByKeyWord("keyword"));
                   },
                 ),
               ),
             ],
+          ),
+          SizedBox(height: responsive.heightPercent(2)),
+          // ĐƯỜNG LINE CUỐI
+          Divider(
+            thickness: 1,
+            color: Colors.grey.shade300,
           ),
         ],
       ),

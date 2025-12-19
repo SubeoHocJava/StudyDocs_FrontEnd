@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/library/data/model/Document.dart';
+import 'package:studydocs/features/subject_library/logic/mapper.dart';
 import '../../../../../core/widgets/document/ListDocument.dart';
-import '../../../data/model/Document.dart';
+import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
 
 class StoredDocument extends StatelessWidget {
-  final List<Document> documents;
+  final List<DocumentEntity> documents;
   final int? crossAxisCount;
 
   const StoredDocument(this.documents, {this.crossAxisCount, super.key});
@@ -38,7 +40,7 @@ class StoredDocument extends StatelessWidget {
 
         // ListDocument responsive
         ListDocument(
-          documents,
+          documents.map((e) => e.toUIModel()).toList(),
           crossAxisCount: columns,
         ),
       ],

@@ -39,3 +39,10 @@ class UploadFileError extends UploadFileState {
   @override
   List<Object?> get props => [message];
 }
+
+class UploadFileSuccess extends UploadFileState {
+  const UploadFileSuccess();
+
+  @override
+  List<Object?> get props => [];
+}

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
 
@@ -7,17 +6,25 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Sự kiện load thông tin profile từ API
+/// Load profile lần đầu
 class LoadProfile extends ProfileEvent {
   final int userId;
-
   const LoadProfile(this.userId);
 
   @override
   List<Object?> get props => [userId];
 }
 
-/// Sự kiện update profile
+/// Refresh profile
+class RefreshProfile extends ProfileEvent {
+  final int userId;
+  const RefreshProfile(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+/// Update profile info
 class UpdateProfile extends ProfileEvent {
   final String userName;
   final String fullName;
@@ -27,7 +34,7 @@ class UpdateProfile extends ProfileEvent {
   final DateTime? birthDate;
   final String address;
 
-  const UpdateProfile( {
+  const UpdateProfile({
     required this.userName,
     required this.fullName,
     required this.email,
@@ -40,4 +47,23 @@ class UpdateProfile extends ProfileEvent {
   @override
   List<Object?> get props =>
       [userName, fullName, email, phoneNumber, gender, birthDate, address];
+}
+
+/// Update avatar
+class UpdateAvatar extends ProfileEvent {
+  final String imagePath;
+  const UpdateAvatar(this.imagePath);
+
+  @override
+  List<Object?> get props => [imagePath];
+}
+
+/// Verify email
+class VerifyEmail extends ProfileEvent {
+  const VerifyEmail();
+}
+
+/// Clear one-shot states (success / failure)
+class ClearProfileActionState extends ProfileEvent {
+  const ClearProfileActionState();
 }
