@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:studydocs/data/model/document_model.dart';
 
 abstract class ProfileState extends Equatable {
   const ProfileState();
@@ -26,6 +27,7 @@ class ProfileLoaded extends ProfileState {
   final String address;
   final String? avatarUrl;
   final bool isVerified;
+  final List<DocumentModel>documents;
 
   /// UI flags
   final bool isUpdating;
@@ -43,6 +45,7 @@ class ProfileLoaded extends ProfileState {
     this.avatarUrl,
     this.isVerified = false,
     this.isUpdating = false,
+    required this.documents,
   });
 
   /// copyWith để update từng field
@@ -58,6 +61,7 @@ class ProfileLoaded extends ProfileState {
     String? avatarUrl,
     bool? isVerified,
     bool? isUpdating,
+    List? documents,
   }) {
     return ProfileLoaded(
       id: id,
@@ -72,26 +76,29 @@ class ProfileLoaded extends ProfileState {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       isVerified: isVerified ?? this.isVerified,
       isUpdating: isUpdating ?? this.isUpdating,
+      documents: this.documents,
     );
   }
 
   @override
-  List<Object?> get props => [
-    id,
-    userName,
-    fullName,
-    school,
-    email,
-    phoneNumber,
-    gender,
-    birthDate,
-    address,
-    avatarUrl,
-    isVerified,
-    isUpdating,
-  ];
-}
+  List<Object?> get props =>
+      [
+        id,
+        userName,
+        fullName,
+        school,
+        email,
+        phoneNumber,
+        gender,
+        birthDate,
+        address,
+        avatarUrl,
+        isVerified,
+        isUpdating,
+        documents,
+      ];
 
+}
 
 
 /// Xảy ra lỗi
@@ -103,15 +110,19 @@ class ProfileError extends ProfileState {
   @override
   List<Object?> get props => [message];
 }
+
 class ProfileUpdateSuccess extends ProfileState {
   final String message;
+
   const ProfileUpdateSuccess({this.message = "Cập nhật thành công"});
 
   @override
   List<Object?> get props => [message];
 }
+
 class ProfileUpdateFailure extends ProfileState {
   final String message;
+
   const ProfileUpdateFailure(this.message);
 
   @override

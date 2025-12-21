@@ -12,4 +12,8 @@ abstract class ProfileRepository {
 
   /// Xác thực email
   Future<void> verifyEmail();
+
+  getDocumentsByUser(String id) {}
+
+
 }

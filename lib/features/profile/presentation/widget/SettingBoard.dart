@@ -19,7 +19,7 @@ class _SettingBoardState extends State<SettingBoard> {
   Future<void> _openUpdateDialog() async {
     final ProfileBloc bloc = widget.bloc;
 
-    // ✅ LẤY ROOT CONTEXT (KHÔNG BỊ DISPOSE)
+    // LẤY ROOT CONTEXT (KHÔNG BỊ DISPOSE)
     final BuildContext rootContext =
         Navigator.of(context, rootNavigator: true).context;
 

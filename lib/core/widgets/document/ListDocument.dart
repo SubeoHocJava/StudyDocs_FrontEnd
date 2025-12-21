@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/data/model/document_model.dart';
 
 import '../../../features/library/data/model/Document.dart';
 
+/// =======================
+/// LIST DOCUMENT (DÙNG CHUNG CHO NHIỀU SCREEN)
+/// =======================
 class ListDocument extends StatelessWidget {
-  final List<Document> documents;
-  final int crossAxisCount;
+  final List<DocumentModel> documents;
 
-  const ListDocument(this.documents, {required this.crossAxisCount, super.key});
+  final void Function(DocumentModel)? onDownload;
+  final void Function(DocumentModel)? onSave;
+  final void Function(DocumentModel)? onLike;
+  final void Function(DocumentModel)? onComment;
 
+  const ListDocument(
+      this.documents, {
+        super.key,
+        this.onDownload,
+        this.onSave,
+        this.onLike,
+        this.onComment,
+      });
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
@@ -19,93 +33,86 @@ class ListDocument extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: documents.length,
       itemBuilder: (context, index) {
+        final document = documents[index];
+
         return Padding(
           padding: EdgeInsets.symmetric(
             vertical: responsive.heightPercent(1),
             horizontal: responsive.isMobile ? 12 : 16,
           ),
-          child: MonoDocumentInList(document: documents[index]),
+          child: MonoDocumentInList(
+            document: document,
+            onDownload: onDownload,
+            onSave: onSave,
+          ),
         );
       },
     );
   }
 }
 
-// mỗi document
+/// =======================
+/// CARD DOCUMENT
+/// =======================
 class MonoDocumentInList extends StatelessWidget {
-  final Document document;
+  final DocumentModel document;
 
-  const MonoDocumentInList({super.key, required this.document});
+  final void Function(DocumentModel)? onDownload;
+  final void Function(DocumentModel)? onSave;
+  final void Function(DocumentModel)? onLike;
+  final void Function(DocumentModel)? onComment;
+  const MonoDocumentInList({
+    super.key,
+    required this.document,
+    this.onDownload,
+    this.onSave,
+    this.onLike,
+    this.onComment,
+  });
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    double with_container =
-        responsive.isMobile ? responsive.widthPercent(90) : 500;
+    final double containerWidth =
+    responsive.isMobile ? responsive.widthPercent(90) : 520;
 
     return Container(
-      width: with_container,
-      height: responsive.isMobile ? responsive.heightPercent(25) : 200,
-      padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
-      margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
+      width: containerWidth,
+      height: responsive.isMobile ? responsive.heightPercent(25) : 210,
+      margin: EdgeInsets.symmetric(
+        vertical: responsive.heightPercent(0.5),
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey),
+        border: Border.all(color: Colors.grey.shade400),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
         children: [
-          // Image left
-          Container(
-            width: responsive.isMobile ? responsive.widthPercent(30) : 200,
-            height: responsive.isMobile ? responsive.widthPercent(30) : 200,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: AppColors.navy, // màu viền
-                width: 1, // độ dày viền
-              ),
-              borderRadius: BorderRadius.circular(8), // nếu muốn bo góc
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              // để ảnh bo theo container
-              child: Image.asset(
-                "assets/icons/temp_image.jpg",
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(width: responsive.widthPercent(2)),
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Padding(
+            padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TitleWidget(title: document.title, responsive: responsive),
-                SizedBox(height: responsive.heightPercent(0.5)),
-
-                SubjectWidget(
-                  subject: document.subject,
-                  responsive: responsive,
-                ),
-                SizedBox(height: responsive.heightPercent(0.5)),
-
-                SchoolWidget(school: document.school, responsive: responsive),
-                SizedBox(height: responsive.heightPercent(0.5)),
-
-                PageDateWidget(
-                  pages: document.pages,
-                  date: document.date,
-                  responsive: responsive,
-                ),
-                SizedBox(height: responsive.heightPercent(2)),
-
-                LikeCommentWidget(
-                  likes: document.likes,
-                  comments: document.comments,
-                  responsive: responsive,
+                DocumentImage(responsive: responsive),
+                SizedBox(width: responsive.widthPercent(2)),
+                Expanded(
+                  child:_DocumentInfo(
+                    document: document,
+                    responsive: responsive,
+                    onLike: onLike,
+                    onComment: onComment,
+                  ),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            right: responsive.isMobile ? 8 : 12,
+            bottom: responsive.isMobile ? 8 : 12,
+            child: DownloadSaveGroup(
+              responsive: responsive,
+              onDownload: () => onDownload?.call(document),
+              onSave: () => onSave?.call(document),
             ),
           ),
         ],
@@ -114,29 +121,111 @@ class MonoDocumentInList extends StatelessWidget {
   }
 }
 
-//  Các thành phần trong document
+/// =======================
+/// IMAGE
+/// =======================
+class DocumentImage extends StatelessWidget {
+  final ResponsiveHelper responsive;
+
+  const DocumentImage({super.key, required this.responsive});
+
+  @override
+  Widget build(BuildContext context) {
+    final double size =
+    responsive.isMobile ? responsive.widthPercent(30) : 180;
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.navy, width: 1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          "assets/icons/temp_image.jpg",
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+}
+
+/// =======================
+/// DOCUMENT INFO
+/// =======================
+class _DocumentInfo extends StatelessWidget {
+  final DocumentModel document;
+  final ResponsiveHelper responsive;
+
+  final void Function(DocumentModel)? onLike;
+  final void Function(DocumentModel)? onComment;
+
+  const _DocumentInfo({
+    required this.document,
+    required this.responsive,
+    this.onLike,
+    this.onComment,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TitleWidget(title: document.title, responsive: responsive),
+        SizedBox(height: responsive.heightPercent(0.5)),
+        SubjectWidget(subject: document.category, responsive: responsive),
+        SizedBox(height: responsive.heightPercent(0.5)),
+        SchoolWidget(school: document.institution, responsive: responsive),
+        SizedBox(height: responsive.heightPercent(0.5)),
+        PageDateWidget(
+          pages: 5,
+          date: document.createdAt,
+          responsive: responsive,
+        ),
+        SizedBox(height: responsive.heightPercent(1.5)),
+        LikeCommentWidget(
+          likes: document.likesCount,
+          comments: document.commentsCount,
+          responsive: responsive,
+          onLikeTap: () => onLike?.call(document),
+          onCommentTap: () => onComment?.call(document),
+        ),
+      ],
+    );
+  }
+}
+
+/// =======================
+/// TEXT COMPONENTS
+/// =======================
 class TitleWidget extends StatelessWidget {
   final String title;
   final ResponsiveHelper responsive;
 
-  const TitleWidget({super.key, required this.title, required this.responsive});
+  const TitleWidget({
+    super.key,
+    required this.title,
+    required this.responsive,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: responsive.fontSize(14),
         fontWeight: FontWeight.bold,
       ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
     );
   }
 }
 
 class SubjectWidget extends StatelessWidget {
-  final String subject;
+  final String? subject;
   final ResponsiveHelper responsive;
 
   const SubjectWidget({
@@ -149,15 +238,15 @@ class SubjectWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.folder, size: responsive.fontSize(14), color: Colors.blue),
+        Icon(Icons.folder,
+            size: responsive.fontSize(14), color: Colors.blue),
         SizedBox(width: responsive.widthPercent(1)),
-        Flexible(
+        Expanded(
           child: Text(
-            subject,
-            style: TextStyle(fontSize: responsive.fontSize(12)),
+            subject!,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            softWrap: true,
+            style: TextStyle(fontSize: responsive.fontSize(12)),
           ),
         ),
       ],
@@ -166,7 +255,7 @@ class SubjectWidget extends StatelessWidget {
 }
 
 class SchoolWidget extends StatelessWidget {
-  final String school;
+  final String? school;
   final ResponsiveHelper responsive;
 
   const SchoolWidget({
@@ -185,13 +274,12 @@ class SchoolWidget extends StatelessWidget {
           height: responsive.fontSize(14),
         ),
         SizedBox(width: responsive.widthPercent(1)),
-        Flexible(
+        Expanded(
           child: Text(
-            school,
-            style: TextStyle(fontSize: responsive.fontSize(12)),
+            school!,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            softWrap: true,
+            style: TextStyle(fontSize: responsive.fontSize(12)),
           ),
         ),
       ],
@@ -201,7 +289,7 @@ class SchoolWidget extends StatelessWidget {
 
 class PageDateWidget extends StatelessWidget {
   final int pages;
-  final String date;
+  final String? date;
   final ResponsiveHelper responsive;
 
   const PageDateWidget({
@@ -214,70 +302,115 @@ class PageDateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
       spacing: responsive.widthPercent(2),
-      runSpacing: responsive.heightPercent(1),
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Icon(Icons.file_open_rounded, size: responsive.fontSize(14)),
-        Text(
-          "$pages trang",
-          style: TextStyle(fontSize: responsive.fontSize(12)),
-        ),
-
-        Icon(Icons.calendar_today, size: responsive.fontSize(14)),
-        Text(date, style: TextStyle(fontSize: responsive.fontSize(12))),
+        Icon(Icons.file_open_rounded,
+            size: responsive.fontSize(14)),
+        Text("$pages trang",
+            style: TextStyle(fontSize: responsive.fontSize(12))),
+        Icon(Icons.calendar_today,
+            size: responsive.fontSize(14)),
+        Text(date!,
+            style: TextStyle(fontSize: responsive.fontSize(12))),
       ],
     );
   }
 }
-
-//
+// LikeComment
 class LikeCommentWidget extends StatelessWidget {
-  final int likes;
-  final int comments;
+  final int? likes;
+  final int? comments;
   final ResponsiveHelper responsive;
+
+  /// CALLBACK EVENTS
+  final VoidCallback? onLikeTap;
+  final VoidCallback? onCommentTap;
 
   const LikeCommentWidget({
     super.key,
     required this.likes,
     required this.comments,
     required this.responsive,
+    this.onLikeTap,
+    this.onCommentTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = responsive.fontSize(16);
+
     return Row(
       children: [
-        Icon(
-          Icons.thumb_up_outlined,
-          size: responsive.fontSize(17),
-          color: Colors.black,
-        ),
-        SizedBox(width: responsive.widthPercent(1)),
-        Text("$likes", style: TextStyle(fontSize: responsive.fontSize(15))),
-
-        SizedBox(width: responsive.widthPercent(2)),
-        Icon(Icons.comment, size: responsive.fontSize(17), color: Colors.grey),
-        SizedBox(width: responsive.widthPercent(1)),
-        Text("$comments", style: TextStyle(fontSize: responsive.fontSize(15))),
-
-        SizedBox(width: responsive.widthPercent(4)),
-        IconButton(
-          icon: Icon(Icons.download),
-          iconSize: responsive.fontSize(30),
-          color: Colors.black,
-          onPressed: () {},
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
+        // ===== LIKE =====
+        GestureDetector(
+          onTap: onLikeTap,
+          child: Row(
+            children: [
+              Icon(Icons.thumb_up_outlined, size: iconSize),
+              SizedBox(width: responsive.widthPercent(1)),
+              Text(
+                "$likes",
+                style: TextStyle(fontSize: responsive.fontSize(14)),
+              ),
+            ],
+          ),
         ),
 
-        IconButton(
-          icon: Icon(Icons.bookmark),
-          iconSize: responsive.fontSize(30),
-          color: Colors.yellowAccent,
-          onPressed: () {},
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
+        SizedBox(width: responsive.widthPercent(3)),
+
+        // ===== COMMENT =====
+        GestureDetector(
+          onTap: onCommentTap,
+          child: Row(
+            children: [
+              Icon(Icons.comment,
+                  size: iconSize, color: Colors.grey),
+              SizedBox(width: responsive.widthPercent(1)),
+              Text(
+                "$comments",
+                style: TextStyle(fontSize: responsive.fontSize(14)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+/// =======================
+/// DOWNLOAD + SAVE
+/// =======================
+class DownloadSaveGroup extends StatelessWidget {
+  final ResponsiveHelper responsive;
+  final VoidCallback? onDownload;
+  final VoidCallback? onSave;
+
+  const DownloadSaveGroup({
+    super.key,
+    required this.responsive,
+    this.onDownload,
+    this.onSave,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final iconSize = responsive.fontSize(26);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onDownload,
+          child: Icon(Icons.download_rounded, size: iconSize),
+        ),
+        const SizedBox(width: 6),
+        GestureDetector(
+          onTap: onSave,
+          child: Icon(Icons.bookmark_rounded,
+              size: iconSize + 2, color: Colors.amber),
         ),
       ],
     );

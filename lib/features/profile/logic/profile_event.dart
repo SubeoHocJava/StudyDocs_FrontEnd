@@ -1,4 +1,8 @@
 import 'package:equatable/equatable.dart';
+
+/// =======================
+/// PROFILE EVENT
+/// =======================
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
 
@@ -6,9 +10,14 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// =======================
+/// LOAD / REFRESH PROFILE
+/// =======================
+
 /// Load profile lần đầu
 class LoadProfile extends ProfileEvent {
   final int userId;
+
   const LoadProfile(this.userId);
 
   @override
@@ -18,11 +27,16 @@ class LoadProfile extends ProfileEvent {
 /// Refresh profile
 class RefreshProfile extends ProfileEvent {
   final int userId;
+
   const RefreshProfile(this.userId);
 
   @override
   List<Object?> get props => [userId];
 }
+
+/// =======================
+/// UPDATE PROFILE
+/// =======================
 
 /// Update profile info
 class UpdateProfile extends ProfileEvent {
@@ -45,13 +59,21 @@ class UpdateProfile extends ProfileEvent {
   });
 
   @override
-  List<Object?> get props =>
-      [userName, fullName, email, phoneNumber, gender, birthDate, address];
+  List<Object?> get props => [
+    userName,
+    fullName,
+    email,
+    phoneNumber,
+    gender,
+    birthDate,
+    address,
+  ];
 }
 
 /// Update avatar
 class UpdateAvatar extends ProfileEvent {
   final String imagePath;
+
   const UpdateAvatar(this.imagePath);
 
   @override
@@ -63,7 +85,56 @@ class VerifyEmail extends ProfileEvent {
   const VerifyEmail();
 }
 
-/// Clear one-shot states (success / failure)
+/// =======================
+/// DOCUMENT ACTION EVENTS
+/// (TỪ ListDocument CALLBACK)
+/// =======================
+
+/// Download document
+class DownloadDocumentRequested extends ProfileEvent {
+  final String documentId;
+
+  const DownloadDocumentRequested(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+/// Save document
+class SaveDocumentRequested extends ProfileEvent {
+  final String documentId;
+
+  const SaveDocumentRequested(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+/// Like document
+class LikeDocumentRequested extends ProfileEvent {
+  final String documentId;
+
+  const LikeDocumentRequested(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+/// Open comment screen / bottom sheet
+class OpenCommentRequested extends ProfileEvent {
+  final String documentId;
+
+  const OpenCommentRequested(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
+/// =======================
+/// CLEAR ONE-SHOT STATE
+/// =======================
+
+/// Clear success / failure / toast state
 class ClearProfileActionState extends ProfileEvent {
   const ClearProfileActionState();
 }
