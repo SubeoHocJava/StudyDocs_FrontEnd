@@ -106,10 +106,3 @@ void _showSettingBoard(BuildContext context){
     builder: (context) => SettingBoard(bloc: bloc),
   );
 }
-void _showUpdateForm(BuildContext context) {
-  final bloc=context.read<ProfileBloc>();
-  showDialog(
-    context: context,
-    builder: (context) => UpdateInforDialog(bloc: bloc),
-  );
-}

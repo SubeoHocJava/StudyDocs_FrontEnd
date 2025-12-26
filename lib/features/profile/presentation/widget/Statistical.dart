@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
 import '../../logic/profile_state.dart';
 
-
 class Statistical extends StatelessWidget {
   final ProfileLoaded state;
-  const Statistical({super.key,  required this.state});
+
+  const Statistical({super.key, required this.state});
+
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
 
-    const numFollowMe = 1;
-    const numMeFollow = 1;
+    int numFollowMe = state.numFollowMe;
+    int numMeFollow = state.numMeFollow;
+
+    int numMyUpload=state.numMyUpload;
+    int numMyLikes=state.numMyLikes;
+    int numMyComment=state.numMyComment;
 
     // responsive width theo thiết bị
     final leftWidth = responsive.responsiveValue(
@@ -45,7 +51,10 @@ class Statistical extends StatelessWidget {
               // LEFT BLOCK
               Container(
                 width: leftWidth,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
                 decoration: const BoxDecoration(
                   color: Colors.greenAccent,
                   borderRadius: BorderRadius.only(
@@ -65,16 +74,15 @@ class Statistical extends StatelessWidget {
               ),
 
               // DIVIDER
-              Container(
-                width: 2,
-                height: dividerHeight,
-                color: Colors.black,
-              ),
+              Container(width: 2, height: dividerHeight, color: Colors.black),
 
               // RIGHT BLOCK
               Container(
                 width: rightWidth,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
                 decoration: const BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.only(
@@ -97,7 +105,7 @@ class Statistical extends StatelessWidget {
           ),
 
           const SizedBox(height: 20),
-          const ActivityStatistics(),
+          ActivityStatistics(numMyUpload: numMyUpload, numMyLikes: numMyLikes, numMyComment: numMyComment,),
         ],
       ),
     );
@@ -105,15 +113,86 @@ class Statistical extends StatelessWidget {
 }
 
 class ActivityStatistics extends StatelessWidget {
-  const ActivityStatistics({super.key});
+  final int numMyUpload;
+  final int numMyLikes;
+  final int numMyComment;
+  const ActivityStatistics({super.key, required this.numMyUpload, required this.numMyLikes, required this.numMyComment});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      "Chưa có dữ liệu hoạt động",
-      style: TextStyle(
-        fontSize: context.responsive.fontSize(14),
-        color: Colors.grey,
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey, // màu border
+          width: 1, // độ dày
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Thống kê hoạt động",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          IntrinsicHeight(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                     numMyUpload.toString(),
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text("Đăng tải"),
+                  ],
+                ),
+
+                const VerticalDivider(color: Colors.grey, thickness: 1),
+
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                     numMyLikes.toString(),
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text("Lượt thích"),
+                  ],
+                ),
+
+                const VerticalDivider(color: Colors.grey, thickness: 1),
+
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      numMyComment.toString(),
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text("Bình luận"),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

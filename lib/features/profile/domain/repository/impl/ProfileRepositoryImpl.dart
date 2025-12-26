@@ -2,70 +2,46 @@ import 'dart:async';
 
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
-
-import '../../../../../data/model/document_model.dart';
+import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
 
-
-  final  List<DocumentModel> _mockDocuments = [
-    DocumentModel(
+  final List<DocumentProfile> _mockDocuments = [
+    DocumentProfile(
       id: 'doc_1',
       title: 'Lập trình Flutter cơ bản',
-      description: 'Tài liệu nhập môn Flutter',
-      author: 'Lâm Bảo Duy',
-      authorId: '1',
-      thumbnailUrl: 'https://picsum.photos/200/300',
       category: 'Mobile',
       institution: 'ĐH Công Nghệ Thông Tin',
-      pageCount: 120,
-      academicYear: '2024',
-      viewCount: 1500,
-      downloadCount: 320,
+      pages: 120,
+      createdAt: '2025-01-01',
       likesCount: 45,
       commentsCount: 10,
-      rating: 4.5,
-      createdAt: '2025-01-01',
-      fileType: 'PDF',
+      thumbnailUrl: 'https://picsum.photos/200/300',
     ),
-    DocumentModel(
+    DocumentProfile(
       id: 'doc_2',
       title: 'Java OOP nâng cao',
-      description: 'Nguyên lý OOP trong Java',
-      author: 'Lâm Bảo Duy',
-      authorId: '1',
-      thumbnailUrl: 'https://picsum.photos/200/301',
       category: 'Backend',
       institution: 'ĐH Công Nghệ Thông Tin',
-      pageCount: 200,
-      academicYear: '2023',
-      viewCount: 2300,
-      downloadCount: 540,
+      pages: 200,
+      createdAt: '2025-02-10',
       likesCount: 78,
       commentsCount: 22,
-      rating: 4.7,
-      createdAt: '2025-02-10',
-      fileType: 'PDF',
+      thumbnailUrl: 'https://picsum.photos/200/301',
     ),
-    DocumentModel(
+    DocumentProfile(
       id: 'doc_3',
       title: 'Cấu trúc dữ liệu & Giải thuật',
-      description: 'Tài liệu CTDL GT',
-      author: 'Lâm Bảo Duy',
-      authorId: '1',
       category: 'Computer Science',
       institution: 'ĐH Công Nghệ Thông Tin',
-      pageCount: 300,
-      viewCount: 3200,
-      downloadCount: 870,
+      pages: 300,
+      createdAt: '2025-03-15',
       likesCount: 120,
       commentsCount: 35,
-      rating: 4.9,
-      createdAt: '2025-03-15',
-      fileType: 'PDF',
+      thumbnailUrl: 'https://picsum.photos/200/302',
     ),
   ];
-  /// Fake profile data
+
   ProfileEntity _mockProfile = ProfileEntity(
     id: '1',
     username: 'lamduy',
@@ -78,11 +54,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
     address: 'TP. Hồ Chí Minh',
     avatarUrl: 'https://i.pravatar.cc/150?img=3',
     isVerified: false,
-
   );
+
   @override
   Future<ProfileEntity> getProfile(int userId) async {
-    // giả lập delay gọi API
     await Future.delayed(const Duration(milliseconds: 800));
     return _mockProfile;
   }
@@ -98,7 +73,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<String> updateAvatar(String imagePath) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // giả lập upload thành công → trả URL mới
     _mockProfile = ProfileEntity(
       id: _mockProfile.id,
       username: _mockProfile.username,
@@ -134,8 +108,9 @@ class ProfileRepositoryImpl extends ProfileRepository {
       isVerified: true,
     );
   }
-  @override
-  List<DocumentModel> getDocumentsByUser(String id) {
-    return _mockDocuments;}
-}
 
+  @override
+  List<DocumentProfile> getDocumentsByUser(String id) {
+    return _mockDocuments;
+  }
+}

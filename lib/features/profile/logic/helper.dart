@@ -1,7 +1,6 @@
 import 'package:studydocs/features/profile/logic/profile_state.dart';
-
-import '../../../data/model/document_model.dart';
 import '../../../data/model/user.dart';
+import '../domain/model/document_profile.dart';
 import '../domain/model/profile_entity.dart';
 
 class HelperMap {
@@ -9,7 +8,7 @@ class HelperMap {
 
   static ProfileLoaded mapProfileToLoaded({
     required ProfileEntity profile,
-    required List<DocumentModel> documents,
+    required List<DocumentProfile> documents,
   }) {
     return ProfileLoaded(
       id: profile.id,
@@ -41,7 +40,7 @@ class HelperMap {
       birthDate: user.dateOfBirth,
       address: user.address,
       avatarUrl: user.avatarUrl,
-      isVerified: false, // UserDTO không có
+      isVerified: false,
     );
   }
 }

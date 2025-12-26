@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/widgets/header.dart';
+import 'package:studydocs/features/library/domain/model/document_library.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
 
-import '../../../library/presentation/widget/stored_document/stored_document.dart';
+import '../../../library/presentation/widget/stored_document.dart';
 import '../../domain/data/impl/SubjectLibraryRepositoryImpl.dart';
 import '../../logic/subject_library_bloc.dart';
 import '../../logic/subject_library_event.dart';
@@ -62,7 +63,7 @@ class SubjectLibraryScreen extends StatelessWidget {
                     MostLikeDocs(state.the_most_liked_docs),
                     SizedBox(height: responsive.heightPercent(3)),
                     // Tài liệu đã lưu
-                    StoredDocument(state.documents),
+                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
                   ],
                 ),
               );

@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/features/library/data/model/Document.dart';
-import 'package:studydocs/features/subject_library/logic/mapper.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
-import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
+import '../../domain/ui_model/doc_subject_lib_ui.dart';
+
+
 
 class MostLikeDocs extends StatelessWidget {
-  final List<DocumentEntity> documents;
+  final List<DocumentSubjectLibUI> documents;
   final int? crossAxisCount;
 
   const MostLikeDocs(this.documents, {this.crossAxisCount, super.key});
@@ -43,7 +43,7 @@ class MostLikeDocs extends StatelessWidget {
 
         // RowDocument responsive
         RowDocument(
-          documents.map((e) => e.toUIModel()).toList(),
+          documents,
           cardWidth: responsive.getCardWidth(columns: columns),
         ),
       ],

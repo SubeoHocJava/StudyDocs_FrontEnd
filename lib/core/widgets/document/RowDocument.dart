@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import '../../../features/library/data/model/Document.dart';
+import 'package:studydocs/data/model/document_model.dart';
+
+import 'model/row_document_ui.dart';
+
 
 class RowDocument extends StatelessWidget {
-  final List<Document> documents;
+  final List<RowDocumentItem > documents;
   final double cardWidth;
 
   const RowDocument(
@@ -38,7 +41,7 @@ class RowDocument extends StatelessWidget {
 }
 
 class MonoDocumentInRow extends StatelessWidget {
-  final Document document;
+  final RowDocumentItem document;
   final double cardWidth;
   final double cardHeight;
 

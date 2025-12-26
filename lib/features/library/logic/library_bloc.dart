@@ -1,66 +1,101 @@
-import "package:file_picker/file_picker.dart";
-import "package:flutter_bloc/flutter_bloc.dart";
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
+import '../domain/usecase/load_document_usecase.dart';
+import '../domain/usecase/search_document_usecase.dart';
+import '../domain/usecase/download_document_usecase.dart';
+import '../domain/usecase/save_document_usecase.dart';
+import '../domain/usecase/like_document_usecase.dart';
 
-import "../data/library_repository.dart";
-import "LibraryEvent.dart";
-import "LibraryState.dart";
+import 'LibraryEvent.dart';
+import 'LibraryState.dart';
 
-/// ProfileBloc quản lý logic load/update dữ liệu
 class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
-  final LibraryRepository repository;
+  final LoadDocumentUseCase loadDocumentUseCase;
+  final SearchDocumentUseCase searchDocumentUseCase;
+  final DownloadDocumentUseCase downloadDocumentUseCase;
+  final SaveDocumentUseCase saveDocumentUseCase;
+  final LikeDocumentUseCase likeDocumentUseCase;
 
-  LibraryBloc(this.repository) : super(LibraryInitial()) {
-    // Xử lý sự kiện LoadDocument theo keyword
-    on<LoadDocumentByKeyWord>((event, emit) async {
-          emit(LibraryLoading());
-          try {
-            final documents = await repository.getDocdemo();
-            final categories= await repository.getCategorieDemo();
-            emit(LibraryLoaded(documents,categories,null));
-          } catch (e) {
-            emit(LibraryError(e.toString()));
-          }
-        });
-    //   Xử lý sự kiện SearchDocument
-    on<SearchDocument>((event,emit)async{
+
+  LibraryBloc({
+    required this.loadDocumentUseCase,
+    required this.searchDocumentUseCase,
+    required this.downloadDocumentUseCase,
+    required this.saveDocumentUseCase,
+    required this.likeDocumentUseCase,
+
+  }) : super(LibraryInitial()) {
+    on<LoadDocumentByKeyWord>(_onLoadDocument);
+    on<SearchDocument>(_onSearchDocument);
+    on<DownloadDocumentRequested>(_onDownloadDocument);
+    on<SaveDocumentRequested>(_onSaveDocument);
+    on<LikeDocumentRequested>(_onLikeDocument);
+  }
+
+  Future<void> _onLoadDocument(
+      LoadDocumentByKeyWord event,
+      Emitter<LibraryState> emit,
+      ) async {
     emit(LibraryLoading());
     try {
-      final documents = await repository.searchDocument(event.keyword);
-      final categories= await repository.getCategorieDemo();
-      emit(LibraryLoaded(documents,categories,null));
+      final result = await loadDocumentUseCase(event.keyword);
+      List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+      emit(LibraryLoaded(
+        documents: result,
+        categories:cate
+      ));
     } catch (e) {
       emit(LibraryError(e.toString()));
     }
-    });
-  //   Xử lý sự kiện pick file
-  //   on<UpLoadDocument>((event,emit)async{
-  //     emit(LibraryLoading());
-  //     try {
-  //       final documents = await repository.searchDocument(event.keyword);
-  //       final categories= await repository.getCategorieDemo();
-  //       emit(LibraryLoaded(documents,categories));
-  //     } catch (e) {
-  //       emit(LibraryError(e.toString()));
-  //     }
-  //   });
-
-  //     Xử lý sự kiện pick file
-    on<PickDocument>((event,emit)async{
-
-      emit(LibraryLoading());
-      try {
-        final documents = await repository.getDocdemo();
-        final categories= await repository.getCategorieDemo();
-        final result = await FilePicker.platform.pickFiles(type: FileType.any);
-        if (result != null && result.files.isNotEmpty) {
-          final pickedFile = result.files.single;
-          // emit state kèm file đã chọn
-          emit(LibraryLoaded(documents, categories, pickedFile));}
-        else{emit(LibraryLoaded(documents,categories,null));}
-      } catch (e) {
-        emit(LibraryError(e.toString()));
-      }
-    });
   }
 
+  Future<void> _onSearchDocument(
+      SearchDocument event,
+      Emitter<LibraryState> emit,
+      ) async {
+    emit(LibraryLoading());
+    try {
+      final result = await searchDocumentUseCase(event.keyword);
+      List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+      emit(LibraryLoaded(
+        documents: result,
+        categories: cate,
+      ));
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
+  }
+
+  Future<void> _onDownloadDocument(
+      DownloadDocumentRequested event,
+      Emitter<LibraryState> emit,
+      ) async {
+    try {
+      await downloadDocumentUseCase(event.documentId);
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
+  }
+
+  Future<void> _onSaveDocument(
+      SaveDocumentRequested event,
+      Emitter<LibraryState> emit,
+      ) async {
+    try {
+      await saveDocumentUseCase(event.documentId);
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
+  }
+
+  Future<void> _onLikeDocument(
+      LikeDocumentRequested event,
+      Emitter<LibraryState> emit,
+      ) async {
+    try {
+      await likeDocumentUseCase(event.documentId);
+    } catch (e) {
+      emit(LibraryError(e.toString()));
+    }
+  }
 }

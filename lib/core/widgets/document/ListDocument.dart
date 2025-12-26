@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/data/model/document_model.dart';
+import 'model/list_document_ui.dart';
 
-import '../../../features/library/data/model/Document.dart';
-
-/// =======================
-/// LIST DOCUMENT (DÙNG CHUNG CHO NHIỀU SCREEN)
-/// =======================
 class ListDocument extends StatelessWidget {
-  final List<DocumentModel> documents;
+  final List<DocumentUiList> documents;
 
-  final void Function(DocumentModel)? onDownload;
-  final void Function(DocumentModel)? onSave;
-  final void Function(DocumentModel)? onLike;
-  final void Function(DocumentModel)? onComment;
+  final void Function(DocumentUiList)? onDownload;
+  final void Function(DocumentUiList)? onSave;
+  final void Function(DocumentUiList)? onLike;
+  final void Function(DocumentUiList)? onComment;
 
   const ListDocument(
       this.documents, {
@@ -55,12 +50,12 @@ class ListDocument extends StatelessWidget {
 /// CARD DOCUMENT
 /// =======================
 class MonoDocumentInList extends StatelessWidget {
-  final DocumentModel document;
+  final DocumentUiList document;
 
-  final void Function(DocumentModel)? onDownload;
-  final void Function(DocumentModel)? onSave;
-  final void Function(DocumentModel)? onLike;
-  final void Function(DocumentModel)? onComment;
+  final void Function(DocumentUiList)? onDownload;
+  final void Function(DocumentUiList)? onSave;
+  final void Function(DocumentUiList)? onLike;
+  final void Function(DocumentUiList)? onComment;
   const MonoDocumentInList({
     super.key,
     required this.document,
@@ -156,11 +151,11 @@ class DocumentImage extends StatelessWidget {
 /// DOCUMENT INFO
 /// =======================
 class _DocumentInfo extends StatelessWidget {
-  final DocumentModel document;
+  final DocumentUiList document;
   final ResponsiveHelper responsive;
 
-  final void Function(DocumentModel)? onLike;
-  final void Function(DocumentModel)? onComment;
+  final void Function(DocumentUiList)? onLike;
+  final void Function(DocumentUiList)? onComment;
 
   const _DocumentInfo({
     required this.document,

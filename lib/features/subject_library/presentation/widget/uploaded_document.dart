@@ -1,15 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/features/library/data/model/Document.dart';
-import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
-import 'package:studydocs/features/subject_library/logic/mapper.dart';
-
-
 import '../../../../core/widgets/document/RowDocument.dart';
+import '../../domain/ui_model/doc_subject_lib_ui.dart';
 
 
 class UploadDocument extends StatelessWidget {
-  final List<DocumentEntity> docs;
+  final List<DocumentSubjectLibUI> docs;
 
   // crossAxisCount và cardWidth sẽ nhận từ parent (responsive)
   final double? cardWidth;
@@ -44,7 +40,7 @@ class UploadDocument extends StatelessWidget {
 
         // RowDocument: có thể truyền crossAxisCount, cardWidth để responsive
         RowDocument(
-          docs.map((e) => e.toUIModel()).toList(),
+          docs,
           cardWidth:
               cardWidth ??
               responsive.getCardWidth(

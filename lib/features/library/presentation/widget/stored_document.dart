@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/features/library/data/model/Document.dart';
-import 'package:studydocs/features/subject_library/logic/mapper.dart';
-import '../../../../../core/widgets/document/ListDocument.dart';
-import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
+import 'package:studydocs/features/library/domain/model/document_library.dart';
+import '../../../../core/widgets/document/ListDocument.dart';
+import '../../logic/LibraryEvent.dart';
+import '../../logic/library_bloc.dart';
 
 class StoredDocument extends StatelessWidget {
-  final List<DocumentEntity> documents;
+  final List<DocumentLibraryUI> documents;
   final int? crossAxisCount;
 
   const StoredDocument(this.documents, {this.crossAxisCount, super.key});
@@ -37,12 +39,22 @@ class StoredDocument extends StatelessWidget {
           ),
         ),
         SizedBox(height: responsive.heightPercent(1)),
-
         // ListDocument responsive
-        // ListDocument(
-        //   documents.map((e) => e.toUIModel()).toList(),
-        //   crossAxisCount: columns,
-        // ),
+        ListDocument(
+          documents.cast<DocumentUiList>(),
+          onDownload: (doc) {
+            context.read<LibraryBloc>().add(DownloadDocumentRequested(doc.id));
+          },
+          onSave: (doc) {
+            context.read<LibraryBloc>().add(SaveDocumentRequested(doc.id));
+          },
+          onLike: (doc) {
+            context.read<LibraryBloc>().add(LikeDocumentRequested(doc.id));
+          },
+          onComment: (doc) {
+            context.read<LibraryBloc>().add(OpenCommentRequested(doc.id));
+          },
+        ),
       ],
     );
   }

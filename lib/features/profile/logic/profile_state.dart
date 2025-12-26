@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:studydocs/data/model/document_model.dart';
 
+import '../domain/model/document_profile.dart';
+
 abstract class ProfileState extends Equatable {
   const ProfileState();
 
@@ -27,7 +29,12 @@ class ProfileLoaded extends ProfileState {
   final String address;
   final String? avatarUrl;
   final bool isVerified;
-  final List<DocumentModel>documents;
+  final int numFollowMe;
+  final int numMeFollow;
+  final int numMyUpload;
+  final int numMyLikes;
+  final int numMyComment;
+  final List<DocumentProfile>documents;
 
   /// UI flags
   final bool isUpdating;
@@ -45,6 +52,11 @@ class ProfileLoaded extends ProfileState {
     this.avatarUrl,
     this.isVerified = false,
     this.isUpdating = false,
+    this.numFollowMe=0,
+    this.numMeFollow=0,
+    this.numMyUpload=4,
+    this.numMyLikes=2,
+    this.numMyComment=15,
     required this.documents,
   });
 

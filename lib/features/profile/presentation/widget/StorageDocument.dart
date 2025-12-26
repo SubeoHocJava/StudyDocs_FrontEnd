@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/ListDocument.dart';
 import '../../../../data/model/document_model.dart';
+import '../../domain/model/document_profile.dart';
 import '../../logic/profile_bloc.dart';
 import '../../logic/profile_event.dart';
 import '../../logic/profile_state.dart';
@@ -14,7 +16,7 @@ class StorageDocument extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DocumentModel> documents = state.documents;
+    List<DocumentProfile> documents = state.documents;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +29,7 @@ class StorageDocument extends StatelessWidget {
           ),
         ),
         ListDocument(
-          documents,
+          documents.cast<DocumentUiList>(),
           onDownload: (doc) {
             context.read<ProfileBloc>().add(DownloadDocumentRequested(doc.id));
           },

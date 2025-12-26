@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import '../../../data/model/Document.dart';
-import '../../../../../core/widgets/document/RowDocument.dart';
+import '../../../../core/widgets/document/RowDocument.dart';
+import '../../domain/model/document_library.dart';
 
 class RecentlyUpload extends StatelessWidget {
-  final List<Document> documents;
+  final List<DocumentLibraryUI> documents;
 
   const RecentlyUpload(this.documents, {super.key});
 

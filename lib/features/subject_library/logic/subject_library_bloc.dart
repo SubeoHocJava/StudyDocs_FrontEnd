@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/subject_library/domain/entity/DocumentEntity.dart';
-import '../../../features/library/data/model/Document.dart';
 import '../domain/usecase/DocsUseCase.dart';
 import 'subject_library_event.dart';
 import 'subject_library_state.dart';
@@ -30,7 +28,7 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
 
       try {
         final docs = await searchDocumentsUseCase(event.keyword);
-
+        print(docs.length);
         emit(
           SubjectLibraryLoaded(
             event.keyword,   // subject

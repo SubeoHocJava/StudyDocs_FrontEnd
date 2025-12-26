@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 
-import '../../library/data/model/File.dart';
+
 
 
 abstract class UploadFileState extends Equatable {

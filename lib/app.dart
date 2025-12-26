@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
             themeMode: themeController.mode,
 
             // màn hình đầu tiên khi mở app
-            home: ProfileScreen()
+            home: LibraryScreen()
             // BlocProvider(
             //   create: (context) => createHomeBloc(),
             //   child: const HomePage(),

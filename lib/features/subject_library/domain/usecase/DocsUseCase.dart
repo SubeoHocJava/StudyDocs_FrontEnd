@@ -1,7 +1,8 @@
 
 import '../data/subject_library_repository.dart';
-import '../entity/CommentEntity.dart';
-import '../entity/DocumentEntity.dart';
+import '../ui_model/CommentEntity.dart';
+import '../ui_model/doc_subject_lib_ui.dart';
+
 
 
 //
@@ -12,7 +13,7 @@ class SearchDocumentsUseCase {
 
   SearchDocumentsUseCase({required this.repository});
 
-  Future<List<DocumentEntity>> call(String query) async {
+  Future<List<DocumentSubjectLibUI>> call(String query) async {
     return await repository.searchDocuments(query);
   }
 }
