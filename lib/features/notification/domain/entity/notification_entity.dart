@@ -21,6 +21,10 @@ class NotificationEntity {
     this.deletedAt,
   });
 
+  bool isDeleted() {
+    return deletedAt != null;
+  }
+
   String timeAgo() {
     final now = DateTime.now();
     final diff = now.difference(receivedAt);
@@ -41,7 +45,11 @@ class NotificationEntity {
   String formattedCreatedTime() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final createdDay = DateTime(receivedAt.year, receivedAt.month, receivedAt.day);
+    final createdDay = DateTime(
+      receivedAt.year,
+      receivedAt.month,
+      receivedAt.day,
+    );
     final yesterday = today.subtract(const Duration(days: 1));
 
     if (createdDay == today) {
@@ -55,6 +63,12 @@ class NotificationEntity {
     }
   }
 
+  String formatDeletedTime() {
+    // Trả về ngày xóa theo format dd/MM/yyyy; nếu deletedAt null trả chuỗi rỗng
+    if (deletedAt == null) return '';
+    return "${deletedAt!.day.toString().padLeft(2, '0')}/${deletedAt!.month.toString().padLeft(2, '0')}/${deletedAt!.year}";
+  }
+
   NotificationEntity copyWith({
     String? id,
     String? sender,
@@ -63,7 +77,7 @@ class NotificationEntity {
     bool? isRead,
     String? type,
     DateTime? receivedAt,
-    DateTime? deletedAt
+    DateTime? deletedAt,
   }) {
     return NotificationEntity(
       id: id ?? this.id,
@@ -73,16 +87,20 @@ class NotificationEntity {
       isRead: isRead ?? this.isRead,
       type: type ?? this.type,
       receivedAt: receivedAt ?? this.receivedAt,
-      deletedAt: deletedAt
+      deletedAt: deletedAt,
     );
   }
-  static NotificationEntity fromModel(Notification model){
-    return  NotificationEntity(id: model.id, sender: model.sender, subject: model.subject, body: model.body, type: model.type, receivedAt: model.receivedAt);
-  }
 
-  String formatDeletedTime() {
-    // Trả về ngày xóa theo format dd/MM/yyyy; nếu deletedAt null trả chuỗi rỗng
-    if (deletedAt == null) return '';
-    return "${deletedAt!.day.toString().padLeft(2, '0')}/${deletedAt!.month.toString().padLeft(2, '0')}/${deletedAt!.year}";
+  static NotificationEntity fromModel(Notification model) {
+    return NotificationEntity(
+      id: model.id,
+      sender: model.senderId,
+      subject: model.subject,
+      body: model.body,
+      isRead: model.isRead,
+      type: model.type,
+      receivedAt: model.receivedAt,
+      deletedAt: model.deletedAt,
+    );
   }
 }

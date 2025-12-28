@@ -30,6 +30,7 @@ class NotificationLayoutHelper {
         desktop: 64.0,
       ),
       fontSize: responsive.fontSize(14.0),
+      metaFontSize: responsive.fontSize(12.0),
     );
   }
 }
@@ -40,6 +41,7 @@ class NotificationLayoutValues {
   final double spacing;
   final double iconSize;
   final double fontSize;
+  final double metaFontSize;
 
   const NotificationLayoutValues({
     required this.horizontalPadding,
@@ -47,6 +49,7 @@ class NotificationLayoutValues {
     required this.spacing,
     required this.iconSize,
     required this.fontSize,
+    required this.metaFontSize,
   });
 }
 

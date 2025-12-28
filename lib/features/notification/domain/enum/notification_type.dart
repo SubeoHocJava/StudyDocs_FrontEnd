@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../../core/constants/app_icons.dart';
 
-// Lưu cấu hình mỗi loại notification (mã type, màu nền avatar, đường dẫn icon).
+// Lưu cấu hình mỗi loại notification
 class NotificationTypeStore {
   static NotificationType like = NotificationType(
     "LIKE",
@@ -21,7 +21,7 @@ class NotificationTypeStore {
     download.type: download,
   };
 
-  // Lấy cấu hình từ chuỗi type (case-insensitive). Nếu không tìm thấy trả null.
+  // Lấy cấu hình từ chuỗi type. Nếu không tìm thấy trả null.
   static NotificationType? fromType(String type) {
     return types[type.toUpperCase()];
   }

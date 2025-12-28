@@ -1,8 +1,8 @@
-import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/notification_repository.dart';
 
 /// UseCase: Đánh dấu tất cả notification là đã đọc
 class MarkAllAsReadUseCase {
-  final NotificationRepositoryImpl repository;
+  final NotificationRepository repository;
 
   MarkAllAsReadUseCase(this.repository);
 

@@ -27,12 +27,12 @@ class UploadBox extends StatelessWidget {
           ),
           child: Column(
             children: const [
-              AppIconButton(
-                assetPath: AppAssets.upload,
-                onPressed: null, // hiển thị như một “icon” tĩnh
-                size: 30,
-                color: AppColors.headerFg,
-              ),
+              // AppIconButton(
+              //   assetPath: AppAssets.upload,
+              //   onPressed: null, // hiển thị như một “icon” tĩnh
+              //   size: 30,
+              //   color: AppColors.headerFg,
+              // ),
               SizedBox(height: 8),
               Text(
                 'Đăng tải bài giảng, tài liệu, khoá học, đề thi, ...',

@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = 'https://api.studydocs.com/api/v1';
+  static const String baseUrl = 'http://192.168.1.56:8087/api/v1/';
 
   // Endpoints
   static const String documents = '/documents';

@@ -35,11 +35,11 @@ class DocItemVertical extends StatelessWidget {
             Container(
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.headerBg,
+                color: AppColors.headerBackground,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
-              child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerFg),
+              child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerForeground),
             ),
             const SizedBox(height: 8),
             Text(
@@ -67,7 +67,7 @@ class DocItemVertical extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
                 AppIconButton(assetPath: AppAssets.like,     onPressed: null, size: 20),
-                AppIconButton(assetPath: AppAssets.cmt,      onPressed: null, size: 20),
+                // AppIconButton(assetPath: AppAssets.cmt,      onPressed: null, size: 20),
                 AppIconButton(assetPath: AppAssets.download, onPressed: null, size: 20),
                 AppIconButton(assetPath: AppAssets.saved,    onPressed: null, size: 20),
               ],

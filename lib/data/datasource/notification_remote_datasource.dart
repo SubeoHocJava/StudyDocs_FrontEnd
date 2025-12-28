@@ -1,19 +1,29 @@
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/model/cursor_pagination_result.dart';
 import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/data/model/notification_metadata.dart';
 
 abstract interface class NotificationDataSource {
-  Future<List<Notification>> getNotifications(
-    DateTime receivedAt,
+  Future<CursorPaginationResult<Notification>> getNotifications(
+    dynamic cursor,
     bool isDeleted,
   );
 
+  Future<int> getUnreadCount();
+
   Future<void> markAsRead(String notificationId);
 
-  Future<void> softDelete(String notificationId);
+  Future<void> softDelete(List<String> notificationIds);
 
-  Future<void> hardDelete(String notificationId);
+  Future<void> hardDelete(List<String> notificationIds);
 
   Future<void> markAllAsRead();
+
+  Future<void> restore(List<String> notificationIds);
+
+  Future<List<NotificationMetadata>> getMetadata();
+
+  Future<void> registerFcmToken(String token);
 }
 
 class NotificationDataSourceImpl implements NotificationDataSource {
@@ -23,37 +33,77 @@ class NotificationDataSourceImpl implements NotificationDataSource {
   NotificationDataSourceImpl({required this.dioClient});
 
   @override
-  Future<List<Notification>> getNotifications(
-    DateTime receivedAt,
+  Future<CursorPaginationResult<Notification>> getNotifications(
+    dynamic cursor,
     bool isDeleted,
   ) async {
+    final Map<String, dynamic> queryParams = {
+        "isDeleted": isDeleted,
+        "limit": 10,
+    };
+    if (cursor != null) {
+      queryParams['cursor'] = cursor;
+    }
+
     final apiResponse = await dioClient.get(
       path,
-      queryParameters: {"isDeleted": isDeleted, "limit": 10},
+      queryParameters: queryParams,
     );
-    final list = apiResponse.data as List;
 
-    return list.map((e) => Notification.fromJson(e)).toList();
+    return CursorPaginationResult.fromJson(
+      apiResponse.data,
+      (json) => Notification.fromJson(json as Map<String, dynamic>),
+    );
   }
 
   @override
-  Future<void> softDelete(String notificationId) async {
-    dioClient.delete("$path/$notificationId/soft");
+  Future<int> getUnreadCount() async {
+    final apiResponse = await dioClient.get("$path/count-unread");
+    return apiResponse.data is int
+        ? apiResponse.data
+        : int.parse(apiResponse.data.toString());
   }
 
   @override
-  Future<void> hardDelete(String notificationId) async {
-    dioClient.delete("$path/$notificationId/hard");
+  Future<void> softDelete(List<String> notificationIds) async {
+    await dioClient.delete("$path/soft", data: {"notificationIds": notificationIds});
+  }
 
+  @override
+  Future<void> hardDelete(List<String> notificationIds) async {
+    await dioClient.delete("$path/hard", data: {"notificationIds": notificationIds});
   }
 
   @override
   Future<void> markAsRead(String notificationId) async {
-    dioClient.patch("$path/$notificationId/read");
+    await dioClient.patch("$path/$notificationId/read");
   }
 
   @override
   Future<void> markAllAsRead() async {
-    dioClient.patch("$path/read-all");
+    await dioClient.patch("$path/read-all");
+  }
+
+  @override
+  Future<void> restore(List<String> notificationIds) async {
+    await dioClient.patch(
+      "$path/restore",
+      data: {"notificationIds": notificationIds},
+    );
+  }
+
+  @override
+  Future<List<NotificationMetadata>> getMetadata() async {
+    final apiResponse = await dioClient.get("$path/metadata");
+    final list = apiResponse.data as List;
+    return list.map((e) => NotificationMetadata.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> registerFcmToken(String token) async {
+    await dioClient.post(
+      "$path/user-profiles/fcm-tokens",
+      data: {"fcmToken": token},
+    );
   }
 }

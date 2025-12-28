@@ -1,4 +1,4 @@
-import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/notification_repository.dart';
 
 /// UseCase: Đánh dấu một notification là đã đọc
 class MarkAsReadParams {
@@ -8,7 +8,7 @@ class MarkAsReadParams {
 }
 
 class MarkAsReadUseCase {
-  final NotificationRepositoryImpl repository;
+  final NotificationRepository repository;
 
   MarkAsReadUseCase(this.repository);
 
