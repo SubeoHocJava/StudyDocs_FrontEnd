@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> {
         rating: entity.rating,
         onTap: () {
           // TODO: Điều hướng đến trang chi tiết tài liệu
-          // Có thể truyền entity.id hoặc toàn bộ entity vào màn hình chi tiết
+          // Có thể truyền ui_model.id hoặc toàn bộ ui_model vào màn hình chi tiết
         },
         onDownloadTap: () {
           // TODO: Xử lý tải xuống tài liệu
