@@ -11,7 +11,7 @@ class ApiResponse<T> {
       json['statusCode'] as int,
       json['errorCode'] as int,
       json['traceId'] as String,
-      json['data'] as T,
+      json['repository'] as T,
     );
   }
 }

@@ -31,7 +31,7 @@ class UploadBox extends StatelessWidget {
               //   assetPath: AppAssets.upload,
               //   onPressed: null, // hiển thị như một “icon” tĩnh
               //   size: 30,
-              //   color: AppColors.headerForeground,
+              //   color: AppColors.headerFg,
               // ),
               SizedBox(height: 8),
               Text(

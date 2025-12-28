@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
 import '../../../core/widgets/header.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../../../core/widgets/document_horizontal.dart';
@@ -7,7 +8,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/responsive_helper.dart';
 import 'bloc/home_bloc.dart';
 import '../domain/entity/document_entity.dart';
-import 'component/home_banner.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -294,7 +294,7 @@ class _HomePageState extends State<HomePage> {
         rating: entity.rating,
         onTap: () {
           // TODO: Điều hướng đến trang chi tiết tài liệu
-          // Có thể truyền entity.id hoặc toàn bộ entity vào màn hình chi tiết
+          // Có thể truyền ui_model.id hoặc toàn bộ ui_model vào màn hình chi tiết
         },
         onDownloadTap: () {
           // TODO: Xử lý tải xuống tài liệu
