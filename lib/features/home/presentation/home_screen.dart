@@ -1,13 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
-import '../../../core/widgets/header.dart';
-import '../../../core/widgets/bottom_nav.dart';
-import '../../../core/widgets/document_horizontal.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/responsive_helper.dart';
-import 'bloc/home_bloc.dart';
-import '../domain/entity/document_entity.dart';
+import 'package:studydocs/core/widgets/header.dart';
+import 'package:studydocs/core/widgets/document/ListDocument.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/home/logic/home_bloc.dart';
+import 'package:studydocs/features/home/logic/home_event.dart';
+import 'package:studydocs/features/home/logic/home_state.dart';
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
+
+// Adapter to use DocumentEntity with the reused ListDocument widget
+class HomeDocumentAdapter extends DocumentUiList {
+  final DocumentEntity entity;
+  
+  const HomeDocumentAdapter(this.entity);
+
+  @override
+  String get id => entity.id.toString();
+  
+  @override
+  String get title => entity.title;
+  
+  @override
+  String? get category => entity.category;
+  
+  @override
+  String? get institution => entity.institution;
+  
+  @override
+  String? get createdAt => entity.academicYear;
+  
+  @override
+  String? get thumbnailUrl => entity.thumbnailUrl;
+  
+  @override
+  int get likesCount => entity.likesCount ?? 0;
+  
+  @override
+  int get commentsCount => entity.commentsCount ?? 0;
+  
+  @override
+  bool get isLiked => false;
+  
+  @override
+  bool get isSaved => false;
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,13 +56,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Tải danh sách tài liệu khi màn hình được khởi tạo
+    // Load documents on init
     context.read<HomeBloc>().add(const LoadDocumentsEvent());
   }
 
@@ -34,231 +72,89 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleSearch(String query) {
-    if (query.trim().isEmpty) {
-      context.read<HomeBloc>().add(const LoadDocumentsEvent());
-    } else {
-      context.read<HomeBloc>().add(SearchDocumentsEvent(query));
-    }
+    context.read<HomeBloc>().add(UpdateSearchQueryEvent(query));
   }
 
   @override
   Widget build(BuildContext context) {
+    // Note: HomePage is used inside MainScreen, which provides Scaffold and BottomNav.
+    // However, if we want the top Header, we usually put it here or in MainScreen.
+    // The user wants Header to stay, but the bottom nav in current HomePage is redundant.
     return Scaffold(
-      appBar: const Header(),
+      appBar: const Header(
+        selectedIndex: 0, // Mark Home as active in menu
+      ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return RefreshIndicator(
             onRefresh: () async {
               context.read<HomeBloc>().add(const RefreshDocumentsEvent());
-              // Đợi state cập nhật
               await Future.delayed(const Duration(milliseconds: 500));
             },
             child: _buildBody(state),
           );
         },
       ),
-      bottomNavigationBar: BottomNav(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          _handleNavigation(index);
-        },
-      ),
     );
   }
 
   Widget _buildBody(HomeState state) {
-    if (state is HomeLoading) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primary,
-        ),
-      );
+    if (state is HomeLoading || state is HomeInitial) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
 
     if (state is HomeError) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.docSmallText,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Đã xảy ra lỗi',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.profileName,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.message,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.docSmallText,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<HomeBloc>().add(const RefreshDocumentsEvent());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('Thử lại'),
-            ),
-          ],
-        ),
-      );
+      return _buildErrorView(state.message);
     }
 
     if (state is HomeLoaded) {
+      final popularDocs = state.popularDocuments.map((e) => HomeDocumentAdapter(e)).toList();
+      final recentDocs = state.recentDocuments.map((e) => HomeDocumentAdapter(e)).toList();
+      final filteredDocs = state.filteredDocuments.map((e) => HomeDocumentAdapter(e)).toList();
+
       return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Banner với thanh tìm kiếm
+            // Banner with Search
             HomeBanner(
               onSearchChanged: _handleSearch,
-              onSearchTap: () {
-                // Tùy chọn: Điều hướng đến màn hình tìm kiếm
-              },
               height: 200,
             ),
 
             const SizedBox(height: 24),
 
-            // Phần tài liệu phổ biến
-            DocumentHorizontalList(
-              sectionTitle: 'Tài liệu phổ biến',
-              documents: _convertToDocumentItems(
-                state.popularDocuments,
-              ),
-              itemHeight: 140,
-              onSeeAllTap: () {
-                // TODO: Điều hướng đến trang tất cả tài liệu phổ biến
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Phần tài liệu mới nhất
-            DocumentHorizontalList(
-              sectionTitle: 'Tài liệu mới nhất',
-              documents: _convertToDocumentItems(
-                state.recentDocuments,
-              ),
-              itemHeight: 140,
-              onSeeAllTap: () {
-                // TODO: Điều hướng đến trang tất cả tài liệu mới nhất
-              },
-            ),
-
-            // Phần kết quả tìm kiếm (khi đang tìm kiếm)
-            if (state.searchQuery != null && state.searchQuery!.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Text(
-                      'Kết quả tìm kiếm: "${state.searchQuery}"',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.profileName,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<HomeBloc>().add(const LoadDocumentsEvent());
-                      },
-                      child: const Text(
-                        'Xóa',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (state.documents.isEmpty)
+            // Search results view
+            if (state.searchQuery.isNotEmpty) ...[
+               _buildSectionTitle('Kết quả tìm kiếm: "${state.searchQuery}"'),
+               if (filteredDocs.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: Center(
-                    child: Text(
-                      'Không tìm thấy tài liệu nào',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.docSmallText,
-                      ),
-                    ),
-                  ),
+                  child: Center(child: Text('Không tìm thấy tài liệu nào', style: TextStyle(color: AppColors.docSmallText))),
                 )
               else
-                Padding(
-                  padding: context.responsive.defaultPadding,
-                  child: Column(
-                    children: state.documents.map((doc) {
-                      return DocumentHorizontal(
-                        title: doc.title,
-                        author: doc.author,
-                        thumbnailUrl: doc.thumbnailUrl,
-                        category: doc.category,
-                        institution: doc.institution,
-                        pageCount: doc.pageCount,
-                        academicYear: doc.academicYear,
-                        viewCount: doc.viewCount,
-                        downloadCount: doc.downloadCount,
-                        likesCount: doc.likesCount,
-                        commentsCount: doc.commentsCount,
-                        rating: doc.rating,
-                        onTap: () {
-                          // TODO: Điều hướng đến trang chi tiết tài liệu
-                        },
-                        onDownloadTap: () {
-                          // TODO: Xử lý tải xuống
-                        },
-                        onBookmarkTap: () {
-                          // TODO: Xử lý bookmark
-                        },
-                        height: 140,
-                      );
-                    }).toList(),
-                  ),
+                ListDocument(
+                  filteredDocs,
+                  onDownload: (doc) { /* TODO */ },
+                  onSave: (doc) { /* TODO */ },
                 ),
-            ],
+            ] else ...[
+               // Default categorized view
+               _buildSectionTitle('Tài liệu phổ biến'),
+               ListDocument(
+                 popularDocs,
+                 onDownload: (doc) {},
+                 onSave: (doc) {},
+               ),
 
-            // Phần tất cả tài liệu (khi không tìm kiếm)
-            if (state.searchQuery == null || state.searchQuery!.isEmpty) ...[
-              const SizedBox(height: 24),
-              DocumentHorizontalList(
-                sectionTitle: 'Tất cả tài liệu',
-                documents: _convertToDocumentItems(state.documents),
-                itemHeight: 140,
-                onSeeAllTap: () {
-                  // TODO: Điều hướng đến trang tất cả tài liệu
-                },
-              ),
+               const SizedBox(height: 24),
+
+               _buildSectionTitle('Tài liệu mới nhất'),
+               ListDocument(
+                 recentDocs,
+                 onDownload: (doc) {},
+                 onSave: (doc) {},
+               ),
             ],
 
             const SizedBox(height: 24),
@@ -267,62 +163,40 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    // Trạng thái khởi tạo
-    return const Center(
-      child: CircularProgressIndicator(
-        color: AppColors.primary,
+    return const SizedBox();
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.profileName,
+        ),
       ),
     );
   }
 
-  List<DocumentHorizontalItem> _convertToDocumentItems(
-    List<DocumentEntity> entities,
-  ) {
-    return entities.map((entity) {
-      return DocumentHorizontalItem(
-        title: entity.title,
-        author: entity.author,
-        thumbnailUrl: entity.thumbnailUrl,
-        category: entity.category,
-        institution: entity.institution,
-        pageCount: entity.pageCount,
-        academicYear: entity.academicYear,
-        viewCount: entity.viewCount,
-        downloadCount: entity.downloadCount,
-        likesCount: entity.likesCount,
-        commentsCount: entity.commentsCount,
-        rating: entity.rating,
-        onTap: () {
-          // TODO: Điều hướng đến trang chi tiết tài liệu
-          // Có thể truyền ui_model.id hoặc toàn bộ ui_model vào màn hình chi tiết
-        },
-        onDownloadTap: () {
-          // TODO: Xử lý tải xuống tài liệu
-        },
-        onBookmarkTap: () {
-          // TODO: Xử lý bookmark tài liệu
-        },
-      );
-    }).toList();
-  }
-
-  void _handleNavigation(int index) {
-    switch (index) {
-      case 0:
-        // Trang chủ - đã ở đây rồi
-        break;
-      case 1:
-        // Thư viện
-        // TODO: Điều hướng đến màn hình Thư viện
-        break;
-      case 2:
-        // Khám phá
-        // TODO: Điều hướng đến màn hình Khám phá
-        break;
-      case 3:
-        // Thông báo
-        // TODO: Điều hướng đến màn hình Thông báo
-        break;
-    }
+  Widget _buildErrorView(String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 64, color: AppColors.docSmallText),
+          const SizedBox(height: 16),
+          const Text('Đã xảy ra lỗi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          Text(message, textAlign: TextAlign.center),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => context.read<HomeBloc>().add(const RefreshDocumentsEvent()),
+            child: const Text('Thử lại'),
+          ),
+        ],
+      ),
+    );
   }
 }
