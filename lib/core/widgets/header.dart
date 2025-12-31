@@ -1,100 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../theme/app_theme.dart';
-import '../constants/app_colors.dart';
-import '../constants/app_icons.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/theme/app_theme.dart';
+import 'package:studydocs/core/widgets/menu.dart';
 import 'app_icon_button.dart';
 
-class Header extends StatelessWidget implements PreferredSizeWidget {
+class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
   final VoidCallback? onLogoTap;
   final VoidCallback? onLoginTap;
+  final VoidCallback? onFollowTap;
+  final VoidCallback? onProfileTap;
+
+  // New properties from user
+  final bool isDefault;
+  final String? headerTitle;
+  final VoidCallback? onBack;
+  final void Function(BuildContext)? onModal;
+  final int selectedIndex;
 
   const Header({
     super.key,
     this.onMenuTap,
     this.onLogoTap,
     this.onLoginTap,
+    this.onFollowTap,
+    this.onProfileTap,
+    this.isDefault = true,
+    this.headerTitle,
+    this.onBack,
+    this.onModal,
+    this.selectedIndex = -1,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = context.read<ThemeController>();
-    
-    return Container(
-      height: kToolbarHeight,
-      decoration: const BoxDecoration(
-        color: AppColors.headerBackground,
+  State<Header> createState() => _HeaderState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(90);
+}
+
+class _HeaderState extends State<Header> {
+  OverlayEntry? _overlayEntry;
+  bool _isMenuOpen = false;
+
+  void _toggleMenu() {
+    if (_isMenuOpen) {
+      _closeMenu();
+    } else {
+      _openMenu();
+    }
+  }
+
+  void _closeMenu() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    setState(() {
+      _isMenuOpen = false;
+    });
+  }
+
+  void _openMenu() {
+    final overlayState = Overlay.of(context);
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // Barrier
+          Positioned.fill(
+            top: widget.preferredSize.height + MediaQuery.of(context).padding.top,
+            child: GestureDetector(
+              onTap: _closeMenu,
+              child: Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ),
+          ),
+          // Drawer Content
+          Positioned(
+            top: widget.preferredSize.height + MediaQuery.of(context).padding.top,
+            left: 0,
+            bottom: 0,
+            width: 300,
+            child: MenuDrawer(
+              onClose: _closeMenu,
+              onLogoTap: widget.onLogoTap,
+              selectedIndex: widget.selectedIndex, // Pass it here
+            ),
+          ),
+        ],
       ),
+    );
+
+    overlayState.insert(_overlayEntry!);
+    setState(() {
+      _isMenuOpen = true;
+    });
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.headerBackground,
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9.0),
-          child: Row(
+        bottom: false,
+        child: SizedBox(
+          height: widget.preferredSize.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              AppIconButton(
-                iconData: Icons.menu,
-                color: AppColors.headerForeground,
-                onPressed: onMenuTap ?? () {},
-                size: 24,
-              ),
-              
-              const SizedBox(width: 12),
-              
-              GestureDetector(
-                onTap: onLogoTap ?? () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Logo image
-                    Image.asset(
-                      AppAssets.logo,
-                      width: 60,
-                      height: 60,
-                    ),
-                    const SizedBox(width: 12),
-                  ],
+              // Top Row: Date/Time
+              _buildDateTimeRow(context),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 9.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Left: Menu + Logo
+                      Row(
+                        children: [
+                          _buildLeading(context),
+                          const SizedBox(width: 12),
+                          if (widget.isDefault) _buildLogo(),
+                        ],
+                      ),
+                      
+                      // Title if not default (or if explicitly set)
+                      if (!widget.isDefault && widget.headerTitle != null)
+                        _buildTitle(),
+
+                      // Right: Actions
+                      _buildActions(context),
+                    ],
+                  ),
                 ),
-              ),
-              
-              const Spacer(),
-              
-              // Login button and sun icon on the right
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Login button
-                  ElevatedButton(
-                    onPressed: onLoginTap ?? () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.headerForeground,
-                      foregroundColor: AppColors.headerBackground,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    child: const Text('Đăng nhập'),
-                  ),
-                  
-                  const SizedBox(width: 8),
-                  
-                  // Sun/brightness icon
-                  AppIconButton(
-                    iconData: Icons.wb_sunny_outlined,
-                    color: AppColors.headerForeground,
-                    onPressed: () => theme.toggle(),
-                    size: 24,
-                  ),
-                ],
               ),
             ],
           ),
@@ -103,6 +149,150 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Widget _buildDateTimeRow(BuildContext context) {
+    final now = DateTime.now();
+    // Simple formatting: "Thứ 3, 12/05/2024 - 10:30"
+    // Using manual formatting to avoid intl dependency if not sure
+    final weekDay = 'Thứ ${now.weekday + 1}'; // 1=Mon -> 2
+    final date = '${now.day}/${now.month}/${now.year}';
+    final time = '${now.hour}:${now.minute.toString().padLeft(2, '0')}'; 
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      color: Colors.transparent, 
+      alignment: Alignment.centerLeft,
+      child: Text(
+        '$weekDay, $date - $time',
+        style: const TextStyle(
+          fontSize: 12,
+          color: AppColors.docSmallText,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  /// LEFT: Menu Button or Back Button
+  Widget _buildLeading(BuildContext context) {
+    if (widget.isDefault) {
+      return AppIconButton(
+        iconData: Icons.menu,
+        color: AppColors.headerForeground,
+        onPressed: _toggleMenu,
+        size: 24,
+      );
+    }
+
+    return AppIconButton(
+      iconData: Icons.arrow_back_ios_new,
+      color: AppColors.headerForeground,
+      onPressed: widget.onBack ?? () => Navigator.pop(context),
+      size: 24,
+    );
+  }
+
+  /// LOGO (moved to left)
+  Widget _buildLogo() {
+     return GestureDetector(
+      onTap: () {
+        if (widget.onLogoTap != null) {
+          widget.onLogoTap!();
+        } else {
+          // Navigate to Home reset logic if needed
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      },
+      child: Image.asset(
+        AppAssets.logo,
+        width: 40,
+        height: 40,
+      ),
+    );
+  }
+
+  /// TITLE (Center - only used if not default/logo mode)
+  Widget _buildTitle() {
+      return Text(
+        widget.headerTitle ?? '',
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.headerForeground,
+          fontFamily: 'Montserrat',
+        ),
+      );
+  }
+
+  /// RIGHT ACTIONS
+  Widget _buildActions(BuildContext context) {
+    final theme = context.read<ThemeController>();
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.onModal != null) ...[
+          AppIconButton(
+            iconData: Icons.more_vert,
+            color: AppColors.headerForeground,
+            onPressed: () => widget.onModal?.call(context),
+            size: 24,
+          ),
+        ],
+        // Removed "User" (Follow) button as requested: "Bỏ nút user hiển thị ra trang follow"
+        // keeping logic generic just in case, but removing the specific icon button for follow
+        /*
+        if (widget.onFollowTap != null) ...[
+          AppIconButton(
+             iconData: Icons.people_outline,
+             color: AppColors.headerForeground,
+             onPressed: widget.onFollowTap!,
+             size: 24,
+          ),
+          const SizedBox(width: 8),
+        ],
+        */
+        
+        if (widget.onProfileTap != null) ...[
+          AppIconButton(
+            iconData: Icons.account_circle_outlined,
+            color: AppColors.headerForeground,
+            onPressed: widget.onProfileTap!,
+            size: 28,
+          ),
+        ] else if (widget.isDefault) ...[
+          // Only show login button in default home-style header if no profile tap
+          ElevatedButton(
+            onPressed: widget.onLoginTap ?? () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.headerForeground,
+              foregroundColor: AppColors.headerBackground,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 6,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              textStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                fontFamily: 'Montserrat',
+              ),
+            ),
+            child: const Text('Đăng nhập'),
+          ),
+        ],
+        const SizedBox(width: 8),
+        // Sun/brightness icon
+        AppIconButton(
+          iconData: Icons.wb_sunny_outlined,
+          color: AppColors.headerForeground,
+          onPressed: () => theme.toggle(),
+          size: 24,
+        ),
+      ],
+    );
+  }
 }
