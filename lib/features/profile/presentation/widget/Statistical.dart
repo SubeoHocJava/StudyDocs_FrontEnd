@@ -4,6 +4,8 @@ import 'package:studydocs/core/utils/responsive_helper.dart';
 
 import '../../logic/profile_state.dart';
 
+import '../../../../features/follow/presentation/screen/follow_screen.dart';
+
 class Statistical extends StatelessWidget {
   final ProfileLoaded state;
 
@@ -12,32 +14,6 @@ class Statistical extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-
-    int numFollowMe = state.numFollowMe;
-    int numMeFollow = state.numMeFollow;
-
-    int numMyUpload=state.numMyUpload;
-    int numMyLikes=state.numMyLikes;
-    int numMyComment=state.numMyComment;
-
-    // responsive width theo thiết bị
-    final leftWidth = responsive.responsiveValue(
-      mobile: responsive.widthPercent(30),
-      tablet: responsive.widthPercent(25),
-      desktop: responsive.widthPercent(20),
-    );
-
-    final rightWidth = responsive.responsiveValue(
-      mobile: responsive.widthPercent(40),
-      tablet: responsive.widthPercent(35),
-      desktop: responsive.widthPercent(22),
-    );
-
-    final dividerHeight = responsive.responsiveValue(
-      mobile: 50.0,
-      tablet: 60.0,
-      desktop: 70.0,
-    );
 
     return Container(
       width: double.infinity,
@@ -48,65 +24,66 @@ class Statistical extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // LEFT BLOCK
-              Container(
-                width: leftWidth,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 12,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.greenAccent,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "$numFollowMe người theo dõi",
-                  style: TextStyle(
-                    fontSize: responsive.fontSize(14),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+              // LEFT BLOCK: Followers
+              _buildFollowButton(
+                context: context,
+                label: "${state.numFollowMe} Người theo dõi",
+                color: AppColors.secondaryTeal,
+                index: 0,
+                responsive: responsive,
               ),
-
-              // DIVIDER
-              Container(width: 2, height: dividerHeight, color: Colors.black),
-
-              // RIGHT BLOCK
-              Container(
-                width: rightWidth,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 12,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Đang theo dõi $numMeFollow người",
-                  style: TextStyle(
-                    fontSize: responsive.fontSize(14),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+              const SizedBox(width: 12),
+              // RIGHT BLOCK: Following
+              _buildFollowButton(
+                context: context,
+                label: "${state.numMeFollow} Đang theo dõi",
+                color: AppColors.secondaryTeal,
+                index: 1,
+                responsive: responsive,
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-          ActivityStatistics(numMyUpload: numMyUpload, numMyLikes: numMyLikes, numMyComment: numMyComment,),
+          ActivityStatistics(
+            numMyUpload: state.numMyUpload,
+            numMyLikes: state.numMyLikes,
+            numMyComment: state.numMyComment,
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFollowButton({
+    required BuildContext context,
+    required String label,
+    required Color color,
+    required int index,
+    required ResponsiveHelper responsive,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => FollowScreen(initialTab: index)),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.primaryLight,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.5)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: responsive.fontSize(14),
+            fontWeight: FontWeight.bold,
+            color: AppColors.headerForeground,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

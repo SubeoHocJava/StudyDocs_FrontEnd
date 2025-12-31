@@ -21,8 +21,9 @@ class NotificationScreen extends StatelessWidget {
     return BlocProvider(
       create:
           (_) =>
-              NotificationBloc(NotificationRepositoryImpl(NotificationDataSourceImpl(dioClient: DioClient())))
-                ..add(LoadNotificationEvent(DateTime.now(), true)),
+      NotificationBloc(NotificationRepositoryImpl(
+          NotificationDataSourceImpl(dioClient: DioClient())))
+        ..add(LoadNotificationEvent(DateTime.now(), true)),
       child: Scaffold(
         appBar: const Header(),
         body: BlocBuilder<NotificationBloc, NotificationState>(
@@ -31,9 +32,9 @@ class NotificationScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is NotificationLoadedState) {
               final mapNotification =
-                  NotificationHelper.groupNotificationsByTime(
-                    state.notifications,
-                  );
+              NotificationHelper.groupNotificationsByTime(
+                state.notifications,
+              );
               final todayNotifications =
                   mapNotification[NotificationHelper.today] ?? [];
               final agoNotifications =

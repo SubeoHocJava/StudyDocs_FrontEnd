@@ -49,7 +49,7 @@ class ListDocument extends StatelessWidget {
 /// =======================
 /// CARD DOCUMENT
 /// =======================
-class MonoDocumentInList extends StatelessWidget {
+class MonoDocumentInList extends StatefulWidget {
   final DocumentUiList document;
 
   final void Function(DocumentUiList)? onDownload;
@@ -66,51 +66,69 @@ class MonoDocumentInList extends StatelessWidget {
   });
 
   @override
+  State<MonoDocumentInList> createState() => _MonoDocumentInListState();
+}
+
+class _MonoDocumentInListState extends State<MonoDocumentInList> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
     final double containerWidth =
-    responsive.isMobile ? responsive.widthPercent(90) : 520;
+        responsive.isMobile ? responsive.widthPercent(90) : 520;
 
-    return Container(
-      width: containerWidth,
-      height: responsive.isMobile ? responsive.heightPercent(25) : 210,
-      margin: EdgeInsets.symmetric(
-        vertical: responsive.heightPercent(0.5),
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade400),
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DocumentImage(responsive: responsive),
-                SizedBox(width: responsive.widthPercent(2)),
-                Expanded(
-                  child:_DocumentInfo(
-                    document: document,
-                    responsive: responsive,
-                    onLike: onLike,
-                    onComment: onComment,
+    // Reduced height as requested (was 210)
+    final double containerHeight =
+        responsive.isMobile ? responsive.heightPercent(22) : 160;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Container(
+        width: containerWidth,
+        height: containerHeight,
+        margin: EdgeInsets.symmetric(
+          vertical: responsive.heightPercent(0.5),
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade400),
+          color: Colors.white,
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DocumentImage(responsive: responsive),
+                  SizedBox(width: responsive.widthPercent(2)),
+                  Expanded(
+                    child: _DocumentInfo(
+                      document: widget.document,
+                      responsive: responsive,
+                      onLike: widget.onLike,
+                      onComment: widget.onComment,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            right: responsive.isMobile ? 8 : 12,
-            bottom: responsive.isMobile ? 8 : 12,
-            child: DownloadSaveGroup(
-              responsive: responsive,
-              onDownload: () => onDownload?.call(document),
-              onSave: () => onSave?.call(document),
+            // Show Save/Download buttons
+            Positioned(
+              right: responsive.isMobile ? 8 : 12,
+              bottom: responsive.isMobile ? 8 : 12,
+              child: DownloadSaveGroup(
+                responsive: responsive,
+                onDownload: () => widget.onDownload?.call(widget.document),
+                onSave: () => widget.onSave?.call(widget.document),
+                showSave: _isHovered || responsive.isMobile, // Always show on mobile
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -382,17 +400,20 @@ class DownloadSaveGroup extends StatelessWidget {
   final ResponsiveHelper responsive;
   final VoidCallback? onDownload;
   final VoidCallback? onSave;
+  final bool showSave;
 
   const DownloadSaveGroup({
     super.key,
     required this.responsive,
     this.onDownload,
     this.onSave,
+    this.showSave = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = responsive.fontSize(26);
+    // Enlarged icon size as requested (was 26)
+    final iconSize = responsive.fontSize(32);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -402,11 +423,13 @@ class DownloadSaveGroup extends StatelessWidget {
           child: Icon(Icons.download_rounded, size: iconSize),
         ),
         const SizedBox(width: 6),
-        GestureDetector(
-          onTap: onSave,
-          child: Icon(Icons.bookmark_rounded,
-              size: iconSize + 2, color: Colors.amber),
-        ),
+        // Save button visibility toggled by showSave
+        if (showSave)
+          GestureDetector(
+            onTap: onSave,
+            child: Icon(Icons.bookmark_rounded,
+                size: iconSize + 2, color: Colors.amber),
+          ),
       ],
     );
   }
