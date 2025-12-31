@@ -4,13 +4,22 @@ import '../../../../core/constants/app_colors.dart';
 import 'email_field.dart';
 import 'login_button.dart';
 import 'password_field.dart';
+import 'username_field.dart';
 
 class RegisterForm extends StatefulWidget {
   final VoidCallback onBackToLogin;
 
+  /// Cho phép disable nút khi đang submit
+  final bool isSubmitting;
+
+  /// Callback trả dữ liệu đăng ký ra ngoài (BLoC)
+  final void Function(String username, String? email, String password) onSubmit;
+
   const RegisterForm({
     super.key,
     required this.onBackToLogin,
+    required this.onSubmit,
+    this.isSubmitting = false,
   });
 
   @override
@@ -19,31 +28,28 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _handleRegister(BuildContext context) {
+  void _handleRegister() {
     if (!_formKey.currentState!.validate()) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tạo tài khoản cho ${_nameController.text} thành công!'),
-        backgroundColor: Colors.green[600],
-      ),
+    widget.onSubmit(
+      _usernameController.text.trim(),
+      _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+      _passwordController.text,
     );
-
-    widget.onBackToLogin();
   }
 
   @override
@@ -51,7 +57,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -62,16 +68,22 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildNameField(),
+          _buildUsernameField(),
           const SizedBox(height: 16),
-          EmailField(controller: _emailController),
+          EmailField(
+            controller: _emailController,
+            label: 'Email (tuỳ chọn)',
+            isRequired: false,
+          ),
           const SizedBox(height: 16),
           PasswordField(controller: _passwordController),
           const SizedBox(height: 16),
           _buildConfirmPasswordField(),
           const SizedBox(height: 24),
           LoginButton(
-            onPressed: () => _handleRegister(context),
+            onPressed: widget.isSubmitting ? null : _handleRegister,
+            isLoading: widget.isSubmitting,
+            label: 'Tạo tài khoản',
           ),
           const SizedBox(height: 12),
           Center(
@@ -85,12 +97,12 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _buildNameField() {
+  Widget _buildUsernameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Họ và tên',
+          'Tên đăng nhập',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -99,11 +111,14 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
         const SizedBox(height: 8),
         TextFormField(
-          controller: _nameController,
-          decoration: _roundedInputDecoration('Nhập họ và tên'),
+          controller: _usernameController,
+          decoration: _roundedInputDecoration('Nhập tên đăng nhập'),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              return 'Vui lòng nhập họ tên';
+              return 'Vui lòng nhập tên đăng nhập';
+            }
+            if (value.trim().length < 3) {
+              return 'Tên đăng nhập phải từ 3 ký tự';
             }
             return null;
           },

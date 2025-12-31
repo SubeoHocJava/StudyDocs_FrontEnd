@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/widgets/header.dart';
-import '../../../core/widgets/bottom_nav.dart';
-import '../../../core/widgets/document_horizontal.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/responsive_helper.dart';
-import 'bloc/home_bloc.dart';
-import '../domain/entity/document_entity.dart';
-import 'component/home_banner.dart';
+import 'package:studydocs/core/widgets/header.dart';
+import 'package:studydocs/core/widgets/bottom_nav.dart';
+import 'package:studydocs/core/widgets/document_horizontal.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/home/presentation/bloc/home_bloc.dart';
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
+import 'package:studydocs/features/home/presentation/component/home_banner.dart';
+import 'package:studydocs/features/explore/presentation/widgets/explore_bottom_sheet.dart';
+import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
+import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
+import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final TextEditingController _searchController = TextEditingController();
+  bool _isExploreOpen = false;
 
   @override
   void initState() {
@@ -45,17 +51,46 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const Header(),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<HomeBloc>().add(const RefreshDocumentsEvent());
-              // Đợi state cập nhật
-              await Future.delayed(const Duration(milliseconds: 500));
+      body: Stack(
+        children: [
+          BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context
+                      .read<HomeBloc>()
+                      .add(const RefreshDocumentsEvent());
+                  // Đợi state cập nhật
+                  await Future.delayed(const Duration(milliseconds: 500));
+                },
+                child: _buildBody(state),
+              );
             },
-            child: _buildBody(state),
-          );
-        },
+          ),
+
+          // Lớp mờ + bottom sheet Khám phá, chỉ phủ phần body (không che footer)
+          if (_isExploreOpen) ...[
+            // Nền mờ
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isExploreOpen = false;
+                  });
+                },
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                ),
+              ),
+            ),
+
+            // Bottom sheet "Khám phá" nằm sát phía trên Footer
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildExploreOverlay(),
+            ),
+          ],
+        ],
       ),
       bottomNavigationBar: BottomNav(
         currentIndex: _currentIndex,
@@ -310,19 +345,52 @@ class _HomePageState extends State<HomePage> {
     switch (index) {
       case 0:
         // Trang chủ - đã ở đây rồi
+        if (_isExploreOpen) {
+          setState(() {
+            _isExploreOpen = false;
+          });
+        }
         break;
       case 1:
         // Thư viện
         // TODO: Điều hướng đến màn hình Thư viện
+        if (_isExploreOpen) {
+          setState(() {
+            _isExploreOpen = false;
+          });
+        }
         break;
       case 2:
-        // Khám phá
-        // TODO: Điều hướng đến màn hình Khám phá
+        // Khám phá - hiển thị bottom sheet giống thiết kế, không che footer
+        setState(() {
+          _isExploreOpen = true;
+        });
         break;
       case 3:
         // Thông báo
         // TODO: Điều hướng đến màn hình Thông báo
+        if (_isExploreOpen) {
+          setState(() {
+            _isExploreOpen = false;
+          });
+        }
         break;
     }
+  }
+
+  /// Xây dựng overlay Khám phá với BLoC và mock data.
+  Widget _buildExploreOverlay() {
+    final remote = ExploreRemoteDataSource();
+    final repo = ExploreRepositoryImpl(remote: remote);
+    final searchUseCase = SearchSchoolsUseCase(repository: repo);
+    final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
+
+    return BlocProvider(
+      create: (_) => ExploreBloc(
+        searchSchoolsUseCase: searchUseCase,
+        getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+      ),
+      child: const ExploreBottomSheet(),
+    );
   }
 }

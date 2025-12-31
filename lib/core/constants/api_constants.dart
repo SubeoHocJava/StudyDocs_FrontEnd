@@ -7,6 +7,8 @@ class ApiConstants {
   static const String popularDocuments = '/documents/popular';
   static const String recentDocuments = '/documents/recent';
   static const String searchDocuments = '/documents/search';
+  static const String authLogin = '/auth/login';
+  static const String authRegister = '/auth/register';
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);

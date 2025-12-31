@@ -1,17 +1,12 @@
-// lib/features/auth/presentation/widgets/email_field.dart
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
-class EmailField extends StatelessWidget {
+class UsernameField extends StatelessWidget {
   final TextEditingController controller;
-  final String label;
-  final bool isRequired;
-  
-  const EmailField({
+
+  const UsernameField({
     super.key,
     required this.controller,
-    this.label = 'Email',
-    this.isRequired = true,
   });
 
   @override
@@ -20,7 +15,7 @@ class EmailField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          'Tên đăng nhập',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -30,9 +25,8 @@ class EmailField extends StatelessWidget {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'Nhập email',
+            hintText: 'Nhập tên đăng nhập',
             hintStyle: TextStyle(
               color: Colors.grey[400],
               fontSize: 14,
@@ -57,14 +51,11 @@ class EmailField extends StatelessWidget {
             ),
           ),
           validator: (value) {
-            if (!isRequired && (value == null || value.isEmpty)) {
-              return null;
+            if (value == null || value.trim().isEmpty) {
+              return 'Vui lòng nhập tên đăng nhập';
             }
-            if (value == null || value.isEmpty) {
-              return 'Vui lòng nhập email';
-            }
-            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-              return 'Email không hợp lệ';
+            if (value.trim().length < 3) {
+              return 'Tên đăng nhập phải từ 3 ký tự';
             }
             return null;
           },
@@ -73,3 +64,4 @@ class EmailField extends StatelessWidget {
     );
   }
 }
+

@@ -46,7 +46,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -61,6 +61,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           const SizedBox(height: 24),
           LoginButton(
             onPressed: () => _handleSubmit(context),
+            label: 'Gửi hướng dẫn',
           ),
           const SizedBox(height: 12),
           Center(

@@ -3,34 +3,61 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class LoginButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  
+  final VoidCallback? onPressed;
+  final String label;
+  final bool isLoading;
+
   const LoginButton({
     super.key,
     required this.onPressed,
+    this.label = 'Đăng nhập',
+    this.isLoading = false,
   });
+
+  static const double _height = 48;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: 48,
+      height: _height,
       child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.headerForeground,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+        onPressed: isLoading ? null : onPressed,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(
+            AppColors.headerForeground,
           ),
-          elevation: 0,
+          foregroundColor: WidgetStateProperty.all(
+            Colors.white,
+          ),
+          elevation: WidgetStateProperty.all(0),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return Colors.white.withValues(alpha: 0.15);
+            }
+            return null;
+          }),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(_height / 2),
+            ),
+          ),
         ),
-        child: const Text(
-          'Đăng nhập',
-          style: TextStyle(
+        child: isLoading
+            ? const SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              AppColors.headerBackground,
+            ),
+          ),
+        )
+            : Text(
+          label,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.headerBackground,
           ),
         ),
       ),
