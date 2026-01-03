@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
 
@@ -21,21 +20,20 @@ class SubjectLibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (context) =>
-      SubjectLibraryBloc(
-        searchDocumentsUseCase: SearchDocumentsUseCase(
-          repository: repository,
-        ),
-        likeDocumentUseCase: LikeDocumentUseCase(repository: repository),
-        getCommentsUseCase: GetCommentsUseCase(repository: repository),
-        downloadDocumentUseCase: DownloadDocumentUseCase(
-            repository: repository),
-        bookmarkDocumentUseCase: BookmarkDocumentUseCase(
-            repository: repository),
-      )
-        ..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
+          (context) => SubjectLibraryBloc(
+            searchDocumentsUseCase: SearchDocumentsUseCase(
+              repository: repository,
+            ),
+            likeDocumentUseCase: LikeDocumentUseCase(repository: repository),
+            getCommentsUseCase: GetCommentsUseCase(repository: repository),
+            downloadDocumentUseCase: DownloadDocumentUseCase(
+              repository: repository,
+            ),
+            bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+              repository: repository,
+            ),
+          )..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
       child: Scaffold(
-        appBar: Header(),
         body: BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
           builder: (context, state) {
             print('Current SubjectLibraryState: $state');
