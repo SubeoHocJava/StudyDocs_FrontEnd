@@ -46,6 +46,8 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
     this.selectedIndex = -1,
   });
 
+
+
   @override
   State<Header> createState() => _HeaderState();
 
@@ -56,6 +58,46 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 class _HeaderState extends State<Header> {
   OverlayEntry? _overlayEntry;
   bool _isMenuOpen = false;
+
+  //auth
+  void _showLoginModal(BuildContext context) {
+    // Hiển thị dialog đăng nhập với hiệu ứng chuẩn Material.
+    // Ở đây chúng ta khởi tạo chuỗi phụ thuộc: DataSource -> Repository -> UseCase -> BLoC
+    // tương tự như phần Home, nhưng rút gọn để dễ hiểu.
+
+    // 1. Tầng data: login/register dùng mock, Google login dùng thật
+    final remote = AuthRemoteDataSourceHybrid();
+
+    // 2. Tầng repository: wrap datasource
+    final authRepository = AuthRepositoryImpl(remote: remote);
+
+    // 3. Tầng domain: usecase đăng nhập
+    final loginUseCase = LoginUseCase(repository: authRepository);
+    final googleLoginUseCase = GoogleLoginUseCase(repository: authRepository);
+    final registerUseCase = RegisterUseCase(repository: authRepository);
+
+    // 4. Cung cấp [LoginBloc] riêng cho dialog thông qua BlocProvider.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create:
+                (_) => LoginBloc(
+              loginUseCase: loginUseCase,
+              googleLoginUseCase: googleLoginUseCase,
+            ),
+          ),
+          BlocProvider(
+            create: (_) => RegisterBloc(registerUseCase: registerUseCase),
+          ),
+        ],
+        child: const LoginModal(),
+      ),
+    );
+  }
 
   void _toggleMenu() {
     if (_isMenuOpen) {
@@ -74,44 +116,45 @@ class _HeaderState extends State<Header> {
   }
 
   void _openMenu() {
-    final overlayState = Overlay.of(context);
-    _overlayEntry = OverlayEntry(
-      builder:
-          (context) => Stack(
-            children: [
-              // Barrier
-              Positioned.fill(
-                top:
-                    widget.preferredSize.height +
-                    MediaQuery.of(context).padding.top,
-                child: GestureDetector(
-                  onTap: _closeMenu,
-                  child: Container(color: Colors.black.withOpacity(0.3)),
-                ),
+  final overlayState = Overlay.of(context);
+  _overlayEntry = OverlayEntry(
+    builder:
+        (context) => Stack(
+          children: [
+            // Barrier
+            Positioned.fill(
+              top:
+                  widget.preferredSize.height +
+                  MediaQuery.of(context).padding.top,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
+                onTap: _closeMenu,
+                child: Container(color: Colors.black.withOpacity(0.3)),
               ),
-              // Drawer Content
-              Positioned(
-                top:
-                    widget.preferredSize.height +
-                    MediaQuery.of(context).padding.top,
-                left: 0,
-                bottom: 0,
-                width: 300,
-                child: MenuDrawer(
-                  onClose: _closeMenu,
-                  onLogoTap: widget.onLogoTap,
-                  selectedIndex: widget.selectedIndex,
-                ),
+            ),
+            // Drawer Content
+            Positioned(
+              top:
+                  widget.preferredSize.height +
+                  MediaQuery.of(context).padding.top,
+              left: 0,
+              bottom: 0,
+              width: 300,
+              child: MenuDrawer(
+                onClose: _closeMenu,
+                onLogoTap: widget.onLogoTap,
+                selectedIndex: widget.selectedIndex,
               ),
-            ],
-          ),
-    );
+            ),
+          ],
+        ),
+  );
 
-    overlayState.insert(_overlayEntry!);
-    setState(() {
-      _isMenuOpen = true;
-    });
-  }
+  overlayState.insert(_overlayEntry!);
+  setState(() {
+    _isMenuOpen = true;
+  });
+}
 
   @override
   void dispose() {
@@ -233,7 +276,7 @@ class _HeaderState extends State<Header> {
           ),
         ] else if (widget.isDefault) ...[
           ElevatedButton(
-            onPressed: widget.onLoginTap ?? () {},
+            onPressed: widget.onLoginTap ??() => _showLoginModal(context) ,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.headerForeground,
               foregroundColor: AppColors.headerBackground,

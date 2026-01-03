@@ -131,7 +131,9 @@ class _LoginModalState extends State<LoginModal> {
               nav.pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Đăng nhập thành công! (token len=${state.token.length})'),
+                  content: Text(
+                    'Đăng nhập thành công! (token len=${state.token.length})',
+                  ),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -185,7 +187,6 @@ class _LoginModalState extends State<LoginModal> {
               builder: (context, constraints) {
                 final mediaQuery = MediaQuery.of(context);
                 final screenWidth = mediaQuery.size.width;
-                // Giữ modal gọn trên màn hình lớn.
                 final isTabletLayout = screenWidth >= 600;
                 final maxWidth = isTabletLayout ? 480.0 : screenWidth * 0.92;
                 final contentPadding = EdgeInsets.symmetric(
@@ -193,48 +194,54 @@ class _LoginModalState extends State<LoginModal> {
                   vertical: isTabletLayout ? 32 : 24,
                 );
 
-                return AnimatedPadding(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOut,
-                  // Đẩy modal lên khi bàn phím mở trên mobile.
-                  padding: mediaQuery.viewInsets,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxWidth),
-                      child: Material(
-                        color: Colors.white,
-                        elevation: 16,
-                        borderRadius: BorderRadius.circular(20),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: contentPadding,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    _title,
-                                    style: TextStyle(
-                                      fontSize: isTabletLayout ? 22 : 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.headerForeground,
+                return GestureDetector(  // ← THÊM wrap toàn bộ
+                    behavior: HitTestBehavior.translucent,  // ← Cho touch đi qua vùng trong suốt
+                    onTap: () => Navigator.of(context).pop(),  // ← Đóng dialog khi tap ra ngoài
+                    child: AnimatedPadding(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      padding: mediaQuery.viewInsets,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: maxWidth),
+                          child: GestureDetector(
+                            onTap: () {},  // ← Chặn tap vào modal không đóng
+                            child: Material(
+                              color: Colors.white,
+                              elevation: 16,
+                              borderRadius: BorderRadius.circular(20),
+                              child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: contentPadding,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _title,
+                                      style: TextStyle(
+                                        fontSize: isTabletLayout ? 22 : 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.headerForeground,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 24),
+                                    const SizedBox(height: 24),
 
-                                  if (isLoading)
-                                    const LinearProgressIndicator(),
-                                  if (isLoading) const SizedBox(height: 16),
+                                    if (isLoading)
+                                      const LinearProgressIndicator(),
+                                    if (isLoading) const SizedBox(height: 16),
 
-                                  _buildContent(
-                                    context: context,
-                                    loginState: loginState,
-                                    registerState: registerState,
-                                  ),
-                                ],
+                                    _buildContent(
+                                      context: context,
+                                      loginState: loginState,
+                                      registerState: registerState,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -242,6 +249,7 @@ class _LoginModalState extends State<LoginModal> {
                       ),
                     ),
                   ),
+                    ),
                 );
               },
             ),
