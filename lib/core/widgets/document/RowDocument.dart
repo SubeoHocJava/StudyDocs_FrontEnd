@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/data/model/document_model.dart';
 
 import 'model/row_document_ui.dart';
 
-
 class RowDocument extends StatelessWidget {
-  final List<RowDocumentItem > documents;
+  final List<RowDocumentItem> documents;
   final double cardWidth;
 
-  const RowDocument(
-      this.documents, {
-        required this.cardWidth,
-        super.key,
-      });
+  const RowDocument(this.documents, {required this.cardWidth, super.key});
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
 
-
-    final cardHeight = cardWidth ;
+    final cardHeight = cardWidth;
 
     return SizedBox(
-      height: cardHeight + responsive.heightPercent(10), // thêm khoảng trống cho title
+      height:
+          cardHeight +
+          responsive.heightPercent(10), // thêm khoảng trống cho title
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: documents.length,
@@ -32,7 +27,8 @@ class RowDocument extends StatelessWidget {
           final document = documents[index];
           return MonoDocumentInRow(
             document: document,
-            cardWidth: cardWidth, cardHeight: cardHeight,
+            cardWidth: cardWidth,
+            cardHeight: cardHeight,
           );
         },
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'model/list_document_ui.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 class ListDocument extends StatelessWidget {
   final List<DocumentUiList> documents;
@@ -78,11 +78,12 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
     final responsive = context.responsive;
     final double containerWidth =
         responsive.isMobile ? responsive.widthPercent(92) : 720;
+    final double containerHeight = responsive.isMobile ? 132 : 148;
 
     return Container(
       width: containerWidth,
+      height: containerHeight,
       margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
-      constraints: BoxConstraints(minHeight: responsive.isMobile ? 120 : 136),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
@@ -98,13 +99,11 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
       child: Padding(
         padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
         child: Row(
-          // Avoid stretching children to an unbounded height when this card is
-          // laid out inside scrollables (can trigger BoxConstraints(h=Infinity)).
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DocumentImage(
               responsive: responsive,
-              widthOverride: responsive.isMobile ? 88 : 100,
+              sizeOverride: responsive.isMobile ? 90 : 102,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -132,7 +131,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
                     date: widget.document.createdAt,
                     responsive: responsive,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       LikeCommentWidget(
@@ -180,22 +179,19 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 /// =======================
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
-  final double? widthOverride;
+  final double? sizeOverride;
 
-  const DocumentImage({
-    super.key,
-    required this.responsive,
-    this.widthOverride,
-  });
+  const DocumentImage({super.key, required this.responsive, this.sizeOverride});
 
   @override
   Widget build(BuildContext context) {
-    final double width =
-        widthOverride ??
+    final double size =
+        sizeOverride ??
         (responsive.isMobile ? responsive.widthPercent(30) : 180);
 
     return Container(
-      width: width,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.navy, width: 1.2),
         borderRadius: BorderRadius.circular(6),
@@ -293,11 +289,8 @@ class TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String displayTitle =
-        title.length > 50 ? '${title.substring(0, 50)}...' : title;
-
     return Text(
-      displayTitle,
+      title,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
@@ -322,7 +315,6 @@ class SubjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final display = (subject ?? '').trim();
     return Row(
       children: [
         Icon(
@@ -333,7 +325,7 @@ class SubjectWidget extends StatelessWidget {
         SizedBox(width: responsive.widthPercent(0.5)),
         Expanded(
           child: Text(
-            display.isEmpty ? 'Chưa phân loại' : display,
+            subject!,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -359,7 +351,6 @@ class SchoolWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final display = (school ?? '').trim();
     return Row(
       children: [
         Image.asset(
@@ -370,7 +361,7 @@ class SchoolWidget extends StatelessWidget {
         SizedBox(width: responsive.widthPercent(0.5)),
         Expanded(
           child: Text(
-            display.isEmpty ? 'Chưa có trường' : display,
+            school!,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -398,7 +389,6 @@ class PageDateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayDate = (date ?? '').trim();
     return Wrap(
       spacing: responsive.widthPercent(1.2),
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -421,7 +411,7 @@ class PageDateWidget extends StatelessWidget {
           color: Colors.grey.shade600,
         ),
         Text(
-          displayDate.isEmpty ? '--/--/----' : displayDate,
+          date!,
           style: TextStyle(
             fontSize: responsive.fontSize(11),
             color: Colors.black87,
@@ -453,7 +443,7 @@ class LikeCommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = responsive.fontSize(15); // Tăng +2 từ 13 lên 15
+    final iconSize = responsive.fontSize(13);
 
     return Row(
       children: [
