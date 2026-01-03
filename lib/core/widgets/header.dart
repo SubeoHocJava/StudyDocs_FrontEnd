@@ -64,32 +64,35 @@ class _HeaderState extends State<Header> {
   void _openMenu() {
     final overlayState = Overlay.of(context);
     _overlayEntry = OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          // Barrier
-          Positioned.fill(
-            top: widget.preferredSize.height + MediaQuery.of(context).padding.top,
-            child: GestureDetector(
-              onTap: _closeMenu,
-              child: Container(
-                color: Colors.black.withOpacity(0.3),
+      builder:
+          (context) => Stack(
+            children: [
+              // Barrier
+              Positioned.fill(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                child: GestureDetector(
+                  onTap: _closeMenu,
+                  child: Container(color: Colors.black.withOpacity(0.3)),
+                ),
               ),
-            ),
+              // Drawer Content
+              Positioned(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                left: 0,
+                bottom: 0,
+                width: 300,
+                child: MenuDrawer(
+                  onClose: _closeMenu,
+                  onLogoTap: widget.onLogoTap,
+                  selectedIndex: widget.selectedIndex,
+                ),
+              ),
+            ],
           ),
-          // Drawer Content
-          Positioned(
-            top: widget.preferredSize.height + MediaQuery.of(context).padding.top,
-            left: 0,
-            bottom: 0,
-            width: 300,
-            child: MenuDrawer(
-              onClose: _closeMenu,
-              onLogoTap: widget.onLogoTap,
-              selectedIndex: widget.selectedIndex, // Pass it here
-            ),
-          ),
-        ],
-      ),
     );
 
     overlayState.insert(_overlayEntry!);
@@ -115,8 +118,7 @@ class _HeaderState extends State<Header> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Top Row: Date/Time
-              _buildDateTimeRow(context),
+              const SizedBox(height: 20),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 9.0),
@@ -131,12 +133,10 @@ class _HeaderState extends State<Header> {
                           if (widget.isDefault) _buildLogo(),
                         ],
                       ),
-                      
-                      // Title if not default (or if explicitly set)
+
                       if (!widget.isDefault && widget.headerTitle != null)
                         _buildTitle(),
 
-                      // Right: Actions
                       _buildActions(context),
                     ],
                   ),
@@ -144,30 +144,6 @@ class _HeaderState extends State<Header> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateTimeRow(BuildContext context) {
-    final now = DateTime.now();
-    // Simple formatting: "Thứ 3, 12/05/2024 - 10:30"
-    // Using manual formatting to avoid intl dependency if not sure
-    final weekDay = 'Thứ ${now.weekday + 1}'; // 1=Mon -> 2
-    final date = '${now.day}/${now.month}/${now.year}';
-    final time = '${now.hour}:${now.minute.toString().padLeft(2, '0')}'; 
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      color: Colors.transparent, 
-      alignment: Alignment.centerLeft,
-      child: Text(
-        '$weekDay, $date - $time',
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.docSmallText,
-          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -192,9 +168,9 @@ class _HeaderState extends State<Header> {
     );
   }
 
-  /// LOGO (moved to left)
+  /// LOGO
   Widget _buildLogo() {
-     return GestureDetector(
+    return GestureDetector(
       onTap: () {
         if (widget.onLogoTap != null) {
           widget.onLogoTap!();
@@ -203,25 +179,21 @@ class _HeaderState extends State<Header> {
           Navigator.of(context).popUntil((route) => route.isFirst);
         }
       },
-      child: Image.asset(
-        AppAssets.logo,
-        width: 40,
-        height: 40,
-      ),
+      child: Image.asset(AppAssets.logo, width: 56, height: 56),
     );
   }
 
-  /// TITLE (Center - only used if not default/logo mode)
+  /// TITLE
   Widget _buildTitle() {
-      return Text(
-        widget.headerTitle ?? '',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: AppColors.headerForeground,
-          fontFamily: 'Montserrat',
-        ),
-      );
+    return Text(
+      widget.headerTitle ?? '',
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.headerForeground,
+        fontFamily: 'Montserrat',
+      ),
+    );
   }
 
   /// RIGHT ACTIONS
@@ -239,20 +211,7 @@ class _HeaderState extends State<Header> {
             size: 24,
           ),
         ],
-        // Removed "User" (Follow) button as requested: "Bỏ nút user hiển thị ra trang follow"
-        // keeping logic generic just in case, but removing the specific icon button for follow
-        /*
-        if (widget.onFollowTap != null) ...[
-          AppIconButton(
-             iconData: Icons.people_outline,
-             color: AppColors.headerForeground,
-             onPressed: widget.onFollowTap!,
-             size: 24,
-          ),
-          const SizedBox(width: 8),
-        ],
-        */
-        
+
         if (widget.onProfileTap != null) ...[
           AppIconButton(
             iconData: Icons.account_circle_outlined,
@@ -261,17 +220,13 @@ class _HeaderState extends State<Header> {
             size: 28,
           ),
         ] else if (widget.isDefault) ...[
-          // Only show login button in default home-style header if no profile tap
           ElevatedButton(
             onPressed: widget.onLoginTap ?? () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.headerForeground,
               foregroundColor: AppColors.headerBackground,
               elevation: 0,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -285,7 +240,6 @@ class _HeaderState extends State<Header> {
           ),
         ],
         const SizedBox(width: 8),
-        // Sun/brightness icon
         AppIconButton(
           iconData: Icons.wb_sunny_outlined,
           color: AppColors.headerForeground,

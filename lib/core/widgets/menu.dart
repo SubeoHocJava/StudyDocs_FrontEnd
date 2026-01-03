@@ -1,44 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/upload_box.dart';
-import 'package:studydocs/features/library/presentation/screen/library_screen.dart';
 import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_event.dart';
 import 'package:studydocs/features/profile/logic/profile_state.dart';
 import 'package:studydocs/features/profile/presentation/screen/profile_screen.dart';
 import 'package:studydocs/features/profile/presentation/widget/Statistical.dart';
-import 'package:studydocs/features/notification/presentation/screen/notification_screen.dart';
-import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
-import 'package:studydocs/features/main/main_screen.dart';
+import 'package:studydocs/core/router/app_router.dart';
 
 class MenuDrawer extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback? onLogoTap;
-  final int selectedIndex; // Add selectedIndex
+  final int selectedIndex;
 
   const MenuDrawer({
     super.key,
     required this.onClose,
     this.onLogoTap,
-    this.selectedIndex = -1, // Default -1 means no highlight
+    this.selectedIndex = -1,
   });
 
   void _navigateTo(BuildContext context, int index) {
     onClose();
-    // Always navigate to refresh/ensure correct state as requested ("bấm 'trang chủ' thì sẽ hiển thị trang home_screen ban đầu")
-    // Even if we are on the page, the user wants to "reset" it effectively (fix white screen bug potentially by reloading)
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => MainScreen(initialIndex: index)),
-      (route) => false,
-    );
+
+    switch (index) {
+      case 0:
+        context.go(AppRoutes.home);
+        break;
+      case 1:
+        context.go(AppRoutes.library);
+        break;
+      case 2:
+        context.go(AppRoutes.explore);
+        break;
+      case 3:
+        context.go(AppRoutes.notifications);
+        break;
+      default:
+        context.go(AppRoutes.home);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile(0)),
+      create:
+          (_) =>
+              ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile(0)),
       child: Material(
         elevation: 16,
         color: Colors.white,
@@ -52,13 +63,18 @@ class MenuDrawer extends StatelessWidget {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 24,
+                      horizontal: 16,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (state is ProfileLoaded) _buildUserInfo(state),
-                        if (state is ProfileLoading) const Center(child: CircularProgressIndicator()),
-                        if (state is ProfileError) Text('Lỗi: ${state.message}'),
+                        if (state is ProfileLoading)
+                          const Center(child: CircularProgressIndicator()),
+                        if (state is ProfileError)
+                          Text('Lỗi: ${state.message}'),
 
                         const SizedBox(height: 24),
 
@@ -99,8 +115,8 @@ class MenuDrawer extends StatelessWidget {
                           isActive: selectedIndex == 3,
                           onTap: () => _navigateTo(context, 3),
                         ),
-                        // ...
 
+                        // ...
                         const SizedBox(height: 24),
                         const UploadBox(),
                       ],
@@ -130,8 +146,12 @@ class MenuDrawer extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundImage: state.avatarUrl != null ? NetworkImage(state.avatarUrl!) : null,
-                child: state.avatarUrl == null ? const Icon(Icons.person) : null,
+                backgroundImage:
+                    state.avatarUrl != null
+                        ? NetworkImage(state.avatarUrl!)
+                        : null,
+                child:
+                    state.avatarUrl == null ? const Icon(Icons.person) : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -139,7 +159,9 @@ class MenuDrawer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      state.fullName.isNotEmpty ? state.fullName : state.userName,
+                      state.fullName.isNotEmpty
+                          ? state.fullName
+                          : state.userName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -162,7 +184,7 @@ class MenuDrawer extends StatelessWidget {
             ],
           ),
         );
-      }
+      },
     );
   }
 
