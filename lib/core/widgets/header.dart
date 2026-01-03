@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/core/theme/app_theme.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
+
+import '../theme/app_theme.dart';
+import '../constants/app_colors.dart';
+import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
+
+//hao
+import '../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
+import '../../features/auth/domain/usecases/google_login_usecase.dart';
+import '../../features/auth/domain/usecases/login_usecase.dart';
+import '../../features/auth/domain/usecases/register_usecase.dart';
+import '../../features/auth/presentation/widgets/login_modal.dart';
+import '../../features/auth/presentation/bloc/login_bloc.dart';
+import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;

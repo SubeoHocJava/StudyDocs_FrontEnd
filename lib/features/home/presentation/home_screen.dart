@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
+import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
+import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
+import 'package:studydocs/features/explore/presentation/widgets/explore_bottom_sheet.dart';
 import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
 import 'package:studydocs/core/widgets/document/ListDocument.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
@@ -273,6 +278,23 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+
+  }
+
+  /// Xây dựng overlay Khám phá với BLoC và mock data.
+  Widget _buildExploreOverlay() {
+    final remote = ExploreRemoteDataSource();
+    final repo = ExploreRepositoryImpl(remote: remote);
+    final searchUseCase = SearchSchoolsUseCase(repository: repo);
+    final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
+
+    return BlocProvider(
+      create: (_) => ExploreBloc(
+        searchSchoolsUseCase: searchUseCase,
+        getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+      ),
+      child: const ExploreBottomSheet(),
     );
   }
 }
