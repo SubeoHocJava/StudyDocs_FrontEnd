@@ -17,6 +17,7 @@ import '../../features/auth/domain/usecases/register_usecase.dart';
 import '../../features/auth/presentation/widgets/login_modal.dart';
 import '../../features/auth/presentation/bloc/login_bloc.dart';
 import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_status_cubit.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
@@ -267,6 +268,7 @@ class _HeaderState extends State<Header> {
           ),
         ],
 
+        // Nếu có onProfileTap được truyền từ ngoài, ưu tiên dùng
         if (widget.onProfileTap != null) ...[
           AppIconButton(
             iconData: Icons.account_circle_outlined,
@@ -275,23 +277,42 @@ class _HeaderState extends State<Header> {
             size: 28,
           ),
         ] else if (widget.isDefault) ...[
-          ElevatedButton(
-            onPressed: widget.onLoginTap ??() => _showLoginModal(context) ,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.headerForeground,
-              foregroundColor: AppColors.headerBackground,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                fontFamily: 'Montserrat',
-              ),
-            ),
-            child: const Text('Đăng nhập'),
+          // Lắng nghe AuthStatusCubit để hiển thị đúng UI
+          BlocBuilder<AuthStatusCubit, AuthStatus>(
+            builder: (context, authStatus) {
+              if (authStatus is AuthAuthenticated) {
+                // ĐÃ ĐĂNG NHẬP → Hiển thị profile icon
+                return AppIconButton(
+                  iconData: Icons.account_circle_outlined,
+                  color: AppColors.headerForeground,
+                  onPressed: () {
+                    // Navigate to profile screen
+                    Navigator.of(context).pushNamed('/profile');
+                  },
+                  size: 28,
+                );
+              } else {
+                // CHƯA ĐĂNG NHẬP → Hiển thị nút đăng nhập
+                return ElevatedButton(
+                  onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.headerForeground,
+                    foregroundColor: AppColors.headerBackground,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  child: const Text('Đăng nhập'),
+                );
+              }
+            },
           ),
         ],
         const SizedBox(width: 8),

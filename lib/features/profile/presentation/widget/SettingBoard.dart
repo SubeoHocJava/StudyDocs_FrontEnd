@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../logic/profile_bloc.dart';
+import '../../../auth/presentation/bloc/auth_status_cubit.dart';
 import 'UpdateInforDialog.dart';
 
 class SettingBoard extends StatefulWidget {
@@ -136,9 +137,22 @@ class _SettingBoardState extends State<SettingBoard> {
         Padding(
           padding: const EdgeInsets.only(right: 12),
           child: TextButton.icon(
-            onPressed: () {
-              // widget.bloc.add(LogoutRequested());
-              // Navigator.of(context, rootNavigator: true).pop();
+            onPressed: () async {
+              // Logout: Xóa tokens và cập nhật auth state
+              await context.read<AuthStatusCubit>().logout();
+              
+              // Đóng dialog
+              if (context.mounted) {
+                Navigator.of(context, rootNavigator: true).pop();
+                
+                // Show thông báo
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Đã đăng xuất'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.logout, color: Colors.red),
             label: const Text(

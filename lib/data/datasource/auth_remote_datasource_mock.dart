@@ -72,7 +72,7 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
   }
 
   @override
-  Future<String> loginWithGoogle() async {
+  Future<String> loginWithGoogle({String? idToken}) async {
     await Future.delayed(const Duration(milliseconds: 600));
     return 'mock_google_token_${DateTime.now().millisecondsSinceEpoch}';
   }

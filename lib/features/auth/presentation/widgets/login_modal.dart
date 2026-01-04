@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../bloc/login_bloc.dart';
+import '../bloc/auth_status_cubit.dart';
 import '../screens/google_debug_screen.dart';
 import 'login_form.dart';
 import 'forgot_password_form.dart';
@@ -111,6 +112,9 @@ class _LoginModalState extends State<LoginModal> {
         BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
+              // CẬP NHẬT AUTH STATE - Quan trọng để Header update UI
+              context.read<AuthStatusCubit>().setAuthenticated(state.token);
+
               final claims = _tryDecodeJwt(state.token);
 
               // Nếu token là JWT (Google idToken), điều hướng sang màn demo để show rõ dữ liệu.
@@ -126,14 +130,12 @@ class _LoginModalState extends State<LoginModal> {
                 return;
               }
 
-              // Login thường (mock username/password): chỉ show snackbar gọn.
+              // Login thường: đóng modal và show snackbar
               final nav = Navigator.of(context, rootNavigator: true);
               nav.pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Đăng nhập thành công! (token len=${state.token.length})',
-                  ),
+                const SnackBar(
+                  content: Text('Đăng nhập thành công!'),
                   backgroundColor: Colors.green,
                 ),
               );

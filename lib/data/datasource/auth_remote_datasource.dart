@@ -6,5 +6,5 @@ import '../model/auth/request/register_request.dart';
 abstract class AuthRemoteDataSource {
   Future<String> login({required LoginRequest request});
   Future<void> register({required RegisterRequest request});
-  Future<String> loginWithGoogle();
+  Future<String> loginWithGoogle({String? idToken});
 }
