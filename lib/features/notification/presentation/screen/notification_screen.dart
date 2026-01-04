@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
 import 'package:studydocs/data/datasource/notification_remote_datasource.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
@@ -20,11 +19,12 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (_) =>
-              NotificationBloc(NotificationRepositoryImpl(NotificationDataSourceImpl(dioClient: DioClient())))
-                ..add(LoadNotificationEvent(DateTime.now(), true)),
+          (_) => NotificationBloc(
+            NotificationRepositoryImpl(
+              NotificationDataSourceImpl(dioClient: DioClient()),
+            ),
+          )..add(LoadNotificationEvent(DateTime.now(), true)),
       child: Scaffold(
-        appBar: const Header(),
         body: BlocBuilder<NotificationBloc, NotificationState>(
           builder: (context, state) {
             if (state is NotificationLoadingState) {

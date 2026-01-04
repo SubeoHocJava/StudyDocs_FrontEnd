@@ -10,14 +10,9 @@ class BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.headerBackground,
-        border: Border(
-          top: BorderSide(
-            color: AppColors.headerBackground,
-            width: 0.5,
-          ),
-        ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
       ),
       child: SafeArea(
         child: Padding(
@@ -45,11 +40,7 @@ class BottomNav extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
+          Icon(icon, color: color, size: 24),
           const SizedBox(height: 4),
           Text(
             label,

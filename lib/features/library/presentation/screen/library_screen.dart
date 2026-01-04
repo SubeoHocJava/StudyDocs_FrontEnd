@@ -1,42 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/library/domain/usecase/download_document_usecase.dart';
-import 'package:studydocs/features/library/domain/usecase/save_document_usecase.dart' show SaveDocumentUseCase;
+import 'package:studydocs/features/library/domain/usecase/save_document_usecase.dart'
+    show SaveDocumentUseCase;
 
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
-import '../../../../core/widgets/bottom_nav.dart';
-import '../../../upload_file/domain/data/impl/upload_file_repository_implement.dart';
-import '../../../upload_file/domain/usecase/upload_file_usecase.dart';
-import '../../../upload_file/logic/upload_file_bloc.dart';
-import '../../../upload_file/logic/upload_file_event.dart';
-import '../../../upload_file/presentation/screen/upload_file_screen.dart';
-import '../../domain/repository/impl/lib_repo_impl.dart';
-import '../../domain/usecase/like_document_usecase.dart';
-import '../../domain/usecase/load_document_usecase.dart';
-import '../../domain/usecase/search_document_usecase.dart';
-import '../../logic/LibraryState.dart';
-import '../../logic/library_bloc.dart';
-import '../widget/library_widgets.dart';
-import '../widget/recently_upload.dart';
-import '../widget/stored_document.dart';
-import '../widget/SubjectCategories.dart';
+import 'package:studydocs/features/upload_file/domain/data/impl/upload_file_repository_implement.dart';
+import 'package:studydocs/features/upload_file/domain/usecase/upload_file_usecase.dart';
+import 'package:studydocs/features/upload_file/logic/upload_file_bloc.dart';
+import 'package:studydocs/features/upload_file/logic/upload_file_event.dart';
+import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
+import 'package:studydocs/features/library/domain/repository/impl/lib_repo_impl.dart';
+import 'package:studydocs/features/library/domain/usecase/like_document_usecase.dart';
+import 'package:studydocs/features/library/domain/usecase/load_document_usecase.dart';
+import 'package:studydocs/features/library/domain/usecase/search_document_usecase.dart';
+import 'package:studydocs/features/library/logic/LibraryState.dart';
+import 'package:studydocs/features/library/logic/library_bloc.dart';
+import 'package:studydocs/features/library/presentation/widget/library_widgets.dart';
+import 'package:studydocs/features/library/presentation/widget/recently_upload.dart';
+import 'package:studydocs/features/library/presentation/widget/stored_document.dart';
+import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
+
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LibraryBloc(
-        loadDocumentUseCase: LoadDocumentUseCase(LibraryRepositoryImpl()),
-        searchDocumentUseCase: SearchDocumentUseCase(LibraryRepositoryImpl()),
-        downloadDocumentUseCase: DownloadDocumentUseCase(LibraryRepositoryImpl()),
-        saveDocumentUseCase: SaveDocumentUseCase(LibraryRepositoryImpl()),
-        likeDocumentUseCase: LikeDocumentUseCase(LibraryRepositoryImpl()),
-      )..add(LoadDocumentByKeyWord("keyword")),
+      create:
+          (_) => LibraryBloc(
+            loadDocumentUseCase: LoadDocumentUseCase(LibraryRepositoryImpl()),
+            searchDocumentUseCase: SearchDocumentUseCase(
+              LibraryRepositoryImpl(),
+            ),
+            downloadDocumentUseCase: DownloadDocumentUseCase(
+              LibraryRepositoryImpl(),
+            ),
+            saveDocumentUseCase: SaveDocumentUseCase(LibraryRepositoryImpl()),
+            likeDocumentUseCase: LikeDocumentUseCase(LibraryRepositoryImpl()),
+          )..add(LoadDocumentByKeyWord("keyword")),
       child: Scaffold(
-        appBar: Header(),
         body: BlocBuilder<LibraryBloc, LibraryState>(
           builder: (context, state) {
             if (state is LibraryLoading) {
@@ -50,9 +54,9 @@ class LibraryScreen extends StatelessWidget {
                   children: [
                     SearchInput(
                       onSearch: () {
-                        context
-                            .read<LibraryBloc>()
-                            .add(SearchDocument("keyword"));
+                        context.read<LibraryBloc>().add(
+                          SearchDocument("keyword"),
+                        );
                       },
                     ),
 
@@ -61,16 +65,21 @@ class LibraryScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => BlocProvider(
-                              create: (_) => UploadFileBloc(
-                                uploadFileUseCase: UploadFileUseCase(
-                                  repository: UpLoadFileRepositoryImpl(),
+                            builder:
+                                (_) => BlocProvider(
+                                  create:
+                                      (_) => UploadFileBloc(
+                                        uploadFileUseCase: UploadFileUseCase(
+                                          repository:
+                                              UpLoadFileRepositoryImpl(),
+                                        ),
+                                      )..add(
+                                        UploadFileLoadDocumentByKeyWord(
+                                          "keyword",
+                                        ),
+                                      ),
+                                  child: UploadFileScreen(),
                                 ),
-                              )..add(
-                                UploadFileLoadDocumentByKeyWord("keyword"),
-                              ),
-                              child: UploadFileScreen(),
-                            ),
                           ),
                         );
                       },
@@ -78,10 +87,7 @@ class LibraryScreen extends StatelessWidget {
 
                     SubjectCategories(state.categories),
                     RecentlyUpload(state.documents),
-                    StoredDocument(
-                      state.documents,
-                      crossAxisCount: 0,
-                    ),
+                    StoredDocument(state.documents, crossAxisCount: 0),
                   ],
                 ),
               );
@@ -93,10 +99,6 @@ class LibraryScreen extends StatelessWidget {
 
             return const Center(child: Text("Chưa có dữ liệu"));
           },
-        ),
-        bottomNavigationBar: BottomNav(
-          currentIndex: 1,
-          onTap: (_) {},
         ),
       ),
     );

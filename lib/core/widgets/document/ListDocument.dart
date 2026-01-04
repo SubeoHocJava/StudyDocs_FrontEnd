@@ -12,13 +12,13 @@ class ListDocument extends StatelessWidget {
   final void Function(DocumentUiList)? onComment;
 
   const ListDocument(
-      this.documents, {
-        super.key,
-        this.onDownload,
-        this.onSave,
-        this.onLike,
-        this.onComment,
-      });
+    this.documents, {
+    super.key,
+    this.onDownload,
+    this.onSave,
+    this.onLike,
+    this.onComment,
+  });
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
@@ -49,7 +49,7 @@ class ListDocument extends StatelessWidget {
 /// =======================
 /// CARD DOCUMENT
 /// =======================
-class MonoDocumentInList extends StatelessWidget {
+class MonoDocumentInList extends StatefulWidget {
   final DocumentUiList document;
 
   final void Function(DocumentUiList)? onDownload;
@@ -66,51 +66,110 @@ class MonoDocumentInList extends StatelessWidget {
   });
 
   @override
+  State<MonoDocumentInList> createState() => _MonoDocumentInListState();
+}
+
+class _MonoDocumentInListState extends State<MonoDocumentInList> {
+  bool _downloadSelected = false;
+  bool _saveSelected = false;
+
+  @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
     final double containerWidth =
-    responsive.isMobile ? responsive.widthPercent(90) : 520;
+        responsive.isMobile ? responsive.widthPercent(92) : 720;
 
     return Container(
       width: containerWidth,
-      height: responsive.isMobile ? responsive.heightPercent(25) : 210,
-      margin: EdgeInsets.symmetric(
-        vertical: responsive.heightPercent(0.5),
-      ),
+      margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
+      constraints: BoxConstraints(minHeight: responsive.isMobile ? 120 : 136),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade400),
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(responsive.isMobile ? 8 : 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DocumentImage(responsive: responsive),
-                SizedBox(width: responsive.widthPercent(2)),
-                Expanded(
-                  child:_DocumentInfo(
-                    document: document,
-                    responsive: responsive,
-                    onLike: onLike,
-                    onComment: onComment,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            right: responsive.isMobile ? 8 : 12,
-            bottom: responsive.isMobile ? 8 : 12,
-            child: DownloadSaveGroup(
-              responsive: responsive,
-              onDownload: () => onDownload?.call(document),
-              onSave: () => onSave?.call(document),
-            ),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
+        child: Row(
+          // Avoid stretching children to an unbounded height when this card is
+          // laid out inside scrollables (can trigger BoxConstraints(h=Infinity)).
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            DocumentImage(
+              responsive: responsive,
+              widthOverride: responsive.isMobile ? 88 : 100,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TitleWidget(
+                    title: widget.document.title,
+                    responsive: responsive,
+                  ),
+                  const SizedBox(height: 2),
+                  SubjectWidget(
+                    subject: widget.document.category,
+                    responsive: responsive,
+                  ),
+                  const SizedBox(height: 2),
+                  SchoolWidget(
+                    school: widget.document.institution,
+                    responsive: responsive,
+                  ),
+                  const SizedBox(height: 2),
+                  PageDateWidget(
+                    pages: 5,
+                    date: widget.document.createdAt,
+                    responsive: responsive,
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      LikeCommentWidget(
+                        likes: widget.document.likesCount,
+                        comments: widget.document.commentsCount,
+                        responsive: responsive,
+                        onLikeTap: () => widget.onLike?.call(widget.document),
+                        onCommentTap:
+                            () => widget.onComment?.call(widget.document),
+                      ),
+                      const Spacer(),
+                      _ActionIcon(
+                        icon: Icons.download_outlined,
+                        selected: _downloadSelected,
+                        onTap: () {
+                          setState(
+                            () => _downloadSelected = !_downloadSelected,
+                          );
+                          widget.onDownload?.call(widget.document);
+                        },
+                      ),
+                      const SizedBox(width: 6),
+                      _ActionIcon(
+                        icon: Icons.bookmark_border,
+                        selected: _saveSelected,
+                        onTap: () {
+                          setState(() => _saveSelected = !_saveSelected);
+                          widget.onSave?.call(widget.document);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -121,73 +180,104 @@ class MonoDocumentInList extends StatelessWidget {
 /// =======================
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
+  final double? widthOverride;
 
-  const DocumentImage({super.key, required this.responsive});
+  const DocumentImage({
+    super.key,
+    required this.responsive,
+    this.widthOverride,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final double size =
-    responsive.isMobile ? responsive.widthPercent(30) : 180;
+    final double width =
+        widthOverride ??
+        (responsive.isMobile ? responsive.widthPercent(30) : 180);
 
     return Container(
-      width: size,
-      height: size,
+      width: width,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.navy, width: 1),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.navy, width: 1.2),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.asset(
-          "assets/icons/temp_image.jpg",
-          fit: BoxFit.cover,
+        borderRadius: BorderRadius.circular(5),
+        child: Padding(
+          padding: const EdgeInsets.all(1.5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Image.asset(
+              "assets/icons/temp_image.jpg",
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// =======================
-/// DOCUMENT INFO
-/// =======================
-class _DocumentInfo extends StatelessWidget {
-  final DocumentUiList document;
-  final ResponsiveHelper responsive;
+class _ActionIcon extends StatefulWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool selected;
 
-  final void Function(DocumentUiList)? onLike;
-  final void Function(DocumentUiList)? onComment;
-
-  const _DocumentInfo({
-    required this.document,
-    required this.responsive,
-    this.onLike,
-    this.onComment,
+  const _ActionIcon({
+    required this.icon,
+    required this.onTap,
+    this.selected = false,
   });
+
+  @override
+  State<_ActionIcon> createState() => _ActionIconState();
+}
+
+class _ActionIconState extends State<_ActionIcon> {
+  bool _hovered = false;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TitleWidget(title: document.title, responsive: responsive),
-        SizedBox(height: responsive.heightPercent(0.5)),
-        SubjectWidget(subject: document.category, responsive: responsive),
-        SizedBox(height: responsive.heightPercent(0.5)),
-        SchoolWidget(school: document.institution, responsive: responsive),
-        SizedBox(height: responsive.heightPercent(0.5)),
-        PageDateWidget(
-          pages: 5,
-          date: document.createdAt,
-          responsive: responsive,
+    // Hover effect applies to both selected and unselected states
+    final bool isSelected = widget.selected;
+    final bool showHover = _hovered;
+
+    Color borderColor;
+    Color iconColor;
+    Color? backgroundColor;
+
+    if (isSelected) {
+      // Selected state
+      borderColor = showHover ? Colors.amber.shade800 : Colors.amber.shade700;
+      iconColor = showHover ? Colors.amber.shade900 : Colors.amber.shade800;
+      backgroundColor =
+          showHover
+              ? Colors.amber.withOpacity(0.15)
+              : Colors.amber.withOpacity(0.1);
+    } else {
+      // Unselected state
+      borderColor = showHover ? Colors.grey.shade500 : const Color(0xFFD0D0D0);
+      iconColor = showHover ? Colors.grey.shade800 : Colors.grey.shade600;
+      backgroundColor =
+          showHover ? Colors.grey.withOpacity(0.08) : Colors.transparent;
+    }
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: borderColor, width: 1.2),
+          ),
+          child: Icon(widget.icon, size: 22, color: iconColor),
         ),
-        SizedBox(height: responsive.heightPercent(1.5)),
-        LikeCommentWidget(
-          likes: document.likesCount,
-          comments: document.commentsCount,
-          responsive: responsive,
-          onLikeTap: () => onLike?.call(document),
-          onCommentTap: () => onComment?.call(document),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -199,21 +289,22 @@ class TitleWidget extends StatelessWidget {
   final String title;
   final ResponsiveHelper responsive;
 
-  const TitleWidget({
-    super.key,
-    required this.title,
-    required this.responsive,
-  });
+  const TitleWidget({super.key, required this.title, required this.responsive});
 
   @override
   Widget build(BuildContext context) {
+    final String displayTitle =
+        title.length > 50 ? '${title.substring(0, 50)}...' : title;
+
     return Text(
-      title,
+      displayTitle,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        fontSize: responsive.fontSize(14),
-        fontWeight: FontWeight.bold,
+        fontSize: responsive.fontSize(13),
+        fontWeight: FontWeight.w700,
+        height: 1.2,
+        color: Colors.black87,
       ),
     );
   }
@@ -231,17 +322,24 @@ class SubjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = (subject ?? '').trim();
     return Row(
       children: [
-        Icon(Icons.folder,
-            size: responsive.fontSize(14), color: Colors.blue),
-        SizedBox(width: responsive.widthPercent(1)),
+        Icon(
+          Icons.folder_outlined,
+          size: responsive.fontSize(11.5),
+          color: Colors.blue.shade600,
+        ),
+        SizedBox(width: responsive.widthPercent(0.5)),
         Expanded(
           child: Text(
-            subject!,
-            maxLines: 2,
+            display.isEmpty ? 'Chưa phân loại' : display,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: responsive.fontSize(12)),
+            style: TextStyle(
+              fontSize: responsive.fontSize(11),
+              color: Colors.black87,
+            ),
           ),
         ),
       ],
@@ -261,20 +359,24 @@ class SchoolWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final display = (school ?? '').trim();
     return Row(
       children: [
         Image.asset(
           "assets/icons/school.png",
-          width: responsive.fontSize(14),
-          height: responsive.fontSize(14),
+          width: responsive.fontSize(11.5),
+          height: responsive.fontSize(11.5),
         ),
-        SizedBox(width: responsive.widthPercent(1)),
+        SizedBox(width: responsive.widthPercent(0.5)),
         Expanded(
           child: Text(
-            school!,
-            maxLines: 2,
+            display.isEmpty ? 'Chưa có trường' : display,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: responsive.fontSize(12)),
+            style: TextStyle(
+              fontSize: responsive.fontSize(11),
+              color: Colors.black87,
+            ),
           ),
         ),
       ],
@@ -296,22 +398,40 @@ class PageDateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayDate = (date ?? '').trim();
     return Wrap(
-      spacing: responsive.widthPercent(2),
+      spacing: responsive.widthPercent(1.2),
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Icon(Icons.file_open_rounded,
-            size: responsive.fontSize(14)),
-        Text("$pages trang",
-            style: TextStyle(fontSize: responsive.fontSize(12))),
-        Icon(Icons.calendar_today,
-            size: responsive.fontSize(14)),
-        Text(date!,
-            style: TextStyle(fontSize: responsive.fontSize(12))),
+        Icon(
+          Icons.description_outlined,
+          size: responsive.fontSize(11.5),
+          color: Colors.grey.shade600,
+        ),
+        Text(
+          "$pages trang",
+          style: TextStyle(
+            fontSize: responsive.fontSize(11),
+            color: Colors.black87,
+          ),
+        ),
+        Icon(
+          Icons.calendar_today_outlined,
+          size: responsive.fontSize(11.5),
+          color: Colors.grey.shade600,
+        ),
+        Text(
+          displayDate.isEmpty ? '--/--/----' : displayDate,
+          style: TextStyle(
+            fontSize: responsive.fontSize(11),
+            color: Colors.black87,
+          ),
+        ),
       ],
     );
   }
 }
+
 // LikeComment
 class LikeCommentWidget extends StatelessWidget {
   final int? likes;
@@ -333,7 +453,7 @@ class LikeCommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = responsive.fontSize(16);
+    final iconSize = responsive.fontSize(15); // Tăng +2 từ 13 lên 15
 
     return Row(
       children: [
@@ -342,29 +462,42 @@ class LikeCommentWidget extends StatelessWidget {
           onTap: onLikeTap,
           child: Row(
             children: [
-              Icon(Icons.thumb_up_outlined, size: iconSize),
-              SizedBox(width: responsive.widthPercent(1)),
+              Icon(
+                Icons.thumb_up_outlined,
+                size: iconSize,
+                color: Colors.grey.shade600,
+              ),
+              SizedBox(width: responsive.widthPercent(0.5)),
               Text(
                 "$likes",
-                style: TextStyle(fontSize: responsive.fontSize(14)),
+                style: TextStyle(
+                  fontSize: responsive.fontSize(11),
+                  color: Colors.black87,
+                ),
               ),
             ],
           ),
         ),
 
-        SizedBox(width: responsive.widthPercent(3)),
+        SizedBox(width: responsive.widthPercent(2)),
 
         // ===== COMMENT =====
         GestureDetector(
           onTap: onCommentTap,
           child: Row(
             children: [
-              Icon(Icons.comment,
-                  size: iconSize, color: Colors.grey),
-              SizedBox(width: responsive.widthPercent(1)),
+              Icon(
+                Icons.chat_bubble_outline,
+                size: iconSize,
+                color: Colors.grey.shade600,
+              ),
+              SizedBox(width: responsive.widthPercent(0.5)),
               Text(
                 "$comments",
-                style: TextStyle(fontSize: responsive.fontSize(14)),
+                style: TextStyle(
+                  fontSize: responsive.fontSize(11),
+                  color: Colors.black87,
+                ),
               ),
             ],
           ),
@@ -374,7 +507,6 @@ class LikeCommentWidget extends StatelessWidget {
   }
 }
 
-
 /// =======================
 /// DOWNLOAD + SAVE
 /// =======================
@@ -382,17 +514,20 @@ class DownloadSaveGroup extends StatelessWidget {
   final ResponsiveHelper responsive;
   final VoidCallback? onDownload;
   final VoidCallback? onSave;
+  final bool showSave;
 
   const DownloadSaveGroup({
     super.key,
     required this.responsive,
     this.onDownload,
     this.onSave,
+    this.showSave = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = responsive.fontSize(26);
+    // Enlarged icon size as requested (was 26)
+    final iconSize = responsive.fontSize(32);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -402,11 +537,16 @@ class DownloadSaveGroup extends StatelessWidget {
           child: Icon(Icons.download_rounded, size: iconSize),
         ),
         const SizedBox(width: 6),
-        GestureDetector(
-          onTap: onSave,
-          child: Icon(Icons.bookmark_rounded,
-              size: iconSize + 2, color: Colors.amber),
-        ),
+        // Save button visibility toggled by showSave
+        if (showSave)
+          GestureDetector(
+            onTap: onSave,
+            child: Icon(
+              Icons.bookmark_rounded,
+              size: iconSize + 2,
+              color: Colors.amber,
+            ),
+          ),
       ],
     );
   }

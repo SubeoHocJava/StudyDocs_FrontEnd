@@ -15,4 +15,7 @@ class AppAssets {
   static const unsaved   = '$_base/unsaved.png';
 
   static const avt       = '$_base/avatar.png';
+
+  static const cmt = '$_base/cmt.png';
+  static const upload = '$_base/upload.png';
 }

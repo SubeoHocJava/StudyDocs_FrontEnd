@@ -1,16 +1,22 @@
 import 'package:dio/dio.dart';
+import '../../services/token_storage_service.dart';
 
-class ApiInterceptor extends Interceptor {
+class ApiInterceptor extends QueuedInterceptor {
+  final TokenStorageService _tokenStorage;
+
+  ApiInterceptor({TokenStorageService? tokenStorage})
+      : _tokenStorage = tokenStorage ?? TokenStorageService();
+
   @override
-  void onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) {
-    // TODO: Thêm token nếu có
-    // final token = await _getToken();
-    // if (token != null) {
-    //   options.headers['Authorization'] = 'Bearer $token';
-    // }
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    // Tự động thêm token vào header nếu có
+    final authHeader = await _tokenStorage.getAuthorizationHeader();
+    if (authHeader != null) {
+      options.headers['Authorization'] = authHeader;
+    }
 
     print('REQUEST[${options.method}] => PATH: ${options.path}');
     super.onRequest(options, handler);
