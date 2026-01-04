@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/core/theme/app_theme.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
+
+import '../theme/app_theme.dart';
+import '../constants/app_colors.dart';
+import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
+
+//hao
+import '../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
+import '../../features/auth/domain/usecases/google_login_usecase.dart';
+import '../../features/auth/domain/usecases/login_usecase.dart';
+import '../../features/auth/domain/usecases/register_usecase.dart';
+import '../../features/auth/presentation/widgets/login_modal.dart';
+import '../../features/auth/presentation/bloc/login_bloc.dart';
+import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_status_cubit.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
@@ -34,6 +47,8 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
     this.selectedIndex = -1,
   });
 
+
+
   @override
   State<Header> createState() => _HeaderState();
 
@@ -44,6 +59,46 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
 class _HeaderState extends State<Header> {
   OverlayEntry? _overlayEntry;
   bool _isMenuOpen = false;
+
+  //auth
+  void _showLoginModal(BuildContext context) {
+    // Hiển thị dialog đăng nhập với hiệu ứng chuẩn Material.
+    // Ở đây chúng ta khởi tạo chuỗi phụ thuộc: DataSource -> Repository -> UseCase -> BLoC
+    // tương tự như phần Home, nhưng rút gọn để dễ hiểu.
+
+    // 1. Tầng data: login/register dùng mock, Google login dùng thật
+    final remote = AuthRemoteDataSourceHybrid();
+
+    // 2. Tầng repository: wrap datasource
+    final authRepository = AuthRepositoryImpl(remote: remote);
+
+    // 3. Tầng domain: usecase đăng nhập
+    final loginUseCase = LoginUseCase(repository: authRepository);
+    final googleLoginUseCase = GoogleLoginUseCase(repository: authRepository);
+    final registerUseCase = RegisterUseCase(repository: authRepository);
+
+    // 4. Cung cấp [LoginBloc] riêng cho dialog thông qua BlocProvider.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create:
+                (_) => LoginBloc(
+              loginUseCase: loginUseCase,
+              googleLoginUseCase: googleLoginUseCase,
+            ),
+          ),
+          BlocProvider(
+            create: (_) => RegisterBloc(registerUseCase: registerUseCase),
+          ),
+        ],
+        child: const LoginModal(),
+      ),
+    );
+  }
 
   void _toggleMenu() {
     if (_isMenuOpen) {
@@ -62,44 +117,45 @@ class _HeaderState extends State<Header> {
   }
 
   void _openMenu() {
-    final overlayState = Overlay.of(context);
-    _overlayEntry = OverlayEntry(
-      builder:
-          (context) => Stack(
-            children: [
-              // Barrier
-              Positioned.fill(
-                top:
-                    widget.preferredSize.height +
-                    MediaQuery.of(context).padding.top,
-                child: GestureDetector(
-                  onTap: _closeMenu,
-                  child: Container(color: Colors.black.withOpacity(0.3)),
-                ),
+  final overlayState = Overlay.of(context);
+  _overlayEntry = OverlayEntry(
+    builder:
+        (context) => Stack(
+          children: [
+            // Barrier
+            Positioned.fill(
+              top:
+                  widget.preferredSize.height +
+                  MediaQuery.of(context).padding.top,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
+                onTap: _closeMenu,
+                child: Container(color: Colors.black.withOpacity(0.3)),
               ),
-              // Drawer Content
-              Positioned(
-                top:
-                    widget.preferredSize.height +
-                    MediaQuery.of(context).padding.top,
-                left: 0,
-                bottom: 0,
-                width: 300,
-                child: MenuDrawer(
-                  onClose: _closeMenu,
-                  onLogoTap: widget.onLogoTap,
-                  selectedIndex: widget.selectedIndex,
-                ),
+            ),
+            // Drawer Content
+            Positioned(
+              top:
+                  widget.preferredSize.height +
+                  MediaQuery.of(context).padding.top,
+              left: 0,
+              bottom: 0,
+              width: 300,
+              child: MenuDrawer(
+                onClose: _closeMenu,
+                onLogoTap: widget.onLogoTap,
+                selectedIndex: widget.selectedIndex,
               ),
-            ],
-          ),
-    );
+            ),
+          ],
+        ),
+  );
 
-    overlayState.insert(_overlayEntry!);
-    setState(() {
-      _isMenuOpen = true;
-    });
-  }
+  overlayState.insert(_overlayEntry!);
+  setState(() {
+    _isMenuOpen = true;
+  });
+}
 
   @override
   void dispose() {
@@ -212,6 +268,7 @@ class _HeaderState extends State<Header> {
           ),
         ],
 
+        // Nếu có onProfileTap được truyền từ ngoài, ưu tiên dùng
         if (widget.onProfileTap != null) ...[
           AppIconButton(
             iconData: Icons.account_circle_outlined,
@@ -220,23 +277,42 @@ class _HeaderState extends State<Header> {
             size: 28,
           ),
         ] else if (widget.isDefault) ...[
-          ElevatedButton(
-            onPressed: widget.onLoginTap ?? () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.headerForeground,
-              foregroundColor: AppColors.headerBackground,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                fontFamily: 'Montserrat',
-              ),
-            ),
-            child: const Text('Đăng nhập'),
+          // Lắng nghe AuthStatusCubit để hiển thị đúng UI
+          BlocBuilder<AuthStatusCubit, AuthStatus>(
+            builder: (context, authStatus) {
+              if (authStatus is AuthAuthenticated) {
+                // ĐÃ ĐĂNG NHẬP → Hiển thị profile icon
+                return AppIconButton(
+                  iconData: Icons.account_circle_outlined,
+                  color: AppColors.headerForeground,
+                  onPressed: () {
+                    // Navigate to profile screen
+                    Navigator.of(context).pushNamed('/profile');
+                  },
+                  size: 28,
+                );
+              } else {
+                // CHƯA ĐĂNG NHẬP → Hiển thị nút đăng nhập
+                return ElevatedButton(
+                  onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.headerForeground,
+                    foregroundColor: AppColors.headerBackground,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                  child: const Text('Đăng nhập'),
+                );
+              }
+            },
           ),
         ],
         const SizedBox(width: 8),

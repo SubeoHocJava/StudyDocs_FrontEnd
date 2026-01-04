@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'features/home/logic/home_bloc.dart';
+import 'features/auth/presentation/bloc/auth_status_cubit.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -26,9 +27,18 @@ class MyApp extends StatelessWidget {
 
             routerConfig: router,
             builder: (context, child) {
-              // Keep a single HomeBloc instance for the whole app (previously provided at home).
-              return BlocProvider(
-                create: (context) => createHomeBloc(),
+              // Provide global BLoCs/Cubits for the whole app
+              return MultiBlocProvider(
+                providers: [
+                  // HomeBloc instance for the whole app
+                  BlocProvider(
+                    create: (context) => createHomeBloc(),
+                  ),
+                  // AuthStatusCubit để quản lý trạng thái login toàn app
+                  BlocProvider(
+                    create: (context) => AuthStatusCubit()..checkAuthStatus(),
+                  ),
+                ],
                 child: child ?? const SizedBox.shrink(),
               );
             },

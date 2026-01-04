@@ -40,6 +40,9 @@ dependencies:
   speech_to_text: ^7.0.0 #voice tim kiem
 
   dio: ^5.4.0 #call api
+  google_sign_in: ^6.2.1
+  font_awesome_flutter: ^10.7.0
+  shared_preferences: ^2.2.2 #lưu trữ tokens
   #note: xem xet https (bo qua)
 
   # The following adds the Cupertino Icons font to your application.

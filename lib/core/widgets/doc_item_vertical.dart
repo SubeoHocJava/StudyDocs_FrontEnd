@@ -40,6 +40,7 @@ class DocItemVertical extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Image.asset(AppAssets.folder, width: 30, height: 30, color: AppColors.headerBackground),
+
             ),
             const SizedBox(height: 8),
             Text(
