@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
-
-import 'package:studydocs/features/manage_user/domain/repository/manage_user_repository.dart';
+import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/manage_user/domain/repository/impl/ManageUserRepositoryImpl.dart';
+import 'package:studydocs/features/manage_user/domain/repository/manage_user_repository.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_event.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_state.dart';
@@ -20,23 +19,15 @@ class ManageUserScreen extends StatelessWidget {
     return RepositoryProvider<ManageUserRepository>(
       create: (_) => ManageUserRepositoryImpl(),
       child: BlocProvider(
-        create: (context) => ManageUserBloc(
-          context.read<ManageUserRepository>(),
-        )..add(
-          LoadListUser(
-            fromPage: 1,
-            toPage: 1,
-            numUser: 7,
-          ),
-        ),
+        create:
+            (context) =>
+                createManageUserBloc(context.read<ManageUserRepository>())
+                  ..add(LoadListUser(fromPage: 1, toPage: 3, numUser: 10)),
         child: Scaffold(
-          appBar: Header(),
           body: BlocBuilder<ManageUserBloc, ManageUserState>(
             builder: (context, state) {
               if (state is ManageUserLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
               if (state is ManageUserLoaded) {
@@ -46,28 +37,18 @@ class ManageUserScreen extends StatelessWidget {
                     children: [
                       SearchAndAddUser(),
                       const SizedBox(height: 12),
-                      Expanded(
-                        child: ListUser(listUser: state.listUser),
-                      ),
+                      Expanded(child: ListUser(listUser: state.listUser)),
                     ],
                   ),
                 );
               }
 
               if (state is ManageUserError) {
-                return Center(
-                  child: Text('Lỗi: ${state.message}'),
-                );
+                return Center(child: Text('Lỗi: ${state.message}'));
               }
 
-              return const Center(
-                child: Text('Chưa có dữ liệu người dùng'),
-              );
+              return const Center(child: Text('Chưa có dữ liệu người dùng'));
             },
-          ),
-          bottomNavigationBar: BottomNav(
-            currentIndex: 4,
-            onTap: (int value) {},
           ),
         ),
       ),

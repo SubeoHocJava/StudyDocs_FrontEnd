@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/model/user.dart';
 
 import '../domain/repository/manage_user_repository.dart';
 import '../domain/usecase/add_user_usecase.dart';
@@ -13,19 +12,20 @@ import 'manage_user_state.dart';
 class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   final ManageUserRepository repository;
 
-  late final GetListUserUseCase _getListUserUseCase;
-  late final DeleteUserUseCase _deleteUserUseCase;
-  late final AddUserUseCase _addUserUseCase;
-  late final UpdateUserUseCase _updateUserUseCase;
-  late final SearchUserUseCase _searchUserUseCase;
+  final GetListUserUseCase _getListUserUseCase;
+  final DeleteUserUseCase _deleteUserUseCase;
+  final AddUserUseCase _addUserUseCase;
+  final UpdateUserUseCase _updateUserUseCase;
+  final SearchUserUseCase _searchUserUseCase;
 
-  ManageUserBloc(this.repository) : super(ManageUserInitial()) {
-    _getListUserUseCase = GetListUserUseCase(repository);
-    _deleteUserUseCase = DeleteUserUseCase(repository);
-    _addUserUseCase = AddUserUseCase(repository);
-    _updateUserUseCase = UpdateUserUseCase(repository);
-    _searchUserUseCase = SearchUserUseCase(repository);
-
+  ManageUserBloc(
+    this.repository,
+    this._getListUserUseCase,
+    this._deleteUserUseCase,
+    this._addUserUseCase,
+    this._updateUserUseCase,
+    this._searchUserUseCase,
+  ) : super(ManageUserInitial()) {
     // ================= LOAD USER LIST =================
     on<LoadListUser>(_onLoadListUser);
 
@@ -47,9 +47,9 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   // ==================================================
 
   Future<void> _onLoadListUser(
-      LoadListUser event,
-      Emitter<ManageUserState> emit,
-      ) async {
+    LoadListUser event,
+    Emitter<ManageUserState> emit,
+  ) async {
     emit(ManageUserLoading());
     try {
       final users = await _getListUserUseCase(
@@ -65,9 +65,9 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   }
 
   Future<void> _onSearchUser(
-      SearchUser event,
-      Emitter<ManageUserState> emit,
-      ) async {
+    SearchUser event,
+    Emitter<ManageUserState> emit,
+  ) async {
     emit(ManageUserLoading());
     try {
       final users = await _searchUserUseCase(
@@ -82,10 +82,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
     }
   }
 
-  Future<void> _onAddUser(
-      AddUser event,
-      Emitter<ManageUserState> emit,
-      ) async {
+  Future<void> _onAddUser(AddUser event, Emitter<ManageUserState> emit) async {
     emit(ManageUserLoading());
     try {
       final success = await _addUserUseCase(event.userId);
@@ -96,7 +93,11 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       }
 
       // reload list
-      final users = await _getListUserUseCase(fromPage: 1,toPage: 3,numUser: 10);
+      final users = await _getListUserUseCase(
+        fromPage: 1,
+        toPage: 3,
+        numUser: 10,
+      );
       emit(ManageUserLoaded(listUser: users));
     } catch (e) {
       emit(ManageUserError('Thêm user thất bại: $e'));
@@ -104,9 +105,9 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   }
 
   Future<void> _onUpdateUser(
-      UpdateUser event,
-      Emitter<ManageUserState> emit,
-      ) async {
+    UpdateUser event,
+    Emitter<ManageUserState> emit,
+  ) async {
     emit(ManageUserLoading());
     try {
       final success = await _updateUserUseCase(event.user);
@@ -116,7 +117,11 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         return;
       }
 
-      final users = await _getListUserUseCase(fromPage: 1,toPage: 3,numUser: 10);
+      final users = await _getListUserUseCase(
+        fromPage: 1,
+        toPage: 3,
+        numUser: 10,
+      );
       emit(ManageUserLoaded(listUser: users));
     } catch (e) {
       emit(ManageUserError('Cập nhật user thất bại: $e'));
@@ -124,9 +129,9 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   }
 
   Future<void> _onDeleteUser(
-      DeleteUser event,
-      Emitter<ManageUserState> emit,
-      ) async {
+    DeleteUser event,
+    Emitter<ManageUserState> emit,
+  ) async {
     emit(ManageUserLoading());
     try {
       final success = await _deleteUserUseCase(event.userId);
@@ -134,11 +139,27 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         emit(const ManageUserError('Xóa user thất bại'));
         return;
       }
-      final users = await _getListUserUseCase(fromPage: 1,toPage: 3,numUser: 10);
+      final users = await _getListUserUseCase(
+        fromPage: 1,
+        toPage: 3,
+        numUser: 10,
+      );
       print('Bloc users length = ${users.length}');
       emit(ManageUserLoaded(listUser: users));
     } catch (e) {
       emit(ManageUserError('Xóa user thất bại: $e'));
     }
   }
+}
+ManageUserBloc createManageUserBloc(
+    ManageUserRepository repository,
+    ) {
+  return ManageUserBloc(
+    repository,
+    GetListUserUseCase(repository),
+    DeleteUserUseCase(repository),
+    AddUserUseCase(repository),
+    UpdateUserUseCase(repository),
+    SearchUserUseCase(repository),
+  );
 }
