@@ -22,6 +22,7 @@ class NotificationScreen extends StatelessWidget {
       child: NotificationPageLayout(
         userId: userId,
         isDeleted: false,
+        showHeader: false, // MainScreen already has header
         headerTitle: "Thông báo",
         emptyMessage: "Chưa có dữ liệu",
         onModal: (BuildContext ctx) {

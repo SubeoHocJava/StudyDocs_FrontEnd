@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 import 'package:studydocs/features/notification/presentation/component/helpers/notification_modal_size_helper.dart';
 import 'package:studydocs/features/notification/presentation/component/base/notification_modal_action.dart';
-import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
+import 'package:go_router/go_router.dart';
 
 import '../base/notification_modal_layout.dart';
 
@@ -41,21 +42,24 @@ class NotificationNormalModal extends StatelessWidget {
             asset: AppAssets.bin,
             size: sizes.clampedButtonIconSize,
               onPressed: () async {
-              // Capture the parent bloc and navigator before closing the modal to avoid using a disposed context
+              // Capture the parent bloc
               final parentBloc = context.read<NotificationBloc>();
-              final navigator = Navigator.of(context);
-              // Close modal
-              navigator.pop();
-              // Navigate to Trash screen with the same bloc
-              final result = await navigator.push<bool?>(
-                MaterialPageRoute(
-                  builder: (_) => NotificationTrashScreen(userId: userId, parentBloc: parentBloc),
-                ),
+              final goRouter = GoRouter.of(context);
+              
+              // Close modal first
+              Navigator.pop(context);
+
+               // Use GoRouter
+              final result = await goRouter.pushNamed<bool?>(
+                AppRoutes.notificationTrash,
+                extra: {
+                  'userId': userId,
+                  'bloc': parentBloc, 
+                },
               );
 
               // If the trash screen returned true (something changed), reload main list
               if (result == true) {
-                // Ask the current NotificationBloc to reload non-deleted notifications
                 parentBloc.add(const LoadNotificationEvent(isDeleted: false));
               }
             },

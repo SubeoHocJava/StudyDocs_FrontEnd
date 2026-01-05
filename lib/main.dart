@@ -14,13 +14,14 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await FcmService().initialize();
+  final dioClient = DioClient();
+  final notificationDataSource = NotificationDataSourceImpl(dioClient: dioClient);
+  final notificationRepository = NotificationRepositoryImpl(notificationDataSource);
+
+  await FcmService().initialize(notificationRepository);
   runApp(
-    RepositoryProvider<NotificationRepository>(
-      create:
-          (_) => NotificationRepositoryImpl(
-            NotificationDataSourceImpl(dioClient: DioClient()),
-          ),
+    RepositoryProvider<NotificationRepository>.value(
+      value: notificationRepository,
       child: const MyApp(),
     ),
   );

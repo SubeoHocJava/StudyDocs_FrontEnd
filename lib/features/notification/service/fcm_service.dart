@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/datasource/notification_remote_datasource.dart';
-import 'package:studydocs/features/notification/domain/repository/impl/notification_repository.dart';
+import 'package:studydocs/features/notification/domain/repository/notification_repository.dart';
 import 'package:studydocs/features/notification/domain/usecase/register_fcm_token_usecase.dart';
 
 class FcmService {
@@ -20,17 +18,9 @@ class FcmService {
 
   late final AndroidNotificationChannel _channel;
 
-  /// Khởi tạo Dependencies (Poor man's DI)
-  void _initDependencies() {
-    final dioClient = DioClient();
-    final dataSource = NotificationDataSourceImpl(dioClient: dioClient);
-    final repository = NotificationRepositoryImpl(dataSource);
-    _registerFcmTokenUseCase = RegisterFcmTokenUseCase(repository);
-  }
-
   /// Khởi tạo FCM: xin quyền và đăng ký các listener
-  Future<void> initialize() async {
-    _initDependencies();
+  Future<void> initialize(NotificationRepository repository) async {
+    _registerFcmTokenUseCase = RegisterFcmTokenUseCase(repository);
 
     // Initialize local notifications
     _channel = const AndroidNotificationChannel(

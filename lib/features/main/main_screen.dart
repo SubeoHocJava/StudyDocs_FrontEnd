@@ -4,7 +4,9 @@ import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/home/presentation/home_screen.dart';
 import 'package:studydocs/features/library/presentation/screen/library_screen.dart';
+import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/presentation/notification_screen.dart';
+import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
 
 class MainScreen extends StatelessWidget {
@@ -81,5 +83,15 @@ class MainTabNotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const NotificationScreen(userId: '');
+  }
+}
+class MainTabNotificationsTrashPage extends StatelessWidget {
+  final String userId; 
+  final NotificationBloc? parentBloc;
+  const MainTabNotificationsTrashPage({super.key, required this.userId, this.parentBloc});
+
+  @override
+  Widget build(BuildContext context) {
+    return const NotificationTrashScreen(userId: '');
   }
 }

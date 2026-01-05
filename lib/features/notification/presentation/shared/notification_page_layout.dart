@@ -12,6 +12,7 @@ class NotificationPageLayout extends StatelessWidget {
   final Widget Function(List<NotificationEntity>) childBuilder;
   final String userId;
 
+  final bool showHeader;
   // Header props
   final bool isDefault;
   final String? headerTitle;
@@ -24,6 +25,7 @@ class NotificationPageLayout extends StatelessWidget {
     required this.emptyMessage,
     required this.childBuilder,
     required this.userId,
+    this.showHeader = true,
     this.isDefault = true,
     this.headerTitle,
     this.onBack,
@@ -33,12 +35,12 @@ class NotificationPageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
+      appBar: showHeader ? Header(
         isDefault: isDefault,
         headerTitle: headerTitle,
         onBack: onBack ?? () => Navigator.pop(context),
         onModal: onModal,
-      ),
+      ) : null,
       body: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (context, state) {
           if (state is NotificationLoadingState) {
