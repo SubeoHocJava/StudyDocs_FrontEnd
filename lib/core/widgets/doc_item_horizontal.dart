@@ -36,7 +36,7 @@ class DocItemHorizontal extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
-            child: Image.asset(AppAssets.folder, width: 26, height: 26, color: AppColors.headerBackground),
+            child: Image.asset(AppAssets.folder, width: 26, height: 26, color: AppColors.headerForeground),
           ),
           const SizedBox(width: 10),
           Expanded(

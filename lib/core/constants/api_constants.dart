@@ -1,8 +1,16 @@
 class ApiConstants {
   // Base URL
-  static const String baseUrl = 'http://192.168.1.56:8087/api/v1/';
+  // Web/iOS: dùng localhost
+  // Android Emulator: dùng 10.0.2.2
+  static const String baseUrl = 'http://10.0.2.2:8081/api';
 
-  // Endpoints
+  // Auth Endpoints
+  static const String authLoginLocal = '/auth/login/local';
+  static const String authLoginGoogle = '/auth/login/provider/google';
+  static const String authLogin = '/auth/login';
+  static const String authRegister = '/auth/register';
+
+  // Document Endpoints
   static const String documents = '/documents';
   static const String popularDocuments = '/documents/popular';
   static const String recentDocuments = '/documents/recent';

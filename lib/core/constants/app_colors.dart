@@ -15,7 +15,7 @@ class AppColors {
   static const Color gray = Color(0xFF7A7A7A);
   static const Color navy = Color(0xFF000F4C); // Xanh navy đậm
 
-  // Semantic aliases (dễ đọc, dùng cho component cụ thể)
+  // Semantic aliases (dễ đọc, dùng cho widget cụ thể)
   static const Color headerBackground = primaryLight;
   static const Color headerForeground = primary;
 

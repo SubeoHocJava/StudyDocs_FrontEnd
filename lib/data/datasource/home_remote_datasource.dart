@@ -19,8 +19,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     try {
       // TODO: Thay bằng API call thật
       // final response = await dioClient.get(ApiConstants.documents);
-      // final List<dynamic> data = response.data['data'];
-      // return data.map((json) => DocumentModel.fromJson(json)).toList();
+      // final List<dynamic> repository = response.repository['repository'];
+      // return repository.map((json) => DocumentModel.fromJson(json)).toList();
 
       // 🎭 MOCK DATA (giữ lại để test)
       await Future.delayed(const Duration(milliseconds: 500));
@@ -87,7 +87,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     }
   }
 
-  // Mock data
+  // Mock repository
   List<DocumentModel> _getMockDocuments() {
     return [
       DocumentModel(
