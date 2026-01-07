@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Event chung của DocsBloc
 abstract class DocsEvent extends Equatable {
   const DocsEvent();
 
@@ -8,8 +7,15 @@ abstract class DocsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Event load chi tiết tài liệu
 class LoadDocDetails extends DocsEvent {}
 
-/// Event đổi trạng thái save (save/un-save)
 class ToggleSave extends DocsEvent {}
+
+class ToggleDocumentLike extends DocsEvent {
+  final bool isLike; // true = like, false = dislike
+
+  const ToggleDocumentLike(this.isLike);
+
+  @override
+  List<Object?> get props => [isLike];
+}

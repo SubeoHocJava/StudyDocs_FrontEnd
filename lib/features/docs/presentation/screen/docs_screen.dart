@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../logic/docs_bloc.dart';
 import '../../logic/docs_state.dart';
 import '../../domain/entity/document_entity.dart';
@@ -8,7 +7,7 @@ import '../widgets/doc_header.dart';
 import '../widgets/doc_info_row.dart';
 import '../widgets/doc_actions.dart';
 import '../widgets/like_dislike_row.dart';
-import '../widgets/pdf_preview_thumbnail.dart';
+import '../widgets/pdf_single_page_preview.dart'; // Preview trang đầu
 import '../widgets/uploader_info.dart';
 import 'docs_detail_screen.dart';
 import '../../../../core/constants/app_icons.dart';
@@ -63,11 +62,9 @@ class DocsScreen extends StatelessWidget {
                   const SizedBox(width: 20),
                   Expanded(
                     flex: 5,
-                    child: PdfPreviewThumbnail(
-                      onTap: () => _openDetail(context),
+                    child: PdfSinglePagePreview(
+                      doc: doc,
                       isFullSize: false,
-                      pages: doc.pages,
-                      fileSize: doc.fileSize,
                     ),
                   ),
                 ],
@@ -104,36 +101,35 @@ class DocsScreen extends StatelessWidget {
         const SizedBox(height: 12),
         LikeDislikeRow(doc: doc),
         const SizedBox(height: 20),
+        // Mobile: Preview 1 trang
         if (MediaQuery.of(context).size.width <= 600)
-          PdfPreviewThumbnail(
-            onTap: () => _openDetail(context),
+          PdfSinglePagePreview(
+            doc: doc,
             isFullSize: false,
-            pages: doc.pages,
-            fileSize: doc.fileSize,
           ),
         const SizedBox(height: 20),
+        // Mobile: Nút "Xem thêm"
         if (MediaQuery.of(context).size.width <= 600)
           Center(
-            child: GestureDetector(
-              onTap: () {
-                final docsBloc = context.read<DocsBloc>();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BlocProvider.value(
-                      value: docsBloc,
-                      child: const DocsDetailScreen(),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => _openDetail(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      "Xem thêm",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: const Text(
-                "Xem thêm",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.underline,
+                    SizedBox(width: 4),
+                    Icon(Icons.keyboard_arrow_down, color: Colors.black, size: 22),
+                  ],
                 ),
               ),
             ),

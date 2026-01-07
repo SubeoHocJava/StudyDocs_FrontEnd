@@ -4,10 +4,10 @@ import '../../../../core/constants/app_icons.dart';
 
 // Widget hiển thị danh sách bình luận kèm phân trang.
 class CommentsSection extends StatelessWidget {
-  final List<CommentEntity> comments;     // Danh sách bình luận đầy đủ
-  final int currentPage;                  // Trang hiện tại
-  final int commentsPerPage;              // Số bình luận mỗi trang
-  final Function(int) onPageChange;       // Callback đổi trang
+  final List<CommentEntity> comments; // Danh sách bình luận đầy đủ
+  final int currentPage; // Trang hiện tại
+  final int commentsPerPage; // Số bình luận mỗi trang
+  final Function(int) onPageChange; // Callback đổi trang
 
   const CommentsSection({
     super.key,
@@ -20,7 +20,6 @@ class CommentsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (comments.isEmpty) {
-      // Nếu không có comment → hiển thị text thông báo
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Text("Chưa có bình luận nào", style: TextStyle(color: Colors.grey)),
@@ -30,11 +29,11 @@ class CommentsSection extends StatelessWidget {
     // Tính tổng số trang
     final totalPages = (comments.length / commentsPerPage).ceil();
 
-    // Xác định index bắt đầu & kết thúc trong list
+    // Index bắt đầu & kết thúc
     final start = currentPage * commentsPerPage;
     final end = (start + commentsPerPage).clamp(0, comments.length);
 
-    // Lấy danh sách comment cho trang hiện tại
+    // Lấy comment cho trang hiện tại
     final pageComments = comments.sublist(start, end);
 
     return Column(
@@ -42,8 +41,6 @@ class CommentsSection extends StatelessWidget {
       children: [
         const Text("Bình luận", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const Divider(),
-
-        // Hiển thị từng comment
         ...pageComments.map(
               (c) => Container(
             margin: const EdgeInsets.only(bottom: 12),
@@ -58,18 +55,15 @@ class CommentsSection extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundImage: AssetImage(AppAssets.avt), // Ảnh avatar mặc định
+                  backgroundImage: AssetImage(AppAssets.avt),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Tên tác giả
                       Text(c.author, style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-
-                      // Nội dung bình luận
                       Text(c.text, style: const TextStyle(fontSize: 14)),
                     ],
                   ),
@@ -77,18 +71,14 @@ class CommentsSection extends StatelessWidget {
               ],
             ),
           ),
-        ),
-
+        ).toList(),
         // Phân trang
         if (totalPages > 1)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                // Trang trước — disable nếu đang ở trang đầu
-                onPressed: currentPage > 0
-                    ? () => onPageChange(currentPage - 1)
-                    : null,
+                onPressed: currentPage > 0 ? () => onPageChange(currentPage - 1) : null,
                 icon: const Icon(Icons.chevron_left),
               ),
               Text(
@@ -96,10 +86,7 @@ class CommentsSection extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               IconButton(
-                // Trang sau — disable nếu đang trang cuối
-                onPressed: currentPage < totalPages - 1
-                    ? () => onPageChange(currentPage + 1)
-                    : null,
+                onPressed: currentPage < totalPages - 1 ? () => onPageChange(currentPage + 1) : null,
                 icon: const Icon(Icons.chevron_right),
               ),
             ],

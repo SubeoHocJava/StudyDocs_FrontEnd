@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../domain/entity/document_entity.dart';
+import '../screen/docs_detail_screen.dart';
 
 class PdfPreviewThumbnail extends StatelessWidget {
-  final VoidCallback? onTap;
+  final DocumentEntity doc;
   final bool isFullSize;
   final double? height;
-  final int? pages;         // ← MỚI
-  final String? fileSize;   // ← MỚI
 
   const PdfPreviewThumbnail({
     super.key,
-    this.onTap,
+    required this.doc,
     this.isFullSize = false,
     this.height,
-    this.pages,
-    this.fileSize,
   });
 
   @override
@@ -22,7 +20,15 @@ class PdfPreviewThumbnail extends StatelessWidget {
     final double effectiveHeight = height ?? (isFullSize ? size.height * 0.65 : 240.0);
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const DocsDetailScreen(),
+
+          ),
+        );
+      },
       child: Container(
         height: effectiveHeight,
         width: double.infinity,
@@ -40,13 +46,13 @@ class PdfPreviewThumbnail extends StatelessWidget {
             Icon(Icons.picture_as_pdf, size: isFullSize ? 100 : 60, color: Colors.red.shade700),
             const SizedBox(height: 16),
             Text(
-              isFullSize ? "Xem trước PDF" : "Nhấn để xem trước PDF",
+              "Nhấn để xem PDF",
               style: TextStyle(fontSize: isFullSize ? 22 : 17, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              "${pages ?? 80} trang • ${fileSize ?? "2.4 MB"}",
+              "${doc.pages} trang • ${doc.fileSize}",
               style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
             ),
           ],

@@ -6,4 +6,5 @@ abstract class DocsRepository {
   Future<void> downloadDocument();
   Future<void> toggleLike({required bool isLike}); // true = like, false = dislike
   Future<void> postComment(String text);
+  Future<void> reactToReview({required String reviewId, required bool isLike});
 }

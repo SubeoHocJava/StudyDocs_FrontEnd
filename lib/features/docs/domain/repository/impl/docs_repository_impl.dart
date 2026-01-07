@@ -2,7 +2,6 @@ import '../../../../../data/datasource/docs_remote_datasource.dart';
 import '../../../../docs/domain/entity/document_entity.dart';
 import '../docs_repository.dart';
 
-
 class DocsRepositoryImpl implements DocsRepository {
   final DocsRemoteDataSource dataSource;
 
@@ -29,5 +28,11 @@ class DocsRepositoryImpl implements DocsRepository {
   @override
   Future<void> postComment(String text) async {
     await dataSource.postComment(text);
+  }
+
+  @override
+  Future<void> reactToReview({required String reviewId, required bool isLike}) {
+    // TODO: implement reactToReview
+    throw UnimplementedError();
   }
 }

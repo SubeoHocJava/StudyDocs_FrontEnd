@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/datasource/docs_remote_datasource.dart';
 import '../domain/repository/impl/docs_repository_impl.dart';
 import '../domain/usecase/get_document_usecase.dart';
+import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
 import '../presentation/screen/docs_screen.dart';
 import 'docs_bloc.dart';
@@ -25,7 +26,8 @@ class DocsPage extends StatelessWidget {
       create: (_) => DocsBloc(
         getDocumentUseCase: GetDocumentUseCase(repository),
         toggleSaveUseCase: ToggleSaveUseCase(repository),
-      )..add(LoadDocDetails()), // load ngay khi mở
+        toggleLikeUseCase: ToggleLikeUseCase(repository), // THÊM DÒNG NÀY
+      )..add(LoadDocDetails()),
       child: const DocsScreen(),
     );
   }
