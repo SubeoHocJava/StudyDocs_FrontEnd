@@ -19,10 +19,9 @@ final GlobalKey<NavigatorState> _exploreNavigatorKey =
 final GlobalKey<NavigatorState> _notificationsNavigatorKey =
     GlobalKey<NavigatorState>();
 
-GoRouter createAppRouter() {
-  return GoRouter(
+final GoRouter appRouter = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.notifications,
     debugLogDiagnostics: false,
     routes: [
       StatefulShellRoute.indexedStack(
@@ -74,7 +73,8 @@ GoRouter createAppRouter() {
                     ),
                 routes: [
                   GoRoute(
-                    path: AppRoutes.notificationTrash,
+                    name: AppRoutes.notificationTrash, 
+                    path: 'trash',
                     builder: (context, state) {
                       final args = state.extra as Map<String, dynamic>?;
                       return MainTabNotificationsTrashPage(
@@ -91,4 +91,3 @@ GoRouter createAppRouter() {
       ),
     ],
   );
-}

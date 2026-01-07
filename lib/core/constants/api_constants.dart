@@ -2,7 +2,7 @@ class ApiConstants {
   // Base URL
   // Web/iOS: dùng localhost
   // Android Emulator: dùng 10.0.2.2
-  static const String baseUrl = 'http://10.0.2.2:8081/api';
+  static const String baseUrl = 'http://192.168.1.181:8087/api/v1';
 
   // Auth Endpoints
   static const String authLoginLocal = '/auth/login/local';

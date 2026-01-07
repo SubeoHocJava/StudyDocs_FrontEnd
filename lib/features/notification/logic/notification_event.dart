@@ -59,3 +59,5 @@ class RestoreNotificationEvent extends NotificationEvent {
   List<Object?> get props => [notificationIds];
 }
 
+// Xóa tất cả notification đã load (soft delete active list)
+class DeleteAllLoadedNotificationEvent extends NotificationEvent {}

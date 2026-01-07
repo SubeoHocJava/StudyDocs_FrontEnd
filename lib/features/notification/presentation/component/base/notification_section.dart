@@ -13,6 +13,9 @@ class NotificationSection extends StatelessWidget {
   final NotificationSectionType type;
   final List<String> selectedIds;
   final void Function(String id, bool checked)? onCheck;
+  final void Function(String id)? onRestore;
+  final void Function(String id)? onHardDelete;
+  final void Function(String id)? onSoftDelete;
 
   const NotificationSection({
     super.key,
@@ -21,6 +24,9 @@ class NotificationSection extends StatelessWidget {
     required this.type,
     this.selectedIds = const [],
     this.onCheck,
+    this.onRestore,
+    this.onHardDelete,
+    this.onSoftDelete,
   });
 
   @override
@@ -39,6 +45,9 @@ class NotificationSection extends StatelessWidget {
           type: type,
           selectedIds: selectedIds,
           onCheck: onCheck,
+          onRestore: onRestore,
+          onHardDelete: onHardDelete,
+          onSoftDelete: onSoftDelete,
         ),
       ],
     );
@@ -74,12 +83,18 @@ class _SectionBody extends StatelessWidget {
   final NotificationSectionType type;
   final List<String> selectedIds;
   final void Function(String id, bool checked)? onCheck;
+  final void Function(String id)? onRestore;
+  final void Function(String id)? onHardDelete;
+  final void Function(String id)? onSoftDelete;
 
   const _SectionBody({
     required this.notifications,
     required this.type,
     this.selectedIds = const [],
     this.onCheck,
+    this.onRestore,
+    this.onHardDelete,
+    this.onSoftDelete,
   });
 
   @override
@@ -88,11 +103,7 @@ class _SectionBody extends StatelessWidget {
       case NotificationSectionType.normal:
         return NotificationList(
           notifications: notifications,
-          onDelete: (id) {
-            context.read<NotificationBloc>().add(
-              DeleteNotificationEvent([id], DeleteType.soft),
-            );
-          },
+          onDelete: (id) => onSoftDelete?.call(id),
         );
 
       case NotificationSectionType.trash:
@@ -100,18 +111,8 @@ class _SectionBody extends StatelessWidget {
           notifications: notifications,
           selectedIds: selectedIds,
           onCheck: onCheck,
-          onRestore: (id) {
-            context.read<NotificationBloc>().add(
-              RestoreNotificationEvent([id]),
-            );
-            // Show confirmation
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Khôi phục thông báo thành công')));
-          },
-          onDelete: (id) {
-            context.read<NotificationBloc>().add(
-              DeleteNotificationEvent([id], DeleteType.hard),
-            );
-          },
+          onRestore: onRestore,
+          onDelete: onHardDelete,
         );
     }
   }

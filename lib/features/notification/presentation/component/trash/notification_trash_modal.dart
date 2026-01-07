@@ -8,14 +8,12 @@ class NotificationTrashModal extends StatelessWidget {
   final List<String> selectedIds;
   final VoidCallback onRestore;
   final VoidCallback onHardDelete;
-  final VoidCallback? onClearAll;
 
   const NotificationTrashModal({
     super.key,
     required this.selectedIds,
     required this.onRestore,
     required this.onHardDelete,
-    this.onClearAll,
   });
 
   @override
@@ -27,28 +25,18 @@ class NotificationTrashModal extends StatelessWidget {
         children: [
           NotificationModalAction(
             label: "Khôi phục thông báo",
-            asset: AppAssets.markAsRead,
+            icon: Icons.restore_from_trash_outlined,
             size: sizes.clampedButtonIconSize,
             onPressed: () {
-              // Delegate logic to parent (do not close modal here to avoid double pops)
               onRestore();
             },
           ),
           NotificationModalAction(
             label: "Xóa thông báo vĩnh viễn",
-            asset: AppAssets.bin,
+            icon: Icons.delete_forever_outlined,
             size: sizes.clampedButtonIconSize,
             onPressed: () {
-              // Delegate logic to parent (parent will close modal)
               onHardDelete();
-            },
-          ),
-          NotificationModalAction(
-            label: "Bỏ chọn tất cả",
-            icon: Icons.clear_all,
-            size: sizes.clampedButtonIconSize,
-            onPressed: () {
-              onClearAll?.call();
             },
           ),
         ],

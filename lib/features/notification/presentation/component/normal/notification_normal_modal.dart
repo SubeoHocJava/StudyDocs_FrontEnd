@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
@@ -28,7 +27,7 @@ class NotificationNormalModal extends StatelessWidget {
         children: [
           NotificationModalAction(
             label: "Đánh dấu tất cả đã đọc",
-            asset: AppAssets.markAsRead,
+            icon: Icons.mark_email_read_outlined,
             size: sizes.clampedButtonIconSize,
             onPressed: () {
               context.read<NotificationBloc>().add(MarkAllAsReadEvent());
@@ -38,30 +37,14 @@ class NotificationNormalModal extends StatelessWidget {
             },
           ),
           NotificationModalAction(
-            label: "Thông báo đã xóa",
-            asset: AppAssets.bin,
+            label: "Xóa tất cả",
+            icon: Icons.delete_sweep_outlined,
             size: sizes.clampedButtonIconSize,
-              onPressed: () async {
-              // Capture the parent bloc
-              final parentBloc = context.read<NotificationBloc>();
-              final goRouter = GoRouter.of(context);
-              
-              // Close modal first
-              Navigator.pop(context);
-
-               // Use GoRouter
-              final result = await goRouter.pushNamed<bool?>(
-                AppRoutes.notificationTrash,
-                extra: {
-                  'userId': userId,
-                  'bloc': parentBloc, 
-                },
-              );
-
-              // If the trash screen returned true (something changed), reload main list
-              if (result == true) {
-                parentBloc.add(const LoadNotificationEvent(isDeleted: false));
-              }
+            onPressed: () {
+               context.read<NotificationBloc>().add(DeleteAllLoadedNotificationEvent());
+               WidgetsBinding.instance.addPostFrameCallback((_) {
+                 Navigator.pop(context);
+               });
             },
           ),
         ],

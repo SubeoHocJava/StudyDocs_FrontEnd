@@ -92,6 +92,6 @@ class MainTabNotificationsTrashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const NotificationTrashScreen(userId: '');
+    return NotificationTrashScreen(userId: userId, parentBloc: parentBloc);
   }
 }

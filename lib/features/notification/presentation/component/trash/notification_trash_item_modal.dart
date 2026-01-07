@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
+import 'package:studydocs/features/notification/presentation/component/base/notification_modal_layout.dart';
 import 'package:studydocs/features/notification/presentation/component/helpers/notification_modal_size_helper.dart';
 import 'package:studydocs/features/notification/presentation/component/base/notification_modal_action.dart';
 
-import '../base/notification_modal_layout.dart';
 
-/// Modal hiển thị chi tiết một notification và các action có thể thực hiện
-/// - Hiển thị nội dung đầy đủ của notification
-/// - Các action: đánh dấu đã đọc, xóa thông báo
-/// - Sử dụng NotificationModalLayout để căn chỉnh và responsive
-class NotificationNormalItemModal extends StatelessWidget {
+class NotificationTrashItemModal extends StatelessWidget {
   final NotificationEntity notification;
-  final VoidCallback? onMarkAsRead;
+  final VoidCallback onRestore;
   final VoidCallback onDelete;
 
-  const NotificationNormalItemModal({
+  const NotificationTrashItemModal({
     super.key,
     required this.notification,
-    this.onMarkAsRead,
+    required this.onRestore,
     required this.onDelete,
   });
 
@@ -36,19 +31,18 @@ class NotificationNormalItemModal extends StatelessWidget {
           ),
           Column(
             children: [
-              if (onMarkAsRead != null)
-                NotificationModalAction(
-                  label: "Đánh dấu đã đọc",
-                  icon: Icons.mark_email_read_outlined,
-                  size: sizes.clampedButtonIconSize,
-                  onPressed: () {
-                    onMarkAsRead!.call();
-                    Navigator.pop(context);
-                  },
-                ),
               NotificationModalAction(
-                label: "Xóa thông báo này",
-                icon: Icons.delete_outline,
+                label: "Khôi phục thông báo",
+                icon: Icons.restore_from_trash_outlined,
+                size: sizes.clampedButtonIconSize,
+                onPressed: () {
+                  onRestore();
+                  Navigator.pop(context);
+                },
+              ),
+              NotificationModalAction(
+                label: "Xóa vĩnh viễn",
+                icon: Icons.delete_forever_outlined,
                 size: sizes.clampedButtonIconSize,
                 onPressed: () {
                   onDelete();
@@ -63,11 +57,6 @@ class NotificationNormalItemModal extends StatelessWidget {
   }
 }
 
-/// Widget hiển thị nội dung chi tiết của notification trong modal
-/// - Icon loại notification (lớn hơn trong list)
-/// - Nội dung đầy đủ (không giới hạn số dòng)
-/// - Divider phân cách với phần actions
-/// Kích thước (icon, font) được điều chỉnh theo màn hình
 class _NotificationModalContent extends StatelessWidget {
   final NotificationEntity notification;
   final double iconSize;

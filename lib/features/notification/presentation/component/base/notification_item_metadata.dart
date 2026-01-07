@@ -33,7 +33,7 @@ class NotificationItemMetadata extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                "Đã xóa vào ${notification.formatDeletedTime()}",
+                "Đã xóa vào ${notification.formattedDeletedTime()}",
                 style: TextStyle(
                   color: const Color(0xFFFF3B30),
                   fontSize: fontSize,

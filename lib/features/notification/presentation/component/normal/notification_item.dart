@@ -27,12 +27,12 @@ class _NotificationItemState extends State<NotificationItem>
     with NotificationPressStateMixin {
   Color _backgroundColor(BuildContext context) {
     if (isPressed) {
-      return AppColors.notificationUnread.withValues(alpha: 0.7);
+      return AppColors.notificationUnread.withOpacity(0.7);
     }
     if (!widget.notification.isRead) {
       return AppColors.notificationUnread;
     }
-    return Theme.of(context).cardColor;
+    return Colors.white;
   }
 
   void _showModal() {
@@ -49,12 +49,11 @@ class _NotificationItemState extends State<NotificationItem>
         value: context.read<NotificationBloc>(),
         child: NotificationNormalItemModal(
           notification: widget.notification,
-          onMarkAsRead:
-              widget.notification.isRead
-                  ? null
-                  : () {
-                    bloc.add(MarkAsReadEvent(widget.notification.id));
-                  },
+          onMarkAsRead: widget.notification.isRead
+              ? null
+              : () {
+                  bloc.add(MarkAsReadEvent(widget.notification.id));
+                },
           onDelete: () {
             bloc.add(
               DeleteNotificationEvent([

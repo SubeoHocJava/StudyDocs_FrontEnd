@@ -76,6 +76,7 @@ class NotificationTrashList extends StatelessWidget {
         return NotificationTrashItem(
           key: ValueKey(item.id),
           notification: item,
+          isChecked: isChecked,
           onCheck: onCheck,
           onRestore: () => onRestore?.call(item.id),
           onDelete: () => onDelete?.call(item.id),
