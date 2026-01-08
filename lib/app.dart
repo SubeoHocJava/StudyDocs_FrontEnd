@@ -6,6 +6,8 @@ import 'features/home/logic/home_bloc.dart';
 import 'features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'core/router/app_router.dart';
 
+final _router = createAppRouter();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.mode,
-            routerConfig: createAppRouter(),
+            routerConfig: _router,
             builder: (context, child) {
               return MultiBlocProvider(
                 providers: [

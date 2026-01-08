@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/features/notification/domain/enum/notification_type.dart';
+import 'package:studydocs/core/utils/notification_icon_helper.dart';
 import 'package:studydocs/features/notification/presentation/component/helpers/notification_modal_size_helper.dart';
 
 class NotificationTypeIcon extends StatelessWidget {
@@ -14,29 +14,7 @@ class NotificationTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = NotificationTypeStore.fromType(type);
-    final innerSize = (size * 0.5).clamp(16.0, size);
-
-    return CircleAvatar(
-      radius: size / 2,
-      backgroundColor: config?.backgroundColor ?? Colors.red,
-      child: Padding(
-        padding: EdgeInsets.all(size * 0.12),
-        child: config == null
-            ? Icon(Icons.info, color: Colors.white, size: innerSize)
-            : Image.asset(
-          config.src,
-          width: innerSize,
-          height: innerSize,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => Icon(
-            Icons.info,
-            color: Colors.white,
-            size: innerSize,
-          ),
-        ),
-      ),
-    );
+    return NotificationIconHelper.getIcon(type, size: size);
   }
 }
 

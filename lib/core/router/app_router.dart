@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/main/main_screen.dart';
+import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -11,6 +12,7 @@ class AppRoutes {
 
   //   admin
   static const String manageUser = '/manage-user';
+  static const String notificationTemplates = '/admin/notification-templates';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -20,10 +22,11 @@ final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>
 final GlobalKey<NavigatorState> _notificationsNavigatorKey = GlobalKey<NavigatorState>();
 // admin
 final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _notificationTemplateNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createAppRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.manageUser,
+    initialLocation: AppRoutes.notificationTemplates,
     debugLogDiagnostics: false,
     routes: [
       StatefulShellRoute.indexedStack(
@@ -98,6 +101,18 @@ GoRouter createAppRouter() {
                 pageBuilder:
                     (context, state) =>
                     NoTransitionPage(child: const MainTabManageUserPage()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _notificationTemplateNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutes.notificationTemplates,
+                pageBuilder:
+                    (context, state) => NoTransitionPage(
+                      child: const MainTabNotificationTemplatePage(),
+                    ),
               ),
             ],
           ),
