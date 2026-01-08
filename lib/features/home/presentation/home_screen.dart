@@ -230,34 +230,6 @@ class _HomePageState extends State<HomePage> {
               ],
 
                 const SizedBox(height: 24),
-                
-                 // Testing Navigation
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => context.push('/docs-management'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                        child: const Text('Test Docs Management'),
-                      ),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: () => context.push('/docs/detail'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                        child: const Text('Test Docs Details'),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 48),
               ],
             ),
           ),
