@@ -9,6 +9,8 @@ import 'package:studydocs/features/notification/presentation/notification_screen
 import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
 
+import '../manage_user/presentation/screen/manage_user_screen.dart';
+
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key, required this.navigationShell});
 
@@ -93,5 +95,11 @@ class MainTabNotificationsTrashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NotificationTrashScreen(userId: userId, parentBloc: parentBloc);
+class MainTabManageUserPage extends StatelessWidget {
+  const MainTabManageUserPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const ManageUserScreen();
   }
 }

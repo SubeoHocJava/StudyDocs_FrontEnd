@@ -104,7 +104,8 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
           children: [
             DocumentImage(
               responsive: responsive,
-              widthOverride: responsive.isMobile ? 88 : 100,
+              widthOverride: responsive.isMobile ? 120 : 150,
+              heightOverride: responsive.isMobile ? 120 : 150,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -181,21 +182,28 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
   final double? widthOverride;
+  final double? heightOverride;
 
   const DocumentImage({
     super.key,
     required this.responsive,
     this.widthOverride,
+    this.heightOverride,
   });
 
   @override
   Widget build(BuildContext context) {
     final double width =
         widthOverride ??
-        (responsive.isMobile ? responsive.widthPercent(30) : 180);
+            (responsive.isMobile ? responsive.widthPercent(35) : 200);
+
+    final double height =
+        heightOverride ??
+            (responsive.isMobile ? responsive.widthPercent(35) : 200);
 
     return Container(
       width: width,
+      height: height, // 👈 set height
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.navy, width: 1.2),
         borderRadius: BorderRadius.circular(6),
@@ -208,7 +216,7 @@ class DocumentImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: Image.asset(
               "assets/icons/temp_image.jpg",
-              fit: BoxFit.cover,
+              fit: BoxFit.fill, // 👈 quan trọng
             ),
           ),
         ),
@@ -216,6 +224,7 @@ class DocumentImage extends StatelessWidget {
     );
   }
 }
+
 
 class _ActionIcon extends StatefulWidget {
   final IconData icon;

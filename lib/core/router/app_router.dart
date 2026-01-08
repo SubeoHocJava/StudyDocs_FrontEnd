@@ -8,20 +8,22 @@ class AppRoutes {
   static const String explore = '/explore';
   static const String notifications = '/notifications';
   static const String notificationTrash = '/notifications/trash';
+
+  //   admin
+  static const String manage_user = '/manage_user';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _libraryNavigatorKey =
-    GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _exploreNavigatorKey =
-    GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _notificationsNavigatorKey =
-    GlobalKey<NavigatorState>();
-
-final GoRouter appRouter = GoRouter(
+final GlobalKey<NavigatorState> _libraryNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _notificationsNavigatorKey = GlobalKey<NavigatorState>();
+// admin
+final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorState>();
+GoRouter createAppRouter() {
+  return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.notifications,
+    initialLocation: AppRoutes.manage_user,
     debugLogDiagnostics: false,
     routes: [
       StatefulShellRoute.indexedStack(
@@ -84,6 +86,17 @@ final GoRouter appRouter = GoRouter(
                     },
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _manageUserNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutes.manage_user,
+                pageBuilder:
+                    (context, state) =>
+                        NoTransitionPage(child: const MainTabManageUserPage()),
               ),
             ],
           ),
