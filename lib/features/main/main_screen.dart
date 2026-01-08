@@ -87,14 +87,23 @@ class MainTabNotificationsPage extends StatelessWidget {
     return const NotificationScreen(userId: '');
   }
 }
+
 class MainTabNotificationsTrashPage extends StatelessWidget {
-  final String userId; 
+  final String userId;
   final NotificationBloc? parentBloc;
-  const MainTabNotificationsTrashPage({super.key, required this.userId, this.parentBloc});
+
+  const MainTabNotificationsTrashPage({
+    super.key,
+    required this.userId,
+    this.parentBloc,
+  });
 
   @override
   Widget build(BuildContext context) {
     return NotificationTrashScreen(userId: userId, parentBloc: parentBloc);
+  }
+}
+
 class MainTabManageUserPage extends StatelessWidget {
   const MainTabManageUserPage({super.key});
 

@@ -10,7 +10,7 @@ class AppRoutes {
   static const String notificationTrash = '/notifications/trash';
 
   //   admin
-  static const String manage_user = '/manage_user';
+  static const String manageUser = '/manage-user';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -23,7 +23,7 @@ final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorSta
 GoRouter createAppRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.manage_user,
+    initialLocation: AppRoutes.manageUser,
     debugLogDiagnostics: false,
     routes: [
       StatefulShellRoute.indexedStack(
@@ -38,7 +38,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.home,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabHomePage()),
+                    NoTransitionPage(child: const MainTabHomePage()),
               ),
             ],
           ),
@@ -49,7 +49,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.library,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabLibraryPage()),
+                    NoTransitionPage(child: const MainTabLibraryPage()),
               ),
             ],
           ),
@@ -60,7 +60,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.explore,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabExplorePage()),
+                    NoTransitionPage(child: const MainTabExplorePage()),
               ),
             ],
           ),
@@ -70,12 +70,13 @@ GoRouter createAppRouter() {
               GoRoute(
                 path: AppRoutes.notifications,
                 pageBuilder:
-                    (context, state) => NoTransitionPage(
+                    (context, state) =>
+                    NoTransitionPage(
                       child: const MainTabNotificationsPage(),
                     ),
                 routes: [
                   GoRoute(
-                    name: AppRoutes.notificationTrash, 
+                    name: AppRoutes.notificationTrash,
                     path: 'trash',
                     builder: (context, state) {
                       final args = state.extra as Map<String, dynamic>?;
@@ -93,10 +94,10 @@ GoRouter createAppRouter() {
             navigatorKey: _manageUserNavigatorKey,
             routes: [
               GoRoute(
-                path: AppRoutes.manage_user,
+                path: AppRoutes.manageUser,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabManageUserPage()),
+                    NoTransitionPage(child: const MainTabManageUserPage()),
               ),
             ],
           ),
@@ -104,3 +105,4 @@ GoRouter createAppRouter() {
       ),
     ],
   );
+}

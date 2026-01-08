@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/logic/home_bloc.dart';
-import 'features/home/presentation/home_screen.dart';
 import 'features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'core/router/app_router.dart';
 
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.mode,
-            routerConfig: appRouter,
+            routerConfig: createAppRouter(),
             builder: (context, child) {
               return MultiBlocProvider(
                 providers: [
