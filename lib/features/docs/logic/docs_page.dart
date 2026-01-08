@@ -5,6 +5,8 @@ import '../domain/repository/impl/docs_repository_impl.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
+import '../domain/usecase/post_comment_usecase.dart';
+import '../domain/usecase/react_review_usecase.dart';
 import '../presentation/screen/docs_screen.dart';
 import 'docs_bloc.dart';
 import 'docs_event.dart';
@@ -26,7 +28,9 @@ class DocsPage extends StatelessWidget {
       create: (_) => DocsBloc(
         getDocumentUseCase: GetDocumentUseCase(repository),
         toggleSaveUseCase: ToggleSaveUseCase(repository),
-        toggleLikeUseCase: ToggleLikeUseCase(repository), // THÊM DÒNG NÀY
+        toggleLikeUseCase: ToggleLikeUseCase(repository),
+        postCommentUseCase: PostCommentUseCase(repository),
+        reactReviewUseCase: ReactReviewUseCase(repository),
       )..add(LoadDocDetails()),
       child: const DocsScreen(),
     );

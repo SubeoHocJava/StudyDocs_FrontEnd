@@ -31,8 +31,7 @@ class DocsRepositoryImpl implements DocsRepository {
   }
 
   @override
-  Future<void> reactToReview({required String reviewId, required bool isLike}) {
-    // TODO: implement reactToReview
-    throw UnimplementedError();
+  Future<void> reactToReview({required String reviewId, required bool isLike}) async {
+    await dataSource.reactToReview(reviewId: reviewId, isLike: isLike);
   }
 }

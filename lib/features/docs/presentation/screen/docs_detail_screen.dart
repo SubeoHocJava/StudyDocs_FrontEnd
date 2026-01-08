@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../logic/docs_bloc.dart';
+import '../../logic/docs_event.dart';
 import '../../logic/docs_state.dart';
 import '../../domain/entity/document_entity.dart';
 import '../widgets/doc_header.dart';
@@ -161,8 +162,7 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
 
         CommentInput(
           onSend: (text) {
-            print("User commented: $text");
-            // TODO: Gọi post comment khi backend sẵn sàng
+            context.read<DocsBloc>().add(PostComment(text));
           },
         ),
         const SizedBox(height: 40),

@@ -14,8 +14,27 @@ class ToggleSave extends DocsEvent {}
 class ToggleDocumentLike extends DocsEvent {
   final bool isLike; // true = like, false = dislike
 
-  const ToggleDocumentLike(this.isLike);
+  const ToggleDocumentLike({required this.isLike});
 
   @override
   List<Object?> get props => [isLike];
+}
+
+class PostComment extends DocsEvent {
+  final String text;
+
+  const PostComment(this.text);
+
+  @override
+  List<Object?> get props => [text];
+}
+
+class ReactToReview extends DocsEvent {
+  final String reviewId;
+  final bool isLike;
+
+  const ReactToReview({required this.reviewId, required this.isLike});
+
+  @override
+  List<Object?> get props => [reviewId, isLike];
 }

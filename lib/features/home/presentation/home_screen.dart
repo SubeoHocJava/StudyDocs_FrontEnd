@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
@@ -228,12 +229,40 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
 
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 24),
+                
+                 // Testing Navigation
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => context.push('/docs-management'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                        child: const Text('Test Docs Management'),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () => context.push('/docs/detail'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                        child: const Text('Test Docs Details'),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 48),
+              ],
+            ),
           ),
-        ),
-      );
-    }
+        );
+      }
 
     return const SizedBox();
   }

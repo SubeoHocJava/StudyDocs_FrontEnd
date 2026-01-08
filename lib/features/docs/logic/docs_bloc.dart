@@ -3,6 +3,8 @@ import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
+import '../domain/usecase/post_comment_usecase.dart';
+import '../domain/usecase/react_review_usecase.dart';
 import 'docs_event.dart';
 import 'docs_state.dart';
 
@@ -10,15 +12,21 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
   final GetDocumentUseCase getDocumentUseCase;
   final ToggleSaveUseCase toggleSaveUseCase;
   final ToggleLikeUseCase toggleLikeUseCase;
+  final PostCommentUseCase postCommentUseCase;
+  final ReactReviewUseCase reactReviewUseCase;
 
   DocsBloc({
     required this.getDocumentUseCase,
     required this.toggleSaveUseCase,
     required this.toggleLikeUseCase,
+    required this.postCommentUseCase,
+    required this.reactReviewUseCase,
   }) : super(DocsInitial()) {
     on<LoadDocDetails>(_onLoadDocDetails);
     on<ToggleSave>(_onToggleSave);
     on<ToggleDocumentLike>(_onToggleDocumentLike);
+    on<PostComment>(_onPostComment);
+    on<ReactToReview>(_onReactToReview);
   }
 
   Future<void> _onLoadDocDetails(
@@ -41,10 +49,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
       await toggleSaveUseCase();
-      emit(DocsLoaded(
-        current.docDetails,
-        isSaved: !current.isSaved,
-      ));
+      emit(current.copyWith(isSaved: !current.isSaved));
     }
   }
 
@@ -60,18 +65,48 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       final newLikes = event.isLike ? doc.likes + 1 : doc.likes;
       final newDislikes = event.isLike ? doc.dislikes : doc.dislikes + 1;
 
-      emit(DocsLoaded(
-        doc.copyWith(likes: newLikes, dislikes: newDislikes),
-        isSaved: current.isSaved,
+      emit(current.copyWith(
+        docDetails: doc.copyWith(likes: newLikes, dislikes: newDislikes),
       ));
 
       try {
         await toggleLikeUseCase(isLike: event.isLike);
       } catch (e) {
         // Revert nếu lỗi
-        emit(DocsLoaded(doc, isSaved: current.isSaved));
+        emit(current.copyWith(docDetails: doc));
         emit(DocsError("Không thể đánh giá: $e"));
       }
     }
+  }
+
+  Future<void> _onPostComment(
+      PostComment event,
+      Emitter<DocsState> emit,
+      ) async {
+    if (state is DocsLoaded) {
+      final current = state as DocsLoaded;
+      try {
+        await postCommentUseCase(event.text);
+        // Reload lại doc để lấy comment mới (hoặc add manual vào list)
+        add(LoadDocDetails()); 
+      } catch (e) {
+        emit(DocsError("Lỗi đăng bình luận: $e"));
+        // Emit lại state cũ để không bị kẹt ở loading/error
+        emit(current); 
+      }
+    }
+  }
+
+  Future<void> _onReactToReview(
+      ReactToReview event,
+      Emitter<DocsState> emit,
+      ) async {
+     try {
+       await reactReviewUseCase(reviewId: event.reviewId, isLike: event.isLike);
+       // Có thể reload hoặc update state cục bộ nếu muốn
+     } catch (e) {
+       // Silent error or toast
+       print("Lỗi react review: $e");
+     }
   }
 }

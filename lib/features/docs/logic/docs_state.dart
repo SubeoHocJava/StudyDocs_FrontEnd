@@ -24,6 +24,16 @@ class DocsLoaded extends DocsState {
 
   const DocsLoaded(this.docDetails, {this.isSaved = false});
 
+  DocsLoaded copyWith({
+    DocumentEntity? docDetails,
+    bool? isSaved,
+  }) {
+    return DocsLoaded(
+      docDetails ?? this.docDetails,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
+
   @override
   List<Object?> get props => [docDetails, isSaved];
 }

@@ -31,7 +31,7 @@ class LikeDislikeRow extends StatelessWidget {
   Widget _buildButton(BuildContext context, int count, bool isLike, bool isSmallScreen) {
     return GestureDetector(
       onTap: () {
-        context.read<DocsBloc>().add(ToggleDocumentLike(isLike));
+        context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLike));
       },
       child: Container(
         padding: EdgeInsets.symmetric(
