@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-// Event definitions cho NotificationBloc.
+import 'notification_enum.dart';
+
 // Mỗi event tương ứng 1 hành động người dùng / side-effect.
 abstract class NotificationEvent extends Equatable {
   const NotificationEvent();
@@ -9,15 +10,16 @@ abstract class NotificationEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Load danh sách notifications (createdAt: tham số cho phân trang/ lọc)
+// Load danh sách notifications (receivedAt: tham số cho phân trang/ lọc)
+// Load danh sách notifications (cursor: tham số cho phân trang)
 class LoadNotificationEvent extends NotificationEvent {
-  final DateTime createdAt;
+  final dynamic cursor;
   final bool isDeleted;
 
-  const LoadNotificationEvent(this.createdAt, this.isDeleted);
+  const LoadNotificationEvent({this.cursor, required this.isDeleted});
 
   @override
-  List<Object?> get props => [createdAt, isDeleted];
+  List<Object?> get props => [cursor, isDeleted];
 }
 
 // Đánh dấu 1 notification đã đọc
@@ -33,16 +35,29 @@ class MarkAsReadEvent extends NotificationEvent {
 // Đánh dấu tất cả đã đọc
 class MarkAllAsReadEvent extends NotificationEvent {}
 
-enum DeleteType { soft, hard }
+// Lấy số lượng thông báo chưa đọc
+class GetUnreadCountEvent extends NotificationEvent {}
 
 // Xoá notification (soft hoặc hard)
 class DeleteNotificationEvent extends NotificationEvent {
-  final String notificationId;
+  final List<String> notificationIds;
   final DeleteType type;
 
-  const DeleteNotificationEvent(this.notificationId, this.type);
+  const DeleteNotificationEvent(this.notificationIds, this.type);
 
-  // include type trong props để Equatable so sánh đúng
   @override
-  List<Object?> get props => [notificationId, type];
+  List<Object?> get props => [notificationIds, type];
 }
+
+// Khôi phục notifications
+class RestoreNotificationEvent extends NotificationEvent {
+  final List<String> notificationIds;
+
+  const RestoreNotificationEvent(this.notificationIds);
+
+  @override
+  List<Object?> get props => [notificationIds];
+}
+
+// Xóa tất cả notification đã load (soft delete active list)
+class DeleteAllLoadedNotificationEvent extends NotificationEvent {}

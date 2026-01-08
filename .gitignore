@@ -11,7 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
-
+pubspec.lock
 # IntelliJ related
 *.iml
 *.ipr
@@ -39,19 +39,17 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
 
-.metadata
-local.properties
-android/caches/
-android/daemon/
-android/kotlin-profile/
-android/native/
-android/wrapper/
-ios/
-linux/
-macos/
-windows/
+# Security and Secrets
+android/local.properties
+android/key.properties
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+*.env
+*.jks
+*.keystore

@@ -29,7 +29,8 @@ class AppIconButton extends StatelessWidget {
       icon: iconWidget,
       onPressed: onPressed,
       padding: padding,
-      constraints: const BoxConstraints(),
+      // Ensure a reasonable tap target (48x48) for accessibility and reliability
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
       splashRadius: size + 6,
     );
   }

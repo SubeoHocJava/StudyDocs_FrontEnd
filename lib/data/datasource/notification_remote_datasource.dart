@@ -1,97 +1,109 @@
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/model/cursor_pagination_result.dart';
 import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/data/model/notification_metadata.dart';
 
 abstract interface class NotificationDataSource {
-  Future<List<AppNotification>> getNotifications(
-    DateTime createdAt,
+  Future<CursorPaginationResult<Notification>> getNotifications(
+    dynamic cursor,
     bool isDeleted,
   );
 
+  Future<int> getUnreadCount();
+
   Future<void> markAsRead(String notificationId);
 
-  Future<void> softDelete(String notificationId);
+  Future<void> softDelete(List<String> notificationIds);
 
-  Future<void> hardDelete(String notificationId);
+  Future<void> hardDelete(List<String> notificationIds);
 
   Future<void> markAllAsRead();
+
+  Future<void> restore(List<String> notificationIds);
+
+  Future<List<NotificationMetadata>> getMetadata();
+
+  Future<void> registerFcmToken(String token);
 }
 
-// Đây là API mock trả dữ liệu mẫu trong giai đoạn phát triển.
-// Khi tích hợp backend thật, triển khai các phương thức để gọi HTTP.
 class NotificationDataSourceImpl implements NotificationDataSource {
-  final String path = "/api/v1/notifications";
+  final String path = "/notifications";
   final DioClient dioClient;
 
   NotificationDataSourceImpl({required this.dioClient});
 
   @override
-  Future<void> markAsRead(String notificationId) async {}
-
-  @override
-  Future<List<AppNotification>> getNotifications(
-    DateTime createdAt,
+  Future<CursorPaginationResult<Notification>> getNotifications(
+    dynamic cursor,
     bool isDeleted,
   ) async {
-    return [
-      AppNotification(
-        id: "1",
-        sender: "Hệ thống",
-        subject: "Cập nhật phiên bản",
-        content:
-            "Ứng dụng đã được cập nhật lên phiên bản 2.1 với nhiều tính năng mới.",
-        isRead: false,
-        type: "like",
-        createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
-      ),
-      AppNotification(
-        id: "2",
-        sender: "Admin",
-        subject: "Khuyến mãi đặc biệt",
-        content: "Nhận ngay ưu đãi 50% cho đơn hàng đầu tiên trong hôm nay!",
-        isRead: true,
-        type: "download",
-        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      AppNotification(
-        id: "3",
-        sender: "Người dùng A",
-        subject: "Tin nhắn mới",
-        content: "Chào bạn, hôm nay bạn có rảnh không?",
-        isRead: false,
-        type: "message",
-        createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-      ),
-      AppNotification(
-        id: "4",
-        sender: "Hệ thống",
-        subject: "Bảo trì",
-        content: "Dịch vụ sẽ được bảo trì vào 23:00 tối nay.",
-        isRead: true,
-        type: "system",
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
-        deletedAt: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
-      ),
-      AppNotification(
-        id: "5",
-        sender: "Shop ABC",
-        subject: "Đơn hàng của bạn",
-        content:
-            "Đơn hàng #12345 đã được giao thành công.Đơn hàng #12345 đã được giao thành công.Đơn hàng #12345 đã được giao thành công.",
-        isRead: false,
-        type: "order",
-        createdAt: DateTime.now().subtract(const Duration(days: 5, hours: 6)),
-      ),
-    ];
+    final Map<String, dynamic> queryParams = {
+        "isDeleted": isDeleted,
+        "limit": 10,
+    };
+    if (cursor != null) {
+      queryParams['cursor'] = cursor;
+    }
+
+    final apiResponse = await dioClient.get(
+      path,
+      queryParameters: queryParams,
+    );
+
+    return CursorPaginationResult.fromJson(
+      apiResponse.data,
+      (json) => Notification.fromJson(json as Map<String, dynamic>),
+    );
   }
 
   @override
-  Future<void> softDelete(String notificationId) async {}
+  Future<int> getUnreadCount() async {
+    final apiResponse = await dioClient.get("$path/count-unread");
+    return apiResponse.data is int
+        ? apiResponse.data
+        : int.parse(apiResponse.data.toString());
+  }
 
   @override
-  Future<void> hardDelete(String notificationId) async {}
+  Future<void> softDelete(List<String> notificationIds) async {
+    await dioClient.delete("$path/soft", data: {"notificationIds": notificationIds});
+  }
+
+  @override
+  Future<void> hardDelete(List<String> notificationIds) async {
+    await dioClient.delete("$path/hard", data: {"notificationIds": notificationIds});
+  }
+
+  @override
+  Future<void> markAsRead(String notificationId) async {
+    await dioClient.patch("$path/$notificationId/read");
+  }
 
   @override
   Future<void> markAllAsRead() async {
-    dioClient.post(path);
+    await dioClient.patch("$path/read-all");
+  }
+
+  @override
+  Future<void> restore(List<String> notificationIds) async {
+    await dioClient.patch(
+      "$path/restore",
+      data: {"notificationIds": notificationIds},
+    );
+  }
+
+  @override
+  Future<List<NotificationMetadata>> getMetadata() async {
+    final apiResponse = await dioClient.get("$path/metadata");
+    final list = apiResponse.data as List;
+    return list.map((e) => NotificationMetadata.fromJson(e)).toList();
+  }
+
+  @override
+  Future<void> registerFcmToken(String token) async {
+    await dioClient.post(
+      "$path/user-profiles/fcm-tokens",
+      data: {"fcmToken": token},
+    );
   }
 }

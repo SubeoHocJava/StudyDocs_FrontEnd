@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/data/model/notification.dart';
+import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 
 // States cho NotificationBloc — biểu diễn các trạng thái UI khác nhau.
 abstract class NotificationState extends Equatable {
@@ -17,16 +17,40 @@ class NotificationLoadingState extends NotificationState {}
 
 // Đã tải xong: chứa danh sách notifications
 class NotificationLoadedState extends NotificationState {
-  final List<AppNotification> notifications;
+  final List<NotificationEntity> activeNotifications;
+  final List<NotificationEntity> deletedNotifications;
+  final int unreadCount;
+  final dynamic nextCursor;
+  final bool hasNext;
 
-  const NotificationLoadedState(this.notifications);
+  const NotificationLoadedState(
+    this.activeNotifications, {
+    this.deletedNotifications = const [],
+    this.unreadCount = 0,
+    this.nextCursor,
+    this.hasNext = false,
+  });
 
   @override
-  List<Object?> get props => [notifications];
+  List<Object?> get props => [activeNotifications, deletedNotifications, unreadCount, nextCursor, hasNext];
 
+  NotificationLoadedState copyWith({
+    List<NotificationEntity>? activeNotifications,
+    List<NotificationEntity>? deletedNotifications,
+    int? unreadCount,
+    dynamic nextCursor,
+    bool? hasNext,
+  }) {
+    return NotificationLoadedState(
+      activeNotifications ?? this.activeNotifications,
+      deletedNotifications: deletedNotifications ?? this.deletedNotifications,
+      unreadCount: unreadCount ?? this.unreadCount,
+      nextCursor: nextCursor ?? this.nextCursor,
+      hasNext: hasNext ?? this.hasNext,
+    );
+  }
 }
 
-// Có lỗi: message để hiển thị hoặc log
 class NotificationErrorState extends NotificationState {
   final String message;
 

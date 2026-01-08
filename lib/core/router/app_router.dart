@@ -1,61 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/main/main_screen.dart';
-import 'package:studydocs/features/docs_management/presentation/screen/docs_management_screen.dart';
-import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
-import 'package:studydocs/features/docs_management/data/datasource/docs_management_remote_datasource.dart';
-import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
-import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_usecase.dart';
-import 'package:studydocs/features/docs_management/domain/usecase/delete_doc_usecase.dart';
-import 'package:studydocs/features/docs_management/domain/usecase/update_doc_usecase.dart';
-import 'package:studydocs/features/docs/logic/docs_page.dart';
 
 class AppRoutes {
   static const String home = '/home';
   static const String library = '/library';
   static const String explore = '/explore';
   static const String notifications = '/notifications';
-  static const String docsManagement = '/docs-management';
-  static const String docsDetail = '/docs/detail';
+  static const String notificationTrash = '/notifications/trash';
+
+  //   admin
+  static const String manageUser = '/manage-user';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _libraryNavigatorKey =
-    GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _exploreNavigatorKey =
-    GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _notificationsNavigatorKey =
-    GlobalKey<NavigatorState>();
-
+final GlobalKey<NavigatorState> _libraryNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _notificationsNavigatorKey = GlobalKey<NavigatorState>();
+// admin
+final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createAppRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.manageUser,
     debugLogDiagnostics: false,
     routes: [
-      GoRoute(
-        path: AppRoutes.docsManagement,
-        builder: (context, state) {
-          final dataSource = DocsManagementRemoteDataSourceImpl();
-          final repository = DocsManagementRepositoryImpl(dataSource: dataSource);
-          return BlocProvider(
-            create: (_) => DocsManagementBloc(
-              getMyDocsUseCase: GetMyDocsUseCase(repository),
-              deleteDocUseCase: DeleteDocUseCase(repository),
-              updateDocUseCase: UpdateDocUseCase(repository),
-            ),
-            child: const DocsManagementScreen(),
-          );
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.docsDetail,
-        builder: (context, state) {
-          return const DocsPage();
-        },
-      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainScreen(navigationShell: navigationShell);
@@ -68,7 +38,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.home,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabHomePage()),
+                    NoTransitionPage(child: const MainTabHomePage()),
               ),
             ],
           ),
@@ -79,7 +49,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.library,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabLibraryPage()),
+                    NoTransitionPage(child: const MainTabLibraryPage()),
               ),
             ],
           ),
@@ -90,7 +60,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.explore,
                 pageBuilder:
                     (context, state) =>
-                        NoTransitionPage(child: const MainTabExplorePage()),
+                    NoTransitionPage(child: const MainTabExplorePage()),
               ),
             ],
           ),
@@ -100,9 +70,34 @@ GoRouter createAppRouter() {
               GoRoute(
                 path: AppRoutes.notifications,
                 pageBuilder:
-                    (context, state) => NoTransitionPage(
+                    (context, state) =>
+                    NoTransitionPage(
                       child: const MainTabNotificationsPage(),
                     ),
+                routes: [
+                  GoRoute(
+                    name: AppRoutes.notificationTrash,
+                    path: 'trash',
+                    builder: (context, state) {
+                      final args = state.extra as Map<String, dynamic>?;
+                      return MainTabNotificationsTrashPage(
+                        userId: args?['userId'] ?? '',
+                        parentBloc: args?['bloc'],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _manageUserNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutes.manageUser,
+                pageBuilder:
+                    (context, state) =>
+                    NoTransitionPage(child: const MainTabManageUserPage()),
               ),
             ],
           ),
