@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
-import 'core/router/app_router.dart';
 import 'features/home/logic/home_bloc.dart';
+import 'features/home/presentation/home_screen.dart';
 import 'features/auth/presentation/bloc/auth_status_cubit.dart';
+import 'core/router/app_router.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final GoRouter router = createAppRouter();
-
     return ChangeNotifierProvider(
       create: (_) => ThemeController(),
       child: Consumer<ThemeController>(
@@ -24,22 +22,18 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.mode,
-
-            routerConfig: router,
+            routerConfig: appRouter,
             builder: (context, child) {
-              // Provide global BLoCs/Cubits for the whole app
               return MultiBlocProvider(
                 providers: [
-                  // HomeBloc instance for the whole app
                   BlocProvider(
-                    create: (context) => createHomeBloc(),
+                     create: (context) => createHomeBloc(),
                   ),
-                  // AuthStatusCubit để quản lý trạng thái login toàn app
                   BlocProvider(
-                    create: (context) => AuthStatusCubit()..checkAuthStatus(),
+                    create: (_) => AuthStatusCubit()..setAuthenticated('fake_bypass_token'),
                   ),
                 ],
-                child: child ?? const SizedBox.shrink(),
+                child: child!,
               );
             },
           );

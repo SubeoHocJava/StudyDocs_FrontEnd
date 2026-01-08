@@ -1,17 +1,23 @@
 class ApiResponse<T> {
   final int statusCode;
-  final int errorCode;
+  final int? errorCode;
   final String traceId;
   final T data;
 
-  ApiResponse(this.statusCode, this.errorCode, this.traceId, this.data);
+  ApiResponse({
+    required this.statusCode,
+    required this.errorCode,
+    required this.traceId,
+    required this.data,
+  });
 
-  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+  factory ApiResponse.fromJson(
+      Map<String, dynamic> json) {
     return ApiResponse(
-      json['statusCode'] as int,
-      json['errorCode'] as int,
-      json['traceId'] as String,
-      json['repository'] as T,
+      statusCode: json['statusCode'],
+      errorCode: json['errorCode'] != null ? json['errorCode'] as int : null,
+      traceId: json['traceId'] ?? '',
+      data: json['data'],
     );
   }
 }

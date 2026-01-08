@@ -7,6 +7,7 @@ class AppRoutes {
   static const String library = '/library';
   static const String explore = '/explore';
   static const String notifications = '/notifications';
+  static const String notificationTrash = '/notifications/trash';
 
   //   admin
   static const String manage_user = '/manage_user';
@@ -72,6 +73,19 @@ GoRouter createAppRouter() {
                     (context, state) => NoTransitionPage(
                       child: const MainTabNotificationsPage(),
                     ),
+                routes: [
+                  GoRoute(
+                    name: AppRoutes.notificationTrash, 
+                    path: 'trash',
+                    builder: (context, state) {
+                      final args = state.extra as Map<String, dynamic>?;
+                      return MainTabNotificationsTrashPage(
+                        userId: args?['userId'] ?? '',
+                        parentBloc: args?['bloc'],
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -90,4 +104,3 @@ GoRouter createAppRouter() {
       ),
     ],
   );
-}
