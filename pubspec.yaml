@@ -43,6 +43,8 @@ dependencies:
   google_sign_in: ^6.2.1
   font_awesome_flutter: ^10.7.0
   shared_preferences: ^2.2.2 #lưu trữ tokens
+  syncfusion_flutter_charts: ^27.2.2 #bar chart for statistics
+  intl: ^0.19.0 #date formatting
   #note: xem xet https (bo qua)
 
   # The following adds the Cupertino Icons font to your application.
