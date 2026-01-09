@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/main/main_screen.dart';
+import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
 import 'package:studydocs/features/profile/presentation/screen/profile_screen.dart';
 
@@ -13,6 +14,7 @@ class AppRoutes {
 
   //   admin
   static const String manageUser = '/manage-user';
+  static const String notificationTemplates = '/admin/notification-templates';
   static const String adminDashboard = '/admin/dashboard';
   static const String profile = '/profile';
 }
@@ -24,9 +26,11 @@ final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>
 final GlobalKey<NavigatorState> _notificationsNavigatorKey = GlobalKey<NavigatorState>();
 // admin
 final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _notificationTemplateNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createAppRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
+    initialLocation: AppRoutes.notificationTemplates,
     initialLocation: AppRoutes.home,
     debugLogDiagnostics: false,
     routes: [
@@ -102,6 +106,18 @@ GoRouter createAppRouter() {
                 pageBuilder:
                     (context, state) =>
                     NoTransitionPage(child: const MainTabManageUserPage()),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _notificationTemplateNavigatorKey,
+            routes: [
+              GoRoute(
+                path: AppRoutes.notificationTemplates,
+                pageBuilder:
+                    (context, state) => NoTransitionPage(
+                      child: const MainTabNotificationTemplatePage(),
+                    ),
               ),
             ],
           ),

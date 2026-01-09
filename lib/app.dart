@@ -7,7 +7,9 @@ import 'features/home/logic/home_bloc.dart';
 import 'features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'core/router/app_router.dart';
 
-class MyApp extends StatefulWidget {
+final _router = createAppRouter();
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override

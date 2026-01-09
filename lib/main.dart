@@ -7,6 +7,9 @@ import 'data/datasource/notification_remote_datasource.dart';
 import 'features/notification/domain/repository/impl/notification_repository.dart';
 import 'features/notification/domain/repository/notification_repository.dart';
 import 'features/notification/service/fcm_service.dart';
+import 'data/datasource/notification_template_remote_datasource.dart';
+import 'features/notification_template/data/repository/notification_template_repository_impl.dart';
+import 'features/notification_template/domain/repository/notification_template_repository.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -18,10 +21,20 @@ void main() async {
   final notificationDataSource = NotificationDataSourceImpl(dioClient: dioClient);
   final notificationRepository = NotificationRepositoryImpl(notificationDataSource);
 
-  await FcmService().initialize(notificationRepository);
+  final notificationTemplateDataSource = NotificationTemplateDataSourceImpl(dioClient: dioClient);
+  final notificationTemplateRepository = NotificationTemplateRepositoryImpl(dataSource: notificationTemplateDataSource);
+
+  FcmService().initialize(notificationRepository);
   runApp(
-    RepositoryProvider<NotificationRepository>.value(
-      value: notificationRepository,
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<NotificationRepository>.value(
+          value: notificationRepository,
+        ),
+        RepositoryProvider<NotificationTemplateRepository>.value(
+          value: notificationTemplateRepository,
+        ),
+      ],
       child: const MyApp(),
     ),
   );

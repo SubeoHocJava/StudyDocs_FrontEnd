@@ -7,6 +7,7 @@ import 'package:studydocs/features/library/presentation/screen/library_screen.da
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/presentation/notification_screen.dart';
 import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
+import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
 
 import '../manage_user/presentation/screen/manage_user_screen.dart';
@@ -110,5 +111,14 @@ class MainTabManageUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const ManageUserScreen();
+  }
+}
+
+class MainTabNotificationTemplatePage extends StatelessWidget {
+  const MainTabNotificationTemplatePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const NotificationTemplateScreen();
   }
 }
