@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/upload_box.dart';
@@ -116,6 +117,25 @@ class MenuDrawer extends StatelessWidget {
                           onTap: () => _navigateTo(context, 3),
                         ),
 
+                        // Admin context
+                        BlocBuilder<AuthStatusCubit, AuthStatus>(
+                          builder: (context, authState) {
+                            if (authState is AuthAuthenticated && authState.role == 'admin') {
+                              return _buildMenuItem(
+                                context,
+                                icon: Icons.admin_panel_settings_outlined,
+                                title: 'Quản lý admin',
+                                isActive: false,
+                                onTap: () {
+                                  onClose();
+                                  context.push(AppRoutes.adminDashboard);
+                                },
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+
                         // ...
                         const SizedBox(height: 24),
                         const UploadBox(),
@@ -137,10 +157,7 @@ class MenuDrawer extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             onClose();
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
-            );
+            context.push(AppRoutes.profile);
           },
           child: Row(
             children: [

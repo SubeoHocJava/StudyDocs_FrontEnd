@@ -14,6 +14,7 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       'email': 'hao@gmail.com',
       'password': '123456',
       'token': 'token_hao_123456',
+      'role': 'user',
     },
     {
       'username': 'admin',
@@ -21,6 +22,7 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       'email': 'admin@example.com',
       'password': 'admin123',
       'token': 'token_admin_123',
+      'role': 'admin',
     },
   ];
 
@@ -39,7 +41,7 @@ class AuthRemoteDataSourceMock implements AuthRemoteDataSource {
       throw Exception('Tên đăng nhập hoặc mật khẩu không đúng');
     }
 
-    return user['token']!;
+    return '${user['token']!}|${user['role']!}';
   }
 
   @override

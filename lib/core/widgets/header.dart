@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/router/app_router.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
@@ -9,7 +11,7 @@ import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
 
 //hao
-import '../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../data/datasource/auth_remote_datasource_mock.dart';
 import '../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
 import '../../features/auth/domain/usecases/google_login_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
@@ -67,7 +69,7 @@ class _HeaderState extends State<Header> {
     // tương tự như phần Home, nhưng rút gọn để dễ hiểu.
 
     // 1. Tầng data: login/register dùng mock, Google login dùng thật
-    final remote = AuthRemoteDataSourceHybrid();
+    final remote = AuthRemoteDataSourceMock();
 
     // 2. Tầng repository: wrap datasource
     final authRepository = AuthRepositoryImpl(remote: remote);
@@ -287,7 +289,7 @@ class _HeaderState extends State<Header> {
                   color: AppColors.headerForeground,
                   onPressed: () {
                     // Navigate to profile screen
-                    Navigator.of(context).pushNamed('/profile');
+                    context.push(AppRoutes.profile);
                   },
                   size: 28,
                 );

@@ -10,6 +10,10 @@ import 'package:studydocs/features/profile/presentation/widget/BasicInfor.dart';
 import 'package:studydocs/features/profile/presentation/widget/Statistical.dart';
 import 'package:studydocs/features/profile/presentation/widget/StorageDocument.dart';
 import 'package:studydocs/features/profile/presentation/widget/UploadDocument.dart';
+import 'package:studydocs/core/widgets/upload_box.dart';
+import 'package:studydocs/core/widgets/bottom_nav.dart';
+import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/router/app_router.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -34,6 +38,10 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       BasicInfor(state: state),
                       Statistical(state: state),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: UploadBox(),
+                      ),
                       UpLoadDocument(state: state),
                       StorageDocument(state: state),
                     ],
@@ -46,6 +54,17 @@ class ProfileScreen extends StatelessWidget {
           }
           return const Center(child: Text("Chưa có dữ liệu trang profile")
           );
+        },
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: -1,
+        onTap: (index) {
+          switch (index) {
+            case 0: context.go(AppRoutes.home); break;
+            case 1: context.go(AppRoutes.library); break;
+            case 2: context.go(AppRoutes.explore); break;
+            case 3: context.go(AppRoutes.notifications); break;
+          }
         },
       ),
     ),
