@@ -24,7 +24,7 @@ void main() async {
   final notificationTemplateDataSource = NotificationTemplateDataSourceImpl(dioClient: dioClient);
   final notificationTemplateRepository = NotificationTemplateRepositoryImpl(dataSource: notificationTemplateDataSource);
 
-  await FcmService().initialize(notificationRepository);
+  FcmService().initialize(notificationRepository);
   runApp(
     MultiRepositoryProvider(
       providers: [
