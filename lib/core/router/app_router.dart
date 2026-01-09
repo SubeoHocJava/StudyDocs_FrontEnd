@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/main/main_screen.dart';
+import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
+import 'package:studydocs/features/profile/presentation/screen/profile_screen.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -11,6 +13,8 @@ class AppRoutes {
 
   //   admin
   static const String manageUser = '/manage-user';
+  static const String adminDashboard = '/admin/dashboard';
+  static const String profile = '/profile';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -23,7 +27,7 @@ final GlobalKey<NavigatorState> _manageUserNavigatorKey = GlobalKey<NavigatorSta
 GoRouter createAppRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.manageUser,
+    initialLocation: AppRoutes.home,
     debugLogDiagnostics: false,
     routes: [
       StatefulShellRoute.indexedStack(
@@ -102,6 +106,14 @@ GoRouter createAppRouter() {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.adminDashboard,
+        builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

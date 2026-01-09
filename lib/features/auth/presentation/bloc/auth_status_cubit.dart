@@ -14,11 +14,12 @@ class AuthUnauthenticated extends AuthStatus {}
 /// User đã đăng nhập
 class AuthAuthenticated extends AuthStatus {
   final String accessToken;
+  final String role;
 
-  AuthAuthenticated(this.accessToken);
+  AuthAuthenticated(this.accessToken, {this.role = 'user'});
 
   @override
-  List<Object?> get props => [accessToken];
+  List<Object?> get props => [accessToken, role];
 }
 
 /// Cubit quản lý trạng thái đăng nhập toàn app
@@ -36,8 +37,9 @@ class AuthStatusCubit extends Cubit<AuthStatus> {
   /// Nếu có token đã lưu → emit AuthAuthenticated
   Future<void> checkAuthStatus() async {
     final token = await _tokenStorage.getAccessToken();
+    final role = await _tokenStorage.getRole();
     if (token != null && token.isNotEmpty) {
-      emit(AuthAuthenticated(token));
+      emit(AuthAuthenticated(token, role: role ?? 'user'));
     } else {
       emit(AuthUnauthenticated());
     }
@@ -45,8 +47,15 @@ class AuthStatusCubit extends Cubit<AuthStatus> {
 
   /// Gọi sau khi login thành công
   /// Token đã được lưu bởi datasource, chỉ cần update UI state
-  void setAuthenticated(String token) {
-    emit(AuthAuthenticated(token));
+  /// Gọi sau khi login thành công
+  /// Lưu token và role vào storage, sau đó update UI state
+  void setAuthenticated(String token, {String role = 'user'}) {
+    _tokenStorage.saveTokens(
+      accessToken: token,
+      refreshToken: '',
+      role: role,
+    );
+    emit(AuthAuthenticated(token, role: role));
   }
 
   /// Gọi khi user logout
