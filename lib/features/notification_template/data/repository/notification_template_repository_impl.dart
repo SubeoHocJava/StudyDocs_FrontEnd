@@ -25,34 +25,26 @@ class NotificationTemplateRepositoryImpl implements NotificationTemplateReposito
 
   @override
   Future<void> updateTemplate(NotificationTemplateEntity template) async {
-    final model = NotificationTemplateModel(
-      id: template.id,
-      name: template.name,
-      channel: template.channel,
-      description: template.description,
-      templateSubject: template.templateSubject,
-      templateBody: template.templateBody,
-      type: template.type,
-      createdAt: template.createdAt,
-      updatedAt: template.updatedAt,
-    );
-    await dataSource.updateTemplate(model);
+    final body = {
+      'name': template.name,
+      'description': template.description,
+      'templateSubject': template.templateSubject,
+      'templateBody': template.templateBody,
+    };
+    await dataSource.updateTemplate(template.id, body);
   }
 
   @override
   Future<void> createTemplate(NotificationTemplateEntity template) async {
-    final model = NotificationTemplateModel(
-      id: template.id,
-      name: template.name,
-      channel: template.channel,
-      description: template.description,
-      templateSubject: template.templateSubject,
-      templateBody: template.templateBody,
-      type: template.type,
-      createdAt: template.createdAt,
-      updatedAt: template.updatedAt,
-    );
-     await dataSource.createTemplate(model);
+    final body = {
+      'name': template.name,
+      'channel': template.channel,
+      'description': template.description,
+      'templateSubject': template.templateSubject,
+      'templateBody': template.templateBody,
+      'type': template.type,
+    };
+     await dataSource.createTemplate(body);
   }
 
   @override
