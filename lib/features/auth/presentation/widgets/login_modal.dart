@@ -112,8 +112,17 @@ class _LoginModalState extends State<LoginModal> {
         BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LoginSuccess) {
+              // Xử lý chuỗi mock "token|role"
+              String token = state.token;
+              String role = 'user';
+              if (token.contains('|')) {
+                final parts = token.split('|');
+                token = parts[0];
+                role = parts[1];
+              }
+
               // CẬP NHẬT AUTH STATE - Quan trọng để Header update UI
-              context.read<AuthStatusCubit>().setAuthenticated(state.token);
+              context.read<AuthStatusCubit>().setAuthenticated(token, role: role);
 
               final claims = _tryDecodeJwt(state.token);
 
