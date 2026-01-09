@@ -1,14 +1,35 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
-import 'package:studydocs/features/notification_template/domain/repository/notification_template_repository.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_event.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_state.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/create_notification_template_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
+
+import 'notification_template_event.dart';
+import 'notification_template_state.dart';
 
 class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, NotificationTemplateState> {
-  final NotificationTemplateRepository repository;
+  final GetNotificationTemplatesUseCase getTemplatesUseCase;
+  final GetNotificationTemplateTypesUseCase getTypesUseCase;
+  final GetNotificationTemplateChannelsUseCase getChannelsUseCase;
+  final SearchNotificationTemplateKeywordsUseCase searchKeywordsUseCase;
+  final CreateNotificationTemplateUseCase createTemplateUseCase;
+  final UpdateNotificationTemplateUseCase updateTemplateUseCase;
+  final DeleteNotificationTemplateUseCase deleteTemplateUseCase;
 
-  NotificationTemplateBloc(this.repository) : super(const NotificationTemplateState()) {
+  NotificationTemplateBloc({
+    required this.getTemplatesUseCase,
+    required this.getTypesUseCase,
+    required this.getChannelsUseCase,
+    required this.searchKeywordsUseCase,
+    required this.createTemplateUseCase,
+    required this.updateTemplateUseCase,
+    required this.deleteTemplateUseCase,
+  }) : super(const NotificationTemplateState()) {
     on<LoadNotificationTemplatesEvent>(_onLoadTemplates);
     on<FilterNotificationTemplatesEvent>(_onFilterTemplates);
     on<DeleteNotificationTemplateEvent>(_onDeleteTemplate);
@@ -23,10 +44,10 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     emit(state.copyWith(status: NotificationTemplateStatus.loading));
     try {
       final results = await Future.wait([
-         repository.getTemplates(),
-         repository.getTypes(),
-         repository.getChannels(),
-         repository.getKeywords(),
+         getTemplatesUseCase(),
+         getTypesUseCase(),
+         getChannelsUseCase(),
+         searchKeywordsUseCase(''),
       ]);
 
       final templates = results[0] as List<NotificationTemplateEntity>;
@@ -54,12 +75,14 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     FilterNotificationTemplatesEvent event,
     Emitter<NotificationTemplateState> emit,
   ) async {
-    emit(state.copyWith(status: NotificationTemplateStatus.loading)); // Show loading while "searching"
+    emit(state.copyWith(status: NotificationTemplateStatus.loading)); // Hiển thị loading trong khi "tìm kiếm"
     try {
-      final filtered = await repository.getTemplates(
-        query: event.query,
-        type: event.type,
-        channel: event.channel,
+      final filtered = await getTemplatesUseCase(
+        GetNotificationTemplatesParams(
+          query: event.query,
+          type: event.type,
+          channel: event.channel,
+        ),
       );
       emit(state.copyWith(
         status: NotificationTemplateStatus.success,
@@ -77,7 +100,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     DeleteNotificationTemplateEvent event,
     Emitter<NotificationTemplateState> emit,
   ) async {
-    // Optimistic Update
+    // Cập nhật lạc quan (Optimistic Update)
     final currentTemplates = List<NotificationTemplateEntity>.from(state.templates);
     currentTemplates.removeWhere((t) => t.id == event.id);
     
@@ -90,9 +113,9 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     ));
 
     try {
-      await repository.deleteTemplate(event.id);
+      await deleteTemplateUseCase(event.id);
     } catch (e) {
-      // Revert if failed (Reload)
+      // Khôi phục nếu thất bại (Tải lại)
       add(const LoadNotificationTemplatesEvent());
     }
   }
@@ -103,8 +126,8 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
   ) async {
     emit(state.copyWith(status: NotificationTemplateStatus.loading));
     try {
-      await repository.updateTemplate(event.template);
-      // Reload the list to get fresh data
+      await updateTemplateUseCase(event.template);
+      // Tải lại danh sách để lấy dữ liệu mới
       add(const LoadNotificationTemplatesEvent());
     } catch (e) {
       emit(state.copyWith(
@@ -120,8 +143,8 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
   ) async {
     emit(state.copyWith(status: NotificationTemplateStatus.loading));
     try {
-      await repository.createTemplate(event.template);
-      // Reload the list to get fresh data
+      await createTemplateUseCase(event.template);
+      // Tải lại danh sách để lấy dữ liệu mới
       add(const LoadNotificationTemplatesEvent());
     } catch (e) {
       emit(state.copyWith(

@@ -51,7 +51,7 @@ class NotificationTemplateItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  template.name, // Display channel or description as subtitle
+                  template.name, // Hiển thị kênh hoặc mô tả làm phụ đề
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,

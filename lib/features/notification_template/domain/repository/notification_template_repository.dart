@@ -12,5 +12,5 @@ abstract class NotificationTemplateRepository {
   Future<void> createTemplate(NotificationTemplateEntity template);
   Future<List<String>> getTypes();
   Future<List<String>> getChannels();
-  Future<List<NotificationKeywordGroup>> getKeywords();
+  Future<List<NotificationKeywordGroup>> searchKeywords(String query);
 }

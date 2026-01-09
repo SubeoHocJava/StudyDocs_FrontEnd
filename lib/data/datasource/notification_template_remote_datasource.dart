@@ -1,0 +1,174 @@
+
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/model/notification_template_model.dart';
+import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
+
+abstract interface class NotificationTemplateDataSource {
+  Future<List<NotificationTemplateModel>> getTemplates({String? query, String? type, String? channel});
+  Future<void> createTemplate(NotificationTemplateModel template);
+  Future<void> updateTemplate(NotificationTemplateModel template);
+  Future<void> deleteTemplate(String id);
+  Future<List<String>> getTypes();
+  Future<List<String>> getChannels();
+  Future<List<NotificationKeywordGroup>> searchKeywords(String query);
+}
+
+class NotificationTemplateDataSourceImpl implements NotificationTemplateDataSource {
+  final DioClient dioClient;
+  final String path = "/notification-templates";
+
+  // Dữ liệu giả lập (Mock Data)
+  final List<NotificationTemplateModel> _mockData = [
+    NotificationTemplateModel(
+      id: '1',
+      name: 'Welcome Email',
+      channel: 'EMAIL',
+      description: 'Gửi cho người dùng mới',
+      templateSubject: 'Chào mừng {userName}!',
+      templateBody: 'Xin chào {userName}, chào mừng bạn đến với nền tảng.',
+      type: 'SYSTEM',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    NotificationTemplateModel(
+      id: '2',
+      name: 'Like Notification',
+      channel: 'PUSH',
+      description: 'Khi ai đó thích bài viết',
+      templateSubject: '{actorName} thích bài viết của bạn',
+      templateBody: '{actorName} thích bài viết: "{postTitle}"',
+      type: 'LIKE',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+  ];
+
+  NotificationTemplateDataSourceImpl({required this.dioClient});
+
+  @override
+  Future<List<NotificationTemplateModel>> getTemplates({String? query, String? type, String? channel}) async {
+    // CÀI ĐẶT THỰC TẾ (Đang comment)
+    /*
+    final Map<String, dynamic> queryParams = {};
+    if (query != null && query.isNotEmpty) queryParams['query'] = query;
+    if (type != null && type.isNotEmpty) queryParams['type'] = type;
+    if (channel != null && channel.isNotEmpty) queryParams['channel'] = channel;
+
+    final response = await dioClient.get(path, queryParameters: queryParams);
+    return (response.data as List)
+        .map((e) => NotificationTemplateModel.fromJson(e))
+        .toList();
+    */
+
+    // GIẢ LẬP ĐỘ TRỄ MẠNG VÀ PHẢN HỒI
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    return _mockData.where((element) {
+      final matchesQuery = query == null || query.isEmpty || element.name.toLowerCase().contains(query.toLowerCase());
+      final matchesType = type == null || type.isEmpty || element.type == type;
+      final matchesChannel = channel == null || channel.isEmpty || element.channel == channel;
+      return matchesQuery && matchesType && matchesChannel;
+    }).toList();
+  }
+
+  @override
+  Future<void> createTemplate(NotificationTemplateModel template) async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    await dioClient.post(path, data: template.toJson());
+    */
+    
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 500));
+    _mockData.add(template);
+  }
+
+  @override
+  Future<void> updateTemplate(NotificationTemplateModel template) async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    await dioClient.put("$path/${template.id}", data: template.toJson());
+    */
+
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 500));
+    final index = _mockData.indexWhere((e) => e.id == template.id);
+    if (index != -1) {
+      _mockData[index] = template;
+    }
+  }
+
+  @override
+  Future<void> deleteTemplate(String id) async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    await dioClient.delete("$path/$id");
+    */
+
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 500));
+    _mockData.removeWhere((element) => element.id == id);
+  }
+
+  @override
+  Future<List<String>> getTypes() async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    final response = await dioClient.get("$path/types");
+    return List<String>.from(response.data);
+    */
+
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 300));
+    return ['LIKE', 'COMMENT', 'SYSTEM', 'CUSTOM'];
+  }
+
+  @override
+  Future<List<String>> getChannels() async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    final response = await dioClient.get("$path/channels");
+    return List<String>.from(response.data);
+    */
+
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 300));
+    return ['EMAIL', 'PUSH', 'SMS'];
+  }
+
+  @override
+  Future<List<NotificationKeywordGroup>> searchKeywords(String query) async {
+    // CÀI ĐẶT THỰC TẾ
+    /*
+    final response = await dioClient.get("$path/search", queryParameters: {'q': query}); // Assuming 'search' endpoint
+    return (response.data as List).map((e) => NotificationKeywordGroup.fromJson(e)).toList();
+    */
+
+    // GIẢ LẬP
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final allGroups = [
+      NotificationKeywordGroup(
+        name: 'Người dùng',
+        keywords: [
+          NotificationKeyword(label: 'Tên người dùng', key: '{userName}'),
+          NotificationKeyword(label: 'Email người dùng', key: '{userEmail}'),
+        ]
+      ),
+      NotificationKeywordGroup(
+        name: 'Bài viết',
+        keywords: [
+          NotificationKeyword(label: 'Tiêu đề bài viết', key: '{postTitle}'),
+          NotificationKeyword(label: 'Tác giả bài viết', key: '{postAuthor}'),
+        ]
+      ),
+    ];
+    
+    if (query.isEmpty) return allGroups;
+
+    return allGroups.where((g) => 
+      g.name.toLowerCase().contains(query.toLowerCase()) || 
+      g.keywords.any((k) => k.label.toLowerCase().contains(query.toLowerCase()))
+    ).toList();
+  }
+}

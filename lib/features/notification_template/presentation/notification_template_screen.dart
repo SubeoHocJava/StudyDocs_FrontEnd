@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/notification_template/domain/repository/notification_template_repository.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_bloc.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_event.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_state.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_bloc.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_event.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_state.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/create_notification_template_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/presentation/component/notification_template_item.dart';
 import 'package:studydocs/features/notification_template/presentation/screen/notification_template_edit_screen.dart';
+import 'package:studydocs/features/notification_template/presentation/component/notification_template_header.dart';
 
 class NotificationTemplateScreen extends StatelessWidget {
   const NotificationTemplateScreen({super.key});
@@ -14,9 +21,18 @@ class NotificationTemplateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NotificationTemplateBloc(
-        context.read<NotificationTemplateRepository>(),
-      )..add(const LoadNotificationTemplatesEvent()),
+      create: (context) {
+        final repository = context.read<NotificationTemplateRepository>();
+        return NotificationTemplateBloc(
+          getTemplatesUseCase: GetNotificationTemplatesUseCase(repository),
+          getTypesUseCase: GetNotificationTemplateTypesUseCase(repository),
+          getChannelsUseCase: GetNotificationTemplateChannelsUseCase(repository),
+          searchKeywordsUseCase: SearchNotificationTemplateKeywordsUseCase(repository),
+          createTemplateUseCase: CreateNotificationTemplateUseCase(repository),
+          updateTemplateUseCase: UpdateNotificationTemplateUseCase(repository),
+          deleteTemplateUseCase: DeleteNotificationTemplateUseCase(repository),
+        )..add(const LoadNotificationTemplatesEvent());
+      },
       child: const _NotificationTemplateView(),
     );
   }
@@ -83,7 +99,7 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
                     return NotificationTemplateItem(
                       template: template,
                       onDelete: () {
-                        // Show confirmation dialog before delete
+                        // Hiển thị hộp thoại xác nhận trước khi xóa
                         showDialog(
                           context: context,
                           builder: (ctx) => AlertDialog(
@@ -108,8 +124,7 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
                         );
                       },
                       onView: () {
-                         // _showDetailModal(context, template);
-                         // Navigate to Edit Screen
+                         // Điều hướng đến màn hình chỉnh sửa
                          Navigator.of(context).push(
                            MaterialPageRoute(
                              builder: (_) => BlocProvider.value(
@@ -131,259 +146,33 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: TextField(
-                    onChanged: (value) {
-                      _searchQuery = value;
-                      _onFilterChanged(context);
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Tìm kiếm mẫu thông báo",
-                      hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.normal),
-                      prefixIcon: const Icon(Icons.search, color: Colors.blue),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue, width: 2),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade900,
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<NotificationTemplateBloc>(),
-                          child: const NotificationTemplateEditScreen(template: null),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.add, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                 // Filter Label
-                 const Text("Lọc theo: ", style: TextStyle(fontWeight: FontWeight.w500)),
-                 const SizedBox(width: 8),
-                  // Type Filter
-                 BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
-                   buildWhen: (previous, current) => previous.types != current.types,
-                   builder: (context, state) {
-                     return _buildFilterChip(
-                        context, 
-                        label: _selectedType ?? 'Tất cả loại',
-                        isSelected: _selectedType != null,
-                        onTap: () {
-                           _showFilterOptions(context, 'Loại', state.types, (val) {
-                              setState(() => _selectedType = val);
-                              _onFilterChanged(context);
-                           });
-                        },
-                        onClear: () {
-                             setState(() => _selectedType = null);
-                             _onFilterChanged(context);
-                        }
-                     );
-                   }
-                 ),
-                 const SizedBox(width: 8),
-                 // Channel Filter
-                 BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
-                   buildWhen: (previous, current) => previous.channels != current.channels,
-                   builder: (context, state) {
-                     return _buildFilterChip(
-                        context, 
-                        label: _selectedChannel ?? 'Tất cả kênh',
-                        isSelected: _selectedChannel != null,
-                        onTap: () {
-                           _showFilterOptions(context, 'Kênh', state.channels, (val) {
-                              setState(() => _selectedChannel = val);
-                              _onFilterChanged(context);
-                           });
-                        },
-                        onClear: () {
-                             setState(() => _selectedChannel = null);
-                             _onFilterChanged(context);
-                        }
-                     );
-                   }
-                 ),
-              ],
+    return NotificationTemplateHeader(
+      searchQuery: _searchQuery,
+      selectedType: _selectedType,
+      selectedChannel: _selectedChannel,
+      onSearchChanged: (value) {
+        _searchQuery = value;
+        _onFilterChanged(context);
+      },
+      onTypeChanged: (value) {
+        setState(() => _selectedType = value);
+        _onFilterChanged(context);
+      },
+      onChannelChanged: (value) {
+        setState(() => _selectedChannel = value);
+        _onFilterChanged(context);
+      },
+      onAddPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: context.read<NotificationTemplateBloc>(),
+              child: const NotificationTemplateEditScreen(template: null),
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(BuildContext context, {required String label, required bool isSelected, required VoidCallback onTap, required VoidCallback onClear}) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Container(
-           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-           decoration: BoxDecoration(
-             color: isSelected ? Colors.blue.shade100 : Colors.grey.shade100,
-             borderRadius: BorderRadius.circular(20),
-             border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300),
-           ),
-           child: Row(
-             children: [
-               Text(
-                 label, 
-                 style: TextStyle(
-                   color: isSelected ? Colors.blue.shade900 : Colors.black87,
-                   fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal
-                 )
-               ),
-               if (isSelected) ...[
-                 const SizedBox(width: 4),
-                 GestureDetector(
-                   onTap: onClear,
-                   child: Icon(Icons.close, size: 16, color: Colors.blue.shade900),
-                 )
-               ] else ...[
-                 const SizedBox(width: 4),
-                 const Icon(Icons.arrow_drop_down, size: 18, color: Colors.black54),
-               ]
-             ],
-           ),
-        ),
-      );
-  }
-
-  void _showFilterOptions(BuildContext context, String title, List<String> options, Function(String?) onSelect) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Chọn $title", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ActionChip(
-                    label: const Text("Tất cả"),
-                    onPressed: () {
-                      onSelect(null);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ...options.map((opt) => ActionChip(
-                    label: Text(opt),
-                    onPressed: () {
-                      onSelect(opt);
-                      Navigator.pop(context);
-                    },
-                  )).toList(),
-                ],
-              )
-            ],
           ),
         );
-      }
+      },
     );
   }
 
-  void _showDetailModal(BuildContext context, dynamic template) {
-      showModalBottomSheet(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          builder: (ctx) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    template.templateSubject,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                   _detailRow("ID", template.id),
-                   _detailRow("Name", template.name),
-                   _detailRow("Channel", template.channel),
-                   _detailRow("Type", template.type),
-                   const SizedBox(height: 12),
-                   const Text("Nội dung:", style: TextStyle(fontWeight: FontWeight.bold)),
-                   const SizedBox(height: 4),
-                   Container(
-                     padding: const EdgeInsets.all(12),
-                     decoration: BoxDecoration(
-                       color: Colors.grey.shade100,
-                       borderRadius: BorderRadius.circular(8),
-                     ),
-                     child: Text(template.templateBody),
-                   ),
-                   const SizedBox(height: 20),
-                ],
-              ),
-            );
-          },
-      );
-  }
-
-  Widget _detailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              "$label:",
-              style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
-            ),
-          ),
-          Expanded(
-            child: Text(value, style: const TextStyle(color: Colors.black87)),
-          ),
-        ],
-      ),
-    );
-  }
 }

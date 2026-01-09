@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_bloc.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_event.dart';
-import 'package:studydocs/features/notification_template/presentation/bloc/notification_template_state.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_bloc.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_event.dart';
+import 'package:studydocs/features/notification_template/logic/notification_template_state.dart';
+import 'package:studydocs/features/notification_template/presentation/component/notification_metadata_modal.dart';
+import 'package:studydocs/features/notification_template/presentation/component/notification_editor_components.dart';
 
 class NotificationTemplateEditScreen extends StatefulWidget {
   final NotificationTemplateEntity? template;
@@ -28,10 +30,10 @@ class _NotificationTemplateEditScreenState
   // NOTE: In real app, we should check if _selectedType/Channel is in the list of available types/channels
   // If not, maybe fetch them or default to first one. Here we assume generic first values or whatever comes from template.
   
-  // Focus nodes to track which text field is active
+  // Nút focus để theo dõi trường văn bản nào đang hoạt động
   late FocusNode _subjectFocus;
   late FocusNode _bodyFocus;
-  String _activeField = 'subject'; // 'subject' or 'body'
+  String _activeField = 'subject'; // 'subject' hoặc 'body'
 
   @override
   void initState() {
@@ -65,12 +67,12 @@ class _NotificationTemplateEditScreenState
 
   void _onSave() {
     if (widget.template == null) {
-      // Create New
+      // Tạo mới
       final newTemplate = NotificationTemplateEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // Mock ID
+        id: DateTime.now().millisecondsSinceEpoch.toString(), // ID giả lập
         name: _nameController.text,
         channel: _selectedChannel,
-        description: "Created via App",
+        description: "Tạo từ ứng dụng",
         templateSubject: _subjectController.text,
         templateBody: _bodyController.text,
         type: _selectedType,
@@ -81,7 +83,7 @@ class _NotificationTemplateEditScreenState
             CreateNotificationTemplateEvent(newTemplate),
           );
     } else {
-      // Update Existing
+      // Cập nhật
       final updatedTemplate = NotificationTemplateEntity(
         id: widget.template!.id,
         name: _nameController.text,
@@ -98,7 +100,7 @@ class _NotificationTemplateEditScreenState
           );
     }
     
-    context.pop(); // Go back after save
+    context.pop(); // Quay lại sau khi lưu
   }
 
   void _insertMetadata(String label, String key) {
@@ -119,10 +121,10 @@ class _NotificationTemplateEditScreenState
         ),
       );
     } else {
-      // Append if no selection/focus (or just selection invalid)
+      // Thêm vào cuối nếu không có lựa chọn/focus
       controller.text += textToInsert;
     }
-    setState(() {}); // Trigger rebuild for preview
+    setState(() {}); // Kích hoạt build lại để xem trước
   }
   
   void _showMetadataModal() {
@@ -133,7 +135,7 @@ class _NotificationTemplateEditScreenState
       ),
       builder: (ctx) => BlocProvider.value(
         value: context.read<NotificationTemplateBloc>(),
-        child: _MetadataModal(onSelect: _insertMetadata),
+        child: NotificationMetadataModal(onSelect: _insertMetadata),
       ),
     );
   }
@@ -150,7 +152,7 @@ class _NotificationTemplateEditScreenState
         leading: BackButton(
           color: Colors.black,
           onPressed: () {
-             // Confirm dialog implementation skipped for brevity as per rapid requirement, but good to have
+             // Hộp thoại xác nhận có thể được thêm vào đây
              context.pop();
           }
         ),
@@ -175,11 +177,11 @@ class _NotificationTemplateEditScreenState
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-             // Info Section (Editable)
-             _buildSection(
+             // Phần thông tin
+             NotificationEditorSection(
               children: [
                 if (widget.template != null)
-                   _buildInfoRow('ID', widget.template!.id),
+                   NotificationInfoRow(label: 'ID', value: widget.template!.id),
                 
                 const SizedBox(height: 8),
                 TextFormField(
@@ -197,7 +199,7 @@ class _NotificationTemplateEditScreenState
                     Expanded(
                       child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                         builder: (context, state) {
-                          // Ensure selected type is in the list, or default to first or keep existing if custom
+                          // Đảm bảo loại đã chọn có trong danh sách, hoặc mặc định
                           final types = state.types.isNotEmpty ? state.types : ['LIKE', 'COMMENT', 'CUSTOM']; 
                           
                           return DropdownButtonFormField<String>(
@@ -238,13 +240,16 @@ class _NotificationTemplateEditScreenState
             ),
             const SizedBox(height: 16),
 
-            // Subject Editor
-            _buildSection(
+            // Trình chỉnh sửa Tiêu đề
+            NotificationEditorSection(
               children: [
-                _buildEditorHeader('Tiêu đề thông báo', () {
-                    _activeField = 'subject';
-                    _showMetadataModal();
-                }),
+                NotificationEditorHeader(
+                    label: 'Tiêu đề thông báo', 
+                    onInsert: () {
+                        _activeField = 'subject';
+                        _showMetadataModal();
+                    }
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _subjectController,
@@ -265,13 +270,16 @@ class _NotificationTemplateEditScreenState
             ),
             const SizedBox(height: 16),
 
-            // Body Editor
-            _buildSection(
+            // Trình chỉnh sửa Nội dung
+            NotificationEditorSection(
               children: [
-                _buildEditorHeader('Nội dung thông báo', () {
-                    _activeField = 'body';
-                    _showMetadataModal();
-                }),
+                NotificationEditorHeader(
+                    label: 'Nội dung thông báo', 
+                    onInsert: () {
+                        _activeField = 'body';
+                        _showMetadataModal();
+                    }
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _bodyController,
@@ -293,7 +301,7 @@ class _NotificationTemplateEditScreenState
             ),
             const SizedBox(height: 16),
 
-            // Preview
+            // Xem trước
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
@@ -352,146 +360,5 @@ class _NotificationTemplateEditScreenState
     );
   }
 
-  Widget _buildSection({required List<Widget> children}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(16),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 80, 
-              child: Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600))
-            ),
-            Expanded(child: Text(value, style: TextStyle(fontSize: 14, color: Colors.grey.shade900))),
-          ],
-        )
-    );
-  }
-
-  Widget _buildEditorHeader(String label, VoidCallback onInsert) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-        TextButton.icon(
-          onPressed: onInsert,
-          icon: const Icon(Icons.add, size: 16),
-          label: const Text('Chèn từ khóa', style: TextStyle(fontSize: 13)),
-          style: TextButton.styleFrom(
-            backgroundColor: Colors.blue.shade50,
-            foregroundColor: Colors.blue,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        )
-      ],
-    );
-  }
 }
 
-class _MetadataModal extends StatelessWidget {
-  final Function(String label, String key) onSelect;
-
-  const _MetadataModal({required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-       padding: const EdgeInsets.symmetric(vertical: 20),
-       height: MediaQuery.of(context).size.height * 0.7,
-       child: Column(
-         children: [
-            Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 16),
-               child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                     const Text('Chọn từ khóa', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                     IconButton(
-                       icon: const Icon(Icons.close),
-                       onPressed: () => Navigator.pop(context),
-                       padding: EdgeInsets.zero,
-                       constraints: const BoxConstraints(),
-                     )
-                  ],
-               ),
-            ),
-            const Divider(),
-            Expanded(
-              child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
-                builder: (context, state) {
-                  if (state.keywords.isEmpty) {
-                     return const Center(child: Text("Không có từ khóa nào"));
-                  }
-                  return ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: state.keywords.map((group) {
-                       return Theme(
-                         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                         child: ExpansionTile(
-                           title: Text(
-                             group.name, 
-                             style: TextStyle(
-                               fontSize: 14, 
-                               fontWeight: FontWeight.w500,
-                               color: Colors.grey.shade700
-                             )
-                           ),
-                           tilePadding: EdgeInsets.zero,
-                           childrenPadding: const EdgeInsets.only(bottom: 12),
-                           initiallyExpanded: false,
-                           children: group.keywords.map((k) => _buildItem(context, k.label, k.key)).toList(),
-                         ),
-                       );
-                    }).toList(),
-                  );
-                }
-              ),
-            ),
-         ],
-       ),
-    );
-  }
-
-  Widget _buildItem(BuildContext context, String label, String key) {
-    return InkWell(
-      onTap: () {
-        onSelect(label, key);
-        Navigator.pop(context);
-      },
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-           children: [
-              Expanded(
-                child: Text(label, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
-              ),
-              const Icon(Icons.add, color: Colors.blue, size: 20),
-           ],
-        ),
-      ),
-    );
-  }
-}
