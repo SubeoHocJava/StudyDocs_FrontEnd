@@ -41,6 +41,17 @@ class NotificationTemplateDataSourceImpl implements NotificationTemplateDataSour
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     ),
+    NotificationTemplateModel(
+      id: '3',
+      name: 'HTML Example',
+      channel: 'EMAIL',
+      description: 'Mẫu email định dạng HTML',
+      templateSubject: 'Thông báo quan trọng gửi đến {userName}',
+      templateBody: '<h3>Xin chào <b>{userName}</b>!</h3><p>Đây là một ví dụ về <i>nội dung HTML</i>.</p><p>Bạn có thể:</p><ul><li><b>In đậm</b> văn bản</li><li><i>In nghiêng</i> văn bản</li><li>Tạo danh sách</li></ul><p style="color: blue">Thay đổi màu sắc...</p>',
+      type: 'CUSTOM',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
   ];
 
   NotificationTemplateDataSourceImpl({required this.dioClient});

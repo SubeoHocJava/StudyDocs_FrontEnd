@@ -7,6 +7,7 @@ import 'package:studydocs/features/notification_template/logic/notification_temp
 import 'package:studydocs/features/notification_template/logic/notification_template_state.dart';
 import 'package:studydocs/features/notification_template/presentation/component/notification_metadata_modal.dart';
 import 'package:studydocs/features/notification_template/presentation/component/notification_editor_components.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class NotificationTemplateEditScreen extends StatefulWidget {
   final NotificationTemplateEntity? template;
@@ -21,19 +22,16 @@ class NotificationTemplateEditScreen extends StatefulWidget {
 class _NotificationTemplateEditScreenState
     extends State<NotificationTemplateEditScreen> {
   late TextEditingController _nameController;
+  TextEditingController? _descriptionController;
   late TextEditingController _subjectController;
   late TextEditingController _bodyController;
   
   String _selectedType = 'LIKE';
   String _selectedChannel = 'EMAIL';
 
-  // NOTE: In real app, we should check if _selectedType/Channel is in the list of available types/channels
-  // If not, maybe fetch them or default to first one. Here we assume generic first values or whatever comes from template.
-  
-  // Nút focus để theo dõi trường văn bản nào đang hoạt động
   late FocusNode _subjectFocus;
   late FocusNode _bodyFocus;
-  String _activeField = 'subject'; // 'subject' hoặc 'body'
+  String _activeField = 'subject';
 
   @override
   void initState() {
@@ -58,6 +56,7 @@ class _NotificationTemplateEditScreenState
   @override
   void dispose() {
     _nameController.dispose();
+    _descriptionController?.dispose();
     _subjectController.dispose();
     _bodyController.dispose();
     _subjectFocus.dispose();
@@ -72,7 +71,7 @@ class _NotificationTemplateEditScreenState
         id: DateTime.now().millisecondsSinceEpoch.toString(), // ID giả lập
         name: _nameController.text,
         channel: _selectedChannel,
-        description: "Tạo từ ứng dụng",
+        description: _descriptionController?.text ?? '',
         templateSubject: _subjectController.text,
         templateBody: _bodyController.text,
         type: _selectedType,
@@ -88,7 +87,7 @@ class _NotificationTemplateEditScreenState
         id: widget.template!.id,
         name: _nameController.text,
         channel: _selectedChannel,
-        description: widget.template!.description,
+        description: _descriptionController?.text ?? '',
         templateSubject: _subjectController.text,
         templateBody: _bodyController.text,
         type: _selectedType,
@@ -142,6 +141,8 @@ class _NotificationTemplateEditScreenState
 
   @override
   Widget build(BuildContext context) {
+    _descriptionController ??= TextEditingController(text: widget.template?.description ?? '');
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
@@ -188,6 +189,15 @@ class _NotificationTemplateEditScreenState
                   controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: 'Tên mẫu',
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                 TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Mô tả',
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   ),
@@ -339,15 +349,15 @@ class _NotificationTemplateEditScreenState
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                         Text(
-                          _bodyController.text,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                            height: 1.5,
+                          const SizedBox(height: 8),
+                          HtmlWidget(
+                             _bodyController.text,
+                             textStyle: const TextStyle(
+                               fontSize: 14,
+                               color: Colors.black54,
+                               height: 1.5,
+                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),
