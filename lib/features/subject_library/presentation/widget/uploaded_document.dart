@@ -29,7 +29,7 @@ class UploadDocument extends StatelessWidget {
             top: responsive.heightPercent(1),
           ),
           child: Text(
-            "Tài liệu bạn tải lên",
+            "Tải lên gần đây",
             style: TextStyle(
               fontSize: responsive.fontSize(18), // responsive font
               fontWeight: FontWeight.bold,

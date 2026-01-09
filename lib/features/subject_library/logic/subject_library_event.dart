@@ -23,7 +23,7 @@ class FindDocument extends SubjectLibraryEvent{
 }
 
 //
-// 2️⃣ Like / Unlike document
+// 2️ Like / Unlike document
 //
 class SubjectLibraryLikeDocument extends SubjectLibraryEvent {
   final String documentId;
@@ -34,7 +34,7 @@ class SubjectLibraryLikeDocument extends SubjectLibraryEvent {
 }
 
 //
-// 3️⃣ Mở phần comment của document
+// 3️ Mở phần comment của document
 //
 class SubjectLibraryOpenComments extends SubjectLibraryEvent {
   final String documentId;
@@ -45,7 +45,7 @@ class SubjectLibraryOpenComments extends SubjectLibraryEvent {
 }
 
 //
-// 4️⃣ Download document
+// 4️ Download document
 //
 class SubjectLibraryDownloadDocument extends SubjectLibraryEvent {
   final String documentId;
@@ -56,7 +56,7 @@ class SubjectLibraryDownloadDocument extends SubjectLibraryEvent {
 }
 
 //
-// 5️⃣ Đánh dấu (bookmark / save) document
+// 5️ Đánh dấu (bookmark / save) document
 //
 class SubjectLibraryBookmarkDocument extends SubjectLibraryEvent {
   final String documentId;
@@ -64,4 +64,15 @@ class SubjectLibraryBookmarkDocument extends SubjectLibraryEvent {
 
   @override
   List<Object?> get props => [documentId];
+}
+
+//
+// Load subjects và documents theo school name
+//
+class SubjectLibraryLoadBySchool extends SubjectLibraryEvent {
+  final String schoolName;
+  const SubjectLibraryLoadBySchool(this.schoolName);
+
+  @override
+  List<Object?> get props => [schoolName];
 }

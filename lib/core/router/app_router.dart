@@ -8,6 +8,14 @@ import 'package:studydocs/features/profile/logic/profile_event.dart';
 import 'package:studydocs/features/statistic/presentation/bloc/statistic_bloc.dart';
 import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.dart';
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
+import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
+import 'package:studydocs/features/subject_library/presentation/screen/subject_documents_screen.dart';
+import 'package:studydocs/features/subject_library/domain/data/impl/SubjectLibraryRepositoryImpl.dart';
+import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
+import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
+import 'package:studydocs/features/subject_library/domain/usecase/get_subjects_by_school_usecase.dart';
+import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
+import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -106,6 +114,80 @@ GoRouter createAppRouter() {
                 ),
               ],
               child: const StatisticScreen(),
+            ),
+          );
+        },
+      ),
+      // School subject library route - standalone screen
+      GoRoute(
+        path: '/school/:schoolName',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          // GoRouter đã tự động decode path parameters rồi
+          final decodedSchoolName = state.pathParameters['schoolName'] ?? 'Unknown School';
+          
+          // Create repositories
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
+          final subjectRepo = SubjectRepositoryImpl();
+          
+          return MaterialPage(
+            child: BlocProvider(
+              create: (_) => SubjectLibraryBloc(
+                searchDocumentsUseCase: SearchDocumentsUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                likeDocumentUseCase: LikeDocumentUseCase(repository: subjectLibraryRepo),
+                getCommentsUseCase: GetCommentsUseCase(repository: subjectLibraryRepo),
+                downloadDocumentUseCase: DownloadDocumentUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
+                  repository: subjectRepo,
+                ),
+              )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
+              child: SubjectLibraryScreen(schoolName: decodedSchoolName),
+            ),
+          );
+        },
+      ),
+      // Subject documents route - standalone screen
+      GoRoute(
+        path: '/school/:schoolName/subject/:subjectName',
+        parentNavigatorKey: _rootNavigatorKey,
+        pageBuilder: (context, state) {
+          // GoRouter đã tự động decode path parameters rồi
+          final decodedSchoolName = state.pathParameters['schoolName'] ?? 'Unknown School';
+          final decodedSubjectName = state.pathParameters['subjectName'] ?? 'Unknown Subject';
+          
+          // Create repositories
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
+          final subjectRepo = SubjectRepositoryImpl();
+          
+          return MaterialPage(
+            child: BlocProvider(
+              create: (_) => SubjectLibraryBloc(
+                searchDocumentsUseCase: SearchDocumentsUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                likeDocumentUseCase: LikeDocumentUseCase(repository: subjectLibraryRepo),
+                getCommentsUseCase: GetCommentsUseCase(repository: subjectLibraryRepo),
+                downloadDocumentUseCase: DownloadDocumentUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                  repository: subjectLibraryRepo,
+                ),
+                getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
+                  repository: subjectRepo,
+                ),
+              )..add(SubjectLibraryLoadDocumentByKeyWord(decodedSubjectName)),
+              child: SubjectDocumentsScreen(
+                schoolName: decodedSchoolName,
+                subjectName: decodedSubjectName,
+              ),
             ),
           );
         },

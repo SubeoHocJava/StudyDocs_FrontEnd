@@ -117,7 +117,14 @@ class MainTabExplorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SubjectLibraryScreen();
+    // Tab "Khám phá" chỉ hiển thị empty state
+    // User phải click vào tab để mở bottom sheet tìm trường
+    return const Center(
+      child: Text(
+        'Nhấn vào tab "Khám phá" để tìm kiếm trường',
+        style: TextStyle(fontSize: 16, color: Colors.grey),
+      ),
+    );
   }
 }
 
