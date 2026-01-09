@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
@@ -228,12 +229,12 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
 
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
-        ),
-      );
-    }
+        );
+      }
 
     return const SizedBox();
   }

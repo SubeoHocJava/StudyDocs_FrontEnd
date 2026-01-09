@@ -53,3 +53,15 @@ ios/Runner/GoogleService-Info.plist
 *.env
 *.jks
 *.keystore
+
+# User requested exclusions
+android/caches/
+android/daemon/
+android/kotlin-profile/
+android/native/
+android/wrapper/
+ios/
+linux/
+macos/
+windows/
+
