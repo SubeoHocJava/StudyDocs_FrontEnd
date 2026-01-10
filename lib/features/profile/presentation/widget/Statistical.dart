@@ -88,7 +88,6 @@ class Statistical extends StatelessWidget {
     );
   }
 }
-
 class ActivityStatistics extends StatelessWidget {
   final int numMyUpload;
   final int numMyLikes;
@@ -174,3 +173,4 @@ class ActivityStatistics extends StatelessWidget {
     );
   }
 }
+

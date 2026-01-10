@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/home/presentation/home_screen.dart';
@@ -9,8 +11,12 @@ import 'package:studydocs/features/notification/presentation/notification_screen
 import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
 import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
-
-import '../manage_user/presentation/screen/manage_user_screen.dart';
+import 'package:studydocs/features/manage_user/presentation/screen/manage_user_screen.dart';
+import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
+import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
+import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
+import 'package:studydocs/features/explore/presentation/widgets/explore_bottom_sheet.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key, required this.navigationShell});
@@ -18,9 +24,37 @@ class MainScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void _goBranch(BuildContext context, int index) {
+    // Nếu bấm nút "Khám phá" (index 2) → Show bottom sheet tìm kiếm trường
+    if (index == 2) {
+      _showExploreBottomSheet(context);
+      return;
+    }
+    
+    // Các tab khác vẫn navigate bình thường
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+
+  /// Hiển thị bottom sheet khám phá trường
+  void _showExploreBottomSheet(BuildContext context) {
+    final remote = ExploreRemoteDataSource();
+    final repo = ExploreRepositoryImpl(remote: remote);
+    final searchUseCase = SearchSchoolsUseCase(repository: repo);
+    final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BlocProvider(
+        create: (_) => ExploreBloc(
+          searchSchoolsUseCase: searchUseCase,
+          getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+        ),
+        child: const ExploreBottomSheet(),
+      ),
     );
   }
 
@@ -76,7 +110,14 @@ class MainTabExplorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SubjectLibraryScreen();
+    // Tab "Khám phá" chỉ hiển thị empty state
+    // User phải click vào tab để mở bottom sheet tìm trường
+    return const Center(
+      child: Text(
+        'Nhấn vào tab "Khám phá" để tìm kiếm trường',
+        style: TextStyle(fontSize: 16, color: Colors.grey),
+      ),
+    );
   }
 }
 

@@ -61,6 +61,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           icon: const Icon(Icons.bar_chart, size: 60, color: Color(0xFF1A237E)),
                           label: 'Thống kê',
                           height: 220,
+                          onTap: () => context.push(AppRoutes.statistic),
                         ),
                       ],
                     ),

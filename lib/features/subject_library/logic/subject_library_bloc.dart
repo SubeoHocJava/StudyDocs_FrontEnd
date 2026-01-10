@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/usecase/DocsUseCase.dart';
+import '../domain/usecase/get_subjects_by_school_usecase.dart';
+import '../domain/ui_model/doc_subject_lib_ui.dart';
 import 'subject_library_event.dart';
 import 'subject_library_state.dart';
 
@@ -12,6 +14,7 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
   final GetCommentsUseCase getCommentsUseCase;
   final DownloadDocumentUseCase downloadDocumentUseCase;
   final BookmarkDocumentUseCase bookmarkDocumentUseCase;
+  final GetSubjectsBySchoolUseCase getSubjectsBySchoolUseCase;
 
   SubjectLibraryBloc({
     required this.searchDocumentsUseCase,
@@ -19,6 +22,7 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
     required this.getCommentsUseCase,
     required this.downloadDocumentUseCase,
     required this.bookmarkDocumentUseCase,
+    required this.getSubjectsBySchoolUseCase,
   }) : super(SubjectLibraryInitial()) {
     //
     // 1️⃣ Load document theo keyword
@@ -38,6 +42,7 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
             "Unknown School",
             0,
             docs.length,
+            [],              // subjects - empty khi load by keyword
           ),
         );
       } catch (e) {
@@ -65,6 +70,7 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
             "Unknown School",
             0,
             docs.length,
+            [],              // subjects - empty khi find document
           ),
         );
       } catch (e) {
@@ -120,6 +126,58 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
     on<SubjectLibraryBookmarkDocument>((event, emit) async {
       try {
         await bookmarkDocumentUseCase(event.documentId);
+      } catch (e) {
+        emit(SubjectLibraryError(e.toString()));
+      }
+    });
+
+    //
+    // 7️⃣ Load subjects và documents theo school name
+    //
+    on<SubjectLibraryLoadBySchool>((event, emit) async {
+      emit(SubjectLibraryLoading());
+
+      try {
+        // Load subjects và documents song song
+        final subjects = await getSubjectsBySchoolUseCase(event.schoolName);
+        // Tạm thời: search với empty query để lấy tất cả documents
+        // Sau này khi có API: sẽ có method getDocumentsBySchool(schoolName)
+        final allDocs = await searchDocumentsUseCase('');
+
+        // Filter documents theo school name (nếu institution match)
+        final schoolDocs = allDocs.where((doc) {
+          final institution = doc.institution ?? '';
+          return institution.toLowerCase().contains(event.schoolName.toLowerCase()) ||
+              event.schoolName.toLowerCase().contains(institution.toLowerCase());
+        }).toList();
+
+        // Nếu không có documents match, dùng tất cả (cho mock data)
+        final docs = schoolDocs.isNotEmpty ? schoolDocs : allDocs;
+
+        // Sort documents: most liked first
+        final sortedDocs = List.from(docs);
+        sortedDocs.sort((a, b) => (b.likesCount ?? 0).compareTo(a.likesCount ?? 0));
+
+        // Uploaded docs: sort by createdAt (newest first)
+        final uploadedDocs = List.from(docs);
+        uploadedDocs.sort((a, b) {
+          final aDate = a.createdAt ?? '';
+          final bDate = b.createdAt ?? '';
+          return bDate.compareTo(aDate);
+        });
+
+        emit(
+          SubjectLibraryLoaded(
+            '', // subject - không dùng khi load by school
+            List<DocumentSubjectLibUI>.from(uploadedDocs.take(3)), // uploaded_docs - lấy 3 mới nhất
+            List<DocumentSubjectLibUI>.from(sortedDocs.take(3)), // the_most_liked_docs - lấy 3 nhiều like nhất
+            docs, // documents - tất cả
+            event.schoolName, // school
+            0, // num_friends
+            docs.length, // num_docs
+            subjects, // subjects - danh sách môn học
+          ),
+        );
       } catch (e) {
         emit(SubjectLibraryError(e.toString()));
       }

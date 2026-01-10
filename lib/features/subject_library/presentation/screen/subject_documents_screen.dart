@@ -6,21 +6,19 @@ import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
-import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
-import 'package:studydocs/features/subject_library/presentation/widget/most_liked_docs.dart';
-import 'package:studydocs/features/subject_library/presentation/widget/title.dart';
-import 'package:studydocs/features/subject_library/presentation/widget/uploaded_document.dart';
-
+import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import '../../../library/presentation/widget/stored_document.dart';
 
-class SubjectLibraryScreen extends StatelessWidget {
+class SubjectDocumentsScreen extends StatelessWidget {
   final String schoolName;
+  final String subjectName;
 
-  const SubjectLibraryScreen({
+  const SubjectDocumentsScreen({
     super.key,
     required this.schoolName,
+    required this.subjectName,
   });
 
   @override
@@ -40,43 +38,49 @@ class SubjectLibraryScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Tiêu đề với tên trường và search bar lớn
-                  TitleSubjectLibrary(
-                    state,
-                    fontSize: responsive.fontSize(22),
-                    schoolName: schoolName,
-                  ),
-                  SizedBox(height: responsive.heightPercent(2)),
-
-                  // Section "Môn học"
-                  if (state.subjects.isNotEmpty) ...[
-                    SubjectCategories(
-                      state.subjects.map((s) => s.name).toList(),
-                      onSubjectTap: (subjectName) {
-                        // Navigate đến trang danh sách tài liệu của môn học
-                        final encodedSchoolName = Uri.encodeComponent(schoolName);
-                        final encodedSubjectName = Uri.encodeComponent(subjectName);
-                        context.push('/school/$encodedSchoolName/subject/$encodedSubjectName');
-                      },
+                  // Tiêu đề: Tên trường > Tên môn
+                  Padding(
+                    padding: EdgeInsets.only(bottom: responsive.heightPercent(2)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          schoolName,
+                          style: TextStyle(
+                            fontSize: responsive.fontSize(18),
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: responsive.heightPercent(1)),
+                        Text(
+                          subjectName,
+                          style: TextStyle(
+                            fontSize: responsive.fontSize(24),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
-
-                  // Section "Lượt thích cao nhất"
-                  if (state.the_most_liked_docs.isNotEmpty) ...[
-                    MostLikeDocs(state.the_most_liked_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
-
-                  // Section "Tải lên gần đây"
-                  if (state.uploaded_docs.isNotEmpty) ...[
-                    UploadDocument(state.uploaded_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
-
-                  // Tài liệu đã lưu (nếu có)
+                  ),
+                  
+                  // Danh sách tài liệu
                   if (state.documents.isNotEmpty)
                     StoredDocument(state.documents.cast<DocumentLibraryUI>()),
+                  
+                  if (state.documents.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(responsive.heightPercent(5)),
+                        child: Text(
+                          'Chưa có tài liệu cho môn học này',
+                          style: TextStyle(
+                            fontSize: responsive.fontSize(16),
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             );
@@ -86,7 +90,7 @@ class SubjectLibraryScreen extends StatelessWidget {
             return Center(child: Text(state.message));
           }
 
-          return const Center(child: Text("Chưa có dữ liệu trang subject"));
+          return const Center(child: Text("Chưa có dữ liệu"));
         },
       ),
       bottomNavigationBar: BottomNav(
