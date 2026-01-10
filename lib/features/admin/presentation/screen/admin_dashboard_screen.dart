@@ -53,6 +53,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           icon: const Icon(Icons.description, size: 60, color: Color(0xFF4FC3F7)),
                           label: 'Quản lý\ntài liệu',
                           height: 220,
+                          onTap: () => context.push(AppRoutes.docsManagement),
                         ),
                         const SizedBox(height: 20),
                         _AdminCard(
@@ -82,6 +83,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           icon: const Icon(Icons.home_work, size: 60, color: Color(0xFF1A237E)),
                           label: 'Mẫu\nthông báo',
                           height: 220,
+                          onTap: () => context.push(AppRoutes.notificationTemplates),
                         ),
                         const SizedBox(height: 20),
                         const UploadBox(),

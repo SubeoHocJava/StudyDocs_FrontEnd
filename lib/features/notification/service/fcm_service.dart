@@ -18,6 +18,11 @@ class FcmService {
 
   late final AndroidNotificationChannel _channel;
 
+  /// Biến để kiểm tra xem FCM đã được khởi tạo chưa
+  bool _isInitialized = false;
+  /// Biến để kiểm tra xem FCM đang được khởi tạo không
+  bool _isInitializing = false;
+
   /// Khởi tạo FCM: xin quyền và đăng ký các listener
   Future<void> initialize(NotificationRepository repository) async {
     _registerFcmTokenUseCase = RegisterFcmTokenUseCase(repository);

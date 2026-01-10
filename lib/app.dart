@@ -9,7 +9,7 @@ import 'core/router/app_router.dart';
 
 final _router = createAppRouter();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
