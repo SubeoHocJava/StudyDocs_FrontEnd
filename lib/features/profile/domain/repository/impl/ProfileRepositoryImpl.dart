@@ -54,6 +54,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     address: 'TP. Hồ Chí Minh',
     avatarUrl: 'https://i.pravatar.cc/150?img=3',
     isVerified: false,
+    isFollowing: false,
   );
 
   @override
@@ -85,6 +86,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       address: _mockProfile.address,
       avatarUrl: 'https://i.pravatar.cc/150?img=8',
       isVerified: _mockProfile.isVerified,
+      isFollowing: _mockProfile.isFollowing,
     );
 
     return _mockProfile.avatarUrl;
@@ -106,6 +108,46 @@ class ProfileRepositoryImpl extends ProfileRepository {
       address: _mockProfile.address,
       avatarUrl: _mockProfile.avatarUrl,
       isVerified: true,
+      isFollowing: _mockProfile.isFollowing,
+    );
+  }
+
+  @override
+  Future<void> followUser(String userId) async {
+
+    await Future.delayed(const Duration(milliseconds: 500));
+    _mockProfile = ProfileEntity(
+      id: _mockProfile.id,
+      username: _mockProfile.username,
+      fullName: _mockProfile.fullName,
+      school: _mockProfile.school,
+      email: _mockProfile.email,
+      phoneNumber: _mockProfile.phoneNumber,
+      gender: _mockProfile.gender,
+      birthDate: _mockProfile.birthDate,
+      address: _mockProfile.address,
+      avatarUrl: _mockProfile.avatarUrl,
+      isVerified: _mockProfile.isVerified,
+      isFollowing: true,
+    );
+  }
+
+  @override
+  Future<void> unfollowUser(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    _mockProfile = ProfileEntity(
+      id: _mockProfile.id,
+      username: _mockProfile.username,
+      fullName: _mockProfile.fullName,
+      school: _mockProfile.school,
+      email: _mockProfile.email,
+      phoneNumber: _mockProfile.phoneNumber,
+      gender: _mockProfile.gender,
+      birthDate: _mockProfile.birthDate,
+      address: _mockProfile.address,
+      avatarUrl: _mockProfile.avatarUrl,
+      isVerified: _mockProfile.isVerified,
+      isFollowing: false,
     );
   }
 

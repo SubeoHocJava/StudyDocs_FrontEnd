@@ -5,6 +5,8 @@ import '../domain/usecase/get_profile_usecase.dart';
 import '../domain/usecase/update_avatar_usecase.dart';
 import '../domain/usecase/update_profile_usecase.dart';
 import '../domain/usecase/verify_email_usecase.dart';
+import '../domain/usecase/follow_user_usecase.dart';
+import '../domain/usecase/unfollow_user_usecase.dart';
 import 'helper.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
@@ -18,6 +20,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final updateProfileUseCase = UpdateProfileUseCase(repository);
     final updateAvatarUseCase = UpdateAvatarUseCase(repository);
     final verifyEmailUseCase = VerifyEmailUseCase(repository);
+    final followUserUseCase = FollowUserUseCase(repository);
+    final unfollowUserUseCase = UnfollowUserUseCase(repository);
 
     // ================= LOAD PROFILE =================
     on<LoadProfile>((event, emit) async {
@@ -141,6 +145,34 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       } catch (e) {
         emit(ProfileUpdateFailure('Xác thực email thất bại: $e'));
+      }
+    });
+
+    // ================= FOLLOW USER =================
+    on<FollowUser>((event, emit) async {
+      if (state is! ProfileLoaded) return;
+      final current = state as ProfileLoaded;
+
+      try {
+        await followUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: true));
+        emit(const ProfileUpdateSuccess(message: 'Đã theo dõi người dùng'));
+      } catch (e) {
+        emit(ProfileUpdateFailure('Theo dõi thất bại: $e'));
+      }
+    });
+
+    // ================= UNFOLLOW USER =================
+    on<UnfollowUser>((event, emit) async {
+      if (state is! ProfileLoaded) return;
+      final current = state as ProfileLoaded;
+
+      try {
+        await unfollowUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: false));
+        emit(const ProfileUpdateSuccess(message: 'Đã bỏ theo dõi người dùng'));
+      } catch (e) {
+        emit(ProfileUpdateFailure('Bỏ theo dõi thất bại: $e'));
       }
     });
 

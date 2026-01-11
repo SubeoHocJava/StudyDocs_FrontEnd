@@ -22,6 +22,7 @@ class HelperMap {
       address: profile.address,
       avatarUrl: profile.avatarUrl,
       isVerified: profile.isVerified,
+      isFollowing: profile.isFollowing,
       documents: documents,
     );
   }

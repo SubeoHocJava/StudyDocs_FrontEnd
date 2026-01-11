@@ -3,9 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_state.dart';
-import 'package:studydocs/features/profile/presentation/widget/UpdateInforDialog.dart';
+import '../../logic/profile_event.dart';
+
+
 
 import 'SettingBoard.dart';
+import '../../../../features/auth/presentation/bloc/auth_status_cubit.dart';
+
 
 class BasicInfor extends StatelessWidget {
   final ProfileLoaded state;
@@ -26,26 +30,10 @@ class BasicInfor extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          /// ================= TOP RIGHT EDIT BUTTON =================
+          /// ================= TOP RIGHT BUTTON (SETTINGS / FOLLOW) =================
           Align(
             alignment: Alignment.topRight,
-            child: TextButton.icon(
-              onPressed: () => _showSettingBoard(context),
-              icon: Icon(Icons.settings, size: responsive.fontSize(16)),
-              label: Text(
-                "Cài đặt",
-                style: TextStyle(fontSize: responsive.fontSize(13)),
-              ),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: responsive.widthPercent(2),
-                  vertical: responsive.heightPercent(1),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
+            child: _buildActionButton(context, responsive),
           ),
 
           SizedBox(height: responsive.heightPercent(1)),
@@ -97,6 +85,72 @@ class BasicInfor extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, dynamic responsive) {
+    final authState = context.read<AuthStatusCubit>().state;
+    String? currentUserId;
+    if (authState is AuthAuthenticated) {
+      currentUserId = authState.userId;
+    }
+
+    final isOwnProfile = state.id == currentUserId;
+
+    if (isOwnProfile) {
+      return TextButton.icon(
+        onPressed: () => _showSettingBoard(context),
+        icon: Icon(Icons.settings, size: responsive.fontSize(16)),
+        label: Text(
+          "Cài đặt",
+          style: TextStyle(fontSize: responsive.fontSize(13)),
+        ),
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.symmetric(
+            horizontal: responsive.widthPercent(2),
+            vertical: responsive.heightPercent(1),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      );
+    }
+
+    final isFollowing = state.isFollowing;
+
+    return TextButton.icon(
+      onPressed: () {
+        if (isFollowing) {
+          context.read<ProfileBloc>().add(UnfollowUser(state.id));
+        } else {
+          context.read<ProfileBloc>().add(FollowUser(state.id));
+        }
+      },
+      icon: Icon(
+        isFollowing ? Icons.person_remove : Icons.person_add,
+        size: responsive.fontSize(16),
+        color: isFollowing ? Colors.grey : Colors.blue,
+      ),
+      label: Text(
+        isFollowing ? "Bỏ theo dõi" : "Theo dõi",
+        style: TextStyle(
+          fontSize: responsive.fontSize(13),
+          color: isFollowing ? Colors.grey : Colors.blue,
+        ),
+      ),
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.symmetric(
+          horizontal: responsive.widthPercent(2),
+          vertical: responsive.heightPercent(1),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(
+            color: isFollowing ? Colors.grey : Colors.blue,
+          ),
+        ),
       ),
     );
   }

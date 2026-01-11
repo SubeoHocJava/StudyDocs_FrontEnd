@@ -85,6 +85,24 @@ class VerifyEmail extends ProfileEvent {
   const VerifyEmail();
 }
 
+/// Follow user
+class FollowUser extends ProfileEvent {
+  final String userId;
+  const FollowUser(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+/// Unfollow user
+class UnfollowUser extends ProfileEvent {
+  final String userId;
+  const UnfollowUser(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
 /// =======================
 /// DOCUMENT ACTION EVENTS
 /// (TỪ ListDocument CALLBACK)

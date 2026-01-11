@@ -9,6 +9,7 @@ class ProfileEntity {
   final String address;
   final String avatarUrl;
   final bool isVerified;
+  final bool isFollowing;
   final String? school;
 
   const ProfileEntity({
@@ -22,6 +23,7 @@ class ProfileEntity {
     required this.address,
     required this.avatarUrl,
     required this.isVerified,
+    this.isFollowing = false,
     this.school,
   });
 }

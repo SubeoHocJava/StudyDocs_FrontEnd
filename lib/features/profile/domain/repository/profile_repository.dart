@@ -13,6 +13,12 @@ abstract class ProfileRepository {
   /// Xác thực email
   Future<void> verifyEmail();
 
+  /// Theo dõi người dùng
+  Future<void> followUser(String userId);
+
+  /// Bỏ theo dõi người dùng
+  Future<void> unfollowUser(String userId);
+
   getDocumentsByUser(String id) {}
 
 

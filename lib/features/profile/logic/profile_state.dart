@@ -35,6 +35,7 @@ class ProfileLoaded extends ProfileState {
   final int numMyLikes;
   final int numMyComment;
   final List<DocumentProfile>documents;
+  final bool isFollowing;
 
   /// UI flags
   final bool isUpdating;
@@ -58,6 +59,7 @@ class ProfileLoaded extends ProfileState {
     this.numMyLikes=2,
     this.numMyComment=15,
     required this.documents,
+    this.isFollowing = false,
   });
 
   /// copyWith để update từng field
@@ -74,6 +76,7 @@ class ProfileLoaded extends ProfileState {
     bool? isVerified,
     bool? isUpdating,
     List? documents,
+    bool? isFollowing,
   }) {
     return ProfileLoaded(
       id: id,
@@ -89,6 +92,7 @@ class ProfileLoaded extends ProfileState {
       isVerified: isVerified ?? this.isVerified,
       isUpdating: isUpdating ?? this.isUpdating,
       documents: this.documents,
+      isFollowing: isFollowing ?? this.isFollowing,
     );
   }
 
@@ -108,6 +112,7 @@ class ProfileLoaded extends ProfileState {
         isVerified,
         isUpdating,
         documents,
+        isFollowing,
       ];
 
 }
