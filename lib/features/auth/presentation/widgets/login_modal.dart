@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../services/token_storage_service.dart';
 import '../bloc/login_bloc.dart';
 import '../bloc/auth_status_cubit.dart';
 import '../screens/google_debug_screen.dart';
@@ -110,7 +111,7 @@ class _LoginModalState extends State<LoginModal> {
     return MultiBlocListener(
       listeners: [
         BlocListener<LoginBloc, LoginState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is LoginSuccess) {
               // Xử lý chuỗi mock "token|role"
               String token = state.token;
@@ -121,22 +122,39 @@ class _LoginModalState extends State<LoginModal> {
                 role = parts[1];
               }
 
+              // Đọc lại user info từ storage (AuthMockDataSourceImpl đã lưu vào)
+              final tokenStorage = TokenStorageService();
+              final userId = await tokenStorage.getUserId();
+              final username = await tokenStorage.getUsername();
+              final displayName = await tokenStorage.getDisplayName();
+              final roles = await tokenStorage.getRoles();
+
               // CẬP NHẬT AUTH STATE - Quan trọng để Header update UI
-              context.read<AuthStatusCubit>().setAuthenticated(token, role: role);
+              if (!context.mounted) return;
+              context.read<AuthStatusCubit>().setAuthenticated(
+                token: token,
+                role: role,
+                userId: userId ?? '',
+                username: username ?? '',
+                displayName: displayName ?? '',
+                roles: roles,
+              );
 
-              final claims = _tryDecodeJwt(state.token);
-
-              // Nếu token là JWT (Google idToken), điều hướng sang màn demo để show rõ dữ liệu.
-              // Màn này demo-only và có thể xoá sau này mà không ảnh hưởng kiến trúc core.
-              if (claims != null) {
-                final nav = Navigator.of(context, rootNavigator: true);
-                nav.pop(); // đóng modal
-                nav.push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => GoogleDebugScreen(idToken: state.token),
-                  ),
-                );
-                return;
+              // Nếu token là JWT (Google idToken - bắt đầu bằng "ey"), điều hướng sang màn demo
+              // JWT luôn bắt đầu bằng "eyJ..." (base64 của {"alg":...})
+              // Mock token thì không bắt đầu bằng "ey"
+              if (state.token.startsWith('ey')) {
+                final claims = _tryDecodeJwt(state.token);
+                if (claims != null) {
+                  final nav = Navigator.of(context, rootNavigator: true);
+                  nav.pop(); // đóng modal
+                  nav.push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => GoogleDebugScreen(idToken: state.token),
+                    ),
+                  );
+                  return;
+                }
               }
 
               // Login thường: đóng modal và show snackbar
@@ -205,53 +223,62 @@ class _LoginModalState extends State<LoginModal> {
                   vertical: isTabletLayout ? 32 : 24,
                 );
 
-                return GestureDetector(  // ← THÊM wrap toàn bộ
-                    behavior: HitTestBehavior.translucent,  // ← Cho touch đi qua vùng trong suốt
-                    onTap: () => Navigator.of(context).pop(),  // ← Đóng dialog khi tap ra ngoài
-                    child: AnimatedPadding(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOut,
-                      padding: mediaQuery.viewInsets,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: maxWidth),
-                          child: GestureDetector(
-                            onTap: () {},  // ← Chặn tap vào modal không đóng
-                            child: Material(
-                              color: Colors.white,
-                              elevation: 16,
-                              borderRadius: BorderRadius.circular(20),
-                              child: ClipRRect(
+                return GestureDetector(
+                  // ← THÊM wrap toàn bộ
+                  behavior:
+                      HitTestBehavior
+                          .translucent, // ← Cho touch đi qua vùng trong suốt
+                  onTap:
+                      () =>
+                          Navigator.of(
+                            context,
+                          ).pop(), // ← Đóng dialog khi tap ra ngoài
+                  child: AnimatedPadding(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    padding: mediaQuery.viewInsets,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: maxWidth),
+                        child: GestureDetector(
+                          onTap: () {}, // ← Chặn tap vào modal không đóng
+                          child: Material(
+                            color: Colors.white,
+                            elevation: 16,
                             borderRadius: BorderRadius.circular(20),
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding: contentPadding,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      _title,
-                                      style: TextStyle(
-                                        fontSize: isTabletLayout ? 22 : 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.headerForeground,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: contentPadding,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _title,
+                                        style: TextStyle(
+                                          fontSize: isTabletLayout ? 22 : 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.headerForeground,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 24),
+                                      const SizedBox(height: 24),
 
-                                    if (isLoading)
-                                      const LinearProgressIndicator(),
-                                    if (isLoading) const SizedBox(height: 16),
+                                      if (isLoading)
+                                        const LinearProgressIndicator(),
+                                      if (isLoading) const SizedBox(height: 16),
 
-                                    _buildContent(
-                                      context: context,
-                                      loginState: loginState,
-                                      registerState: registerState,
-                                    ),
-                                  ],
+                                      _buildContent(
+                                        context: context,
+                                        loginState: loginState,
+                                        registerState: registerState,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -260,7 +287,6 @@ class _LoginModalState extends State<LoginModal> {
                       ),
                     ),
                   ),
-                    ),
                 );
               },
             ),

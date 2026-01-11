@@ -26,8 +26,12 @@ class NotificationTemplateScreen extends StatelessWidget {
         return NotificationTemplateBloc(
           getTemplatesUseCase: GetNotificationTemplatesUseCase(repository),
           getTypesUseCase: GetNotificationTemplateTypesUseCase(repository),
-          getChannelsUseCase: GetNotificationTemplateChannelsUseCase(repository),
-          searchKeywordsUseCase: SearchNotificationTemplateKeywordsUseCase(repository),
+          getChannelsUseCase: GetNotificationTemplateChannelsUseCase(
+            repository,
+          ),
+          searchKeywordsUseCase: SearchNotificationTemplateKeywordsUseCase(
+            repository,
+          ),
           createTemplateUseCase: CreateNotificationTemplateUseCase(repository),
           updateTemplateUseCase: UpdateNotificationTemplateUseCase(repository),
           deleteTemplateUseCase: DeleteNotificationTemplateUseCase(repository),
@@ -42,7 +46,8 @@ class _NotificationTemplateView extends StatefulWidget {
   const _NotificationTemplateView();
 
   @override
-  State<_NotificationTemplateView> createState() => _NotificationTemplateViewState();
+  State<_NotificationTemplateView> createState() =>
+      _NotificationTemplateViewState();
 }
 
 class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
@@ -50,7 +55,6 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
   String? _selectedType;
   String? _selectedChannel;
 
-  
   void _onFilterChanged(BuildContext context) {
     context.read<NotificationTemplateBloc>().add(
       FilterNotificationTemplatesEvent(
@@ -79,7 +83,10 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
         children: [
           _buildHeader(context),
           Expanded(
-            child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
+            child: BlocBuilder<
+              NotificationTemplateBloc,
+              NotificationTemplateState
+            >(
               builder: (context, state) {
                 if (state.status == NotificationTemplateStatus.loading) {
                   return const Center(child: CircularProgressIndicator());
@@ -102,37 +109,51 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
                         // Hiển thị hộp thoại xác nhận trước khi xóa
                         showDialog(
                           context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text("Xác nhận xoá"),
-                            content: const Text("Bạn có chắc chắn muốn xoá mẫu thông báo này không?"),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: const Text("Huỷ"),
+                          builder:
+                              (ctx) => AlertDialog(
+                                title: const Text("Xác nhận xoá"),
+                                content: const Text(
+                                  "Bạn có chắc chắn muốn xoá mẫu thông báo này không?",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx),
+                                    child: const Text("Huỷ"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      context
+                                          .read<NotificationTemplateBloc>()
+                                          .add(
+                                            DeleteNotificationTemplateEvent(
+                                              template.id,
+                                            ),
+                                          );
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: const Text(
+                                      "Xoá",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  context.read<NotificationTemplateBloc>().add(
-                                    DeleteNotificationTemplateEvent(template.id),
-                                  );
-                                  Navigator.pop(ctx);
-                                },
-                                child: const Text("Xoá", style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          ),
                         );
                       },
                       onView: () {
-                         // Điều hướng đến màn hình chỉnh sửa
-                         Navigator.of(context).push(
-                           MaterialPageRoute(
-                             builder: (_) => BlocProvider.value(
-                               value: context.read<NotificationTemplateBloc>(),
-                               child: NotificationTemplateEditScreen(template: template),
-                             ),
-                           ),
-                         );
+                        // Điều hướng đến màn hình chỉnh sửa
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (_) => BlocProvider.value(
+                                  value:
+                                      context.read<NotificationTemplateBloc>(),
+                                  child: NotificationTemplateEditScreen(
+                                    template: template,
+                                  ),
+                                ),
+                          ),
+                        );
                       },
                     );
                   },
@@ -165,14 +186,14 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
       onAddPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<NotificationTemplateBloc>(),
-              child: const NotificationTemplateEditScreen(template: null),
-            ),
+            builder:
+                (_) => BlocProvider.value(
+                  value: context.read<NotificationTemplateBloc>(),
+                  child: const NotificationTemplateEditScreen(template: null),
+                ),
           ),
         );
       },
     );
   }
-
 }

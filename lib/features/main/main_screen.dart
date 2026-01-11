@@ -29,7 +29,7 @@ class MainScreen extends StatelessWidget {
       _showExploreBottomSheet(context);
       return;
     }
-    
+
     // Các tab khác vẫn navigate bình thường
     navigationShell.goBranch(
       index,
@@ -48,14 +48,39 @@ class MainScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider(
-        create: (_) => ExploreBloc(
-          searchSchoolsUseCase: searchUseCase,
-          getCurrentSchoolUseCase: getCurrentSchoolUseCase,
-        ),
-        child: const ExploreBottomSheet(),
-      ),
+      builder:
+          (context) => BlocProvider(
+            create:
+                (_) => ExploreBloc(
+                  searchSchoolsUseCase: searchUseCase,
+                  getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+                ),
+            child: const ExploreBottomSheet(),
+          ),
     );
+  }
+
+  void _onTabTap(BuildContext context, int index) {
+    // Home tab (index 0) vẫn dùng navigationShell
+    if (index == 0) {
+      navigationShell.goBranch(0, initialLocation: true);
+      return;
+    }
+    // Khám phá (index 2) vẫn show bottom sheet
+    if (index == 2) {
+      _showExploreBottomSheet(context);
+      return;
+    }
+    // Các tab khác dùng GoRouter để trigger redirect
+    final routes = [
+      AppRoutes.home, // 0
+      AppRoutes.library, // 1
+      AppRoutes.explore, // 2 (handled above)
+      AppRoutes.notifications, // 3
+    ];
+    if (index < routes.length) {
+      context.go(routes[index]);
+    }
   }
 
   @override
@@ -81,7 +106,7 @@ class MainScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomNav(
         currentIndex: currentIndex,
-        onTap: (i) => _goBranch(context, i),
+        onTap: (i) => _onTabTap(context, i),
       ),
     );
   }

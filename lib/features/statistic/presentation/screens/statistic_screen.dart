@@ -17,6 +17,16 @@ class StatisticScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const BackButton(color: Colors.black),
+        title: const Text(
+          "Thống kê",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: BlocBuilder<StatisticBloc, StatisticState>(
           builder: (context, state) {
@@ -32,49 +42,38 @@ class StatisticScreen extends StatelessWidget {
 
             if (state is StatisticLoaded) {
               return RefreshIndicator(
-            onRefresh: () async {
-              context
-                  .read<StatisticBloc>()
-                  .add(const RefreshDownloadStatisticsEvent());
-              await Future.delayed(const Duration(milliseconds: 500));
-            },
-            color: AppColors.primary,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    const Text(
-                      'Thống kê',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+                onRefresh: () async {
+                  context.read<StatisticBloc>().add(
+                    const RefreshDownloadStatisticsEvent(),
+                  );
+                  await Future.delayed(const Duration(milliseconds: 500));
+                },
+                color: AppColors.primary,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Activity Summary Card (from ProfileBloc)
+                        const ActivitySummaryCard(),
+
+                        const SizedBox(height: 24),
+
+                        // Download Chart Card (from StatisticBloc)
+                        DownloadChartCard(statistics: state.statistics),
+
+                        const SizedBox(height: 24),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-
-                    // Activity Summary Card (from ProfileBloc)
-                    const ActivitySummaryCard(),
-
-                    const SizedBox(height: 24),
-
-                    // Download Chart Card (from StatisticBloc)
-                    DownloadChartCard(statistics: state.statistics),
-
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        }
+              );
+            }
 
-        return const SizedBox.shrink();
-      },
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );
@@ -113,15 +112,17 @@ class StatisticScreen extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                context
-                    .read<StatisticBloc>()
-                    .add(const LoadDownloadStatisticsEvent());
+                context.read<StatisticBloc>().add(
+                  const LoadDownloadStatisticsEvent(),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

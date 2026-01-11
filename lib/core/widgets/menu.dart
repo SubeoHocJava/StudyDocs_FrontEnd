@@ -120,7 +120,8 @@ class MenuDrawer extends StatelessWidget {
                         // Admin context
                         BlocBuilder<AuthStatusCubit, AuthStatus>(
                           builder: (context, authState) {
-                            if (authState is AuthAuthenticated && authState.role == 'admin') {
+                            if (authState is AuthAuthenticated &&
+                                authState.isAdmin) {
                               return _buildMenuItem(
                                 context,
                                 icon: Icons.admin_panel_settings_outlined,

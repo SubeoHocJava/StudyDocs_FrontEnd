@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
 import 'package:studydocs/features/docs_management/data/datasource/docs_management_remote_datasource.dart'
@@ -61,16 +63,65 @@ class AppRoutes {
   static const String adminDashboard = '/admin/dashboard';
   static const String profile = '/profile';
   static const String docsManagement = '/admin/docs-management';
-  
+
   // statistic & subject library
   static const String statistic = '/statistic';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _libraryNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _exploreNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _notificationsNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _libraryNavigatorKey =
+    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _exploreNavigatorKey =
+    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _notificationsNavigatorKey =
+    GlobalKey<NavigatorState>();
+
+String? _checkAuthRedirect(BuildContext context, GoRouterState state) {
+  final authCubit = context.read<AuthStatusCubit>();
+  if (!authCubit.isAuthenticated) {
+    if (state.uri.toString() != AppRoutes.home) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Vui lòng đăng nhập để truy cập trang này'),
+            backgroundColor: AppColors.headerForeground,
+          ),
+        );
+      });
+      return AppRoutes.home;
+    }
+  }
+  return null;
+}
+
+String? _checkAdminRedirect(BuildContext context, GoRouterState state) {
+  final authCubit = context.read<AuthStatusCubit>();
+  final st = authCubit.state;
+  if (st is! AuthAuthenticated) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Bạn cần đăng nhập để truy cập trang quản trị'),
+          backgroundColor: AppColors.headerForeground,
+        ),
+      );
+    });
+    return AppRoutes.home;
+  }
+  if (!st.isAdmin) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Bạn không có quyền truy cập trang này'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    });
+    return AppRoutes.home;
+  }
+  return null;
+}
 
 GoRouter createAppRouter() {
   return GoRouter(
@@ -90,7 +141,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.home,
                 pageBuilder:
                     (context, state) =>
-                    NoTransitionPage(child: const MainTabHomePage()),
+                        NoTransitionPage(child: const MainTabHomePage()),
               ),
             ],
           ),
@@ -99,9 +150,10 @@ GoRouter createAppRouter() {
             routes: [
               GoRoute(
                 path: AppRoutes.library,
+                redirect: _checkAuthRedirect,
                 pageBuilder:
                     (context, state) =>
-                    NoTransitionPage(child: const MainTabLibraryPage()),
+                        NoTransitionPage(child: const MainTabLibraryPage()),
               ),
             ],
           ),
@@ -112,7 +164,7 @@ GoRouter createAppRouter() {
                 path: AppRoutes.explore,
                 pageBuilder:
                     (context, state) =>
-                    NoTransitionPage(child: const MainTabExplorePage()),
+                        NoTransitionPage(child: const MainTabExplorePage()),
               ),
             ],
           ),
@@ -121,9 +173,9 @@ GoRouter createAppRouter() {
             routes: [
               GoRoute(
                 path: AppRoutes.notifications,
+                redirect: _checkAuthRedirect,
                 pageBuilder:
-                    (context, state) =>
-                    NoTransitionPage(
+                    (context, state) => NoTransitionPage(
                       child: const MainTabNotificationsPage(),
                     ),
                 routes: [
@@ -147,6 +199,7 @@ GoRouter createAppRouter() {
       // Statistic route - standalone screen outside main navigation
       GoRoute(
         path: AppRoutes.statistic,
+        redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
           return MaterialPage(
@@ -154,15 +207,17 @@ GoRouter createAppRouter() {
               providers: [
                 // Create StatisticBloc for this screen
                 BlocProvider(
-                  create: (_) =>
-                      createStatisticBloc()
-                        ..add(const LoadDownloadStatisticsEvent()),
+                  create:
+                      (_) =>
+                          createStatisticBloc()
+                            ..add(const LoadDownloadStatisticsEvent()),
                 ),
                 // Provide ProfileBloc for ActivitySummaryCard
                 BlocProvider(
-                  create: (_) =>
-                      ProfileBloc(ProfileRepositoryImpl())
-                        ..add(const LoadProfile(0)),
+                  create:
+                      (_) =>
+                          ProfileBloc(ProfileRepositoryImpl())
+                            ..add(const LoadProfile(0)),
                 ),
               ],
               child: const StatisticScreen(),
@@ -176,30 +231,36 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
           // GoRouter đã tự động decode path parameters rồi
-          final decodedSchoolName = state.pathParameters['schoolName'] ?? 'Unknown School';
-          
+          final decodedSchoolName =
+              state.pathParameters['schoolName'] ?? 'Unknown School';
+
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
           final subjectRepo = SubjectRepositoryImpl();
-          
+
           return MaterialPage(
             child: BlocProvider(
-              create: (_) => SubjectLibraryBloc(
-                searchDocumentsUseCase: SearchDocumentsUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                likeDocumentUseCase: LikeDocumentUseCase(repository: subjectLibraryRepo),
-                getCommentsUseCase: GetCommentsUseCase(repository: subjectLibraryRepo),
-                downloadDocumentUseCase: DownloadDocumentUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                bookmarkDocumentUseCase: BookmarkDocumentUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
-                  repository: subjectRepo,
-                ),
-              )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
+              create:
+                  (_) => SubjectLibraryBloc(
+                    searchDocumentsUseCase: SearchDocumentsUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    likeDocumentUseCase: LikeDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getCommentsUseCase: GetCommentsUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    downloadDocumentUseCase: DownloadDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
+                      repository: subjectRepo,
+                    ),
+                  )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
               child: SubjectLibraryScreen(schoolName: decodedSchoolName),
             ),
           );
@@ -211,31 +272,40 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
           // GoRouter đã tự động decode path parameters rồi
-          final decodedSchoolName = state.pathParameters['schoolName'] ?? 'Unknown School';
-          final decodedSubjectName = state.pathParameters['subjectName'] ?? 'Unknown Subject';
-          
+          final decodedSchoolName =
+              state.pathParameters['schoolName'] ?? 'Unknown School';
+          final decodedSubjectName =
+              state.pathParameters['subjectName'] ?? 'Unknown Subject';
+
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
           final subjectRepo = SubjectRepositoryImpl();
-          
+
           return MaterialPage(
             child: BlocProvider(
-              create: (_) => SubjectLibraryBloc(
-                searchDocumentsUseCase: SearchDocumentsUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                likeDocumentUseCase: LikeDocumentUseCase(repository: subjectLibraryRepo),
-                getCommentsUseCase: GetCommentsUseCase(repository: subjectLibraryRepo),
-                downloadDocumentUseCase: DownloadDocumentUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                bookmarkDocumentUseCase: BookmarkDocumentUseCase(
-                  repository: subjectLibraryRepo,
-                ),
-                getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
-                  repository: subjectRepo,
-                ),
-              )..add(SubjectLibraryLoadDocumentByKeyWord(decodedSubjectName)),
+              create:
+                  (_) => SubjectLibraryBloc(
+                    searchDocumentsUseCase: SearchDocumentsUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    likeDocumentUseCase: LikeDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getCommentsUseCase: GetCommentsUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    downloadDocumentUseCase: DownloadDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
+                      repository: subjectRepo,
+                    ),
+                  )..add(
+                    SubjectLibraryLoadDocumentByKeyWord(decodedSubjectName),
+                  ),
               child: SubjectDocumentsScreen(
                 schoolName: decodedSchoolName,
                 subjectName: decodedSubjectName,
@@ -247,14 +317,16 @@ GoRouter createAppRouter() {
       // Standalone routes - Admin routes di chuyển ra ngoài StatefulShellRoute
       GoRoute(
         path: AppRoutes.manageUser,
+        redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           return RepositoryProvider<ManageUserRepository>(
             create: (_) => ManageUserRepositoryImpl(),
             child: BlocProvider(
-              create: (context) =>
-                  createManageUserBloc(context.read<ManageUserRepository>())
-                    ..add(LoadListUser(fromPage: 1, toPage: 3, numUser: 10)),
+              create:
+                  (context) => createManageUserBloc(
+                    context.read<ManageUserRepository>(),
+                  )..add(LoadListUser(fromPage: 1, toPage: 3, numUser: 10)),
               child: const ManageUserScreen(),
             ),
           );
@@ -262,48 +334,67 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: AppRoutes.notificationTemplates,
+        redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           // Tạo repository nếu chưa có trong context
           final repository = context.read<NotificationTemplateRepository>();
           return BlocProvider(
-            create: (context) => NotificationTemplateBloc(
-              getTemplatesUseCase: GetNotificationTemplatesUseCase(repository),
-              getTypesUseCase: GetNotificationTemplateTypesUseCase(repository),
-              getChannelsUseCase: GetNotificationTemplateChannelsUseCase(repository),
-              searchKeywordsUseCase: SearchNotificationTemplateKeywordsUseCase(repository),
-              createTemplateUseCase: CreateNotificationTemplateUseCase(repository),
-              updateTemplateUseCase: UpdateNotificationTemplateUseCase(repository),
-              deleteTemplateUseCase: DeleteNotificationTemplateUseCase(repository),
-            )..add(const LoadNotificationTemplatesEvent()),
+            create:
+                (context) => NotificationTemplateBloc(
+                  getTemplatesUseCase: GetNotificationTemplatesUseCase(
+                    repository,
+                  ),
+                  getTypesUseCase: GetNotificationTemplateTypesUseCase(
+                    repository,
+                  ),
+                  getChannelsUseCase: GetNotificationTemplateChannelsUseCase(
+                    repository,
+                  ),
+                  searchKeywordsUseCase:
+                      SearchNotificationTemplateKeywordsUseCase(repository),
+                  createTemplateUseCase: CreateNotificationTemplateUseCase(
+                    repository,
+                  ),
+                  updateTemplateUseCase: UpdateNotificationTemplateUseCase(
+                    repository,
+                  ),
+                  deleteTemplateUseCase: DeleteNotificationTemplateUseCase(
+                    repository,
+                  ),
+                )..add(const LoadNotificationTemplatesEvent()),
             child: const NotificationTemplateScreen(),
           );
         },
       ),
       GoRoute(
         path: AppRoutes.docsManagement,
+        redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final repository = DocsManagementRepositoryImpl(
             dataSource: DocsManagementRemoteDataSourceImpl(),
           );
           return BlocProvider(
-            create: (context) => DocsManagementBloc(
-              getMyDocsUseCase: GetMyDocsUseCase(repository),
-              deleteDocUseCase: DeleteDocUseCase(repository),
-              updateDocUseCase: UpdateDocUseCase(repository),
-            ),
+            create:
+                (context) => DocsManagementBloc(
+                  getMyDocsUseCase: GetMyDocsUseCase(repository),
+                  deleteDocUseCase: DeleteDocUseCase(repository),
+                  updateDocUseCase: UpdateDocUseCase(repository),
+                ),
             child: const DocsManagementScreen(),
           );
         },
       ),
       GoRoute(
         path: AppRoutes.adminDashboard,
+        redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AdminDashboardScreen(),
       ),
       GoRoute(
         path: AppRoutes.profile,
+        redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
       ),

@@ -14,7 +14,7 @@ class BasicInfor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    var image = "icons/avt.png";
+    var image = "assets/icons/avt.png";
     var name = state.fullName;
     var school = state.school;
 
@@ -56,21 +56,23 @@ class BasicInfor extends StatelessWidget {
             height: responsive.widthPercent(30),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              image: image.isNotEmpty
-                  ? DecorationImage(
-                image: AssetImage(image),
-                fit: BoxFit.cover,
-              )
-                  : null,
+              image:
+                  image.isNotEmpty
+                      ? DecorationImage(
+                        image: AssetImage(image),
+                        fit: BoxFit.cover,
+                      )
+                      : null,
               color: Colors.grey.shade300,
             ),
-            child: image.isEmpty
-                ? Icon(
-              Icons.person,
-              size: responsive.widthPercent(20),
-              color: Colors.grey.shade700,
-            )
-                : null,
+            child:
+                image.isEmpty
+                    ? Icon(
+                      Icons.person,
+                      size: responsive.widthPercent(20),
+                      color: Colors.grey.shade700,
+                    )
+                    : null,
           ),
 
           SizedBox(height: responsive.heightPercent(1.5)),
@@ -99,10 +101,8 @@ class BasicInfor extends StatelessWidget {
     );
   }
 }
-void _showSettingBoard(BuildContext context){
-  final bloc=context.read<ProfileBloc>();
-  showDialog(
-    context: context,
-    builder: (context) => SettingBoard(bloc: bloc),
-  );
+
+void _showSettingBoard(BuildContext context) {
+  final bloc = context.read<ProfileBloc>();
+  showDialog(context: context, builder: (context) => SettingBoard(bloc: bloc));
 }

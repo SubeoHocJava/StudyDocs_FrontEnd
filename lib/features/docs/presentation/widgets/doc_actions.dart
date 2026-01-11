@@ -6,6 +6,15 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../data/datasource/auth_mock_datasource_impl.dart';
+import '../../../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
+import '../../../../features/auth/domain/usecases/login_usecase.dart';
+import '../../../../features/auth/domain/usecases/google_login_usecase.dart';
+import '../../../../features/auth/domain/usecases/register_usecase.dart';
+import '../../../../features/auth/presentation/widgets/login_modal.dart';
+import '../../../../features/auth/presentation/bloc/login_bloc.dart';
+import 'package:studydocs/features/auth/presentation/bloc/register_bloc.dart';
+import '../../../../features/auth/presentation/bloc/auth_status_cubit.dart';
 import '../../logic/docs_bloc.dart';
 import '../../logic/docs_state.dart';
 import '../../logic/docs_event.dart';
@@ -17,8 +26,10 @@ class DocActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isSaved = state is DocsLoaded ? (state as DocsLoaded).isSaved : false;
+    final bool isSaved =
+        state is DocsLoaded ? (state as DocsLoaded).isSaved : false;
     final doc = state is DocsLoaded ? (state as DocsLoaded).docDetails : null;
+    final isAuth = context.watch<AuthStatusCubit>().isAuthenticated;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -26,12 +37,18 @@ class DocActions extends StatelessWidget {
         // Nút Tải về: Download trực tiếp với progress dialog
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: doc != null ? () => _downloadPdf(context, doc.downloadUrl) : null,
+            onPressed:
+                doc != null
+                    ? () {
+                      if (!isAuth) {
+                        _promptLogin(context);
+                        return;
+                      }
+                      _downloadPdf(context, doc.downloadUrl);
+                    }
+                    : null,
             icon: Image.asset(AppAssets.download, width: 28, height: 28),
-            label: const Text(
-              "Tải về",
-              style: TextStyle(fontSize: 16),
-            ),
+            label: const Text("Tải về", style: TextStyle(fontSize: 16)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondaryTeal,
               foregroundColor: Colors.white,
@@ -51,7 +68,13 @@ class DocActions extends StatelessWidget {
           child: SizedBox(
             height: 56,
             child: IconButton(
-              onPressed: () => context.read<DocsBloc>().add(ToggleSave()),
+              onPressed: () {
+                if (!isAuth) {
+                  _promptLogin(context);
+                  return;
+                }
+                context.read<DocsBloc>().add(ToggleSave());
+              },
               icon: Image.asset(
                 isSaved ? AppAssets.saved : AppAssets.unsaved,
                 width: 40,
@@ -74,6 +97,35 @@ class DocActions extends StatelessWidget {
     );
   }
 
+  void _promptLogin(BuildContext context) {
+    final remote = AuthMockDataSourceImpl();
+    final authRepository = AuthRepositoryImpl(remote: remote);
+    final loginUseCase = LoginUseCase(repository: authRepository);
+    final googleLoginUseCase = GoogleLoginUseCase(repository: authRepository);
+    final registerUseCase = RegisterUseCase(repository: authRepository);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create:
+                    (_) => LoginBloc(
+                      loginUseCase: loginUseCase,
+                      googleLoginUseCase: googleLoginUseCase,
+                    ),
+              ),
+              BlocProvider(
+                create: (_) => RegisterBloc(registerUseCase: registerUseCase),
+              ),
+            ],
+            child: const LoginModal(),
+          ),
+    );
+  }
+
   // Hàm download PDF với progress dialog
   Future<void> _downloadPdf(BuildContext context, String downloadUrl) async {
     double progress = 0;
@@ -83,17 +135,20 @@ class DocActions extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: const Text('Đang tải PDF...'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(value: progress > 0 ? progress : null),
-            const SizedBox(height: 16),
-            Text('${(progress * 100).toStringAsFixed(0)}%'),
-          ],
-        ),
-      ),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Đang tải PDF...'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  value: progress > 0 ? progress : null,
+                ),
+                const SizedBox(height: 16),
+                Text('${(progress * 100).toStringAsFixed(0)}%'),
+              ],
+            ),
+          ),
     );
 
     try {
@@ -114,11 +169,15 @@ class DocActions extends StatelessWidget {
 
       await OpenFilex.open(savePath);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tải thành công!')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Tải thành công!')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi tải: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi tải: $e')));
       }
     } finally {
       isDownloading = false;

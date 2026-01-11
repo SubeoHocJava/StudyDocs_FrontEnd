@@ -28,37 +28,24 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Quản lý tài liệu",
-          style: TextStyle(
-            color: Color(0xFF3F51B5), // Match blueprint color
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: false,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF3F51B5)),
-          onPressed: () => Navigator.pop(context),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline, color: Color(0xFF3F51B5)),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.wb_sunny_outlined, color: Color(0xFF3F51B5)),
-            onPressed: () {},
-          ),
-        ],
+        leading: const BackButton(color: Colors.black),
+        title: const Text(
+          "Quản lý tài liệu",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search & Filter Row
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -72,21 +59,27 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.filter_list, color: Color(0xFF3F51B5)),
+                          icon: const Icon(
+                            Icons.filter_list,
+                            color: Color(0xFF3F51B5),
+                          ),
                           onPressed: () {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (context) => FilterBottomSheet(
-                                onApply: (school, subject, year) {
-                                  context.read<DocsManagementBloc>().add(LoadMyDocs(
-                                        filterSchool: school,
-                                        filterSubject: subject,
-                                        filterYear: year,
-                                      ));
-                                },
-                              ),
+                              builder:
+                                  (context) => FilterBottomSheet(
+                                    onApply: (school, subject, year) {
+                                      context.read<DocsManagementBloc>().add(
+                                        LoadMyDocs(
+                                          filterSchool: school,
+                                          filterSubject: subject,
+                                          filterYear: year,
+                                        ),
+                                      );
+                                    },
+                                  ),
                             );
                           },
                         ),
@@ -118,11 +111,12 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
               ],
             ),
           ),
-          
+
           Expanded(
             child: BlocBuilder<DocsManagementBloc, DocsManagementState>(
               builder: (context, state) {
-                if (state is DocsManagementLoading || state is DocsManagementInitial) {
+                if (state is DocsManagementLoading ||
+                    state is DocsManagementInitial) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (state is DocsManagementError) {
@@ -140,16 +134,22 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text("Hôm nay", style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(
+                          "Hôm nay",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                       ...docs.map((doc) => _buildDocItem(context, doc)),
                       const SizedBox(height: 16),
                       const Padding(
                         padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text("Trước đó", style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(
+                          "Trước đó",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                       // Just mock repeating the list for visual effect of "Earlier"
-                      _buildDocItem(context, docs.first, isMockEarlier: true), 
+                      _buildDocItem(context, docs.first, isMockEarlier: true),
                     ],
                   );
                 }
@@ -162,7 +162,11 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
     );
   }
 
-  Widget _buildDocItem(BuildContext context, DocumentEntity doc, {bool isMockEarlier = false}) {
+  Widget _buildDocItem(
+    BuildContext context,
+    DocumentEntity doc, {
+    bool isMockEarlier = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -192,13 +196,17 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.remove_red_eye_outlined, color: Colors.grey),
+              icon: const Icon(
+                Icons.remove_red_eye_outlined,
+                color: Colors.grey,
+              ),
               onPressed: () {
-                 // Navigate to Detail
-                 Navigator.push(
+                // Navigate to Detail
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DocsManagementDetailScreen(document: doc),
+                    builder:
+                        (context) => DocsManagementDetailScreen(document: doc),
                   ),
                 );
               },
@@ -209,21 +217,30 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                 // Confirm delete
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Xóa tài liệu?"),
-                    content: Text("Bạn có chắc muốn xóa '${doc.title}'?"),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text("Hủy")),
-                      TextButton(
-                        onPressed: () {
-                          // Note: In real app, use Bloc event. Since we don't have ID, using title mock
-                          context.read<DocsManagementBloc>().add(DeleteDocEvent(doc.title));
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Xóa", style: TextStyle(color: Colors.red)),
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text("Xóa tài liệu?"),
+                        content: Text("Bạn có chắc muốn xóa '${doc.title}'?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Hủy"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Note: In real app, use Bloc event. Since we don't have ID, using title mock
+                              context.read<DocsManagementBloc>().add(
+                                DeleteDocEvent(doc.title),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Xóa",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
                 );
               },
             ),
