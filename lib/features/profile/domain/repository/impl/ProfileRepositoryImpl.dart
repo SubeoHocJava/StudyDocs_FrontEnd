@@ -1,10 +1,22 @@
 import 'dart:async';
 
+import 'package:studydocs/data/datasource/user_datasource.dart';
+import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
+import '../../../../../core/network/dio_client.dart';
+
 class ProfileRepositoryImpl extends ProfileRepository {
+  late final UserDataSource userDataSource;
+
+  /// Constructor rỗng
+  ProfileRepositoryImpl() {
+    userDataSource = UserDataSourceImpl(
+      dioClient: DioClient(),
+    );
+  }
 
   final List<DocumentProfile> _mockDocuments = [
     DocumentProfile(
@@ -42,117 +54,129 @@ class ProfileRepositoryImpl extends ProfileRepository {
     ),
   ];
 
-  ProfileEntity _mockProfile = ProfileEntity(
-    id: '1',
-    username: 'lamduy',
-    fullName: 'Lâm Bảo Duy',
-    school: 'ĐH Công Nghệ Thông Tin',
-    email: 'lamduy@gmail.com',
-    phoneNumber: '0123456789',
-    gender: 'MALE',
-    birthDate: DateTime(2001, 5, 20),
-    address: 'TP. Hồ Chí Minh',
-    avatarUrl: 'https://i.pravatar.cc/150?img=3',
-    isVerified: false,
-    isFollowing: false,
-  );
-
   @override
   Future<ProfileEntity> getProfile(int userId) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return _mockProfile;
+    try {
+      final response = await userDataSource.getUserById(userId.toString());
+      
+      // Check if statusCode is in success range (200-299)
+      if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
+        final userData = response.data;
+        return ProfileEntity(
+          id: userData['id']?.toString() ?? '',
+          username: userData['username'] ?? '',
+          fullName: userData['fullName'] ?? '',
+          email: userData['email'] ?? '',
+          phoneNumber: userData['phoneNumber'] ?? '',
+          gender: userData['gender'] ?? '',
+          birthDate: userData['dateOfBirth'] != null
+              ? DateTime.tryParse(userData['dateOfBirth']) 
+              : null,
+          address: userData['address'] ?? '',
+          avatarUrl: userData['avatarUrl'] ?? '',
+          isVerified: userData['isVerified'] ?? false,
+          isFollowing: userData['isFollowing'] ?? false,
+          school: userData['school'],
+        );
+      } else {
+        throw Exception('Failed to get profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
+      }
+    } catch (e) {
+      throw Exception('Error getting profile: $e');
+    }
   }
 
   @override
   Future<ProfileEntity> updateProfile(ProfileEntity profile) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockProfile = profile;
-    return _mockProfile;
+    try {
+      final request = UpdateUserRequest(
+        id: profile.id,
+        username: profile.username,
+        fullName: profile.fullName,
+        email: profile.email,
+        phoneNumber: profile.phoneNumber,
+        gender: profile.gender,
+        dateOfBirth: profile.birthDate,
+        address: profile.address,
+        avatarUrl: profile.avatarUrl,
+      );
+
+      final response = await userDataSource.updateUser(request);
+      
+      // Check if statusCode is in success range (200-299)
+      if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
+        final userData = response.data;
+        return ProfileEntity(
+          id: userData['id']?.toString() ?? profile.id,
+          username: userData['username'] ?? profile.username,
+          fullName: userData['fullName'] ?? profile.fullName,
+          email: userData['email'] ?? profile.email,
+          phoneNumber: userData['phoneNumber'] ?? profile.phoneNumber,
+          gender: userData['gender'] ?? profile.gender,
+          birthDate: userData['dateOfBirth'] != null
+              ? DateTime.tryParse(userData['dateOfBirth']) 
+              : profile.birthDate,
+          address: userData['address'] ?? profile.address,
+          avatarUrl: userData['avatarUrl'] ?? profile.avatarUrl,
+          isVerified: userData['isVerified'] ?? false,
+          isFollowing: userData['isFollowing'] ?? false,
+          school: userData['school'] ?? profile.school,
+        );
+      } else {
+        throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
+      }
+    } catch (e) {
+      throw Exception('Error updating profile: $e');
+    }
   }
 
   @override
   Future<String> updateAvatar(String imagePath) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    _mockProfile = ProfileEntity(
-      id: _mockProfile.id,
-      username: _mockProfile.username,
-      fullName: _mockProfile.fullName,
-      school: _mockProfile.school,
-      email: _mockProfile.email,
-      phoneNumber: _mockProfile.phoneNumber,
-      gender: _mockProfile.gender,
-      birthDate: _mockProfile.birthDate,
-      address: _mockProfile.address,
-      avatarUrl: 'https://i.pravatar.cc/150?img=8',
-      isVerified: _mockProfile.isVerified,
-      isFollowing: _mockProfile.isFollowing,
-    );
-
-    return _mockProfile.avatarUrl;
+    try {
+      // TODO: Implement file upload
+      // For now, we'll need to pass the file path or File object
+      // This requires updating the UserDataSource.updateImage method
+      throw UnimplementedError('Avatar upload not yet implemented');
+    } catch (e) {
+      throw Exception('Error updating avatar: $e');
+    }
   }
 
   @override
   Future<void> verifyEmail() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    _mockProfile = ProfileEntity(
-      id: _mockProfile.id,
-      username: _mockProfile.username,
-      fullName: _mockProfile.fullName,
-      school: _mockProfile.school,
-      email: _mockProfile.email,
-      phoneNumber: _mockProfile.phoneNumber,
-      gender: _mockProfile.gender,
-      birthDate: _mockProfile.birthDate,
-      address: _mockProfile.address,
-      avatarUrl: _mockProfile.avatarUrl,
-      isVerified: true,
-      isFollowing: _mockProfile.isFollowing,
-    );
+    try {
+      // TODO: Implement email verification endpoint
+      throw UnimplementedError('Email verification not yet implemented');
+    } catch (e) {
+      throw Exception('Error verifying email: $e');
+    }
   }
 
   @override
   Future<void> followUser(String userId) async {
-
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockProfile = ProfileEntity(
-      id: _mockProfile.id,
-      username: _mockProfile.username,
-      fullName: _mockProfile.fullName,
-      school: _mockProfile.school,
-      email: _mockProfile.email,
-      phoneNumber: _mockProfile.phoneNumber,
-      gender: _mockProfile.gender,
-      birthDate: _mockProfile.birthDate,
-      address: _mockProfile.address,
-      avatarUrl: _mockProfile.avatarUrl,
-      isVerified: _mockProfile.isVerified,
-      isFollowing: true,
-    );
+    try {
+      // TODO: Implement follow user endpoint
+      // This should call a follow service endpoint
+      throw UnimplementedError('Follow user not yet implemented');
+    } catch (e) {
+      throw Exception('Error following user: $e');
+    }
   }
 
   @override
   Future<void> unfollowUser(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockProfile = ProfileEntity(
-      id: _mockProfile.id,
-      username: _mockProfile.username,
-      fullName: _mockProfile.fullName,
-      school: _mockProfile.school,
-      email: _mockProfile.email,
-      phoneNumber: _mockProfile.phoneNumber,
-      gender: _mockProfile.gender,
-      birthDate: _mockProfile.birthDate,
-      address: _mockProfile.address,
-      avatarUrl: _mockProfile.avatarUrl,
-      isVerified: _mockProfile.isVerified,
-      isFollowing: false,
-    );
+    try {
+      // TODO: Implement unfollow user endpoint
+      // This should call a follow service endpoint
+      throw UnimplementedError('Unfollow user not yet implemented');
+    } catch (e) {
+      throw Exception('Error unfollowing user: $e');
+    }
   }
 
   @override
   List<DocumentProfile> getDocumentsByUser(String id) {
+    // TODO: Implement real document fetching from API
     return _mockDocuments;
   }
 }
