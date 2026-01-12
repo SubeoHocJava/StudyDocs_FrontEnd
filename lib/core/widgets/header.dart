@@ -5,7 +5,9 @@ import 'package:studydocs/core/router/app_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
 
-import '../../data/datasource/auth_mock_datasource_impl.dart';
+import '../../core/network/dio_client.dart';
+import '../../data/datasource/auth_remote_datasource_impl.dart';
+import '../../data/datasource/auth_remote_datasource_hybrid.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
@@ -66,8 +68,10 @@ class _HeaderState extends State<Header> {
     // Ở đây chúng ta khởi tạo chuỗi phụ thuộc: DataSource -> Repository -> UseCase -> BLoC
     // tương tự như phần Home, nhưng rút gọn để dễ hiểu.
 
-    // 1. Tầng data: login/register dùng mock, Google login dùng thật
-    final remote = AuthMockDataSourceImpl();
+    // 1. Tầng data: login/register dùng real API logic
+    final dioClient = context.read<DioClient>();
+    final impl = AuthRemoteDataSourceImpl(dioClient: dioClient);
+    final remote = AuthRemoteDataSourceHybrid(implementation: impl);
 
     // 2. Tầng repository: wrap datasource
     final authRepository = AuthRepositoryImpl(remote: remote);

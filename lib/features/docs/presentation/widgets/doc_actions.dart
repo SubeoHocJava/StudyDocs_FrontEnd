@@ -6,7 +6,9 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../data/datasource/auth_mock_datasource_impl.dart';
+import '../../../../data/datasource/auth_remote_datasource_impl.dart';
+import '../../../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
 import '../../../../features/auth/domain/usecases/login_usecase.dart';
 import '../../../../features/auth/domain/usecases/google_login_usecase.dart';
@@ -98,7 +100,9 @@ class DocActions extends StatelessWidget {
   }
 
   void _promptLogin(BuildContext context) {
-    final remote = AuthMockDataSourceImpl();
+    final dioClient = context.read<DioClient>();
+    final impl = AuthRemoteDataSourceImpl(dioClient: dioClient);
+    final remote = AuthRemoteDataSourceHybrid(implementation: impl);
     final authRepository = AuthRepositoryImpl(remote: remote);
     final loginUseCase = LoginUseCase(repository: authRepository);
     final googleLoginUseCase = GoogleLoginUseCase(repository: authRepository);

@@ -13,7 +13,12 @@ class RegisterForm extends StatefulWidget {
   final bool isSubmitting;
 
   /// Callback trả dữ liệu đăng ký ra ngoài (BLoC)
-  final void Function(String username, String? email, String password) onSubmit;
+  final void Function(
+    String username,
+    String? email,
+    String password,
+    String? displayName,
+  ) onSubmit;
 
   const RegisterForm({
     super.key,
@@ -29,6 +34,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -36,6 +42,7 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   void dispose() {
     _usernameController.dispose();
+    _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -47,8 +54,13 @@ class _RegisterFormState extends State<RegisterForm> {
 
     widget.onSubmit(
       _usernameController.text.trim(),
-      _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+      _emailController.text.trim().isEmpty
+          ? null
+          : _emailController.text.trim(),
       _passwordController.text,
+      _displayNameController.text.trim().isEmpty
+          ? null
+          : _displayNameController.text.trim(),
     );
   }
 
@@ -69,6 +81,8 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
           const SizedBox(height: 16),
           _buildUsernameField(),
+          const SizedBox(height: 16),
+          _buildDisplayNameField(),
           const SizedBox(height: 16),
           EmailField(
             controller: _emailController,
@@ -94,6 +108,27 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDisplayNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tên hiển thị (Tuỳ chọn)',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.profileName,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _displayNameController,
+          decoration: _roundedInputDecoration('Nhập tên hiển thị'),
+        ),
+      ],
     );
   }
 

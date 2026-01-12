@@ -31,8 +31,10 @@ class ApiResponse<T> {
     return ApiResponse<T>(
       statusCode: json['statusCode'] ?? 0,
       errorCode: json['errorCode'],
-      data: json['data'] != null && fromJsonT != null
-          ? fromJsonT(json['data'] as Map<String, dynamic>)
+      data: json['data'] != null
+          ? (fromJsonT != null
+              ? fromJsonT(json['data'] as Map<String, dynamic>)
+              : json['data'] as T)
           : null,
       traceId: json['traceId'],
     );

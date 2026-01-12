@@ -8,7 +8,7 @@ class ApiConstants {
   static const String authLoginLocal = '/auth/login/local';
   static const String authLoginGoogle = '/auth/login/provider/google';
   static const String authLogin = '/auth/login';
-  static const String authRegister = '/auth/register';
+  static const String authRegister = '/auth/register/local';
 
   // Document Endpoints
   static const String documents = '/documents';
