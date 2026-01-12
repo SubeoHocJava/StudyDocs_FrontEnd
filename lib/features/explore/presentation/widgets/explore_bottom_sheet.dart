@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
 
@@ -29,7 +30,13 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final height = mediaQuery.size.height * 0.42;
+    // Tính height để không che bottom nav (footer)
+    // Screen height - bottom nav (khoảng 70-80px) - safe area bottom
+    final bottomNavHeight = 70.0;
+    final safeAreaBottom = mediaQuery.padding.bottom;
+    final maxHeight = mediaQuery.size.height * 0.45; // Tối đa 45% màn hình
+    final heightWithMargin = mediaQuery.size.height - bottomNavHeight - safeAreaBottom - 20;
+    final height = heightWithMargin < maxHeight ? heightWithMargin : maxHeight;
 
     return Container(
       height: height,
@@ -191,8 +198,10 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                               ),
                             ),
                             onTap: () {
-                              // TODO: Sau này điều hướng sang trang tài liệu của trường này
-                              debugPrint('Chọn trường: ${school.name}');
+                              // Navigate đến trang subject library của trường
+                              final encodedSchoolName = Uri.encodeComponent(school.name);
+                              Navigator.of(context).pop(); // Đóng bottom sheet
+                              context.push('/school/$encodedSchoolName');
                             },
                           );
                         },

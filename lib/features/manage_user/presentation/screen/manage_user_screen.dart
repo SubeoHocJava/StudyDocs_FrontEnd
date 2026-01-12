@@ -24,6 +24,20 @@ class ManageUserScreen extends StatelessWidget {
                 createManageUserBloc(context.read<ManageUserRepository>())
                   ..add(LoadListUser(fromPage: 1, toPage: 3, numUser: 10)),
         child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: const BackButton(color: Colors.black),
+            title: const Text(
+              "Quản lý người dùng",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+          ),
           body: BlocBuilder<ManageUserBloc, ManageUserState>(
             builder: (context, state) {
               if (state is ManageUserLoading) {

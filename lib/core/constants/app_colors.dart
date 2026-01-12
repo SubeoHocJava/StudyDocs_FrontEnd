@@ -29,4 +29,9 @@ class AppColors {
   static const Color followingChip = secondaryBlue;
   //Notification
   static const notificationUnread = Color(0xFFE6EAFA);
+
+  // Semantic feedback colors
+  static const Color success = Color(0xFF2ECC71); // green
+  static const Color warning = Color(0xFFF39C12); // orange
+  static const Color danger = Color(0xFFE74C3C); // red
 }

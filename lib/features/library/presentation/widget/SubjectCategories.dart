@@ -4,7 +4,13 @@ import 'package:studydocs/core/utils/responsive_helper.dart';
 
 class SubjectCategories extends StatelessWidget {
   final List<String> categories;
-  const SubjectCategories(this.categories, {super.key});
+  final Function(String)? onSubjectTap;
+  
+  const SubjectCategories(
+    this.categories, {
+    super.key,
+    this.onSubjectTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +42,10 @@ class SubjectCategories extends StatelessWidget {
                 vertical: responsive.heightPercent(0.5),
               ),
               child: Center(
-                child: MonoSubject(name: categories[index]),
+                child: MonoSubject(
+                  name: categories[index],
+                  onTap: () => onSubjectTap?.call(categories[index]),
+                ),
               )
             );
           },
@@ -48,31 +57,42 @@ class SubjectCategories extends StatelessWidget {
 
 class MonoSubject extends StatelessWidget {
   final String name;
-  const MonoSubject({super.key, required this.name});
+  final VoidCallback? onTap;
+  
+  const MonoSubject({
+    super.key,
+    required this.name,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
 
-    return Container(
-      width: responsive.widthPercent(responsive.isMobile ? 85 : 80),
-      padding: EdgeInsets.all(responsive.isMobile ? 10 : 12),
-      decoration: BoxDecoration(
-        color: AppColors.headerBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.headerBackground),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.folder, size: responsive.fontSize(18)),
-          SizedBox(width: responsive.widthPercent(2)),
-          Expanded(
-            child: Text(
-              name,
-              style: TextStyle(fontSize: responsive.fontSize(14)),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: responsive.widthPercent(responsive.isMobile ? 85 : 80),
+        padding: EdgeInsets.all(responsive.isMobile ? 10 : 12),
+        decoration: BoxDecoration(
+          color: AppColors.headerBackground,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.headerBackground),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.folder, size: responsive.fontSize(18)),
+            SizedBox(width: responsive.widthPercent(2)),
+            Expanded(
+              child: Text(
+                name,
+                style: TextStyle(fontSize: responsive.fontSize(14)),
+              ),
             ),
-          ),
-        ],
+            Icon(Icons.chevron_right, size: responsive.fontSize(18)),
+          ],
+        ),
       ),
     );
   }

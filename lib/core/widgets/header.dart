@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/router/app_router.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
 
+import '../../data/datasource/auth_mock_datasource_impl.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
 
 //hao
-import '../../data/datasource/auth_remote_datasource_hybrid.dart';
 import '../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
 import '../../features/auth/domain/usecases/google_login_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
@@ -47,8 +49,6 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
     this.selectedIndex = -1,
   });
 
-
-
   @override
   State<Header> createState() => _HeaderState();
 
@@ -67,7 +67,7 @@ class _HeaderState extends State<Header> {
     // tương tự như phần Home, nhưng rút gọn để dễ hiểu.
 
     // 1. Tầng data: login/register dùng mock, Google login dùng thật
-    final remote = AuthRemoteDataSourceHybrid();
+    final remote = AuthMockDataSourceImpl();
 
     // 2. Tầng repository: wrap datasource
     final authRepository = AuthRepositoryImpl(remote: remote);
@@ -83,20 +83,20 @@ class _HeaderState extends State<Header> {
       barrierDismissible: true,
       builder:
           (context) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create:
-                (_) => LoginBloc(
-              loginUseCase: loginUseCase,
-              googleLoginUseCase: googleLoginUseCase,
-            ),
+            providers: [
+              BlocProvider(
+                create:
+                    (_) => LoginBloc(
+                      loginUseCase: loginUseCase,
+                      googleLoginUseCase: googleLoginUseCase,
+                    ),
+              ),
+              BlocProvider(
+                create: (_) => RegisterBloc(registerUseCase: registerUseCase),
+              ),
+            ],
+            child: const LoginModal(),
           ),
-          BlocProvider(
-            create: (_) => RegisterBloc(registerUseCase: registerUseCase),
-          ),
-        ],
-        child: const LoginModal(),
-      ),
     );
   }
 
@@ -117,45 +117,45 @@ class _HeaderState extends State<Header> {
   }
 
   void _openMenu() {
-  final overlayState = Overlay.of(context);
-  _overlayEntry = OverlayEntry(
-    builder:
-        (context) => Stack(
-          children: [
-            // Barrier
-            Positioned.fill(
-              top:
-                  widget.preferredSize.height +
-                  MediaQuery.of(context).padding.top,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
-                onTap: _closeMenu,
-                child: Container(color: Colors.black.withOpacity(0.3)),
+    final overlayState = Overlay.of(context);
+    _overlayEntry = OverlayEntry(
+      builder:
+          (context) => Stack(
+            children: [
+              // Barrier
+              Positioned.fill(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
+                  onTap: _closeMenu,
+                  child: Container(color: Colors.black.withOpacity(0.3)),
+                ),
               ),
-            ),
-            // Drawer Content
-            Positioned(
-              top:
-                  widget.preferredSize.height +
-                  MediaQuery.of(context).padding.top,
-              left: 0,
-              bottom: 0,
-              width: 300,
-              child: MenuDrawer(
-                onClose: _closeMenu,
-                onLogoTap: widget.onLogoTap,
-                selectedIndex: widget.selectedIndex,
+              // Drawer Content
+              Positioned(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                left: 0,
+                bottom: 0,
+                width: 300,
+                child: MenuDrawer(
+                  onClose: _closeMenu,
+                  onLogoTap: widget.onLogoTap,
+                  selectedIndex: widget.selectedIndex,
+                ),
               ),
-            ),
-          ],
-        ),
-  );
+            ],
+          ),
+    );
 
-  overlayState.insert(_overlayEntry!);
-  setState(() {
-    _isMenuOpen = true;
-  });
-}
+    overlayState.insert(_overlayEntry!);
+    setState(() {
+      _isMenuOpen = true;
+    });
+  }
 
   @override
   void dispose() {
@@ -287,19 +287,23 @@ class _HeaderState extends State<Header> {
                   color: AppColors.headerForeground,
                   onPressed: () {
                     // Navigate to profile screen
-                    Navigator.of(context).pushNamed('/profile');
+                    context.push(AppRoutes.profile);
                   },
                   size: 28,
                 );
               } else {
                 // CHƯA ĐĂNG NHẬP → Hiển thị nút đăng nhập
                 return ElevatedButton(
-                  onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
+                  onPressed:
+                      widget.onLoginTap ?? () => _showLoginModal(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.headerForeground,
                     foregroundColor: AppColors.headerBackground,
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

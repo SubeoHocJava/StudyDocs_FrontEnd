@@ -5,6 +5,7 @@ import '../model/auth/request/login_request.dart';
 import '../model/auth/request/register_request.dart';
 import '../model/auth/response/api_response.dart';
 import '../model/auth/response/token_data.dart';
+import '../model/auth/response/user_me_response.dart';
 import 'auth_remote_datasource.dart';
 
 /// Implementation thật gọi API backend
@@ -50,6 +51,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         accessToken: tokenData.accessToken,
         refreshToken: tokenData.refreshToken,
         tokenType: tokenData.tokenType,
+      );
+
+      // Gọi getMe() để lấy thông tin user + roles
+      final userMe = await getMe();
+
+      // Cập nhật storage với user info + roles
+      await tokenStorage.saveTokens(
+        accessToken: tokenData.accessToken,
+        refreshToken: tokenData.refreshToken,
+        tokenType: tokenData.tokenType,
+        userId: userMe.id,
+        username: userMe.username,
+        displayName: userMe.displayName,
+        roles: userMe.roles,
       );
 
       // Trả về accessToken (để tương thích với interface cũ)
@@ -118,11 +133,48 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         tokenType: tokenData.tokenType,
       );
 
+      // Gọi getMe() để lấy thông tin user + roles
+      final userMe = await getMe();
+
+      // Cập nhật storage với user info + roles
+      await tokenStorage.saveTokens(
+        accessToken: tokenData.accessToken,
+        refreshToken: tokenData.refreshToken,
+        tokenType: tokenData.tokenType,
+        userId: userMe.id,
+        username: userMe.username,
+        displayName: userMe.displayName,
+        roles: userMe.roles,
+      );
+
       // Trả về accessToken
       return tokenData.accessToken;
     } catch (e) {
       throw Exception('Google login failed: $e');
     }
   }
-}
 
+  /// Gọi GET /api/user/me để lấy thông tin user + roles
+  Future<UserMeResponse> getMe() async {
+    try {
+      final response = await dioClient.get('/api/user/me');
+
+      // Response từ server có format: { statusCode, errorCode, data, traceId }
+      if (response.statusCode != 200 && response.data?['statusCode'] != 200) {
+        throw Exception('Failed to fetch user info: ${response.statusCode}');
+      }
+
+      // Parse data từ response
+      final userData =
+          response.data is Map ? response.data['data'] : response.data;
+      if (userData == null) {
+        throw Exception('User data is null');
+      }
+
+      final userMe = UserMeResponse.fromJson(userData);
+      return userMe;
+    } catch (e) {
+      throw Exception('Failed to get user info: $e');
+    }
+  }
+}

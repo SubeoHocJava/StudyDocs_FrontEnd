@@ -1,82 +1,115 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/core/widgets/header.dart';
+import 'package:studydocs/core/widgets/bottom_nav.dart';
+import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
-import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
-
-import 'package:studydocs/features/library/presentation/widget/stored_document.dart';
-import 'package:studydocs/features/subject_library/domain/data/impl/SubjectLibraryRepositoryImpl.dart';
+import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
-import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
 import 'package:studydocs/features/subject_library/presentation/widget/most_liked_docs.dart';
 import 'package:studydocs/features/subject_library/presentation/widget/title.dart';
 import 'package:studydocs/features/subject_library/presentation/widget/uploaded_document.dart';
 
+import '../../../library/presentation/widget/stored_document.dart';
+
 class SubjectLibraryScreen extends StatelessWidget {
-  final repository = SubjectLibraryRepositoryImpl();
+  final String schoolName;
+
+  const SubjectLibraryScreen({
+    super.key,
+    required this.schoolName,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) => SubjectLibraryBloc(
-            searchDocumentsUseCase: SearchDocumentsUseCase(
-              repository: repository,
-            ),
-            likeDocumentUseCase: LikeDocumentUseCase(repository: repository),
-            getCommentsUseCase: GetCommentsUseCase(repository: repository),
-            downloadDocumentUseCase: DownloadDocumentUseCase(
-              repository: repository,
-            ),
-            bookmarkDocumentUseCase: BookmarkDocumentUseCase(
-              repository: repository,
-            ),
-          )..add(SubjectLibraryLoadDocumentByKeyWord("keyword")),
-      child: Scaffold(
-        body: BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
-          builder: (context, state) {
-            print('Current SubjectLibraryState: $state');
+    return Scaffold(
+      appBar: const Header(isDefault: true),
+      body: BlocBuilder<SubjectLibraryBloc, SubjectLibraryState>(
+        builder: (context, state) {
+          if (state is SubjectLibraryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (state is SubjectLibraryLoaded) {
+            final responsive = context.responsive;
+            return SingleChildScrollView(
+              padding: responsive.screenPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tiêu đề với tên trường và search bar lớn
+                  TitleSubjectLibrary(
+                    state,
+                    fontSize: responsive.fontSize(22),
+                    schoolName: schoolName,
+                  ),
+                  SizedBox(height: responsive.heightPercent(2)),
 
-            if (state is SubjectLibraryLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (state is SubjectLibraryLoaded) {
-              final responsive = context.responsive;
-              return SingleChildScrollView(
-                padding: responsive.screenPadding,
-                // responsive padding toàn trang
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Tiêu đề responsive
-                    TitleSubjectLibrary(
-                      state,
-                      fontSize: responsive.fontSize(22),
+                  // Section "Môn học"
+                  if (state.subjects.isNotEmpty) ...[
+                    SubjectCategories(
+                      state.subjects.map((s) => s.name).toList(),
+                      onSubjectTap: (subjectName) {
+                        // Navigate đến trang danh sách tài liệu của môn học
+                        final encodedSchoolName = Uri.encodeComponent(schoolName);
+                        final encodedSubjectName = Uri.encodeComponent(subjectName);
+                        context.push('/school/$encodedSchoolName/subject/$encodedSubjectName');
+                      },
                     ),
-                    SizedBox(height: responsive.heightPercent(2)),
-
-                    // Tài liệu đã upload
-                    UploadDocument(state.uploaded_docs),
                     SizedBox(height: responsive.heightPercent(3)),
+                  ],
 
-                    // Tài liệu được thích nhiều nhất
+                  // Section "Lượt thích cao nhất"
+                  if (state.the_most_liked_docs.isNotEmpty) ...[
                     MostLikeDocs(state.the_most_liked_docs),
                     SizedBox(height: responsive.heightPercent(3)),
-                    // Tài liệu đã lưu
-                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
                   ],
-                ),
-              );
-            }
 
-            if (state is SubjectLibraryError) {
-              return Center(child: Text(state.message));
-            }
+                  // Section "Tải lên gần đây"
+                  if (state.uploaded_docs.isNotEmpty) ...[
+                    UploadDocument(state.uploaded_docs),
+                    SizedBox(height: responsive.heightPercent(3)),
+                  ],
 
-            return Center(child: Text("Chưa có dữ liệu trang subject"));
-          },
-        ),
+                  // Tài liệu đã lưu (nếu có)
+                  if (state.documents.isNotEmpty)
+                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
+                ],
+              ),
+            );
+          }
+
+          if (state is SubjectLibraryError) {
+            return Center(child: Text(state.message));
+          }
+
+          return const Center(child: Text("Chưa có dữ liệu trang subject"));
+        },
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: -1, // No tab active
+        onTap: (index) {
+          // Navigate to the nested tab root.
+          switch (index) {
+            case 0:
+              context.go(AppRoutes.home);
+              break;
+            case 1:
+              context.go(AppRoutes.library);
+              break;
+            case 2:
+              context.go(AppRoutes.explore);
+              break;
+            case 3:
+              context.go(AppRoutes.notifications);
+              break;
+            default:
+              context.go(AppRoutes.home);
+          }
+        },
       ),
     );
   }
