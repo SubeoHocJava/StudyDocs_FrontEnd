@@ -33,12 +33,12 @@ class DioClient {
   Dio get dio => _dio;
 
   // Helper methods
-  Future<ApiResponse> get(
+  Future<ApiResponse<dynamic>> get(
     String path, {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      return fromResponse(
+      return fromResponse<dynamic>(
         await _dio.get(path, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -46,13 +46,13 @@ class DioClient {
     }
   }
 
-  Future<ApiResponse> post(
+  Future<ApiResponse<dynamic>> post(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      return fromResponse(
+      return fromResponse<dynamic>(
         await _dio.post(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -60,26 +60,27 @@ class DioClient {
     }
   }
 
-  Future<ApiResponse> patch(
+  Future<ApiResponse<dynamic>> patch(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      return fromResponse(
+      return fromResponse<dynamic>(
         await _dio.patch(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
       throw _handleError(e);
     }
   }
-  Future<ApiResponse> delete(
-      String path, {
-        dynamic data,
-        Map<String, dynamic>? queryParameters,
-      }) async {
+
+  Future<ApiResponse<dynamic>> delete(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
-      return fromResponse(
+      return fromResponse<dynamic>(
         await _dio.delete(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -102,11 +103,11 @@ class DioClient {
     }
   }
 
-  Future<ApiResponse> fromResponse(Response response) async {
+  Future<ApiResponse<T>> fromResponse<T>(Response response) async {
     dynamic responseData = response.data;
     if (responseData is String) {
       responseData = jsonDecode(responseData);
     }
-    return ApiResponse.fromJson(responseData);
+    return ApiResponse<T>.fromJson(responseData, null);
   }
 }

@@ -3,7 +3,8 @@ import '../../core/constants/api_constants.dart';
 import '../../services/token_storage_service.dart';
 import '../model/auth/request/login_request.dart';
 import '../model/auth/request/register_request.dart';
-import '../model/auth/response/api_response.dart';
+import '../model/api_response.dart'; // Deleted
+
 import '../model/auth/response/token_data.dart';
 import '../model/auth/response/user_me_response.dart';
 import 'auth_remote_datasource.dart';
@@ -27,16 +28,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: request.toJson(),
       );
 
-      // Parse API response
-      final apiResponse = ApiResponse<TokenData>.fromJson(
-        response.data,
-        (json) => TokenData.fromJson(json),
-      );
+      final ApiResponse<dynamic> apiResponse = response;
 
       // Kiểm tra errorCode
       if (!apiResponse.isSuccess) {
-        final errorCode = apiResponse.errorCode ?? 'UNKNOWN_ERROR';
-        throw Exception('Login failed with error code: $errorCode');
+        final errorMsg =
+            'Code: ${apiResponse.errorCode}, Status: ${apiResponse.statusCode}';
+        throw Exception('Login failed: $errorMsg');
       }
 
       // Kiểm tra data
@@ -44,7 +42,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Login response data is null');
       }
 
-      final tokenData = apiResponse.data!;
+      final tokenData = TokenData.fromJson(
+        apiResponse.data as Map<String, dynamic>,
+      );
 
       // Lưu tokens vào storage
       await tokenStorage.saveTokens(
@@ -83,11 +83,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: request.toJson(),
       );
 
-      final apiResponse = ApiResponse<void>.fromJson(response.data, null);
+      final ApiResponse<dynamic> apiResponse = response;
 
       if (!apiResponse.isSuccess) {
-        final errorCode = apiResponse.errorCode ?? 'UNKNOWN_ERROR';
-        throw Exception('Register failed with error code: $errorCode');
+        final errorMsg =
+            'Code: ${apiResponse.errorCode}, Status: ${apiResponse.statusCode}';
+        throw Exception('Register failed: $errorMsg');
       }
     } catch (e) {
       throw Exception('Register failed: $e');
@@ -107,16 +108,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {'tokenId': idToken},
       );
 
-      // Parse API response
-      final apiResponse = ApiResponse<TokenData>.fromJson(
-        response.data,
-        (json) => TokenData.fromJson(json),
-      );
+      final ApiResponse<dynamic> apiResponse = response;
 
       // Kiểm tra errorCode
       if (!apiResponse.isSuccess) {
-        final errorCode = apiResponse.errorCode ?? 'UNKNOWN_ERROR';
-        throw Exception('Google login failed with error code: $errorCode');
+        final errorMsg =
+            'Code: ${apiResponse.errorCode}, Status: ${apiResponse.statusCode}';
+        throw Exception('Google login failed: $errorMsg');
       }
 
       // Kiểm tra data
@@ -124,7 +122,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Google login response data is null');
       }
 
-      final tokenData = apiResponse.data!;
+      final tokenData = TokenData.fromJson(
+        apiResponse.data as Map<String, dynamic>,
+      );
 
       // Lưu tokens vào storage
       await tokenStorage.saveTokens(
@@ -157,21 +157,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// Gọi GET /api/user/me để lấy thông tin user + roles
   Future<UserMeResponse> getMe() async {
     try {
-      final response = await dioClient.get('/api/user/me');
+      final response = await dioClient.get('/auth/user/me');
+      final ApiResponse<dynamic> apiResponse = response;
 
-      // Response từ server có format: { statusCode, errorCode, data, traceId }
-      if (response.statusCode != 200 && response.data?['statusCode'] != 200) {
-        throw Exception('Failed to fetch user info: ${response.statusCode}');
+      if (!apiResponse.isSuccess) {
+        final errorMsg =
+            'Code: ${apiResponse.errorCode}, Status: ${apiResponse.statusCode}';
+        throw Exception('Failed to fetch user info: $errorMsg');
       }
 
       // Parse data từ response
-      final userData =
-          response.data is Map ? response.data['data'] : response.data;
+      final userData = apiResponse.data;
       if (userData == null) {
         throw Exception('User data is null');
       }
 
-      final userMe = UserMeResponse.fromJson(userData);
+      final userMe = UserMeResponse.fromJson(userData as Map<String, dynamic>);
       return userMe;
     } catch (e) {
       throw Exception('Failed to get user info: $e');

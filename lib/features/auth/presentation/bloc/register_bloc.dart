@@ -19,15 +19,17 @@ class RegisterSubmitted extends RegisterEvent {
   final String username;
   final String? email;
   final String password;
+  final String? displayName;
 
   const RegisterSubmitted({
     required this.username,
     this.email,
     required this.password,
+    this.displayName,
   });
 
   @override
-  List<Object?> get props => [username, email, password];
+  List<Object?> get props => [username, email, password, displayName];
 }
 
 /// -----------------------------
@@ -87,6 +89,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           username: event.username,
           email: event.email,
           password: event.password,
+          displayName: event.displayName,
         ),
       );
       emit(const RegisterSuccess());

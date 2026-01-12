@@ -42,6 +42,7 @@ class AuthRepositoryImpl implements AuthRepository {
         username: params.username,
         email: params.email,
         password: params.password,
+        displayName: params.displayName,
       ),
     );
   }

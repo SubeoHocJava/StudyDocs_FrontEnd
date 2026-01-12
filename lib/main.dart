@@ -28,6 +28,9 @@ void main() async {
   runApp(
     MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<DioClient>.value(
+          value: dioClient,
+        ),
         RepositoryProvider<NotificationRepository>.value(
           value: notificationRepository,
         ),
