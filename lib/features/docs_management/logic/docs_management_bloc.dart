@@ -9,15 +9,18 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
   final GetMyDocsUseCase getMyDocsUseCase;
   final DeleteDocUseCase deleteDocUseCase;
   final UpdateDocUseCase updateDocUseCase;
+  final UploadDocUseCase uploadDocUseCase;
 
   DocsManagementBloc({
     required this.getMyDocsUseCase,
     required this.deleteDocUseCase,
     required this.updateDocUseCase,
+    required this.uploadDocUseCase,
   }) : super(DocsManagementInitial()) {
     on<LoadMyDocs>(_onLoadMyDocs);
     on<DeleteDocEvent>(_onDeleteDoc);
     on<UpdateDocEvent>(_onUpdateDoc);
+    on<UploadDocEvent>(_onUploadDoc);
   }
 
   Future<void> _onLoadMyDocs(
@@ -77,6 +80,16 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
       add(const LoadMyDocs()); // Reload to get fresh state
     } catch (e) {
       emit(DocsManagementError("Failed to update: $e"));
+    }
+  }
+
+  Future<void> _onUploadDoc(
+      UploadDocEvent event, Emitter<DocsManagementState> emit) async {
+    try {
+      await uploadDocUseCase(event.file, event.metadata);
+      add(const LoadMyDocs()); // Reload list
+    } catch (e) {
+      emit(DocsManagementError("Failed to upload: $e"));
     }
   }
 }

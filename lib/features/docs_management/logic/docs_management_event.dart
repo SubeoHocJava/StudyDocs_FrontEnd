@@ -38,3 +38,13 @@ class UpdateDocEvent extends DocsManagementEvent {
   @override
   List<Object?> get props => [docId, updatedDoc];
 }
+
+class UploadDocEvent extends DocsManagementEvent {
+  final dynamic file; // File from dart:io
+  final DocumentEntity metadata;
+
+  const UploadDocEvent(this.file, this.metadata);
+
+  @override
+  List<Object?> get props => [file, metadata];
+}

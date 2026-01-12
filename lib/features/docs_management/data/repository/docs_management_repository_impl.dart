@@ -1,5 +1,5 @@
 import '../../../docs/domain/entity/document_entity.dart';
-import '../../data/datasource/docs_management_remote_datasource.dart';
+import '../../../../data/datasource/docs_management_remote_datasource.dart';
 import '../../domain/repository/docs_management_repository.dart';
 
 class DocsManagementRepositoryImpl implements DocsManagementRepository {

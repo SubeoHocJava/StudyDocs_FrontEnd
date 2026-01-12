@@ -1,4 +1,5 @@
 class DocumentEntity {
+  final String? id; // Nullable for new uploads
   final String title;
   final String course;
   final String school;
@@ -14,6 +15,7 @@ class DocumentEntity {
   final List<String> previewUrls;
 
   DocumentEntity({
+    this.id, // Optional
     required this.title,
     required this.course,
     required this.school,

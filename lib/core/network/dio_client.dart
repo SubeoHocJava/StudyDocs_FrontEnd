@@ -8,10 +8,10 @@ import 'api_interceptor.dart';
 class DioClient {
   late final Dio _dio;
 
-  DioClient() {
+  DioClient({String? baseUrl}) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
+        baseUrl: baseUrl ?? ApiConstants.baseUrl,
         connectTimeout: ApiConstants.connectTimeout,
         receiveTimeout: ApiConstants.receiveTimeout,
         headers: {

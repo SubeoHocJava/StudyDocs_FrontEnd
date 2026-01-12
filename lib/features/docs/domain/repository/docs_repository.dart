@@ -1,10 +1,9 @@
-import '../../../docs/domain/entity/document_entity.dart';
+import '../entity/document_entity.dart';
 
 abstract class DocsRepository {
-  Future<DocumentEntity> getDocumentDetails();
-  Future<void> toggleSave();
-  Future<void> downloadDocument();
-  Future<void> toggleLike({required bool isLike}); // true = like, false = dislike
-  Future<void> postComment(String text);
-  Future<void> reactToReview({required String reviewId, required bool isLike});
+  Future<List<DocumentEntity>> getPublicDocuments({int page = 0, int size = 10});
+  Future<List<DocumentEntity>> getNewestDocuments({int limit = 10});
+  Future<List<DocumentEntity>> getMostLikedDocuments({int limit = 10});
+  Future<DocumentEntity> getDocumentById(String id);
+  Future<void> reactToDocument(String id, String type);
 }
