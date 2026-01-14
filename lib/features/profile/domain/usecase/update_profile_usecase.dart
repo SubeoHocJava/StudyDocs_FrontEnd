@@ -8,7 +8,7 @@ class UpdateProfileUseCase {
   final ProfileRepository repository;
   UpdateProfileUseCase(this.repository);
 
-  Future<ProfileEntity> call(Map<String, dynamic> data) {
-    return repository.updateProfile(data as ProfileEntity);
+  Future<ProfileEntity> call(ProfileEntity profile) {
+    return repository.updateProfile(profile);
   }
 }

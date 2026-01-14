@@ -1,45 +1,48 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
 
-
+import '../../../../../core/network/dio_client.dart';
+import '../../../../../data/datasource/user_datasource.dart';
 import '../upload_file_repository.dart';
 
 class UpLoadFileRepositoryImpl implements UploadFileRepository {
+  late final UserDataSource userDataSource;
+
+  UpLoadFileRepositoryImpl() {
+    userDataSource = UserDataSourceImpl(
+      dioClient: DioClient(),
+    );
+  }
+
+  final String apiUrl = "https://your-api.com/upload";
+
   @override
-  Future<bool> uploadDocument({required String filePath, required String school,
+  Future<bool> uploadDocument({
+    required String filePath,
+    required String school,
     required String subject,
     required String fileName,
     required String year,
-    required String description}) async {
-    print("Đã gửi request thành công");
-   return true;
+    required String description,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        'school': school,
+        'subject': subject,
+        'fileName': fileName,
+        'year': year,
+        'description': description,
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: fileName,
+        ),
+      });
+      final response = await userDataSource.uploadImage("a", formData);
+      
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print('Upload error: $e');
+      return false;
+    }
   }
-  // final String apiUrl = "https://your-api.com/upload";
-  // @override
-  // Future<bool> uploadDocument({
-  //   required String filePath,
-  //   required String school,
-  //   required String subject,
-  //   required String fileName,
-  //   required String year,
-  //   required String description,
-  // }) async {
-  //   try {
-  //     final request = http.MultipartRequest("POST", Uri.parse(apiUrl));
-  //
-  //     request.fields['school'] = school;
-  //     request.fields['subject'] = subject;
-  //     request.fields['fileName'] = fileName;
-  //     request.fields['year'] = year;
-  //     request.fields['description'] = description;
-  //
-  //     request.files.add(
-  //       await http.MultipartFile.fromPath('file', filePath),
-  //     );
-  //
-  //     final res = await request.send();
-  //     return res.statusCode == 200;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
 }
