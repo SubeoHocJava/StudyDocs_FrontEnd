@@ -37,7 +37,7 @@ class DocsRepositoryImpl implements DocsRepository {
       likes: (stats['likeCount'] as num?)?.toInt() ?? 0,
       dislikes: (stats['dislikeCount'] as num?)?.toInt() ?? 0,
       currentUserReaction: reaction,
-      comments: reviews,
+      comments: reviews, description: '',
     );
   }
 

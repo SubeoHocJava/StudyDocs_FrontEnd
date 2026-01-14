@@ -39,6 +39,7 @@ class DocumentEntity {
 
   DocumentEntity copyWith({
     String? title,
+    String? description, // Made optional
     String? course,
     String? school,
     String? year,
@@ -55,6 +56,7 @@ class DocumentEntity {
     List<String>? previewUrls,
   }) {
     return DocumentEntity(
+      id: this.id, // ID should not change typically in copyWith, or use id ?? this.id if we add it to arguments. But currently it's not in arguments, so preserve this.id
       title: title ?? this.title,
       description: description ?? this.description,
       course: course ?? this.course,

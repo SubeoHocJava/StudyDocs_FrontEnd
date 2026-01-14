@@ -20,10 +20,30 @@ class LoadMyDocs extends DocsManagementEvent {
   List<Object?> get props => [filterSchool, filterSubject, filterYear];
 }
 
+class LoadAllDocs extends DocsManagementEvent {
+  final String? filterSchool;
+  final String? filterSubject;
+  final String? filterYear;
+
+  const LoadAllDocs({this.filterSchool, this.filterSubject, this.filterYear});
+
+  @override
+  List<Object?> get props => [filterSchool, filterSubject, filterYear];
+}
+
 class DeleteDocEvent extends DocsManagementEvent {
   final String docId;
 
   const DeleteDocEvent(this.docId);
+
+  @override
+  List<Object?> get props => [docId];
+}
+
+class DeleteAdminDocEvent extends DocsManagementEvent {
+  final String docId;
+
+  const DeleteAdminDocEvent(this.docId);
 
   @override
   List<Object?> get props => [docId];

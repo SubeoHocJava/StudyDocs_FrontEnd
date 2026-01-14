@@ -63,7 +63,16 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     final response = await dioClient.get(
       '${ApiConstants.documentServiceUrl}/internal/documents/$id',
     );
-    return DocumentModel.fromJson(response.data);
+    final doc = DocumentModel.fromJson(response.data);
+    
+    // Fetch preview comments (top 5)
+    try {
+      final comments = await getReviewsByDocumentId(id, page: 0, size: 5);
+      return doc.copyWith(comments: comments);
+    } catch (e) {
+      // If review service fails, return doc without comments
+      return doc;
+    }
   }
 
   @override

@@ -22,7 +22,7 @@ class DocumentModel extends DocumentEntity {
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
     return DocumentModel(
-      id: json['id'],
+      id: json['id']?.toString(),
       title: json['title'] ?? 'Untitled',
       course: json['subjectName'] ?? 'Unknown Course', // Placeholder if backend missing
       school: json['universityName'] ?? 'Unknown School', // Placeholder
@@ -39,7 +39,8 @@ class DocumentModel extends DocumentEntity {
       downloadUrl: json['downloadUrl'] ?? '',
       fileId: json['fileId'], // Map fileId
       currentUserReaction: json['currentUserReaction'], 
-      previewUrls: parsePreviews(json), description: '',
+      previewUrls: parsePreviews(json),
+      description: json['description'] ?? '', 
     );
   }
 

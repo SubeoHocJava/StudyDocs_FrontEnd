@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../docs/domain/entity/document_entity.dart';
+import '../../logic/docs_management_bloc.dart';
 import 'docs_edit_screen.dart';
 
 class DocsManagementDetailScreen extends StatelessWidget {
@@ -55,7 +57,10 @@ class DocsManagementDetailScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DocsEditScreen(document: document),
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<DocsManagementBloc>(),
+                          child: DocsEditScreen(document: document),
+                        ),
                       ),
                     );
                   },

@@ -12,7 +12,13 @@ class DocsManagementRepositoryImpl implements DocsManagementRepository {
   Future<List<DocumentEntity>> getMyDocuments() => dataSource.getMyDocuments();
 
   @override
+  Future<List<DocumentEntity>> getAllDocuments() => dataSource.getAllDocuments();
+
+  @override
   Future<void> deleteDocument(String id) => dataSource.deleteDocument(id);
+
+  @override
+  Future<void> deleteAdminDocument(String id) => dataSource.deleteAdminDocument(id);
 
   @override
   Future<void> updateDocument(String id, DocumentEntity updatedDoc) =>

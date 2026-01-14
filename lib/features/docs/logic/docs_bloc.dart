@@ -75,7 +75,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
           docDetails: doc.copyWith(
             likes: newLikes, 
             dislikes: newDislikes,
-            currentUserReaction: newReaction,
+            currentUserReaction: newReaction, description: '',
           ),
         ));
 
