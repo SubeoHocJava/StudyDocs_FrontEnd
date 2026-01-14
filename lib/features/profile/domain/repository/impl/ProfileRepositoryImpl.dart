@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/user_datasource.dart';
+import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
@@ -15,8 +16,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   /// Constructor rỗng
   ProfileRepositoryImpl() {
+    final dioClient = DioClient();
     userDataSource = UserDataSourceImpl(
-      dioClient: DioClient(),
+      dioClient: dioClient,
+      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
   }
 

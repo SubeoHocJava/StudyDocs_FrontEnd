@@ -9,8 +9,6 @@ class AssetModel extends Equatable {
   final String downloadUrl;
   final String status;
   final int uploadProgress;
-  // Ignoring PreviewData for now as structure is complex/undefined in projection snippet, 
-  // can be added later if needed or mapped to Map<String, dynamic>
   final Map<String, dynamic>? previewData;
 
   const AssetModel({
@@ -35,8 +33,23 @@ class AssetModel extends Equatable {
       downloadUrl: json['downloadUrl'] as String,
       status: json['status'] as String,
       uploadProgress: json['uploadProgress'] as int,
-      previewData: json['previewData'] as Map<String, dynamic>?,
+      previewData: json['previewDataView'] as Map<String, dynamic>?,
     );
+  }
+
+  List<String> get previewUrls {
+    List<String> urls = [];
+    if (previewData != null && totalPages > 0) {
+      final baseUrl = previewData!['baseUrl'] as String?;
+      final key = previewData!['key'] as String?;
+
+      if (baseUrl != null && key != null) {
+        for (int i = 1; i <= totalPages; i++) {
+          urls.add(baseUrl.replaceAll(key, i.toString()));
+        }
+      }
+    }
+    return urls;
   }
 
   @override

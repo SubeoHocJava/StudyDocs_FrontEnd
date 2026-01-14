@@ -1,4 +1,4 @@
-import 'package:studydocs/features/media/data/datasource/asset_remote_datasource.dart';
+import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/features/media/domain/entity/asset_entity.dart';
 import 'package:studydocs/features/media/domain/repository/asset_repository.dart';
 

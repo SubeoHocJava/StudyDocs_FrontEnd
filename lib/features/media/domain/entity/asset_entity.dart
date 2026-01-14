@@ -11,6 +11,7 @@ class AssetEntity extends Equatable {
   final String status;
   final int uploadProgress;
   final Map<String, dynamic>? previewData;
+  final List<String> previewUrls;
 
   const AssetEntity({
     required this.id,
@@ -22,6 +23,7 @@ class AssetEntity extends Equatable {
     required this.status,
     required this.uploadProgress,
     this.previewData,
+    this.previewUrls = const [],
   });
 
   factory AssetEntity.fromModel(AssetModel model) {
@@ -35,6 +37,7 @@ class AssetEntity extends Equatable {
       status: model.status,
       uploadProgress: model.uploadProgress,
       previewData: model.previewData,
+      previewUrls: model.previewUrls,
     );
   }
 
@@ -49,5 +52,6 @@ class AssetEntity extends Equatable {
         status,
         uploadProgress,
         previewData,
+        previewUrls,
       ];
 }

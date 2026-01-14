@@ -1,5 +1,5 @@
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/features/media/data/datasource/asset_remote_datasource.dart';
+import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/features/media/data/model/asset_model.dart';
 
 class AssetRemoteDataSourceImpl implements AssetRemoteDataSource {
