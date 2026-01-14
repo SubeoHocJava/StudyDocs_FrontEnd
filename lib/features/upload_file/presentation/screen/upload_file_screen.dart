@@ -30,7 +30,6 @@ class UploadFileScreen extends StatelessWidget {
         ..add(UploadFileLoadDocumentByKeyWord("keyword"))
         ..add(PickDocument()),
       child: Scaffold(
-        appBar: Header(),
         body: BlocConsumer<UploadFileBloc, UploadFileState>(
           listener: (context, state) {
             if (state is UploadFileSuccess) {//thông báo success
@@ -79,7 +78,7 @@ class UploadFileScreen extends StatelessWidget {
             return const Center(child: Text("Chưa có dữ liệu"));
           },
         ),
-        bottomNavigationBar: BottomNav(currentIndex: 0, onTap: (int value) {}),
+
       ),
     );
   }

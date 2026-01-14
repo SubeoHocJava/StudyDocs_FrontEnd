@@ -5,4 +5,7 @@ import '../entity/subject_entity.dart';
 abstract class SubjectRepository {
   /// Lấy danh sách môn học theo tên trường
   Future<List<SubjectEntity>> getSubjectsBySchool(String schoolName);
+
+  /// Lấy danh sách tên các trường
+  Future<List<String>> getSchools();
 }
