@@ -17,7 +17,21 @@ class ApiConstants {
   static const String popularDocuments = '/documents/popular';
   static const String recentDocuments = '/documents/recent';
   static const String searchDocuments = '/documents/search';
+  //User Endpoints
+  static const String usersAll        = '/users/all';
+  static const String usersCount      = '/users/count';
+  static const String usersRegister   = '/users/register';
+  static const String usersUpdate     = '/users/update';
+  static const String usersUpdateImage= '/users/updateImage';
+  static const String usersDelete     = '/users/delete';
 
+  static const String usersGetById    = '/users/getUserByID';
+  static const String usersIsPrivate  = '/users/isPrivate';
+  static const String usersExists     = '/users/exists';
+
+
+  //
+  static const String uploadDocument='/';
   //Academic Endpoints
   // Academic service (StudyDocs Academic microservice)
   // Web/iOS: use localhost; Android emulator: use 10.0.2.2

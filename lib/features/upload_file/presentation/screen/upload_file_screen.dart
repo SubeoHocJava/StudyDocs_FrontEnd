@@ -78,7 +78,6 @@ class UploadFileScreen extends StatelessWidget {
             return const Center(child: Text("Chưa có dữ liệu"));
           },
         ),
-
       ),
     );
   }
