@@ -2,7 +2,7 @@ class ApiConstants {
   // Base URL
   // Web/iOS: dùng localhost
   // Android Emulator: dùng 10.0.2.2
-  static const String baseUrl = 'http://192.168.1.43:8080/api/v1';
+  static const String baseUrl = 'http://172.16.17.80:8080/api/v1';
 
   // Auth Endpoints
   static const String authLoginLocal = '/auth/login/local';
@@ -27,6 +27,9 @@ class ApiConstants {
   static const String usersIsPrivate  = '/users/isPrivate';
   static const String usersExists     = '/users/exists';
 
+
+  //
+  static const String uploadDocument='/';
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);

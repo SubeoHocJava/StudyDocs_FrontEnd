@@ -65,6 +65,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (state is! ProfileLoaded) return;
       final current = state as ProfileLoaded;
 
+      // bật loading
       emit(current.copyWith(isUpdating: true));
 
       try {
@@ -85,6 +86,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           ),
         );
 
+        // ✅ QUAY LẠI PROFILELOADED (KHÔNG EMIT STATE KHÁC)
         emit(
           current.copyWith(
             userName: updatedProfile.username,
@@ -98,11 +100,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             isUpdating: false,
           ),
         );
-
-        emit(const ProfileUpdateSuccess());
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileUpdateFailure('Cập nhật thất bại: $e'));
+        emit(ProfileError('Cập nhật thất bại: $e'));
       }
     });
 
@@ -122,15 +122,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             isUpdating: false,
           ),
         );
-
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Cập nhật avatar thành công',
-          ),
-        );
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileUpdateFailure('Cập nhật avatar thất bại: $e'));
+        emit(ProfileError('Cập nhật avatar thất bại: $e'));
       }
     });
 
@@ -142,13 +136,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       try {
         await verifyEmailUseCase();
         emit(current.copyWith(isVerified: true));
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Email đã được xác thực',
-          ),
-        );
       } catch (e) {
-        emit(ProfileUpdateFailure('Xác thực email thất bại: $e'));
+        emit(ProfileError('Xác thực email thất bại: $e'));
       }
     });
 
@@ -160,13 +149,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       try {
         await followUserUseCase(event.userId);
         emit(current.copyWith(isFollowing: true));
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Đã theo dõi người dùng',
-          ),
-        );
       } catch (e) {
-        emit(ProfileUpdateFailure('Theo dõi thất bại: $e'));
+        emit(ProfileError('Theo dõi thất bại: $e'));
       }
     });
 
@@ -177,13 +161,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       try {
         await unfollowUserUseCase(event.userId);
         emit(current.copyWith(isFollowing: false));
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Đã bỏ theo dõi người dùng',
-          ),
-        );
       } catch (e) {
-        emit(ProfileUpdateFailure('Bỏ theo dõi thất bại: $e'));
+        emit(ProfileError('Bỏ theo dõi thất bại: $e'));
       }
     });
 
@@ -195,18 +174,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final updatedDocuments = current.documents.map((doc) {
         if (doc.id != event.documentId) return doc;
 
-        return DocumentProfile(
-          id: doc.id,
-          title: doc.title,
-          category: doc.category,
-          institution: doc.institution,
-          pages: doc.pages,
-          createdAt: doc.createdAt,
+        return doc.copyWith(
           likesCount: doc.likesCount + 1,
-          commentsCount: doc.commentsCount,
-          thumbnailUrl: doc.thumbnailUrl,
           isLiked: true,
-          isSaved: doc.isSaved,
         );
       }).toList();
 
@@ -215,18 +185,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     // ================= DOCUMENT: DOWNLOAD =================
     on<DownloadDocumentRequested>((event, emit) async {
-      if (state is! ProfileLoaded) return;
-
-      // DocumentProfile không có downloadCount
-      // => chỉ gọi API, không update state
-      // TODO: await repository.downloadDocument(event.documentId);
-    });
-
-    // ================= CLEAR ACTION =================
-    on<ClearProfileActionState>((event, emit) {
-      if (state is ProfileLoaded) {
-        emit(state);
-      }
+      // chỉ gọi API, không update state
+      // await repository.downloadDocument(event.documentId);
     });
   }
 }

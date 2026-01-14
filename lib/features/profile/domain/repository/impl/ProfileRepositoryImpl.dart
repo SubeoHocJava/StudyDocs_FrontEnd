@@ -89,7 +89,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
           avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
-          school: userData['school']??'Chưa nhập thông tin trường',
+          school: userData['school']??'',
         );
       } else {
         throw Exception(

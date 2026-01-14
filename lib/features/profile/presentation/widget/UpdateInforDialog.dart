@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../upload_file/logic/upload_file_bloc.dart';
 import '../../logic/profile_event.dart';
 import '../../logic/profile_state.dart';
 
@@ -23,12 +21,13 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController schoolController = TextEditingController();
+
   final ProfileBloc bloc;
+
   DateTime? selectedDate;
   String? selectedGender;
 
   _UpdateInforDialogState(this.bloc) {
-    // Khởi tạo các controller với dữ liệu hiện tại nếu có
     if (bloc.state is ProfileLoaded) {
       final state = bloc.state as ProfileLoaded;
       fullNameController.text = state.fullName;
@@ -36,7 +35,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
       userNameController.text = state.userName;
       phoneNumberController.text = state.phoneNumber;
       addressController.text = state.address;
-      schoolController.text = state.school!;
+      schoolController.text = state.school ?? '';
       selectedDate = state.birthDate;
       selectedGender = state.gender;
     }
@@ -57,13 +56,15 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
         child: AlertDialog(
           backgroundColor: AppColors.white,
           insetPadding: EdgeInsets.zero,
-          contentPadding: const EdgeInsets.all(0),
+          contentPadding: EdgeInsets.zero,
           titlePadding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
           actionsPadding: const EdgeInsets.only(bottom: 16, top: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           actionsAlignment: MainAxisAlignment.center,
+
+          // ================= TITLE =================
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -76,8 +77,8 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                 ),
               ),
               IconButton(
-                icon: const Icon(
-                    Icons.close_rounded, size: 35, color: Colors.black87),
+                icon: const Icon(Icons.close_rounded,
+                    size: 35, color: Colors.black87),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () => Navigator.pop(context),
@@ -85,154 +86,124 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
             ],
           ),
 
-          // ---------------- FORM ---------------- //
+          // ================= FORM =================
           content: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  // --- Tên tài khoản ---
-                  const Text("Tên tài khoản",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  _label("Tên tài khoản"),
+                  _input(
                     controller: userNameController,
-                    validator: (value) =>
-                    value == null || value
-                        .trim()
-                        .isEmpty
-                        ? "Vui lòng nhập tên tài khoản"
-                        : null,
-                    decoration: InputDecoration(
-                      hintText: "Nhập tên tài khoản",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                    hint: "Nhập tên tài khoản",
+                    validator: _requiredValidator("tên tài khoản"),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Họ và tên ---
-                  const Text("Họ và tên",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  _label("Họ và tên"),
+                  _input(
                     controller: fullNameController,
-                    validator: (value) =>
-                    value == null || value
-                        .trim()
-                        .isEmpty
-                        ? "Vui lòng nhập họ và tên"
-                        : null,
-                    decoration: InputDecoration(
-                      hintText: "Nhập họ và tên",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                    hint: "Nhập họ và tên",
+                    validator: _requiredValidator("họ và tên"),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Email ---
-                  const Text(
-                      "Email", style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  _label("Email"),
+                  _input(
                     controller: emailController,
+                    hint: "Nhập email",
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Email không được để trống";
                       }
-                      final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                      final regex =
+                      RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                       if (!regex.hasMatch(value)) {
                         return "Email không hợp lệ";
                       }
                       return null;
                     },
-                    decoration: InputDecoration(
-                      hintText: "Nhập email",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Số điện thoại ---
-                  const Text("Số điện thoại",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  _label("Số điện thoại"),
+                  _input(
                     controller: phoneNumberController,
+                    hint: "Nhập số điện thoại",
                     keyboardType: TextInputType.phone,
                     validator: (value) {
-                      if (value == null || value
-                          .trim()
-                          .isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return "Vui lòng nhập số điện thoại";
                       }
-                      final regex = RegExp(r'^[0-9]{9,11}$');
-                      if (!regex.hasMatch(value)) {
+                      if (!RegExp(r'^[0-9]{9,11}$').hasMatch(value)) {
                         return "Số điện thoại không hợp lệ (9–11 số)";
                       }
                       return null;
                     },
-                    decoration: InputDecoration(
-                      hintText: "Nhập số điện thoại",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Trường học ---
-                  const Text("Trường học",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  // ===== SCHOOL (BẮT BUỘC) =====
+                  _label("Trường học"),
+                  _input(
                     controller: schoolController,
-                    decoration: InputDecoration(
-                      hintText: "Nhập trường học",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                    hint: "Nhập trường học",
+                    validator: _requiredValidator("trường học"),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Giới tính ---
-                  const Text("Giới tính",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: "Nam",
-                        groupValue: selectedGender,
-                        onChanged: (value) =>
-                            setState(() => selectedGender = value),
-                      ),
-                      const Text("Nam"),
-                      Radio<String>(
-                        value: "Nữ",
-                        groupValue: selectedGender,
-                        onChanged: (value) =>
-                            setState(() => selectedGender = value),
-                      ),
-                      const Text("Nữ"),
-                    ],
+                  // ===== GENDER (BẮT BUỘC) =====
+                  FormField<String>(
+                    validator: (_) {
+                      if (selectedGender == null) {
+                        return "Vui lòng chọn giới tính";
+                      }
+                      return null;
+                    },
+                    builder: (state) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _label("Giới tính"),
+                          Row(
+                            children: [
+                              Radio<String>(
+                                value: "Nam",
+                                groupValue: selectedGender,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedGender = value;
+                                    state.didChange(value);
+                                  });
+                                },
+                              ),
+                              const Text("Nam"),
+                              Radio<String>(
+                                value: "Nữ",
+                                groupValue: selectedGender,
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedGender = value;
+                                    state.didChange(value);
+                                  });
+                                },
+                              ),
+                              const Text("Nữ"),
+                            ],
+                          ),
+                          if (state.hasError)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Text(
+                                state.errorText!,
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 12),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Ngày sinh ---
-                  const Text("Ngày sinh",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
+                  _label("Ngày sinh"),
                   GestureDetector(
                     onTap: () async {
                       final picked = await showDatePicker(
@@ -247,17 +218,16 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                     },
                     child: AbsorbPointer(
                       child: TextFormField(
-                        validator: (_) {
-                          if (selectedDate == null)
-                            return "Vui lòng chọn ngày sinh";
-                          return null;
-                        },
+                        validator: (_) =>
+                        selectedDate == null
+                            ? "Vui lòng chọn ngày sinh"
+                            : null,
                         decoration: InputDecoration(
                           hintText: selectedDate == null
                               ? "Chọn ngày sinh"
-                              : "${selectedDate!.day}/${selectedDate!
-                              .month}/${selectedDate!.year}",
-                          suffixIcon: const Icon(Icons.calendar_today),
+                              : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+                          suffixIcon:
+                          const Icon(Icons.calendar_today),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -265,36 +235,24 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
 
-                  // --- Địa chỉ ---
-                  const Text(
-                      "Địa chỉ", style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  TextFormField(
+                  _label("Địa chỉ"),
+                  _input(
                     controller: addressController,
-                    validator: (value) =>
-                    value == null || value
-                        .trim()
-                        .isEmpty
-                        ? "Vui lòng nhập địa chỉ"
-                        : null,
-                    decoration: InputDecoration(
-                      hintText: "Nhập địa chỉ",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                    hint: "Nhập địa chỉ",
+                    validator: _requiredValidator("địa chỉ"),
                   ),
                 ],
               ),
             ),
           ),
 
+          // ================= ACTION =================
           actions: [
             ElevatedButton(
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
+
                 bloc.add(UpdateProfile(
                   userName: userNameController.text.trim(),
                   fullName: fullNameController.text.trim(),
@@ -305,23 +263,58 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                   address: addressController.text.trim(),
                   school: schoolController.text.trim(),
                 ));
+
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                elevation: 4,
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               child: const Text(
-                  "Cập nhật", style: TextStyle(fontWeight: FontWeight.bold)),
+                "Cập nhật",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  // ================= HELPERS =================
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 4, top: 12),
+    child: Text(text,
+        style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
+
+  Widget _input({
+    required TextEditingController controller,
+    required String hint,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) =>
+      TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        validator: validator,
+        decoration: InputDecoration(
+          hintText: hint,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      );
+
+  String? Function(String?) _requiredValidator(String fieldName) {
+    return (value) =>
+    value == null || value.trim().isEmpty
+        ? "Vui lòng nhập $fieldName"
+        : null;
   }
 }
