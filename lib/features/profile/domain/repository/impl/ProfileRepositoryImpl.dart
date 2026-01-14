@@ -7,6 +7,7 @@ import 'package:studydocs/features/profile/domain/repository/profile_repository.
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
 import '../../../../../core/network/dio_client.dart';
+import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserDataSource userDataSource;
@@ -53,15 +54,27 @@ class ProfileRepositoryImpl extends ProfileRepository {
       thumbnailUrl: 'https://picsum.photos/200/302',
     ),
   ];
-
   @override
   Future<ProfileEntity> getProfile(int userId) async {
     try {
-      final response = await userDataSource.getUserById(userId.toString());
-      
-      // Check if statusCode is in success range (200-299)
-      if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
+      final tokenStorage = TokenStorageService();
+      final storedUserId = await tokenStorage.getUserId();
+
+      if (storedUserId == null) {
+        throw Exception('User ID not found in local storage');
+      }
+
+      print('User ID from storage: $storedUserId');
+
+      final response =
+      await userDataSource.getUserById(storedUserId);
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          response.data != null) {
+
         final userData = response.data;
+
         return ProfileEntity(
           id: userData['id']?.toString() ?? '',
           username: userData['username'] ?? '',
@@ -70,21 +83,24 @@ class ProfileRepositoryImpl extends ProfileRepository {
           phoneNumber: userData['phoneNumber'] ?? '',
           gender: userData['gender'] ?? '',
           birthDate: userData['dateOfBirth'] != null
-              ? DateTime.tryParse(userData['dateOfBirth']) 
+              ? DateTime.tryParse(userData['dateOfBirth'])
               : null,
           address: userData['address'] ?? '',
           avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
-          school: userData['school'],
+          school: userData['school']??'Chưa nhập thông tin trường',
         );
       } else {
-        throw Exception('Failed to get profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
+        throw Exception(
+          'Failed to get profile. Status: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error getting profile: $e');
     }
   }
+
 
   @override
   Future<ProfileEntity> updateProfile(ProfileEntity profile) async {
@@ -99,6 +115,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
         dateOfBirth: profile.birthDate,
         address: profile.address,
         avatarUrl: profile.avatarUrl,
+        school: profile.school,
       );
 
       final response = await userDataSource.updateUser(request);
@@ -120,7 +137,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
           avatarUrl: userData['avatarUrl'] ?? profile.avatarUrl,
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
-          school: userData['school'] ?? profile.school,
+          school: userData['school'] ?? "Chưa nhập thông tin trường",
         );
       } else {
         throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
@@ -135,7 +152,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     try {
       // TODO: Implement file upload
       // For now, we'll need to pass the file path or File object
-      // This requires updating the UserDataSource.updateImage method
+      // This requires updating the UserDataSource.uploadImage method
       throw UnimplementedError('Avatar upload not yet implemented');
     } catch (e) {
       throw Exception('Error updating avatar: $e');

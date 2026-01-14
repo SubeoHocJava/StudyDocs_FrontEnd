@@ -14,7 +14,7 @@ class HelperMap {
       id: profile.id,
       userName: profile.username,
       fullName: profile.fullName,
-      school: "profile.school",
+      school: profile.school,
       email: profile.email,
       phoneNumber: profile.phoneNumber,
       gender: profile.gender,
@@ -33,8 +33,7 @@ class HelperMap {
       id: user.id,
       username: user.username,
       fullName: user.fullName,
-      school: null,
-      // User không có field này
+      school: user.school,
       email: user.email,
       phoneNumber: user.phoneNumber,
       gender: user.gender,

@@ -4,6 +4,7 @@ import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../upload_file/logic/upload_file_bloc.dart';
 import '../../logic/profile_event.dart';
+import '../../logic/profile_state.dart';
 
 class UpdateInforDialog extends StatefulWidget {
   final ProfileBloc bloc;
@@ -21,18 +22,29 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController schoolController = TextEditingController();
   final ProfileBloc bloc;
   DateTime? selectedDate;
   String? selectedGender;
 
-  _UpdateInforDialogState( this.bloc); // "Nam" hoặc "Nữ"
+  _UpdateInforDialogState(this.bloc) {
+    // Khởi tạo các controller với dữ liệu hiện tại nếu có
+    if (bloc.state is ProfileLoaded) {
+      final state = bloc.state as ProfileLoaded;
+      fullNameController.text = state.fullName;
+      emailController.text = state.email;
+      userNameController.text = state.userName;
+      phoneNumberController.text = state.phoneNumber;
+      addressController.text = state.address;
+      schoolController.text = state.school!;
+      selectedDate = state.birthDate;
+      selectedGender = state.gender;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Dialog(
       backgroundColor: AppColors.white,
@@ -179,6 +191,21 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                   ),
                   const SizedBox(height: 12),
 
+                  // --- Trường học ---
+                  const Text("Trường học",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  TextFormField(
+                    controller: schoolController,
+                    decoration: InputDecoration(
+                      hintText: "Nhập trường học",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
                   // --- Giới tính ---
                   const Text("Giới tính",
                       style: TextStyle(fontWeight: FontWeight.bold)),
@@ -276,6 +303,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                   gender: selectedGender,
                   birthDate: selectedDate,
                   address: addressController.text.trim(),
+                  school: schoolController.text.trim(),
                 ));
                 Navigator.pop(context);
               },

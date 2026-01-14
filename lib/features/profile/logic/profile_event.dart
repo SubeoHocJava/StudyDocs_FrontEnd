@@ -47,6 +47,7 @@ class UpdateProfile extends ProfileEvent {
   final String? gender;
   final DateTime? birthDate;
   final String address;
+  final String? school;
 
   const UpdateProfile({
     required this.userName,
@@ -56,6 +57,7 @@ class UpdateProfile extends ProfileEvent {
     this.gender,
     this.birthDate,
     required this.address,
+    this.school,
   });
 
   @override
@@ -67,6 +69,7 @@ class UpdateProfile extends ProfileEvent {
     gender,
     birthDate,
     address,
+    school,
   ];
 }
 

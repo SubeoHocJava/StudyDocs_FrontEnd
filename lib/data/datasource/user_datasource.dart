@@ -6,12 +6,13 @@ import '../model/auth/request/register_request.dart';
 import '../model/auth/request/update_user_request.dart';
 
 abstract interface class UserDataSource {
+  Future<ApiResponse> getThisUser();
   Future<ApiResponse> registerUser(RegisterRequest request, {String? traceId});
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId});
   Future<ApiResponse> getUserById(String id, {String? traceId});
   Future<ApiResponse> isUserPrivate(String id, {String? traceId});
   Future<ApiResponse> isUserExists(String id, {String? traceId});
-  Future<ApiResponse> updateImage(String id, dynamic file, {String? traceId});
+  Future<ApiResponse> uploadImage(String id, dynamic file, {String? traceId});
   Future<ApiResponse> getAllUsers({String? traceId});
   Future<ApiResponse> getUserCount({String? traceId});
   Future<ApiResponse> deleteUser(String id, {String? traceId});
@@ -72,7 +73,7 @@ class UserDataSourceImpl implements UserDataSource {
   }
 
   @override
-  Future<ApiResponse> updateImage(String id, dynamic file, {String? traceId}) {
+  Future<ApiResponse> uploadImage(String id, dynamic file, {String? traceId}) {
     return dioClient.post(
       ApiConstants.usersUpdateImage,
       queryParameters: {'id': id},
@@ -111,5 +112,11 @@ class UserDataSourceImpl implements UserDataSource {
       //   'toIndex': toIndex,
       // },
     );
+  }
+
+  @override
+  Future<ApiResponse<dynamic>> getThisUser() {
+    // TODO: implement getThisUser
+    throw UnimplementedError();
   }
 }

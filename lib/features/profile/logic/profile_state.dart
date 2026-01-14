@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/data/model/document_model.dart';
-
 import '../domain/model/document_profile.dart';
 
 abstract class ProfileState extends Equatable {
@@ -10,32 +8,35 @@ abstract class ProfileState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Ban đầu (chưa load)
+/// ================= INITIAL =================
 class ProfileInitial extends ProfileState {}
 
-/// Đang load dữ liệu
+/// ================= LOADING =================
 class ProfileLoading extends ProfileState {}
 
-/// Load thành công
+/// ================= LOADED =================
 class ProfileLoaded extends ProfileState {
   final String id;
   final String userName;
   final String fullName;
-  final String school;
+  final String? school;
   final String email;
   final String phoneNumber;
   final String? gender;
   final DateTime? birthDate;
   final String address;
   final String? avatarUrl;
+
   final bool isVerified;
+  final bool isFollowing;
+
   final int numFollowMe;
   final int numMeFollow;
   final int numMyUpload;
   final int numMyLikes;
   final int numMyComment;
-  final List<DocumentProfile>documents;
-  final bool isFollowing;
+
+  final List<DocumentProfile> documents;
 
   /// UI flags
   final bool isUpdating;
@@ -44,7 +45,7 @@ class ProfileLoaded extends ProfileState {
     required this.id,
     required this.userName,
     required this.fullName,
-    required this.school,
+    this.school,
     required this.email,
     required this.phoneNumber,
     this.gender,
@@ -52,17 +53,16 @@ class ProfileLoaded extends ProfileState {
     required this.address,
     this.avatarUrl,
     this.isVerified = false,
-    this.isUpdating = false,
-    this.numFollowMe=0,
-    this.numMeFollow=0,
-    this.numMyUpload=4,
-    this.numMyLikes=2,
-    this.numMyComment=15,
-    required this.documents,
     this.isFollowing = false,
+    this.numFollowMe = 0,
+    this.numMeFollow = 0,
+    this.numMyUpload = 0,
+    this.numMyLikes = 0,
+    this.numMyComment = 0,
+    required this.documents,
+    this.isUpdating = false,
   });
 
-  /// copyWith để update từng field
   ProfileLoaded copyWith({
     String? userName,
     String? fullName,
@@ -74,9 +74,9 @@ class ProfileLoaded extends ProfileState {
     String? address,
     String? avatarUrl,
     bool? isVerified,
-    bool? isUpdating,
-    List? documents,
     bool? isFollowing,
+    bool? isUpdating,
+    List<DocumentProfile>? documents,
   }) {
     return ProfileLoaded(
       id: id,
@@ -90,35 +90,37 @@ class ProfileLoaded extends ProfileState {
       address: address ?? this.address,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       isVerified: isVerified ?? this.isVerified,
-      isUpdating: isUpdating ?? this.isUpdating,
-      documents: this.documents,
       isFollowing: isFollowing ?? this.isFollowing,
+      isUpdating: isUpdating ?? this.isUpdating,
+      documents: documents ?? this.documents,
+      numFollowMe: numFollowMe,
+      numMeFollow: numMeFollow,
+      numMyUpload: numMyUpload,
+      numMyLikes: numMyLikes,
+      numMyComment: numMyComment,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [
-        id,
-        userName,
-        fullName,
-        school,
-        email,
-        phoneNumber,
-        gender,
-        birthDate,
-        address,
-        avatarUrl,
-        isVerified,
-        isUpdating,
-        documents,
-        isFollowing,
-      ];
-
+  List<Object?> get props => [
+    id,
+    userName,
+    fullName,
+    school,
+    email,
+    phoneNumber,
+    gender,
+    birthDate,
+    address,
+    avatarUrl,
+    isVerified,
+    isFollowing,
+    documents,
+    isUpdating,
+  ];
 }
 
-
-/// Xảy ra lỗi
+/// ================= ERROR =================
 class ProfileError extends ProfileState {
   final String message;
 
@@ -128,10 +130,11 @@ class ProfileError extends ProfileState {
   List<Object?> get props => [message];
 }
 
+/// ================= ACTION STATES =================
 class ProfileUpdateSuccess extends ProfileState {
   final String message;
 
-  const ProfileUpdateSuccess({this.message = "Cập nhật thành công"});
+  const ProfileUpdateSuccess({this.message = 'Cập nhật thành công'});
 
   @override
   List<Object?> get props => [message];

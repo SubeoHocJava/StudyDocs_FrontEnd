@@ -34,6 +34,7 @@ class UpdateUserRequest {
     if (dateOfBirth != null) data['dateOfBirth'] = dateOfBirth!.toIso8601String();
     if (address != null) data['address'] = address;
     if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
+    if (school != null) data['school'] = school;
     
     return data;
   }
@@ -51,6 +52,7 @@ class UpdateUserRequest {
           : null,
       address: json['address'],
       avatarUrl: json['avatarUrl'],
+      school: json['school'],
     );
   }
 }

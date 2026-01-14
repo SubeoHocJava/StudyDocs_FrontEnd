@@ -59,4 +59,7 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
 
   @override
   bool? get stringify => true;
+
+
+
 }
