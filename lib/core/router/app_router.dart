@@ -5,15 +5,16 @@ import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
-import 'package:studydocs/features/docs_management/data/datasource/docs_management_remote_datasource.dart'
-    show DocsManagementRemoteDataSourceImpl;
 import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
 import 'package:studydocs/features/docs_management/domain/repository/docs_management_repository.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/delete_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/update_doc_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/upload_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
 import 'package:studydocs/features/docs_management/presentation/screen/docs_management_screen.dart';
+import 'package:studydocs/features/docs/logic/docs_page.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/main/main_screen.dart';
 import 'package:studydocs/features/manage_user/domain/repository/impl/ManageUserRepositoryImpl.dart';
 import 'package:studydocs/features/manage_user/domain/repository/manage_user_repository.dart';
@@ -49,6 +50,8 @@ import 'package:studydocs/features/subject_library/logic/subject_library_bloc.da
 import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_documents_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
+
+import '../../data/datasource/docs_management_remote_datasource.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -372,8 +375,9 @@ GoRouter createAppRouter() {
         redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
+          final dioClient = DioClient();
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(),
+            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: dioClient),
           );
           return BlocProvider(
             create:
@@ -381,6 +385,7 @@ GoRouter createAppRouter() {
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
+                  uploadDocUseCase: UploadDocUseCase(repository),
                 ),
             child: const DocsManagementScreen(),
           );
@@ -397,6 +402,15 @@ GoRouter createAppRouter() {
         redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      // Document Detail Route
+      GoRoute(
+        path: '/document/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final documentId = state.pathParameters['id'] ?? '';
+          return DocsPage(documentId: documentId);
+        },
       ),
     ],
   );

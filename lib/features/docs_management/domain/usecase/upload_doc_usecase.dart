@@ -7,7 +7,7 @@ class UploadDocUseCase {
 
   UploadDocUseCase(this.repository);
 
-  Future<void> call(File file, DocumentEntity metadata) async {
+  Future<void> call(dynamic file, DocumentEntity metadata) async {
     return repository.uploadDocument(file, metadata);
   }
 }

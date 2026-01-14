@@ -1,6 +1,7 @@
 class DocumentEntity {
   final String? id; // Nullable for new uploads
   final String title;
+  final String description;
   final String course;
   final String school;
   final String year;
@@ -12,11 +13,14 @@ class DocumentEntity {
   final int pages;
   final String fileSize;
   final String downloadUrl;
+  final String? fileId; // Added fileId
+  final String? currentUserReaction; // Added for Review Service integration
   final List<String> previewUrls;
 
   DocumentEntity({
-    this.id, // Optional
+    this.id,
     required this.title,
+    required this.description,
     required this.course,
     required this.school,
     required this.year,
@@ -28,6 +32,8 @@ class DocumentEntity {
     required this.pages,
     required this.fileSize,
     required this.downloadUrl,
+    this.fileId,
+    this.currentUserReaction,
     required this.previewUrls,
   });
 
@@ -44,10 +50,13 @@ class DocumentEntity {
     int? pages,
     String? fileSize,
     String? downloadUrl,
+    String? fileId,
+    String? currentUserReaction,
     List<String>? previewUrls,
   }) {
     return DocumentEntity(
       title: title ?? this.title,
+      description: description ?? this.description,
       course: course ?? this.course,
       school: school ?? this.school,
       year: year ?? this.year,
@@ -59,6 +68,8 @@ class DocumentEntity {
       pages: pages ?? this.pages,
       fileSize: fileSize ?? this.fileSize,
       downloadUrl: downloadUrl ?? this.downloadUrl,
+      fileId: fileId ?? this.fileId,
+      currentUserReaction: currentUserReaction ?? this.currentUserReaction,
       previewUrls: previewUrls ?? this.previewUrls,
     );
   }

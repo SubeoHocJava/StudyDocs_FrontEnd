@@ -5,7 +5,7 @@ class ToggleLikeUseCase {
 
   ToggleLikeUseCase(this.repository);
 
-  Future<void> call({required bool isLike}) async {
-    await repository.toggleLike(isLike: isLike);
+  Future<void> call(String id, {required bool isLike}) async {
+    await repository.reactToDocument(id, isLike ? 'LIKE' : 'DISLIKE');
   }
 }

@@ -35,7 +35,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ) async {
     emit(DocsLoading());
     try {
-      final doc = await getDocumentUseCase();
+      final doc = await getDocumentUseCase(event.id);
       emit(DocsLoaded(doc as DocumentEntity));
     } catch (e) {
       emit(DocsError(e.toString()));
@@ -48,8 +48,11 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ) async {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
-      await toggleSaveUseCase();
-      emit(current.copyWith(isSaved: !current.isSaved));
+      final id = current.docDetails.id;
+      if (id != null) {
+        await toggleSaveUseCase(id);
+        emit(current.copyWith(isSaved: !current.isSaved));
+      }
     }
   }
 
@@ -60,21 +63,29 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
       final doc = current.docDetails;
+      final id = doc.id;
 
-      // Optimistic update
-      final newLikes = event.isLike ? doc.likes + 1 : doc.likes;
-      final newDislikes = event.isLike ? doc.dislikes : doc.dislikes + 1;
+      if (id != null) {
+        // Optimistic update
+        final newLikes = event.isLike ? doc.likes + 1 : doc.likes;
+        final newDislikes = event.isLike ? doc.dislikes : doc.dislikes + 1;
+        final newReaction = event.isLike ? 'LIKE' : 'DISLIKE';
 
-      emit(current.copyWith(
-        docDetails: doc.copyWith(likes: newLikes, dislikes: newDislikes),
-      ));
+        emit(current.copyWith(
+          docDetails: doc.copyWith(
+            likes: newLikes, 
+            dislikes: newDislikes,
+            currentUserReaction: newReaction,
+          ),
+        ));
 
-      try {
-        await toggleLikeUseCase(isLike: event.isLike);
-      } catch (e) {
-        // Revert nếu lỗi
-        emit(current.copyWith(docDetails: doc));
-        emit(DocsError("Không thể đánh giá: $e"));
+        try {
+          await toggleLikeUseCase(id, isLike: event.isLike);
+        } catch (e) {
+          // Revert nếu lỗi
+          emit(current.copyWith(docDetails: doc));
+          emit(DocsError("Không thể đánh giá: $e"));
+        }
       }
     }
   }
@@ -85,14 +96,17 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ) async {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
-      try {
-        await postCommentUseCase(event.text);
-        // Reload lại doc để lấy comment mới (hoặc add manual vào list)
-        add(LoadDocDetails()); 
-      } catch (e) {
-        emit(DocsError("Lỗi đăng bình luận: $e"));
-        // Emit lại state cũ để không bị kẹt ở loading/error
-        emit(current); 
+      final id = current.docDetails.id;
+      if (id != null) {
+        try {
+          await postCommentUseCase(id, event.text);
+          // Reload lại doc để lấy comment mới (hoặc add manual vào list)
+          add(LoadDocDetails(id));
+        } catch (e) {
+          emit(DocsError("Lỗi đăng bình luận: $e"));
+          // Emit lại state cũ để không bị kẹt ở loading/error
+          emit(current);
+        }
       }
     }
   }

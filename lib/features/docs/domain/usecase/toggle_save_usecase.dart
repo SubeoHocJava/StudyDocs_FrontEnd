@@ -6,7 +6,7 @@ class ToggleSaveUseCase {
   ToggleSaveUseCase(this.repository);
 
   /// Gọi repository để thực thi hành động lưu/huỷ lưu.
-  Future<void> call() async {
-    await repository.toggleSave();
+  Future<void> call(String id) async {
+    await repository.toggleSave(id);
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/datasource/docs_remote_datasource.dart';
-import '../domain/repository/impl/docs_repository_impl.dart';
+import '../data/repository/docs_repository_impl.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
@@ -13,7 +13,9 @@ import 'docs_event.dart';
 import '../../../../core/network/dio_client.dart';
 
 class DocsPage extends StatelessWidget {
-  const DocsPage({super.key});
+  final String documentId;
+
+  const DocsPage({super.key, required this.documentId});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class DocsPage extends StatelessWidget {
         toggleLikeUseCase: ToggleLikeUseCase(repository),
         postCommentUseCase: PostCommentUseCase(repository),
         reactReviewUseCase: ReactReviewUseCase(repository),
-      )..add(LoadDocDetails()),
+      )..add(LoadDocDetails(documentId)),
       child: const DocsScreen(),
     );
   }

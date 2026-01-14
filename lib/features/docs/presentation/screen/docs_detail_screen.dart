@@ -13,6 +13,7 @@ import '../widgets/like_dislike_row.dart';
 import '../widgets/comments_section.dart';
 import '../widgets/comment_input.dart';
 import '../../../../core/constants/app_icons.dart';
+import 'package:studydocs/features/docs/presentation/screen/reviews_screen.dart';
 
 class DocsDetailScreen extends StatefulWidget {
   const DocsDetailScreen({super.key});
@@ -158,6 +159,33 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
           commentsPerPage: _commentsPerPage,
           onPageChange: (page) => setState(() => _commentPageIndex = page),
         ),
+        
+        // Nút xem tất cả bình luận
+        if (doc.comments.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                   Navigator.push(
+                     context,
+                     MaterialPageRoute(
+                       builder: (_) => BlocProvider.value(
+                         value: context.read<DocsBloc>(), // Pass existing bloc if needed or just Repo
+                         child: ReviewsScreen(
+                           documentId: doc.id!, 
+                           documentTitle: doc.title
+                         ),
+                       ),
+                     ),
+                   );
+                },
+                child: const Text("Xem tất cả bình luận"),
+              ),
+            ),
+          ),
+          
         const SizedBox(height: 20),
 
         CommentInput(

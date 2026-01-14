@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../docs/domain/entity/document_entity.dart';
 import '../../logic/docs_management_bloc.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import '../../logic/docs_management_event.dart';
 
 class DocsEditScreen extends StatefulWidget {
@@ -39,8 +41,34 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
     super.dispose();
   }
 
+  PlatformFile? _selectedFile;
+
+  Future<void> _pickFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        withData: true, // Critical for Web to get bytes
+      );
+
+      if (result != null) {
+        setState(() {
+          _selectedFile = result.files.single;
+          if (_titleController.text.isEmpty) {
+            _titleController.text = _selectedFile!.name;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Lỗi chọn file: $e")));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isEditing = widget.document != null;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -51,19 +79,9 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.document == null ? "Thêm tài liệu" : "Chỉnh sửa tài liệu",
+          isEditing ? "Chỉnh sửa tài liệu" : "Thêm tài liệu",
           style: const TextStyle(color: Color(0xFF3F51B5), fontWeight: FontWeight.bold),
         ),
-        actions: [
-            IconButton(
-            icon: const Icon(Icons.person_outline, color: Color(0xFF3F51B5)),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.wb_sunny_outlined, color: Color(0xFF3F51B5)),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -72,15 +90,10 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               // Title (Readonly or Editable? Assuming editable)
-               if (widget.document != null) ...[
+               if (isEditing) ...[
                  Text(widget.document!.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-               ] else ...[
-                 _buildTextField("Tên tài liệu", _titleController),
-               ],
-               if (widget.document != null) ...[
-                const SizedBox(height: 8),
-                Container(
+                 const SizedBox(height: 8),
+                 Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -94,27 +107,30 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
                         ]
                     )
                 ),
+               ] else ...[
+                 _buildTextField("Tên tài liệu", _titleController),
+                 const SizedBox(height: 16),
+                  GestureDetector(
+                   onTap: _pickFile,
+                   behavior: HitTestBehavior.opaque,
+                   child: Container(
+                     padding: const EdgeInsets.all(16),
+                     decoration: BoxDecoration(
+                       border: Border.all(color: Colors.grey),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                     child: Row(
+                       children: [
+                         const Icon(Icons.upload_file),
+                         const SizedBox(width: 8),
+                         Text(_selectedFile != null ? _selectedFile!.name : "Chọn file tài liệu"),
+                       ],
+                     ),
+                   ),
+                 ),
                ],
 
                const SizedBox(height: 24),
-               
-               _buildLabel("Trường học"),
-               Text(widget.document?.school ?? _schoolController.text, style: const TextStyle(color: Color(0xFF3F51B5), fontWeight: FontWeight.bold)),
-               // If completely editable form:
-               // _buildTextField("Trường học", _schoolController),
-
-               const SizedBox(height: 16),
-                _buildLabel("Môn học"),
-                Text(widget.document?.course ?? _subjectController.text, style: const TextStyle(color: Color(0xFF3F51B5), fontWeight: FontWeight.bold)),
-               // _buildTextField("Môn học", _subjectController),
-               
-               // But wait, the UI design screenshot shows "Chỉnh sửa" button leading to a form-like view? 
-               // Or does the "Screen 4" in prompt imply the form?
-               // The screenshot 4 shows "Cập nhật" button and fields.
-               // Let's implement full fields based on screenshot 4.
-               
-               _buildTextField("Tiêu đề (File)", _titleController, icon: Icons.description, enabled: false), // Disabled as file name usually fixed unless re-uploaded
-               const SizedBox(height: 16),
                
                _buildLabel("Trường học"),
                _buildTextField("Trường học", _schoolController, icon: Icons.school),
@@ -125,52 +141,59 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
 
                 const SizedBox(height: 16),
                _buildLabel("Năm học"),
-                // Dropdown or text field for year
                _buildYearSelector(),
-
-                const SizedBox(height: 16),
-                _buildLabel("Tác giả:"),
-                Row(
-                    children: [
-                         const CircleAvatar(
-                             backgroundImage: AssetImage('assets/images/google.png'), // Placeholder
-                             radius: 20,
-                         ),
-                         const SizedBox(width: 12),
-                         Column(
-                             crossAxisAlignment: CrossAxisAlignment.start,
-                             children: [
-                                 const Text("Subeo Dangiu", style: TextStyle(fontWeight: FontWeight.bold)),
-                                 Text(widget.document?.school ?? "Trường ĐH...", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                             ],
-                         )
-                    ],
-                ),
 
                 const SizedBox(height: 40),
                 SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                         onPressed: () {
-                             // Dispatch Update Event
-                             final updatedDoc = widget.document!.copyWith(
-                                 school: _schoolController.text,
-                                 course: _subjectController.text,
-                                 year: _yearController.text,
-                                 // title: file name usually not changed here
-                             );
-                             context.read<DocsManagementBloc>().add(UpdateDocEvent(widget.document!.title, updatedDoc));
+                             if (isEditing) {
+                                 final updatedDoc = widget.document!.copyWith(
+                                     school: _schoolController.text,
+                                     course: _subjectController.text,
+                                     year: _yearController.text,
+                                 );
+                                 context.read<DocsManagementBloc>().add(UpdateDocEvent(widget.document!.title, updatedDoc));
+                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đã cập nhật tài liệu")));
+                             } else {
+                               if (_selectedFile != null) {
+                                  final newDoc = DocumentEntity(
+                                    id: '', // Generated by backend
+                                    title: _titleController.text,
+                                    school: _schoolController.text,
+                                    course: _subjectController.text,
+                                    year: _yearController.text,
+                                    uploader: 'Me', // Placeholder, backend will set actual user
+                                    likes: 0,
+                                    dislikes: 0,
+                                    comments: [],
+                                    pages: 0,
+                                    fileSize: '0 B',
+                                    downloadUrl: '',
+                                    fileId: '',
+                                    previewUrls: [], description: '',
+                                  );
+                                  context.read<DocsManagementBloc>().add(UploadDocEvent(
+                                    _selectedFile, 
+                                    newDoc
+                                  ));
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đang tải tài liệu lên...")));
+                               } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vui lòng chọn file để tải lên")));
+                               }
+                             }
                              
-                             Navigator.pop(context);
-                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đã cập nhật tài liệu")));
+                             if (isEditing) Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0000AA), // Deep Blue
+                            backgroundColor: const Color(0xFF0000AA),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))
                         ),
-                        child: const Text("Cập nhật", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: Text(isEditing ? "Cập nhật" : "Tải lên", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                 )
             ],

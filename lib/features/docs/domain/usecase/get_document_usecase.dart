@@ -6,7 +6,7 @@ class GetDocumentUseCase {
 
   GetDocumentUseCase(this.repository);
 
-  Future<DocumentEntity> call() async {
-    return await repository.getDocumentDetails();
+  Future<DocumentEntity> call(String id) async {
+    return await repository.getDocumentById(id);
   }
 }

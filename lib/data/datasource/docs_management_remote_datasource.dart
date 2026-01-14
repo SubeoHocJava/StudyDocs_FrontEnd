@@ -11,7 +11,7 @@ abstract class DocsManagementRemoteDataSource {
   Future<List<DocumentEntity>> getMyDocuments();
   Future<void> deleteDocument(String id);
   Future<void> updateDocument(String id, DocumentEntity updatedDoc);
-  Future<void> uploadDocument(File file, DocumentEntity metadata);
+  Future<void> uploadDocument(dynamic file, DocumentEntity metadata);
 }
 
 class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSource {
@@ -23,7 +23,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   Future<List<DocumentEntity>> getMyDocuments() async {
     try {
       final response = await dioClient.get(
-        '${ApiConstants.documentServiceUrl}/documents/user',
+        '${ApiConstants.documentServiceUrl}/documents/user/me',
       );
       // Assuming response.data is List or Page
       // Adjust based on ApiResponse structure
@@ -51,28 +51,48 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
 
   @override
   Future<void> updateDocument(String id, DocumentEntity updatedDoc) async {
-     // TODO: Implement Update API when available or if using same endpoint
+    await dioClient.put(
+      '${ApiConstants.documentServiceUrl}/documents/user/$id',
+      data: {
+        'title': updatedDoc.title,
+        'description': updatedDoc.description, 
+        'schoolYear': updatedDoc.year,
+      },
+    );
   }
 
   @override
-  Future<void> uploadDocument(File file, DocumentEntity metadata) async {
-    String fileName = file.path.split('/').last;
-    
+  Future<void> uploadDocument(dynamic file, DocumentEntity metadata) async {
     // Construct JSON data matching UploadDocumentRequest
+    final metadataMap = {
       'title': metadata.title,
-      'description': metadata.title, // or description field if added
+      'description': metadata.description,
       'schoolYear': metadata.year,
-      'universityId': null, // TODO: Bind to UI selection
-      'subjectId': null,    // TODO: Bind to UI selection
+      // userId is typically extracted from Token in Backend, 
+      // but if Request Body requires it explicitly and Backend doesn't extracting it from Token for this specific DTO,
+      // we might need to send it. Use a placeholder if not available in Entity.
+      // However, usually User endpoints use the Token's UserID.
+      'universityId': null, 
+      'subjectId': null,    
     };
 
+    MultipartFile multipartFile;
+    if (file.bytes != null) {
+      multipartFile = MultipartFile.fromBytes(file.bytes!, filename: file.name);
+    } else {
+      multipartFile = await MultipartFile.fromFile(file.path!, filename: file.name);
+    }
+
     FormData formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path, filename: fileName),
-      'data': jsonEncode(metadataMap),
+      'file': multipartFile,
+      'data': MultipartFile.fromString(
+          jsonEncode(metadataMap),
+          contentType: DioMediaType.parse("application/json"),
+      ),
     });
 
     await dioClient.post(
-      '${ApiConstants.documentServiceUrl}/documents/user/upload',
+      '${ApiConstants.documentServiceUrl}/documents/user',
       data: formData,
     );
   }

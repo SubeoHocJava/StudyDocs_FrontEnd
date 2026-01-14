@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/usecase/get_my_docs_usecase.dart';
 import '../domain/usecase/delete_doc_usecase.dart';
 import '../domain/usecase/update_doc_usecase.dart';
+import '../domain/usecase/upload_doc_usecase.dart';
 import 'docs_management_event.dart';
 import 'docs_management_state.dart';
 

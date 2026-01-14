@@ -7,6 +7,7 @@ import '../../logic/docs_management_event.dart';
 import '../../logic/docs_management_state.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import 'docs_management_detail_screen.dart';
+import 'docs_edit_screen.dart';
 
 class DocsManagementScreen extends StatefulWidget {
   const DocsManagementScreen({super.key});
@@ -104,7 +105,16 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
-                      // Navigate to Add Document Screen (Reuse Edit Screen probably)
+                      final bloc = context.read<DocsManagementBloc>();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: bloc,
+                            child: const DocsEditScreen(),
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -230,7 +240,7 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                             onPressed: () {
                               // Note: In real app, use Bloc event. Since we don't have ID, using title mock
                               context.read<DocsManagementBloc>().add(
-                                DeleteDocEvent(doc.title),
+                                DeleteDocEvent(doc.id ?? ''),
                               );
                               Navigator.pop(context);
                             },

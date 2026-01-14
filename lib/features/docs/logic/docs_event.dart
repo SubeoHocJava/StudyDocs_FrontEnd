@@ -7,7 +7,12 @@ abstract class DocsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadDocDetails extends DocsEvent {}
+class LoadDocDetails extends DocsEvent {
+  final String id;
+  const LoadDocDetails(this.id);
+  @override
+  List<Object?> get props => [id];
+}
 
 class ToggleSave extends DocsEvent {}
 
