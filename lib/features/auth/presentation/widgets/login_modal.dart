@@ -93,12 +93,13 @@ class _LoginModalState extends State<LoginModal> {
         return RegisterForm(
           onBackToLogin: () => _switchView(AuthModalView.login),
           isSubmitting: registerState is RegisterLoading,
-          onSubmit: (username, email, password) {
+          onSubmit: (username, email, password, displayName) {
             context.read<RegisterBloc>().add(
               RegisterSubmitted(
                 username: username,
                 email: email,
                 password: password,
+                displayName: displayName,
               ),
             );
           },
