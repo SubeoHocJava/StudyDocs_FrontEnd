@@ -1,6 +1,5 @@
-
 import '../../../../../data/datasource/subject_remote_datasource.dart';
-import '../../../../../data/datasource/subject_remote_datasource_mock.dart';
+import '../../../../../data/datasource/subject_remote_datasource_impl.dart';
 import '../../entity/subject_entity.dart';
 import '../subject_repository.dart';
 
@@ -13,10 +12,15 @@ class SubjectRepositoryImpl implements SubjectRepository {
   final SubjectRemoteDataSource remote;
 
   SubjectRepositoryImpl({SubjectRemoteDataSource? remote})
-      : remote = remote ?? SubjectRemoteDataSourceMock();
+    : remote = remote ?? SubjectRemoteDataSourceImpl();
 
   @override
   Future<List<SubjectEntity>> getSubjectsBySchool(String schoolName) {
     return remote.getSubjectsBySchool(schoolName);
+  }
+
+  @override
+  Future<List<String>> getSchools() {
+    return remote.getSchools();
   }
 }

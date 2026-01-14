@@ -41,7 +41,7 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_bloc.da
     show createStatisticBloc;
 import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.dart';
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
-import 'package:studydocs/features/subject_library/domain/data/impl/SubjectLibraryRepositoryImpl.dart';
+import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/get_subjects_by_school_usecase.dart';
