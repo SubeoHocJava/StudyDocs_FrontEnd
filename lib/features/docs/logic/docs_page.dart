@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/datasource/docs_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import '../domain/repository/impl/docs_repository_impl.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
@@ -13,19 +13,20 @@ import 'docs_event.dart';
 import '../../../../core/network/dio_client.dart';
 
 class DocsPage extends StatelessWidget {
-  const DocsPage({super.key});
+  final String documentId;
+
+  const DocsPage({super.key, required this.documentId});
 
   @override
   Widget build(BuildContext context) {
-    // Tạo DataSource (inject Dio nếu có)
-    final dioClient = DioClient(); // Giả sử lấy từ Provider hoặc singleton
-    final dataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
-
-    // Tạo RepositoryImpl với DataSource
+    // Lấy DioClient từ context
+    final dioClient = context.read<DioClient>();
+    final dataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
     final repository = DocsRepositoryImpl(dataSource: dataSource);
 
     return BlocProvider(
       create: (_) => DocsBloc(
+        documentId: documentId,
         getDocumentUseCase: GetDocumentUseCase(repository),
         toggleSaveUseCase: ToggleSaveUseCase(repository),
         toggleLikeUseCase: ToggleLikeUseCase(repository),

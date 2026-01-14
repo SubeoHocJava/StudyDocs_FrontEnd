@@ -15,7 +15,10 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
   final PostCommentUseCase postCommentUseCase;
   final ReactReviewUseCase reactReviewUseCase;
 
+  final String documentId;
+
   DocsBloc({
+    required this.documentId,
     required this.getDocumentUseCase,
     required this.toggleSaveUseCase,
     required this.toggleLikeUseCase,
@@ -35,8 +38,8 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ) async {
     emit(DocsLoading());
     try {
-      final doc = await getDocumentUseCase();
-      emit(DocsLoaded(doc as DocumentEntity));
+      final doc = await getDocumentUseCase(documentId: documentId);
+      emit(DocsLoaded(doc));
     } catch (e) {
       emit(DocsError(e.toString()));
     }
@@ -48,7 +51,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ) async {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
-      await toggleSaveUseCase();
+      await toggleSaveUseCase(documentId: documentId);
       emit(current.copyWith(isSaved: !current.isSaved));
     }
   }
@@ -70,7 +73,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       ));
 
       try {
-        await toggleLikeUseCase(isLike: event.isLike);
+        await toggleLikeUseCase(documentId: documentId, isLike: event.isLike);
       } catch (e) {
         // Revert nếu lỗi
         emit(current.copyWith(docDetails: doc));
@@ -86,7 +89,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
     if (state is DocsLoaded) {
       final current = state as DocsLoaded;
       try {
-        await postCommentUseCase(event.text);
+        await postCommentUseCase(documentId: documentId, text: event.text);
         // Reload lại doc để lấy comment mới (hoặc add manual vào list)
         add(LoadDocDetails()); 
       } catch (e) {
@@ -102,7 +105,11 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       Emitter<DocsState> emit,
       ) async {
      try {
-       await reactReviewUseCase(reviewId: event.reviewId, isLike: event.isLike);
+       await reactReviewUseCase(
+         documentId: documentId,
+         reviewId: event.reviewId,
+         isLike: event.isLike,
+       );
        // Có thể reload hoặc update state cục bộ nếu muốn
      } catch (e) {
        // Silent error or toast

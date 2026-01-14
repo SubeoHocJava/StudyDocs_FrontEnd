@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
@@ -41,6 +42,9 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_bloc.da
     show createStatisticBloc;
 import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.dart';
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
+import 'package:studydocs/features/docs/logic/docs_page.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
@@ -66,6 +70,7 @@ class AppRoutes {
 
   // statistic & subject library
   static const String statistic = '/statistic';
+  static const String documentDetail = '/document/:id';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -234,9 +239,18 @@ GoRouter createAppRouter() {
           final decodedSchoolName =
               state.pathParameters['schoolName'] ?? 'Unknown School';
 
+          // Create DataSources
+          final dioClient = context.read<DioClient>();
+          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
+          final academicDataSource = AcademicRemoteDataSourceImpl(dio: dioClient.dio);
+
           // Create repositories
-          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
-          final subjectRepo = SubjectRepositoryImpl();
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
+            documentDataSource: documentDataSource,
+          );
+          final subjectRepo = SubjectRepositoryImpl(
+            remote: academicDataSource,
+          );
 
           return MaterialPage(
             child: BlocProvider(
@@ -277,9 +291,18 @@ GoRouter createAppRouter() {
           final decodedSubjectName =
               state.pathParameters['subjectName'] ?? 'Unknown Subject';
 
+          // Create DataSources
+          final dioClient = context.read<DioClient>();
+          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
+          final academicDataSource = AcademicRemoteDataSourceImpl(dio: dioClient.dio);
+
           // Create repositories
-          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
-          final subjectRepo = SubjectRepositoryImpl();
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
+            documentDataSource: documentDataSource,
+          );
+          final subjectRepo = SubjectRepositoryImpl(
+            remote: academicDataSource,
+          );
 
           return MaterialPage(
             child: BlocProvider(
@@ -397,6 +420,15 @@ GoRouter createAppRouter() {
         redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      // Document Detail Route
+      GoRoute(
+        path: AppRoutes.documentDetail,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final docId = state.pathParameters['id'] ?? '';
+          return DocsPage(documentId: docId);
+        },
       ),
     ],
   );

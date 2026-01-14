@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
@@ -12,7 +13,7 @@ import 'package:studydocs/features/notification/presentation/notification_trash_
 import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
 import 'package:studydocs/features/manage_user/presentation/screen/manage_user_screen.dart';
-import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
 import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
 import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
@@ -39,8 +40,8 @@ class MainScreen extends StatelessWidget {
 
   /// Hiển thị bottom sheet khám phá trường
   void _showExploreBottomSheet(BuildContext context) {
-    final remote = ExploreRemoteDataSource();
-    final repo = ExploreRepositoryImpl(remote: remote);
+    final academicDataSource = AcademicRemoteDataSourceImpl(dio: context.read<DioClient>().dio);
+    final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
 

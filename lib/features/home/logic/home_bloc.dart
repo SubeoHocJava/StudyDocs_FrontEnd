@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/datasource/home_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/home/domain/repository/impl/home_repository_impl.dart';
 import 'package:studydocs/features/home/domain/usecase/get_documents_usecase.dart';
 import 'package:studydocs/features/home/logic/home_event.dart';
@@ -73,7 +73,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
 HomeBloc createHomeBloc() {
   final dioClient = DioClient();
-  final remoteDataSource = HomeRemoteDataSourceImpl(dioClient: dioClient);
+  final remoteDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
   final repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource);
 
   return HomeBloc(

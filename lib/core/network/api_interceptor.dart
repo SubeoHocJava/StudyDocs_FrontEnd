@@ -12,10 +12,21 @@ class ApiInterceptor extends QueuedInterceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // Tự động thêm token vào header nếu có
-    final authHeader = await _tokenStorage.getAuthorizationHeader();
-    if (authHeader != null) {
-      options.headers['Authorization'] = authHeader;
+    // Danh sách các path không cần gửi kèm token (Public Endpoints)
+    const publicPaths = [
+      '/auth/login/local',
+      '/auth/login/provider/google',
+      '/auth/register/local',
+    ];
+
+    final isPublic = publicPaths.any((path) => options.path.contains(path));
+
+    if (!isPublic) {
+      // Tự động thêm token vào header nếu có và KHÔNG phải public endpoint
+      final authHeader = await _tokenStorage.getAuthorizationHeader();
+      if (authHeader != null) {
+        options.headers['Authorization'] = authHeader;
+      }
     }
 
     print('REQUEST[${options.method}] => PATH: ${options.path}');

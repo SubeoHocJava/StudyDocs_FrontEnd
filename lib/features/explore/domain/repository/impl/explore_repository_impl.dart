@@ -1,9 +1,9 @@
-import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/features/explore/domain/entity/school_entity.dart';
 import 'package:studydocs/features/explore/domain/repository/explore_repository.dart';
 
 class ExploreRepositoryImpl implements ExploreRepository {
-  final ExploreRemoteDataSource remote;
+  final AcademicRemoteDataSource remote;
 
   ExploreRepositoryImpl({required this.remote});
 

@@ -6,8 +6,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../data/datasource/auth_remote_datasource_impl.dart';
-import '../../../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../../../data/datasource/impl/auth_remote_datasource_impl.dart';
+import '../../../../data/datasource/impl/auth_remote_datasource_hybrid.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../features/auth/domain/repositories/impl/auth_repository_impl.dart';
 import '../../../../features/auth/domain/usecases/login_usecase.dart';

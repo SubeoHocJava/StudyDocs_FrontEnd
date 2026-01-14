@@ -5,7 +5,7 @@ class DownloadDocumentUseCase {
 
   DownloadDocumentUseCase(this.repository);
 
-  Future<void> call() async {
-    await repository.downloadDocument();
+  Future<void> call({required String documentId}) async {
+    await repository.downloadDocument(documentId: documentId);
   }
 }

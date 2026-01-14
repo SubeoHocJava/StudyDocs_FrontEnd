@@ -1,9 +1,9 @@
-import 'package:studydocs/data/datasource/home_remote_datasource.dart';
+import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/home_repository.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
-  final HomeRemoteDataSource remoteDataSource;
+  final DocumentRemoteDataSource remoteDataSource;
 
   HomeRepositoryImpl({required this.remoteDataSource});
 

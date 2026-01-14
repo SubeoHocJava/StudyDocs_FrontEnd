@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
 import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
 import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
@@ -285,8 +286,8 @@ class _HomePageState extends State<HomePage> {
 
   /// Xây dựng overlay Khám phá với BLoC và mock data.
   Widget _buildExploreOverlay() {
-    final remote = ExploreRemoteDataSource();
-    final repo = ExploreRepositoryImpl(remote: remote);
+    final academicDataSource = AcademicRemoteDataSourceImpl(dio: context.read<DioClient>().dio);
+    final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
 
