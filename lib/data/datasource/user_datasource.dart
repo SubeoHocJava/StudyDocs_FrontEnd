@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/model/api_response.dart';
 
@@ -73,11 +75,37 @@ class UserDataSourceImpl implements UserDataSource {
   }
 
   @override
-  Future<ApiResponse> uploadImage(String id, dynamic file, {String? traceId}) {
+  Future<ApiResponse> uploadImage(String id, dynamic file, {String? traceId}) async {
+    FormData formData;
+
+    if (file is PlatformFile) {
+      // Check if running on web (bytes) or mobile (path)
+      if (file.bytes != null) {
+         formData = FormData.fromMap({
+          "file": MultipartFile.fromBytes(
+            file.bytes!,
+            filename: file.name,
+          ),
+        });
+      } else if (file.path != null) {
+        formData = FormData.fromMap({
+          "file": await MultipartFile.fromFile(
+            file.path!,
+            filename: file.name,
+          ),
+        });
+      } else {
+         throw Exception("File is invalid (no bytes or path)");
+      }
+    } else {
+       // Fallback or other file types if necessary
+       throw Exception("Unsupported file type: ${file.runtimeType}");
+    }
+
     return dioClient.post(
       ApiConstants.usersUpdateImage,
       queryParameters: {'id': id},
-      data: file,
+      data: formData,
     );
   }
 
@@ -119,4 +147,5 @@ class UserDataSourceImpl implements UserDataSource {
     // TODO: implement getThisUser
     throw UnimplementedError();
   }
+
 }

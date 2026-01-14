@@ -114,11 +114,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(current.copyWith(isUpdating: true));
 
       try {
-        final avatarUrl = await updateAvatarUseCase(event.imagePath);
+        final image = await updateAvatarUseCase(event.file);
 
         emit(
           current.copyWith(
-            avatarUrl: avatarUrl,
+            avatarUrl: image.path,
             isUpdating: false,
           ),
         );

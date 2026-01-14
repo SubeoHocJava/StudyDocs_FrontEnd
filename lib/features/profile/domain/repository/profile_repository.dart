@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+
 import '../model/profile_entity.dart';
 
 abstract class ProfileRepository {
@@ -8,7 +10,7 @@ abstract class ProfileRepository {
   Future<ProfileEntity> updateProfile(ProfileEntity profile);
 
   /// Cập nhật avatar
-  Future<String> updateAvatar(String imagePath);
+  Future<PlatformFile> updateAvatar(PlatformFile imagePath);
 
   /// Xác thực email
   Future<void> verifyEmail();

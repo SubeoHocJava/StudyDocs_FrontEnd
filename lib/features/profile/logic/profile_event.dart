@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 
 /// =======================
 /// PROFILE EVENT
@@ -73,15 +74,17 @@ class UpdateProfile extends ProfileEvent {
   ];
 }
 
-/// Update avatar
-class UpdateAvatar extends ProfileEvent {
-  final String imagePath;
 
-  const UpdateAvatar(this.imagePath);
+
+class UpdateAvatar extends ProfileEvent {
+  final PlatformFile file;
+
+  const UpdateAvatar(this.file);
 
   @override
-  List<Object?> get props => [imagePath];
+  List<Object?> get props => [file];
 }
+
 
 /// Verify email
 class VerifyEmail extends ProfileEvent {

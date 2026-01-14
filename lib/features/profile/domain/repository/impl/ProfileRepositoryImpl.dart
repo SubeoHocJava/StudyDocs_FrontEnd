@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/user_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
@@ -148,16 +149,22 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<String> updateAvatar(String imagePath) async {
-    try {
-      // TODO: Implement file upload
-      // For now, we'll need to pass the file path or File object
-      // This requires updating the UserDataSource.uploadImage method
-      throw UnimplementedError('Avatar upload not yet implemented');
-    } catch (e) {
-      throw Exception('Error updating avatar: $e');
+  Future<PlatformFile> updateAvatar(PlatformFile imagePath) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+
+   await userDataSource.uploadImage(
+      storedUserId,
+      imagePath,
+    );
+
+    return imagePath;
   }
+
 
   @override
   Future<void> verifyEmail() async {
