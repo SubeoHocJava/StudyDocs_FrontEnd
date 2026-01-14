@@ -7,7 +7,7 @@ import '../../core/constants/api_constants.dart';
 import '../model/auth/request/register_request.dart';
 import '../model/auth/request/update_user_request.dart';
 
-abstract interface class UserDataSource {
+abstract interface class UserRemoteDataSource {
   Future<ApiResponse> getThisUser();
   Future<ApiResponse> registerUser(RegisterRequest request, {String? traceId});
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId});
@@ -21,7 +21,7 @@ abstract interface class UserDataSource {
   Future<ApiResponse> getUsersInRange(int fromIndex, int toIndex, {String? traceId});
 }
 
-class UserDataSourceImpl implements UserDataSource {
+class UserDataSourceImpl implements UserRemoteDataSource {
   static UserDataSourceImpl? _instance;
 
   final DioClient dioClient;

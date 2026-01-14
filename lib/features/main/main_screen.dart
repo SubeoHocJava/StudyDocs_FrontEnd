@@ -40,7 +40,7 @@ class MainScreen extends StatelessWidget {
 
   /// Hiển thị bottom sheet khám phá trường
   void _showExploreBottomSheet(BuildContext context) {
-    final academicDataSource = AcademicRemoteDataSourceImpl(dio: context.read<DioClient>().dio);
+    final academicDataSource = AcademicRemoteDataSourceImpl();
     final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);

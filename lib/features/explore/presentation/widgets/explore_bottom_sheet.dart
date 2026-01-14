@@ -198,10 +198,10 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                               ),
                             ),
                             onTap: () {
-                              // Navigate đến trang subject library của trường
+                              final goRouter = GoRouter.of(context);
                               final encodedSchoolName = Uri.encodeComponent(school.name);
                               Navigator.of(context).pop(); // Đóng bottom sheet
-                              context.push('/school/$encodedSchoolName');
+                              goRouter.push('/school/$encodedSchoolName');
                             },
                           );
                         },

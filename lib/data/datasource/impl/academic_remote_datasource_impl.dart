@@ -39,28 +39,27 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   Future<List<SchoolEntity>> searchSchools(String query) async {
     await _attachAuthHeader();
     try {
-      final response = await _dio.get(ApiConstants.academicUniversitiesFilter);
+      final response = await _dio.get(
+        ApiConstants.academicUniversitiesFilter,
+        queryParameters: query.trim().isNotEmpty ? {'query': query} : null,
+      );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && response.data != null) {
         final body = response.data;
-        final List data = body is Map && body['data'] != null ? body['data'] as List : [];
+        // Linh hoạt handle: {data: [...]} hoặc thẳng [...]
+        final List data = (body is Map && body['data'] != null)
+            ? body['data'] as List
+            : (body is List ? body : []);
 
         final allSchools = data.map<SchoolEntity>((e) {
           return SchoolEntity(
             id: (e['id'] ?? '').toString(),
             name: (e['name'] ?? '').toString(),
-            shortName: (e['slug'] ?? '').toString(),
+            shortName: (e['slug'] ?? e['shortName'] ?? '').toString(),
           );
         }).where((s) => s.name.isNotEmpty).toList();
 
-        if (query.trim().isEmpty) return allSchools;
-
-        final lowerQuery = query.toLowerCase();
-        return allSchools.where((s) {
-          final matchName = s.name.toLowerCase().contains(lowerQuery);
-          final matchShort = s.shortName?.toLowerCase().contains(lowerQuery) ?? false;
-          return matchName || matchShort;
-        }).toList();
+        return allSchools;
       }
     } catch (e) {
       return [];

@@ -35,11 +35,11 @@ class ApiConstants {
   //Academic Endpoints
   // Academic service (StudyDocs Academic microservice)
   // Web/iOS: use localhost; Android emulator: use 10.0.2.2
-  static const String academicBaseUrl = 'http://172.16.17.80:8080/api/v1'; // Base trùng với chính để dùng chung Dio
-  static const String academicUniversitiesFilter = '/academics/universities/filter';
-  static const String academicSubjectsFilter = '/academics/subjects/filter';
-  static const String academicUniversities = '/academics/universities';
-  static const String academicSubjects = '/academics/subjects';
+  static const String academicBaseUrl = 'http://172.16.17.80:8080/api/v1/academics/';
+  static const String academicUniversitiesFilter = 'universities/filter';
+  static const String academicSubjectsFilter = 'subjects/filter';
+  static const String academicUniversities = 'universities';
+  static const String academicSubjects = 'subjects';
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);

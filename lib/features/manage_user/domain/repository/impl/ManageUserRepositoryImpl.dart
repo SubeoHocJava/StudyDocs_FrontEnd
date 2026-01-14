@@ -1,17 +1,17 @@
 import 'dart:async';
 
-import 'package:studydocs/data/datasource/user_datasource.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/data/model/user.dart';
 import '../../../../../core/network/dio_client.dart';
 import '../manage_user_repository.dart';
 
 class ManageUserRepositoryImpl extends ManageUserRepository {
-  late final UserDataSource userDataSource;
+  late final UserRemoteDataSource userRemoteDataSource;
 
   /// Constructor rỗng
   ManageUserRepositoryImpl() {
-    userDataSource = UserDataSourceImpl(
+    userRemoteDataSource = UserDataSourceImpl(
       dioClient: DioClient(),
     );
   }
@@ -23,7 +23,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   Future<bool> addUser(String userID) async {
     try {
       // Kiểm tra xem user đã tồn tại chưa
-      final existsResponse = await userDataSource.isUserExists(userID);
+      final existsResponse = await userRemoteDataSource.isUserExists(userID);
       
       if (existsResponse.statusCode == 200 && existsResponse.data == true) {
         return false; // User đã tồn tại
@@ -44,7 +44,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   @override
   Future<bool> deleteUser(String userID) async {
     try {
-      final response = await userDataSource.deleteUser(userID);
+      final response = await userRemoteDataSource.deleteUser(userID);
       
       if (response.statusCode == 200) {
         return true;
@@ -72,7 +72,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
         school: user.school,
       );
 
-      final response = await userDataSource.updateUser(updateRequest);
+      final response = await userRemoteDataSource.updateUser(updateRequest);
       
       if (response.statusCode == 200) {
         return true;
@@ -95,7 +95,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   ) async {
     try {
       // Lấy tất cả users
-      final response = await userDataSource.getAllUsers();
+      final response = await userRemoteDataSource.getAllUsers();
       
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> usersJson = response.data as List<dynamic>;
@@ -132,7 +132,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   ) async {
     try {
       // Sử dụng getUsersInRange từ datasource
-      final response = await userDataSource.getUsersInRange(frompage, topage);
+      final response = await userRemoteDataSource.getUsersInRange(frompage, topage);
       
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> usersJson = response.data as List<dynamic>;

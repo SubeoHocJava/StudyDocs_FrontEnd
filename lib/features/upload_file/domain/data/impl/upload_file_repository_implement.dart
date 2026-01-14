@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import '../../../../../core/network/dio_client.dart';
-import '../../../../../data/datasource/user_datasource.dart';
+import '../../../../../data/datasource/user_remote_datasource.dart';
 import '../upload_file_repository.dart';
 
 class UpLoadFileRepositoryImpl implements UploadFileRepository {
-  late final UserDataSource userDataSource;
+  late final UserRemoteDataSource userRemoteDataSource;
 
   UpLoadFileRepositoryImpl() {
-    userDataSource = UserDataSourceImpl(
+    userRemoteDataSource = UserDataSourceImpl(
       dioClient: DioClient(),
     );
   }
@@ -37,7 +37,7 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
           filename: fileName,
         ),
       });
-      final response = await userDataSource.uploadImage("a", formData);
+      final response = await userRemoteDataSource.uploadImage("a", formData);
       
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {

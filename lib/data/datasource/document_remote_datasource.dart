@@ -14,11 +14,11 @@ abstract class DocumentRemoteDataSource {
   Future<void> downloadDocument({required String documentId});
   Future<void> toggleLike({required String documentId, required bool isLike});
   Future<void> postComment({required String documentId, required String text});
-  
+
   // Review logic
   Future<void> reactToReview({
     required String documentId,
-    required String reviewId, 
+    required String reviewId,
     required bool isLike,
   });
 }
