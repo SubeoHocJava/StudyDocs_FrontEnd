@@ -10,13 +10,15 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   final TokenStorageService _tokenStorage;
 
   AcademicRemoteDataSourceImpl({Dio? dio, TokenStorageService? tokenStorage})
-    : _dio = dio ?? Dio(
-        BaseOptions(
-          baseUrl: ApiConstants.academicBaseUrl,
-          connectTimeout: ApiConstants.connectTimeout,
-          receiveTimeout: ApiConstants.receiveTimeout,
-        ),
-      ),
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: ApiConstants.academicBaseUrl,
+              connectTimeout: ApiConstants.connectTimeout,
+              receiveTimeout: ApiConstants.receiveTimeout,
+            ),
+          ),
       _tokenStorage = tokenStorage ?? TokenStorageService();
 
   Future<void> _attachAuthHeader() async {
@@ -24,6 +26,23 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
     if (token != null) {
       _dio.options.headers['Authorization'] = token;
     }
+  }
+
+  String _slugify(String input) {
+    // basic slugify: lowercase, replace spaces with hyphen, remove common diacritics
+    var s = input.trim().toLowerCase();
+    // remove Vietnamese diacritics (basic mapping)
+    const withDia =
+        'áàảãạâấầẩẫậăắằẳẵặéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ';
+    const withoutDia =
+        'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+    for (var i = 0; i < withDia.length; i++) {
+      s = s.replaceAll(withDia[i], withoutDia[i]);
+    }
+    s = s.replaceAll(RegExp(r"[^a-z0-9\s-]"), '');
+    s = s.replaceAll(RegExp(r"\s+"), '-');
+    s = s.replaceAll(RegExp(r"-+"), '-');
+    return s;
   }
 
   // --- EXPLORE / SCHOOL LOGIC (Real API) ---
@@ -47,17 +66,22 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
       if (response.statusCode == 200 && response.data != null) {
         final body = response.data;
         // Linh hoạt handle: {data: [...]} hoặc thẳng [...]
-        final List data = (body is Map && body['data'] != null)
-            ? body['data'] as List
-            : (body is List ? body : []);
+        final List data =
+            (body is Map && body['data'] != null)
+                ? body['data'] as List
+                : (body is List ? body : []);
 
-        final allSchools = data.map<SchoolEntity>((e) {
-          return SchoolEntity(
-            id: (e['id'] ?? '').toString(),
-            name: (e['name'] ?? '').toString(),
-            shortName: (e['slug'] ?? e['shortName'] ?? '').toString(),
-          );
-        }).where((s) => s.name.isNotEmpty).toList();
+        final allSchools =
+            data
+                .map<SchoolEntity>((e) {
+                  return SchoolEntity(
+                    id: (e['id'] ?? '').toString(),
+                    name: (e['name'] ?? '').toString(),
+                    shortName: (e['slug'] ?? e['shortName'] ?? '').toString(),
+                  );
+                })
+                .where((s) => s.name.isNotEmpty)
+                .toList();
 
         return allSchools;
       }
@@ -67,47 +91,60 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
     return [];
   }
 
-  // --- SUBJECT LOGIC (Keeping mocks for now) ---
+  // --- SUBJECT LOGIC (Real API) ---
 
   @override
-  Future<List<SubjectEntity>> getSubjectsBySchool(String schoolName) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    final allSubjects = _getMockSubjects();
-    
-    // Simple filter logic for mocks based on hardcoded associations
-    if (schoolName.contains('Nông Lâm')) {
-      return allSubjects.where((s) => s.id == '1').toList();
-    } else if (schoolName.contains('Bách Khoa')) {
-      return allSubjects.where((s) => s.id == '2' || s.id == '3').toList();
+  Future<List<SubjectEntity>> getSubjectsBySchool(String schoolId) async {
+    await _attachAuthHeader();
+    try {
+      // Direct call using University ID
+      final resp = await _dio.get(
+        ApiConstants.academicSubjectsFilter,
+        queryParameters: {'universityId': schoolId, 'isActive': true},
+      );
+      if (resp.statusCode == 200) {
+        final body = resp.data;
+        final data =
+            (body is Map && body['data'] != null)
+                ? body['data'] as List
+                : (body is List ? body : []);
+
+        return data
+            .map<SubjectEntity>(
+              (item) => SubjectEntity(
+                id: (item['id'] ?? '').toString(),
+                name: (item['name'] ?? item['title'] ?? '').toString(),
+              ),
+            )
+            .where((s) => s.id.isNotEmpty && s.name.isNotEmpty)
+            .toList();
+      }
+    } catch (e) {
+      // ignore
     }
+
     return [];
   }
 
   @override
   Future<List<String>> getSchools() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return [
-      'Trường Đại học Nông Lâm Tp. HCM',
-      'Trường Đại học Bách Khoa',
-    ];
-  }
-
-  // --- PRIVATE MOCK HELPERS ---
-
-  List<SubjectEntity> _getMockSubjects() {
-    return [
-      const SubjectEntity(
-        id: '1',
-        name: 'Lập trình .NET',
-      ),
-      const SubjectEntity(
-        id: '2',
-        name: 'Lập trình Mobile Flutter',
-      ),
-      const SubjectEntity(
-        id: '3',
-        name: 'Cấu trúc dữ liệu và giải thuật',
-      ),
-    ];
+    await _attachAuthHeader();
+    try {
+      final resp = await _dio.get(ApiConstants.academicUniversitiesFilter);
+      if (resp.statusCode == 200) {
+        final body = resp.data;
+        final data =
+            (body is Map && body['data'] != null)
+                ? body['data'] as List
+                : (body is List ? body : []);
+        return data
+            .map<String>((e) => (e['name'] ?? '').toString())
+            .where((s) => s.isNotEmpty)
+            .toList();
+      }
+    } catch (e) {
+      // ignore
+    }
+    return [];
   }
 }

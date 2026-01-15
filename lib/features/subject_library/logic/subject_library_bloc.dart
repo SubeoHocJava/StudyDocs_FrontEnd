@@ -5,10 +5,8 @@ import '../domain/ui_model/doc_subject_lib_ui.dart';
 import 'subject_library_event.dart';
 import 'subject_library_state.dart';
 
-
-
-class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> {
-
+class SubjectLibraryBloc
+    extends Bloc<SubjectLibraryEvent, SubjectLibraryState> {
   final SearchDocumentsUseCase searchDocumentsUseCase;
   final LikeDocumentUseCase likeDocumentUseCase;
   final GetCommentsUseCase getCommentsUseCase;
@@ -35,22 +33,20 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
         print(docs.length);
         emit(
           SubjectLibraryLoaded(
-            event.keyword,   // subject
-            docs,            // uploaded_docs
-            docs,            // the_most_liked_docs
-            docs,            // documents
+            event.keyword, // subject
+            docs, // uploaded_docs
+            docs, // the_most_liked_docs
+            docs, // documents
             "Unknown School",
             0,
             docs.length,
-            [],              // subjects - empty khi load by keyword
+            [], // subjects - empty khi load by keyword
           ),
         );
       } catch (e) {
         emit(SubjectLibraryError(e.toString()));
       }
     });
-
-
 
     //
     // 2️⃣ Tìm document (y như load, chỉ khác event loại khác)
@@ -70,15 +66,13 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
             "Unknown School",
             0,
             docs.length,
-            [],              // subjects - empty khi find document
+            [], // subjects - empty khi find document
           ),
         );
       } catch (e) {
         emit(SubjectLibraryError(e.toString()));
       }
     });
-
-
 
     //
     // 3️⃣ Like document
@@ -92,8 +86,6 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
       }
     });
 
-
-
     //
     // 4️⃣ Open comments
     //
@@ -105,8 +97,6 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
       }
     });
 
-
-
     //
     // 5️⃣ Download document
     //
@@ -117,8 +107,6 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
         emit(SubjectLibraryError(e.toString()));
       }
     });
-
-
 
     //
     // 6️⃣ Bookmark document
@@ -139,24 +127,32 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
 
       try {
         // Load subjects và documents song song
-        final subjects = await getSubjectsBySchoolUseCase(event.schoolName);
+        // Pass schoolId instead of schoolName
+        final subjects = await getSubjectsBySchoolUseCase(event.schoolId);
         // Tạm thời: search với empty query để lấy tất cả documents
         // Sau này khi có API: sẽ có method getDocumentsBySchool(schoolName)
         final allDocs = await searchDocumentsUseCase('');
 
         // Filter documents theo school name (nếu institution match)
-        final schoolDocs = allDocs.where((doc) {
-          final institution = doc.institution ?? '';
-          return institution.toLowerCase().contains(event.schoolName.toLowerCase()) ||
-              event.schoolName.toLowerCase().contains(institution.toLowerCase());
-        }).toList();
+        final schoolDocs =
+            allDocs.where((doc) {
+              final institution = doc.institution ?? '';
+              return institution.toLowerCase().contains(
+                    event.schoolName.toLowerCase(),
+                  ) ||
+                  event.schoolName.toLowerCase().contains(
+                    institution.toLowerCase(),
+                  );
+            }).toList();
 
         // Nếu không có documents match, dùng tất cả (cho mock data)
         final docs = schoolDocs.isNotEmpty ? schoolDocs : allDocs;
 
         // Sort documents: most liked first
         final sortedDocs = List.from(docs);
-        sortedDocs.sort((a, b) => (b.likesCount ?? 0).compareTo(a.likesCount ?? 0));
+        sortedDocs.sort(
+          (a, b) => (b.likesCount ?? 0).compareTo(a.likesCount ?? 0),
+        );
 
         // Uploaded docs: sort by createdAt (newest first)
         final uploadedDocs = List.from(docs);
@@ -169,8 +165,12 @@ class SubjectLibraryBloc extends Bloc<SubjectLibraryEvent, SubjectLibraryState> 
         emit(
           SubjectLibraryLoaded(
             '', // subject - không dùng khi load by school
-            List<DocumentSubjectLibUI>.from(uploadedDocs.take(3)), // uploaded_docs - lấy 3 mới nhất
-            List<DocumentSubjectLibUI>.from(sortedDocs.take(3)), // the_most_liked_docs - lấy 3 nhiều like nhất
+            List<DocumentSubjectLibUI>.from(
+              uploadedDocs.take(3),
+            ), // uploaded_docs - lấy 3 mới nhất
+            List<DocumentSubjectLibUI>.from(
+              sortedDocs.take(3),
+            ), // the_most_liked_docs - lấy 3 nhiều like nhất
             docs, // documents - tất cả
             event.schoolName, // school
             0, // num_friends

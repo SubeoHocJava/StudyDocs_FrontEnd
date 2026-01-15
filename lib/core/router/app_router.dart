@@ -232,25 +232,26 @@ GoRouter createAppRouter() {
       ),
       // School subject library route - standalone screen
       GoRoute(
-        path: '/school/:schoolName',
+        path: '/school/:schoolId',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          // GoRouter đã tự động decode path parameters rồi
+          // Get ID from path, Name from query
+          final decodedSchoolId = state.pathParameters['schoolId'] ?? '';
           final decodedSchoolName =
-              state.pathParameters['schoolName'] ?? 'Unknown School';
+              state.uri.queryParameters['name'] ?? 'Unknown School';
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
           final academicDataSource = AcademicRemoteDataSourceImpl();
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
           );
-          final subjectRepo = SubjectRepositoryImpl(
-            remote: academicDataSource,
-          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
@@ -274,7 +275,12 @@ GoRouter createAppRouter() {
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
                       repository: subjectRepo,
                     ),
-                  )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
+                  )..add(
+                    SubjectLibraryLoadBySchool(
+                      decodedSchoolId,
+                      decodedSchoolName,
+                    ),
+                  ),
               child: SubjectLibraryScreen(schoolName: decodedSchoolName),
             ),
           );
@@ -293,16 +299,16 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
           final academicDataSource = AcademicRemoteDataSourceImpl();
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
           );
-          final subjectRepo = SubjectRepositoryImpl(
-            remote: academicDataSource,
-          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
