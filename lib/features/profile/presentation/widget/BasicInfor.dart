@@ -141,10 +141,16 @@ class BasicInfor extends StatelessWidget {
   }
 
   DecorationImage? _buildAvatarImage(String image) {
-    if (image.isEmpty) return null;
+    print("DEBUG: _buildAvatarImage input: '$image'");
+
+    if (image.isEmpty) {
+      print("DEBUG: Image string is empty");
+      return null;
+    }
 
     // Ảnh local (FilePicker)
     if (image.startsWith('/')) {
+      print("DEBUG: Loading Local File: $image");
       return DecorationImage(
         image: FileImage(File(image)),
         fit: BoxFit.cover,
@@ -152,7 +158,8 @@ class BasicInfor extends StatelessWidget {
     }
 
     // Ảnh từ network
-    if (image.startsWith('http')) {
+    if (image.startsWith('http') || image.startsWith('https')) {
+      print("DEBUG: Loading Network Image: $image");
       return DecorationImage(
         image: NetworkImage(image),
         fit: BoxFit.cover,
@@ -160,10 +167,20 @@ class BasicInfor extends StatelessWidget {
     }
 
     // Ảnh asset
+    if (image.startsWith('assets/')) {
+      print("DEBUG: Loading Asset: $image");
+      return DecorationImage(
+        image: AssetImage(image),
+        fit: BoxFit.cover,
+      );
+    }
+    
+    // Fallback cho trường hợp chuỗi không hợp lệ hoặc ID
+    print("DEBUG: Fallback to default avatar (Input was: '$image')");
     return DecorationImage(
-      image: AssetImage(image),
-      fit: BoxFit.cover,
-    );
+        image: AssetImage("assets/icons/avt.png"),
+        fit: BoxFit.cover,
+      );
   }
 
   /// ================= ACTION BUTTON =================

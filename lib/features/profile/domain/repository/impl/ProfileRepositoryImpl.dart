@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/user_datasource.dart';
+import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
@@ -13,11 +14,16 @@ import '../../../../../core/utils/helpers/document_url_helper.dart';
 import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
-  late final UserRemoteDataSource userRemoteDataSource;
+  late final UserDataSource userDataSource;
+
   /// Constructor rỗng
   ProfileRepositoryImpl() {
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: DioClient(),
+    final dioClient = DioClient();
+    userDataSource = UserDataSourceImpl(
+      dioClient: dioClient,
+      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
   }
 
@@ -69,7 +75,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       print('User ID from storage: $storedUserId');
 
       final response =
-      await userRemoteDataSource.getUserById(storedUserId);
+      await userDataSource.getUserById(storedUserId);
 
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
@@ -92,7 +98,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
               ? DateTime.tryParse(userData['dateOfBirth'])
               : null,
           address: userData['address'] ?? '',
-          avatarUrl: thumbUrl ?? '',
+          avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school']??'',
@@ -124,7 +130,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
         school: profile.school,
       );
 
-      final response = await userRemoteDataSource.updateUser(request);
+      final response = await userDataSource.updateUser(request);
       
       // Check if statusCode is in success range (200-299)
       if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
@@ -162,7 +168,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       throw Exception('User not logged in');
     }
 
-   await userRemoteDataSource.uploadImage(
+   await userDataSource.uploadImage(
       storedUserId,
       imagePath,
     );
