@@ -28,7 +28,7 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
         emit(loaded);
       } catch (e) {
-        emit(UploadFileError(e.toString()));
+        emit(UploadFileError(e.toString(), [], "subject", "school"));
       }
     });
 
@@ -84,7 +84,18 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         emit(newState);
 
       } catch (e) {
-        emit(UploadFileError(e.toString()));
+        // Helper to get current values safely
+        final currentFiles = (state is UploadFileLoaded)
+            ? (state as UploadFileLoaded).file
+            : lastLoadedState?.file ?? [];
+        final currentSubject = (state is UploadFileLoaded)
+            ? (state as UploadFileLoaded).subject
+            : lastLoadedState?.subject ?? "subject";
+        final currentSchool = (state is UploadFileLoaded)
+            ? (state as UploadFileLoaded).school
+            : lastLoadedState?.school ?? "school";
+
+        emit(UploadFileError(e.toString(), currentFiles, currentSubject, currentSchool));
       }
     });
 
@@ -165,7 +176,12 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         if (success) {
           emit(UploadFileSuccess());
         } else {
-          emit(UploadFileError("Upload failed"));
+          emit(UploadFileError(
+            "Upload failed",
+            current.file,
+            current.subject,
+            current.school,
+          ));
         }
       }
     });

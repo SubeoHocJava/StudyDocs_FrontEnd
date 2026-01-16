@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 
 import '../model/profile_entity.dart';
+import '../model/document_profile.dart';
 
 abstract class ProfileRepository {
   /// Lấy thông tin profile hiện tại
@@ -21,7 +22,7 @@ abstract class ProfileRepository {
   /// Bỏ theo dõi người dùng
   Future<void> unfollowUser(String userId);
 
-  getDocumentsByUser(String id) {}
+  Future<List<DocumentProfile>> getDocumentsByUser(String id);
 
 
 }

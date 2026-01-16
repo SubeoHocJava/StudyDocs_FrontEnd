@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
+import 'package:studydocs/data/model/api_response.dart';
 import 'package:studydocs/data/model/document_model.dart';
+import 'package:studydocs/data/model/request/upload_document_request.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../document_remote_datasource.dart';
 
@@ -11,6 +17,45 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   DocumentRemoteDataSourceImpl({required this.dioClient});
 
   // --- HOME / LIST LOGIC (Keeping mocks for now) ---
+
+  @override
+  Future<DocumentModel> uploadDocument(
+    UploadDocumentRequest request,
+    File file,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'data': jsonEncode(request.toJson()), // Send metadata as JSON string
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
+      });
+
+      final response = await dioClient.post(
+        ApiConstants.userUploadDocument,
+        data: formData,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 202) {
+        final apiResponse = ApiResponse<DocumentModel>.fromJson(
+          response.data,
+          (json) => DocumentModel.fromJson(json),
+        );
+
+        if (apiResponse.isSuccess && apiResponse.data != null) {
+          return apiResponse.data!;
+        }
+      }
+
+      throw ServerException(
+        'Failed to upload document',
+        response.statusCode ?? 0,
+      );
+    } catch (e) {
+      throw ServerException('Failed to upload document: $e', 0);
+    }
+  }
 
   @override
   Future<List<DocumentModel>> getDocuments() async {
@@ -252,4 +297,121 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       ),
     ];
   }
+
+  @override
+  Future<List<DocumentModel>> deleteDocument(
+    String documentId, {
+    String? traceId,
+  }) async {
+    try {
+      await dioClient.delete(
+        '${ApiConstants.userDeleteDocument}/$documentId',
+      );
+      // Sau khi xóa, trả về danh sách mới của user
+      return getMyDocuments(traceId: traceId);
+    } catch (e) {
+      throw ServerException('Failed to delete document', 0);
+    }
+  }
+
+  @override
+  Future<List<DocumentModel>> getMyDocuments({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myDocuments,
+      queryParameters: {'page': page, 'size': size},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      // Nếu API trả về Page object (có content)
+      if (data is Map<String, dynamic> && data.containsKey('content')) {
+        final List<dynamic> content = data['content'];
+        return content.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+      // Nếu API trả về List trực tiếp
+      if (data is List) {
+        return data.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+    }
+
+    throw ServerException('Failed to fetch my documents', response.statusCode);
+  }
+
+  @override
+  Future<List<DocumentModel>> getMyNewestDocuments({
+    int limit = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myNewestDocuments,
+      queryParameters: {'limit': limit},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+       // Nếu API trả về Page object (có content)
+      if (data is Map<String, dynamic> && data.containsKey('content')) {
+        final List<dynamic> content = data['content'];
+        return content.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+      if (data is List) {
+        return data.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+    }
+
+    throw ServerException(
+      'Failed to fetch newest documents',
+      response.statusCode,
+    );
+  }
+
+  @override
+  Future<List<DocumentModel>> getViewHistory({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myDocumentHistory,
+      queryParameters: {'page': page, 'size': size},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      if (data is Map<String, dynamic> && data.containsKey('content')) {
+        final List<dynamic> content = data['content'];
+        return content.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+      if (data is List) {
+        return data.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+    }
+
+    throw ServerException('Failed to fetch view history', response.statusCode);
+  }
+
+  @override
+  Future<List<DocumentModel>> updateDocument(
+    String documentId,
+    Map<String, dynamic> data, {
+    String? traceId,
+  }) async {
+    try {
+      await dioClient.patch(
+        '${ApiConstants.userUpdateDocument}/$documentId',
+        data: data,
+      );
+      // Sau khi update, trả về danh sách mới của user
+      return getMyDocuments(traceId: traceId);
+    } catch (e) {
+       throw ServerException('Failed to update document', 0);
+    }
+  }
+
+
+
 }
