@@ -118,9 +118,10 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Navigate to Edit
-                    Navigator.push(
+                    // Navigate to Edit and wait for result
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => BlocProvider.value(
@@ -129,6 +130,10 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
                         ),
                       ),
                     );
+                    // Refresh data after returning from Edit
+                    if (context.mounted) {
+                        context.read<DocsBloc>().add(LoadDocDetails(widget.document.id ?? ''));
+                    }
                   },
                   child: const Text("Chỉnh sửa", style: TextStyle(color: Color(0xFF3F51B5))),
                 )
