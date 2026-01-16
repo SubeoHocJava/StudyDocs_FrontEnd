@@ -13,7 +13,18 @@ class DocumentUrlHelper {
       final baseUrl = previewDataView['baseUrl'];
       if (baseUrl != null) {
         // Thay thế placeholder để lấy ảnh trang 1
-        return baseUrl.toString().replaceAll('PAGE_NUMBER_PLACEHOLDER', '1');
+        String url = baseUrl.toString().replaceAll(
+          'PAGE_NUMBER_PLACEHOLDER',
+          '1',
+        );
+
+        // Force JPG format for Cloudinary if missing extension
+        if (!url.toLowerCase().endsWith('.jpg') &&
+            !url.toLowerCase().endsWith('.png') &&
+            !url.toLowerCase().endsWith('.jpeg')) {
+          return "$url.jpg";
+        }
+        return url;
       }
     }
 
@@ -39,7 +50,14 @@ class DocumentUrlHelper {
     final List<String> urls = [];
 
     for (int i = 1; i <= totalPages; i++) {
-      urls.add(baseUrl.replaceAll('PAGE_NUMBER_PLACEHOLDER', '$i'));
+      String url = baseUrl.replaceAll('PAGE_NUMBER_PLACEHOLDER', '$i');
+      // Force JPG format if missing
+      if (!url.toLowerCase().endsWith('.jpg') &&
+          !url.toLowerCase().endsWith('.png') &&
+          !url.toLowerCase().endsWith('.jpeg')) {
+        url = "$url.jpg";
+      }
+      urls.add(url);
     }
     return urls;
   }

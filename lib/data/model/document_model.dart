@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
+import '../../core/utils/helpers/document_url_helper.dart';
 
 class DocumentModel extends Equatable {
   final String id;
@@ -54,29 +55,11 @@ class DocumentModel extends Equatable {
 
   // Parse JSON từ API
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
-    // Xử lý thumbnail từ previewDataView nếu có
-    String? thumbUrl;
-    if (json['previewDataView'] != null && json['previewDataView'] is Map) {
-      final preview = json['previewDataView'];
-      if (preview['baseUrl'] != null) {
-        // Thay thế placeholder bằng trang 1 để làm thumbnail
-        String url = preview['baseUrl'].toString().replaceAll(
-          'PAGE_NUMBER_PLACEHOLDER',
-          '1',
-        );
-        // Force JPG format for Cloudinary to ensure Flutter can decode it
-        // Nếu URL chưa có đuôi ảnh, thêm .jpg
-        if (!url.toLowerCase().endsWith('.jpg') &&
-            !url.toLowerCase().endsWith('.png') &&
-            !url.toLowerCase().endsWith('.jpeg')) {
-          thumbUrl = "$url.jpg";
-        } else {
-          thumbUrl = url;
-        }
-      }
-    } else {
-      thumbUrl = json['thumbnail_url']?.toString();
-    }
+    // Sử dụng Helper để lấy thumbnail handle
+    final thumbUrl = DocumentUrlHelper.getThumbnailUrl(
+      previewDataView: json['previewDataView'],
+      fallbackThumbnailUrl: json['thumbnail_url']?.toString(),
+    );
 
     return DocumentModel(
       id: json['id']?.toString() ?? '',
