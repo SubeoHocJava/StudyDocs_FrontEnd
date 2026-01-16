@@ -1,24 +1,41 @@
-import 'dart:math';
 
-/// Mock datasource for statistics feature
-/// Returns download statistics for the last 5 days
-class StatisticRemoteDataSource {
-  /// Mock API: Returns download count for the last 5 days
-  /// In production, this would call actual backend API
-  Future<List<Map<String, dynamic>>> getDownloadStatistics() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
+import 'package:studydocs/core/network/dio_client.dart';
+import '../statistic_remote_datasource.dart';
 
-    final now = DateTime.now();
-    final random = Random();
+class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
+  final DioClient dioClient;
 
-    // Generate data for last 5 days
-    return List.generate(5, (i) {
-      final date = now.subtract(Duration(days: 4 - i));
-      return {
-        'date': date.toIso8601String(),
-        'count': random.nextInt(5) + 1, // Random 1-5 files per day
-      };
-    });
+  StatisticRemoteDataSourceImpl({required this.dioClient});
+
+  @override
+  Future<int> getTotalDocuments() async {
+    try {
+      final response = await dioClient.get(
+        '/api/v1/documents/admin/stats/documents/total',
+      );
+      if (response.isSuccess && response.data != null) {
+        return response.data as int;
+      }
+      return 0; // Default fallback
+    } catch (e) {
+      // Log or rethrow depending on strategy. Rethrowing for Repo to handle.
+      throw Exception('Failed to fetch total documents: $e');
+    }
+  }
+
+  @override
+  Future<int> getSystemStats(String period) async {
+    try {
+      final response = await dioClient.get(
+        '/api/v1/documents/admin/stats/system',
+        queryParameters: {'period': period},
+      );
+      if (response.isSuccess && response.data != null) {
+        return response.data as int;
+      }
+      return 0; // Default fallback
+    } catch (e) {
+      throw Exception('Failed to fetch system stats for $period: $e');
+    }
   }
 }
