@@ -7,7 +7,6 @@ import 'package:studydocs/data/model/api_response.dart';
 import 'package:studydocs/data/model/auth/request/register_request.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 
-
 class UserDataSourceImpl implements UserRemoteDataSource {
   static UserDataSourceImpl? _instance;
 
@@ -23,18 +22,12 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> registerUser(RegisterRequest request, {String? traceId}) {
-    return dioClient.post(
-      ApiConstants.usersRegister,
-      data: request.toJson(),
-    );
+    return dioClient.post(ApiConstants.usersRegister, data: request.toJson());
   }
 
   @override
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId}) {
-    return dioClient.patch(
-      ApiConstants.usersUpdate,
-      data: request.toJson(),
-    );
+    return dioClient.patch(ApiConstants.usersUpdate, data: request.toJson());
   }
 
   @override
@@ -55,38 +48,33 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> isUserExists(String id, {String? traceId}) {
-    return dioClient.get(
-      ApiConstants.usersExists,
-      queryParameters: {'id': id},
-    );
+    return dioClient.get(ApiConstants.usersExists, queryParameters: {'id': id});
   }
 
   @override
-  Future<ApiResponse> uploadImage(String id, dynamic file, {String? traceId}) async {
+  Future<ApiResponse> uploadImage(
+    String id,
+    dynamic file, {
+    String? traceId,
+  }) async {
     FormData formData;
 
     if (file is PlatformFile) {
       // Check if running on web (bytes) or mobile (path)
       if (file.bytes != null) {
-         formData = FormData.fromMap({
-          "file": MultipartFile.fromBytes(
-            file.bytes!,
-            filename: file.name,
-          ),
+        formData = FormData.fromMap({
+          "file": MultipartFile.fromBytes(file.bytes!, filename: file.name),
         });
       } else if (file.path != null) {
         formData = FormData.fromMap({
-          "file": await MultipartFile.fromFile(
-            file.path!,
-            filename: file.name,
-          ),
+          "file": await MultipartFile.fromFile(file.path!, filename: file.name),
         });
       } else {
-         throw Exception("File is invalid (no bytes or path)");
+        throw Exception("File is invalid (no bytes or path)");
       }
     } else {
-       // Fallback or other file types if necessary
-       throw Exception("Unsupported file type: ${file.runtimeType}");
+      // Fallback or other file types if necessary
+      throw Exception("Unsupported file type: ${file.runtimeType}");
     }
 
     return dioClient.post(
@@ -116,10 +104,10 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> getUsersInRange(
-      int fromIndex,
-      int toIndex, {
-        String? traceId,
-      }) {
+    int fromIndex,
+    int toIndex, {
+    String? traceId,
+  }) {
     return dioClient.get(
       ApiConstants.usersAll,
       // queryParameters: {

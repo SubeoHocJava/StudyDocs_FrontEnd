@@ -10,13 +10,14 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
   DocumentRemoteDataSourceImpl({required this.dioClient});
 
-  // --- HOME / LIST LOGIC (Keeping mocks for now) ---
+  // --- HOME / LIST LOGIC ---
 
   @override
   Future<List<DocumentModel>> getDocuments() async {
-    // Mock logic from HomeRemoteDataSource
-    await Future.delayed(const Duration(milliseconds: 500));
-    return _getMockDocuments();
+    // Default to popular or recent if no specific "all" endpoint is defined for home.
+    // Or return empty list if intended.
+    // For now, let's just use getRecentDocuments() as the default feed.
+    return getRecentDocuments();
   }
 
   @override
@@ -60,7 +61,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<List<DocumentModel>> searchDocuments(String query) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    final allDocs = _getMockDocuments();
+    final allDocs = null;
     final lowerQuery = query.toLowerCase();
     return allDocs.where((doc) {
       return doc.title.toLowerCase().contains(lowerQuery) ||
@@ -207,49 +208,5 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     }
   }
 
-  // --- PRIVATE MOCK HELPERS ---
-
-  List<DocumentModel> _getMockDocuments() {
-    return [
-      DocumentModel(
-        id: '1',
-        title: 'Báo Cáo Đồ Án Chuyên Ngành Trang web bán rượu',
-        description:
-            'Đồ án chuyên ngành về phát triển trang web bán rượu sử dụng công nghệ .NET',
-        author: 'Lý Tuấn Dũng, Nguyễn Văn Hảo',
-        authorId: 'author1',
-        category: 'Lập trình .NET',
-        institution: 'Trường Đại học Nông Lâm Tp. HCM',
-        pageCount: 19,
-        academicYear: '2024/2025',
-        viewCount: 1250,
-        downloadCount: 320,
-        likesCount: 15,
-        commentsCount: 3,
-        rating: 4.5,
-        createdAt:
-            DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
-        fileType: 'PDF',
-      ),
-      DocumentModel(
-        id: '2',
-        title: 'Bài giảng Lập Trình Mobile Flutter',
-        description: 'Tài liệu hướng dẫn lập trình ứng dụng mobile với Flutter',
-        author: 'Trần Thị B',
-        authorId: 'author2',
-        category: 'Lập trình Mobile',
-        institution: 'Trường Đại học Bách Khoa',
-        pageCount: 45,
-        academicYear: '2024/2025',
-        viewCount: 890,
-        downloadCount: 245,
-        likesCount: 23,
-        commentsCount: 5,
-        rating: 4.8,
-        createdAt:
-            DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
-        fileType: 'PDF',
-      ),
-    ];
-  }
+  // --- PRIVATE MOCK HELPERS --- (Removed)
 }

@@ -21,6 +21,7 @@ class DocumentEntity extends Equatable {
   final DateTime? updatedAt;
   final String? fileUrl;
   final String? fileType;
+  final String? fileId; // Added fileId
 
   const DocumentEntity({
     required this.id,
@@ -42,30 +43,31 @@ class DocumentEntity extends Equatable {
     this.updatedAt,
     this.fileUrl,
     this.fileType,
+    this.fileId,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        description,
-        author,
-        authorId,
-        thumbnailUrl,
-        category,
-        institution,
-        pageCount,
-        academicYear,
-        viewCount,
-        downloadCount,
-        likesCount,
-        commentsCount,
-        rating,
-        createdAt,
-        updatedAt,
-        fileUrl,
-        fileType,
-      ];
+    id,
+    title,
+    description,
+    author,
+    authorId,
+    thumbnailUrl,
+    category,
+    institution,
+    pageCount,
+    academicYear,
+    viewCount,
+    downloadCount,
+    likesCount,
+    commentsCount,
+    rating,
+    createdAt,
+    updatedAt,
+    fileUrl,
+    fileType,
+  ];
 
   // Convert Model → Entity
   static DocumentEntity fromModel(DocumentModel model) {
@@ -85,15 +87,15 @@ class DocumentEntity extends Equatable {
       likesCount: model.likesCount,
       commentsCount: model.commentsCount,
       rating: model.rating,
-      createdAt: model.createdAt != null
-          ? DateTime.tryParse(model.createdAt!)  // Convert String → DateTime
-          : null,
-      updatedAt: model.updatedAt != null
-          ? DateTime.tryParse(model.updatedAt!)
-          : null,
+      createdAt:
+          model.createdAt != null
+              ? DateTime.tryParse(model.createdAt!) // Convert String → DateTime
+              : null,
+      updatedAt:
+          model.updatedAt != null ? DateTime.tryParse(model.updatedAt!) : null,
       fileUrl: model.fileUrl,
       fileType: model.fileType,
+      fileId: model.fileId,
     );
   }
 }
-

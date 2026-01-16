@@ -1,21 +1,30 @@
 import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
+import 'package:studydocs/data/datasource/asset_remote_datasource.dart'; // ✅ Import Asset
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/home_repository.dart';
+import 'package:studydocs/data/model/document_model.dart';
+import 'package:studydocs/core/utils/helpers/document_url_helper.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   final DocumentRemoteDataSource remoteDataSource;
-  final AcademicRemoteDataSource academicDataSource;  // ✅ New dependency
+  final AcademicRemoteDataSource academicDataSource;
+  final AssetRemoteDataSource assetDataSource; // ✅ New dependency
 
   HomeRepositoryImpl({
     required this.remoteDataSource,
-    required this.academicDataSource,  // ✅ Inject Academic DataSource
+    required this.academicDataSource,
+    required this.assetDataSource, // ✅ Inject
   });
 
   @override
   Future<List<DocumentEntity>> getDocuments() async {
     try {
-      final models = await remoteDataSource.getDocuments();
+      var models = await remoteDataSource.getDocuments();
+
+      // Enrich with assets (thumbnails)
+      models = await _enrichWithAssets(models);
+
       return models.map((model) => DocumentEntity.fromModel(model)).toList();
     } catch (e) {
       throw Exception('Repository: Failed to get documents - $e');
@@ -26,20 +35,30 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<List<DocumentEntity>> getPopularDocuments() async {
     try {
       // 1. Fetch documents với IDs từ API
-      final documents = await remoteDataSource.getPopularDocuments();
+      var documents = await remoteDataSource.getPopularDocuments();
+
+      // 1b. Enrich with assets (thumbnails)
+      documents = await _enrichWithAssets(documents);
 
       // 2. Extract unique university IDs và subject IDs
-      final universityIds = documents
-          .where((doc) => doc.universityId != null && doc.universityId!.isNotEmpty)
-          .map((doc) => doc.universityId!)
-          .toSet()
-          .toList();
+      final universityIds =
+          documents
+              .where(
+                (doc) =>
+                    doc.universityId != null && doc.universityId!.isNotEmpty,
+              )
+              .map((doc) => doc.universityId!)
+              .toSet()
+              .toList();
 
-      final subjectIds = documents
-          .where((doc) => doc.subjectId != null && doc.subjectId!.isNotEmpty)
-          .map((doc) => doc.subjectId!)
-          .toSet()
-          .toList();
+      final subjectIds =
+          documents
+              .where(
+                (doc) => doc.subjectId != null && doc.subjectId!.isNotEmpty,
+              )
+              .map((doc) => doc.subjectId!)
+              .toSet()
+              .toList();
 
       // 3. Batch fetch universities và subjects (parallel)
       final results = await Future.wait([
@@ -52,20 +71,26 @@ class HomeRepositoryImpl implements HomeRepository {
 
       // 4. Map documents → entities với tên đầy đủ
       return documents.map((doc) {
-        final institutionName = doc.universityId != null
-            ? universityMap[doc.universityId!] ?? doc.institution ?? 'Unknown University'
-            : doc.institution ?? 'Unknown University';
+        final institutionName =
+            doc.universityId != null
+                ? universityMap[doc.universityId!] ??
+                    doc.institution ??
+                    'Unknown University'
+                : doc.institution ?? 'Unknown University';
 
-        final categoryName = doc.subjectId != null
-            ? subjectMap[doc.subjectId!] ?? doc.category ?? 'Unknown Subject'
-            : doc.category ?? 'Unknown Subject';
+        final categoryName =
+            doc.subjectId != null
+                ? subjectMap[doc.subjectId!] ??
+                    doc.category ??
+                    'Unknown Subject'
+                : doc.category ?? 'Unknown Subject';
 
         return DocumentEntity(
           id: doc.id,
           title: doc.title,
           description: doc.description ?? '',
-          institution: institutionName,     //  Tên đầy đủ từ Academic API
-          category: categoryName,           //  Tên đầy đủ từ Academic API
+          institution: institutionName, //  Tên đầy đủ từ Academic API
+          category: categoryName, //  Tên đầy đủ từ Academic API
           academicYear: doc.createdAt ?? '',
           viewCount: doc.viewCount,
           downloadCount: doc.downloadCount,
@@ -84,19 +109,29 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<List<DocumentEntity>> getRecentDocuments() async {
     try {
       //  Apply orchestration pattern tương tự Popular Documents
-      final documents = await remoteDataSource.getRecentDocuments();
+      var documents = await remoteDataSource.getRecentDocuments();
 
-      final universityIds = documents
-          .where((doc) => doc.universityId != null && doc.universityId!.isNotEmpty)
-          .map((doc) => doc.universityId!)
-          .toSet()
-          .toList();
+      // Enrich with assets (thumbnails)
+      documents = await _enrichWithAssets(documents);
 
-      final subjectIds = documents
-          .where((doc) => doc.subjectId != null && doc.subjectId!.isNotEmpty)
-          .map((doc) => doc.subjectId!)
-          .toSet()
-          .toList();
+      final universityIds =
+          documents
+              .where(
+                (doc) =>
+                    doc.universityId != null && doc.universityId!.isNotEmpty,
+              )
+              .map((doc) => doc.universityId!)
+              .toSet()
+              .toList();
+
+      final subjectIds =
+          documents
+              .where(
+                (doc) => doc.subjectId != null && doc.subjectId!.isNotEmpty,
+              )
+              .map((doc) => doc.subjectId!)
+              .toSet()
+              .toList();
 
       final results = await Future.wait([
         _fetchUniversitiesByIds(universityIds),
@@ -107,13 +142,19 @@ class HomeRepositoryImpl implements HomeRepository {
       final subjectMap = results[1] as Map<String, String>;
 
       return documents.map((doc) {
-        final institutionName = doc.universityId != null
-            ? universityMap[doc.universityId!] ?? doc.institution ?? 'Unknown University'
-            : doc.institution ?? 'Unknown University';
+        final institutionName =
+            doc.universityId != null
+                ? universityMap[doc.universityId!] ??
+                    doc.institution ??
+                    'Unknown University'
+                : doc.institution ?? 'Unknown University';
 
-        final categoryName = doc.subjectId != null
-            ? subjectMap[doc.subjectId!] ?? doc.category ?? 'Unknown Subject'
-            : doc.category ?? 'Unknown Subject';
+        final categoryName =
+            doc.subjectId != null
+                ? subjectMap[doc.subjectId!] ??
+                    doc.category ??
+                    'Unknown Subject'
+                : doc.category ?? 'Unknown Subject';
 
         return DocumentEntity(
           id: doc.id,
@@ -138,11 +179,43 @@ class HomeRepositoryImpl implements HomeRepository {
   @override
   Future<List<DocumentEntity>> searchDocuments(String query) async {
     try {
-      final models = await remoteDataSource.searchDocuments(query);
+      var models = await remoteDataSource.searchDocuments(query);
+      models = await _enrichWithAssets(models);
       return models.map((model) => DocumentEntity.fromModel(model)).toList();
     } catch (e) {
       throw Exception('Repository: Failed to search documents - $e');
     }
+  }
+
+  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /// 🔧 HELPER METHODS - Assets Enrichment
+  /// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  /// Enrich document list with thumbnails from Asset Service if missing
+  Future<List<DocumentModel>> _enrichWithAssets(
+    List<DocumentModel> docs,
+  ) async {
+    // Run in parallel for performance
+    final futures = docs.map((doc) async {
+      // Logic: If thumbnail is missing AND we have a fileId -> fetch asset info
+      if ((doc.thumbnailUrl == null || doc.thumbnailUrl!.isEmpty) &&
+          doc.fileId != null &&
+          doc.fileId!.isNotEmpty) {
+        try {
+          final asset = await assetDataSource.getAssetById(doc.fileId!);
+          final previewUrls = asset.previewUrls;
+          if (previewUrls.isNotEmpty) {
+            // Found a preview URL, update the document model
+            return doc.copyWith(thumbnailUrl: previewUrls.first);
+          }
+        } catch (_) {
+          // Keep original doc on error
+        }
+      }
+      return doc;
+    });
+
+    return Future.wait(futures);
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
