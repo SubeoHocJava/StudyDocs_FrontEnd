@@ -11,11 +11,9 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
 
   UpLoadFileRepositoryImpl() {
     final dioClient = DioClient();
-    userDataSource = UserDataSourceImpl(
+    userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
       assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
-    userRemoteDataSource = UserDataSourceImpl(
-      dioClient: DioClient(),
     );
   }
 
@@ -42,7 +40,7 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
           filename: fileName,
         ),
       });
-      final response = await userDataSource.uploadImage("a", formData);
+      final response = await userRemoteDataSource.uploadImage("a", formData);
       
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
