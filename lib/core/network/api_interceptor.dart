@@ -27,6 +27,8 @@ class ApiInterceptor extends QueuedInterceptor {
       ApiConstants.authLoginLocal,
       ApiConstants.authLoginGoogle,
       ApiConstants.authRegister,
+      ApiConstants.authForgotPasswordRequest, //  Public
+      ApiConstants.authForgotPasswordConfirm, //  Public
       '/internal', //  Cho phép tất cả các API internal đi xuyên
     ];
 
