@@ -1,19 +1,22 @@
 import 'dart:async';
 
-import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/data/model/user.dart';
+import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
+import '../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
 import '../manage_user_repository.dart';
 
 class ManageUserRepositoryImpl extends ManageUserRepository {
-  late final UserRemoteDataSource userRemoteDataSource;
+  late final UserDataSourceImpl userDataSource;
 
   /// Constructor rỗng
   ManageUserRepositoryImpl() {
-    userRemoteDataSource = UserDataSourceImpl(
-      dioClient: DioClient(),
+    final dioClient = DioClient();
+    userDataSource = UserDataSourceImpl(
+      dioClient: dioClient,
     );
+    assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient);
   }
 
   // =============================
@@ -23,7 +26,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   Future<bool> addUser(String userID) async {
     try {
       // Kiểm tra xem user đã tồn tại chưa
-      final existsResponse = await userRemoteDataSource.isUserExists(userID);
+      final existsResponse = await userDataSource.isUserExists(userID);
       
       if (existsResponse.statusCode == 200 && existsResponse.data == true) {
         return false; // User đã tồn tại
@@ -44,7 +47,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   @override
   Future<bool> deleteUser(String userID) async {
     try {
-      final response = await userRemoteDataSource.deleteUser(userID);
+      final response = await userDataSource.deleteUser(userID);
       
       if (response.statusCode == 200) {
         return true;
@@ -72,7 +75,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
         school: user.school,
       );
 
-      final response = await userRemoteDataSource.updateUser(updateRequest);
+      final response = await userDataSource.updateUser(updateRequest);
       
       if (response.statusCode == 200) {
         return true;
@@ -95,7 +98,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   ) async {
     try {
       // Lấy tất cả users
-      final response = await userRemoteDataSource.getAllUsers();
+      final response = await userDataSource.getAllUsers();
       
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> usersJson = response.data as List<dynamic>;
@@ -132,7 +135,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   ) async {
     try {
       // Sử dụng getUsersInRange từ datasource
-      final response = await userRemoteDataSource.getUsersInRange(frompage, topage);
+      final response = await userDataSource.getUsersInRange(frompage, topage);
       
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> usersJson = response.data as List<dynamic>;

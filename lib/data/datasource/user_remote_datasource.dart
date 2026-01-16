@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/data/model/api_response.dart';
 
 import '../../core/constants/api_constants.dart';
@@ -25,13 +26,23 @@ class UserDataSourceImpl implements UserRemoteDataSource {
   static UserDataSourceImpl? _instance;
 
   final DioClient dioClient;
+  final AssetRemoteDataSource assetRemoteDataSource;
 
   /// Private constructor
-  UserDataSourceImpl._({required this.dioClient});
+  UserDataSourceImpl._({
+    required this.dioClient,
+    required this.assetRemoteDataSource,
+  });
 
   /// Singleton factory
-  factory UserDataSourceImpl({required DioClient dioClient}) {
-    return _instance ??= UserDataSourceImpl._(dioClient: dioClient);
+  factory UserDataSourceImpl({
+    required DioClient dioClient,
+    required AssetRemoteDataSource assetRemoteDataSource,
+  }) {
+    return _instance ??= UserDataSourceImpl._(
+      dioClient: dioClient,
+      assetRemoteDataSource: assetRemoteDataSource,
+    );
   }
 
   @override
@@ -51,11 +62,39 @@ class UserDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<ApiResponse> getUserById(String id, {String? traceId}) {
-    return dioClient.get(
+  Future<ApiResponse> getUserById(String id, {String? traceId}) async {
+    final response = await dioClient.get(
       ApiConstants.usersGetById,
       queryParameters: {'id': id},
     );
+
+    if (response.isSuccess && response.data != null) {
+      final userData = response.data as Map<String, dynamic>;
+      
+      // Backend returns ID in 'avatarUrl' field mostly
+      String? currentAvatar = userData['avatarUrl'] as String?;
+      
+      // Use 'avatarId' if available, otherwise check 'avatarUrl' (if it's not a URL)
+      String? avatarId = userData['avatarId'] as String?;
+      
+      if (avatarId == null && currentAvatar != null && !currentAvatar.startsWith('http') && !currentAvatar.startsWith('/')) {
+         avatarId = currentAvatar;
+      }
+
+      if (avatarId != null && avatarId.isNotEmpty) {
+        try {
+          final asset = await assetRemoteDataSource.getAssetById(avatarId);
+          if (asset.previewUrls.isNotEmpty) {
+            userData['avatarUrl'] = asset.previewUrls.first;
+          }
+        } catch (e) {
+          // Ignore asset fetch error to not block user fetch
+          print("Failed to fetch avatar: $e");
+        }
+      }
+    }
+
+    return response;
   }
 
   @override

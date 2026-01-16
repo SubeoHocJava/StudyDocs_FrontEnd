@@ -4,9 +4,10 @@ import '../repository/profile_repository.dart';
 
 class GetProfileUseCase {
   final ProfileRepository repository;
+
   GetProfileUseCase(this.repository);
 
-  Future<ProfileEntity> call(int userId) {
-    return repository.getProfile(userId);
+  Future<ProfileEntity> call(int userId) async {
+    return await repository.getProfile(userId);
   }
 }

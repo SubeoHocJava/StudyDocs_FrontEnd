@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 
+import '../../../../../data/datasource/impl/asset_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
 import '../../../../../data/datasource/user_remote_datasource.dart';
 import '../upload_file_repository.dart';
@@ -9,8 +10,10 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
 
   UpLoadFileRepositoryImpl() {
+    final dioClient = DioClient();
     userRemoteDataSource = UserDataSourceImpl(
-      dioClient: DioClient(),
+      dioClient: dioClient,
+      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
   }
 

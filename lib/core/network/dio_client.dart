@@ -69,6 +69,20 @@ class DioClient {
     }
   }
 
+  Future<ApiResponse<dynamic>> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return fromResponse<dynamic>(
+        await _dio.put(path, data: data, queryParameters: queryParameters),
+      );
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<ApiResponse<dynamic>> patch(
     String path, {
     dynamic data,
