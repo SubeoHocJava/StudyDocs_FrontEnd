@@ -3,9 +3,9 @@ class ApiConstants {
   // Web/iOS: dùng localhost
   // Android Emulator: dùng 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8081/api/v1';
-  static const String baseUrl = 'http://172.16.17.80:8080/api/v1';
-  static const String documentServiceUrl = 'http://172.16.17.86:8085/api/v1'; // Use localhost for Web
-  static const String reviewServiceUrl = 'http://172.16.17.86:8086/api/v1';   // Use localhost for Web
+  static const String baseUrl = 'http://192.168.1.244:8080/api/v1';
+  static const String documentServiceUrl = 'http://192.168.1.250:8085/api/v1'; // Use localhost for Web
+  static const String reviewServiceUrl = 'http://192.168.1.250:8086/api/v1';   // Use localhost for Web
   // Auth Endpoints
   static const String authLoginLocal = '/auth/login/local';
   static const String authLoginGoogle = '/auth/login/provider/google';

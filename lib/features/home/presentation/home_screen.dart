@@ -15,6 +15,7 @@ import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import '../../docs/presentation/screen/test_document_render_screen.dart' as test_screen;
 
 // Adapter to use DocumentEntity with the reused ListDocument widget
 class HomeDocumentAdapter extends DocumentUiList {
@@ -183,6 +184,21 @@ class _HomePageState extends State<HomePage> {
                 onSearchChanged: _handleSearch,
                 onMicTap: _toggleListening,
                 height: 200,
+              ),
+
+              // Temporary Test Button
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                     Navigator.of(context).push(
+                       MaterialPageRoute(builder: (_) => const test_screen.TestRenderScreen()),
+                     );
+                  },
+                  icon: const Icon(Icons.bug_report),
+                  label: const Text("Test Cloudinary Render"),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+                ),
               ),
 
               const SizedBox(height: 24),

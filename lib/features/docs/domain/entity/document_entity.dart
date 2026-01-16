@@ -17,6 +17,9 @@ class DocumentEntity {
   final String? currentUserReaction; // Added for Review Service integration
   final List<String> previewUrls;
 
+  final String? subjectId; // Added subjectId
+  final String? universityId; // Added universityId
+
   DocumentEntity({
     this.id,
     required this.title,
@@ -35,6 +38,8 @@ class DocumentEntity {
     this.fileId,
     this.currentUserReaction,
     required this.previewUrls,
+    this.subjectId,
+    this.universityId,
   });
 
   DocumentEntity copyWith({
@@ -54,6 +59,8 @@ class DocumentEntity {
     String? fileId,
     String? currentUserReaction,
     List<String>? previewUrls,
+    String? subjectId,
+    String? universityId,
   }) {
     return DocumentEntity(
       id: this.id, // ID should not change typically in copyWith, or use id ?? this.id if we add it to arguments. But currently it's not in arguments, so preserve this.id
@@ -73,6 +80,8 @@ class DocumentEntity {
       fileId: fileId ?? this.fileId,
       currentUserReaction: currentUserReaction ?? this.currentUserReaction,
       previewUrls: previewUrls ?? this.previewUrls,
+      subjectId: subjectId ?? this.subjectId,
+      universityId: universityId ?? this.universityId,
     );
   }
 }

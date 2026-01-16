@@ -16,9 +16,15 @@ class DocumentModel extends DocumentEntity {
     required super.fileSize,
     required super.downloadUrl,
     required super.previewUrls,
-    super.fileId, // Fixed: use super parameter for optional field
-    super.currentUserReaction, required super.description,
-  });
+    super.fileId,
+    super.currentUserReaction, 
+    required super.description,
+    String? subjectId, // Explicitly declare argument
+    String? universityId, // Explicitly declare argument
+  }) : super(
+         subjectId: subjectId,
+         universityId: universityId,
+       );
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
     return DocumentModel(
@@ -36,11 +42,16 @@ class DocumentModel extends DocumentEntity {
       fileSize: json['fileSize'] != null ? formatBytes(json['fileSize'], 2) : "Unknown", // Backend might not return size
       // downloadUrl is no longer directly in DocumentResponse.
       // FE must use fileId to fetch it.
-      downloadUrl: json['downloadUrl'] ?? '',
-      fileId: json['fileId'], // Map fileId
+      subjectId: json['subjectId']?.toString(),
+      universityId: json['universityId']?.toString(),
+      // Use backend URL if available, else construct fallback if fileId exists
+      downloadUrl: json['downloadUrl'] ?? (json['fileId'] != null 
+          ? 'http://172.16.17.86:8081/api/v1/files/${json['fileId']}' // Assuming Gateway/UploadService path
+          : ''),
+      fileId: json['fileId'],
       currentUserReaction: json['currentUserReaction'], 
       previewUrls: parsePreviews(json),
-      description: json['description'] ?? '', 
+      description: json['description'] ?? '',
     );
   }
 
@@ -69,11 +80,44 @@ class DocumentModel extends DocumentEntity {
 
       if (baseUrl != null && key != null && totalPages > 0) {
         return List.generate(totalPages, (index) {
-          return baseUrl.replaceFirst(key, '${index + 1}');
+          String url = baseUrl.replaceFirst(key, '${index + 1}');
+           // Remove .pdf if present
+          if (url.endsWith('.pdf')) {
+            url = url.substring(0, url.length - 4);
+          }
+           // Force .jpg extension so Cloudinary converts PDF page to Image
+          if (!url.endsWith('.jpg')) {
+            url += '.jpg';
+          }
+          return url;
+        });
+      }
+      
+      // Handle the specific case where key might be implicit or just replacing 'PAGE_NUMBER_PLACEHOLDER'
+      if (baseUrl != null && totalPages > 0 && baseUrl.contains('PAGE_NUMBER_PLACEHOLDER')) {
+         return List.generate(totalPages, (index) {
+          String url = baseUrl.replaceFirst('PAGE_NUMBER_PLACEHOLDER', '${index + 1}');
+          if (url.endsWith('.pdf')) {
+            url = url.substring(0, url.length - 4);
+          }
+          if (!url.endsWith('.jpg')) {
+            url += '.jpg';
+          }
+          return url;
         });
       }
     }
     
+    // Fallback: Cloudinary (if fileId exists)
+    // URL format: https://res.cloudinary.com/<cloud_name>/image/upload/<fileId>.jpg
+    // Note: 'dnk892k4r' is a placeholder/guessed cloud name. 
+    // If your cloud name is different, please update it here or in a config file.
+    if (json['fileId'] != null) {
+      final fileId = json['fileId'].toString();
+      // Assuming PDF preview for page 1 (pg_1)
+      return ['https://res.cloudinary.com/dnk892k4r/image/upload/pg_1/$fileId.jpg']; 
+    }
+
     // Fallback to old list if exists
     if (json['previewUrls'] != null && json['previewUrls'] is List) {
       return List<String>.from(json['previewUrls']);
