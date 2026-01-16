@@ -68,3 +68,18 @@ class UploadDocEvent extends DocsManagementEvent {
   @override
   List<Object?> get props => [file, metadata];
 }
+
+class LoadManagementDocDetail extends DocsManagementEvent {
+  final String docId;
+  const LoadManagementDocDetail(this.docId);
+  @override
+  List<Object?> get props => [docId];
+}
+
+class PostManagementComment extends DocsManagementEvent {
+  final String docId;
+  final String content;
+  const PostManagementComment(this.docId, this.content);
+  @override
+  List<Object?> get props => [docId, content];
+}

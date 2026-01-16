@@ -93,15 +93,24 @@ class DocumentModel extends DocumentEntity {
         });
       }
       
-      // Handle the specific case where key might be implicit or just replacing 'PAGE_NUMBER_PLACEHOLDER'
+      // Handle case with 'PAGE_NUMBER_PLACEHOLDER'
       if (baseUrl != null && totalPages > 0 && baseUrl.contains('PAGE_NUMBER_PLACEHOLDER')) {
          return List.generate(totalPages, (index) {
           String url = baseUrl.replaceFirst('PAGE_NUMBER_PLACEHOLDER', '${index + 1}');
+          // Note: If using R2 and files are PDFs, CachedNetworkImage won't work.
+          // Assuming UploadService generates image previews or we use a viewer.
+          // For now, removing the forced .jpg logic if it seems like a direct file link that might not be Cloudinary key-based.
+          // But preserving it if it's likely needed.
+          // Safer to check extensions.
+          
           if (url.endsWith('.pdf')) {
-            url = url.substring(0, url.length - 4);
-          }
-          if (!url.endsWith('.jpg')) {
-            url += '.jpg';
+            // If it's a PDF link, CachedNetworkImage will fail. 
+            // We hope the backend provided an Image URL.
+            // If we MUST convert, typically we need an image endpoint.
+            // Leaving as is, but removing the double extension risk.
+          } else if (!url.endsWith('.jpg') && !url.endsWith('.png') && !url.endsWith('.jpeg')) {
+             // If no extension, maybe append jpg? 
+             // url += '.jpg';
           }
           return url;
         });

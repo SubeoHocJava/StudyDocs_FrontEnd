@@ -73,7 +73,7 @@ class _TestRenderScreenState extends State<TestRenderScreen> {
              TextField(
               controller: _cloudNameController,
               decoration: const InputDecoration(labelText: "Cloud Name (if needed for fallback)", border: OutlineInputBorder()),
-              onChanged: (_) => _parseDocument(), // Re-parse if this changes logic
+              onChanged: (_) => _parseDocument(), 
             ),
              const SizedBox(height: 10),
              TextField(
@@ -83,71 +83,82 @@ class _TestRenderScreenState extends State<TestRenderScreen> {
             ),
 
             const SizedBox(height: 20),
-            const SizedBox(height: 20),
-            _buildSectionTitle("Resulting URLs (Loop Check)"),
-            _buildInfoRow("Download URL", document.downloadUrl),
-            const SizedBox(height: 8),
-            const Text("Generated Preview URLs:", style: TextStyle(fontWeight: FontWeight.bold)),
-            if (document.previewUrls.isEmpty)
-              const Text("No URLs generated", style: TextStyle(color: Colors.red))
-            else
-              ...document.previewUrls.asMap().entries.map((entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: SelectableText("Page ${entry.key + 1}: ${entry.value}", style: const TextStyle(fontSize: 12)),
-              )),
-
-            const SizedBox(height: 20),
-            _buildSectionTitle("Actions"),
-            if (document.downloadUrl.isNotEmpty)
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    final uri = Uri.parse(document.downloadUrl);
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Could not launch $uri")));
-                    }
-                  },
-                  icon: const Icon(Icons.download),
-                  label: const Text("Download File"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  ),
-                ),
-              )
-            else
-               const Text("No Download URL available", style: TextStyle(color: Colors.red)),
-
-            const SizedBox(height: 20),
-            _buildSectionTitle("Preview Render (Page 1)"),
+            _buildSectionTitle("UI Simulation (DocsDetailScreen Logic)"),
+            
+            // SIMULATED UI
             Container(
-              height: 400,
-              width: double.infinity,
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-              child: previewUrl.isNotEmpty 
-              ? CachedNetworkImage(
-                imageUrl: previewUrl,
-                fit: BoxFit.contain,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error, color: Colors.red, size: 50),
-                    const SizedBox(height: 8),
-                    Text("Failed to load:\n$url", textAlign: TextAlign.center),
-                  ],
-                ),
-              )
-              : const Center(child: Text("No Preview URL to render")),
+              decoration: BoxDecoration(border: Border.all(color: Colors.purple, width: 2), borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                   const Text("Render Area", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                   const SizedBox(height: 10),
+                   
+                   // PDF VIEWER SIMULATOR
+                   SizedBox(
+                      height: 400,
+                      child: PageView.builder(
+                        // Logic from DocsDetailScreen
+                        itemCount: _isExpanded ? document.previewUrls.length : (document.previewUrls.isNotEmpty ? 1 : 0),
+                        physics: _isExpanded ? null : const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: CachedNetworkImage(
+                                imageUrl: document.previewUrls[index],
+                                fit: BoxFit.contain,
+                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) => const Center(child: Icon(Icons.error, size: 50, color: Colors.red)),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                   ),
+                   
+                   const SizedBox(height: 16),
+                   
+                   // SEE MORE BUTTON SIMULATOR
+                   if (!_isExpanded)
+                     OutlinedButton.icon(
+                       onPressed: () {
+                         setState(() {
+                           _isExpanded = true;
+                         });
+                       },
+                       icon: const Icon(Icons.expand_more),
+                       label: const Text("Xem thêm chi tiết & Bình luận (Simulated)"),
+                     ),
+                     
+                   // EXPANDED CONTENT SIMULATOR
+                   if (_isExpanded) ...[
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      const Text("Bình luận (Visible only when expanded)", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Container(height: 100, color: Colors.grey.shade200, child: const Center(child: Text("[Comments Section Placeholder]"))),
+                   ]
+                ],
+              ),
             ),
+            
+            const SizedBox(height: 20),
+            _buildSectionTitle("Debug Info"),
+             _buildInfoRow("Mock Total Pages", document.pages.toString()),
+             _buildInfoRow("Generated URLs Check", ""),
+             ...document.previewUrls.take(3).map((u) => SelectableText("- $u", style: const TextStyle(fontSize: 10))),
           ],
         ),
       ),
     );
   }
+  
+  bool _isExpanded = false; // Added state logic
 
   Widget _buildSectionTitle(String title) {
     return Padding(

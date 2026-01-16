@@ -5,6 +5,7 @@ import '../../logic/docs_management_bloc.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../../logic/docs_management_event.dart';
+import '../../../docs/presentation/widgets/document_preview_widget.dart';
 
 class DocsEditScreen extends StatefulWidget {
   final DocumentEntity? document; // Null if creating new
@@ -92,29 +93,17 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               if (isEditing) ...[
-                 Text(widget.document!.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                 const SizedBox(height: 8),
-                 Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Row(
-                        children:[
-                            const Icon(Icons.description, color: Colors.grey),
-                            const SizedBox(width: 8),
-                             Expanded(child: Text(widget.document!.title, style: const TextStyle(color: Colors.grey)))
-                        ]
-                    )
-                ),
-               ] else ...[
-                  _buildTextField("Tên tài liệu", _titleController),
-                 const SizedBox(height: 16),
-                 _buildTextField("Mô tả", _descriptionController, maxLines: 3),
-                 const SizedBox(height: 16),
-                  GestureDetector(
+              // TITLE - Always allowed to edit
+              _buildTextField("Tên tài liệu", _titleController),
+              const SizedBox(height: 16),
+              
+              // DESCRIPTION - Always allowed to edit
+              _buildTextField("Mô tả", _descriptionController, maxLines: 3),
+              const SizedBox(height: 16),
+
+              // FILE PICKER - Only for New Documents
+              if (!isEditing) ...[
+                 GestureDetector(
                    onTap: _pickFile,
                    behavior: HitTestBehavior.opaque,
                    child: Container(
@@ -132,18 +121,34 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
                      ),
                    ),
                  ),
+                 const SizedBox(height: 24),
+              ],
+
+              // SCHOOL / SUBJECT - Only for New Documents (Hidden/Read-only in Edit)
+               if (!isEditing) ...[
+                   _buildLabel("Trường học"),
+                   _buildTextField("Trường học", _schoolController, icon: Icons.school),
+                   const SizedBox(height: 16),
+                   
+                   _buildLabel("Môn học"),
+                   _buildTextField("Môn học", _subjectController, icon: Icons.folder),
+                   const SizedBox(height: 16),
+               ] else ...[
+                   // Optional: Show them as read-only info if needed, or keep hidden as per request "chỉ cho chỉnh sửa..."
+                   // _buildLabel("Trường học (Không thể chỉnh sửa)"),
+                   // Container(padding: EdgeInsets.all(12), child: Text(widget.document?.school ?? "", style: TextStyle(color: Colors.grey))),
+                   // SizedBox(height: 16),
                ],
-
-               const SizedBox(height: 24),
                
-               _buildLabel("Trường học"),
-               _buildTextField("Trường học", _schoolController, icon: Icons.school),
-               
-               const SizedBox(height: 16),
-               _buildLabel("Môn học"),
-               _buildTextField("Môn học", _subjectController, icon: Icons.folder),
+               if (isEditing && widget.document != null)
+                 Padding(
+                   padding: const EdgeInsets.only(bottom: 24.0),
+                   child: DocumentPreviewWidget(
+                     previewUrls: widget.document!.previewUrls,
+                   ),
+                 ),
 
-                const SizedBox(height: 16),
+                // SCHOOL YEAR - Always allowed to edit
                _buildLabel("Năm học"),
                _buildTextField("Năm học (VD: 2023-2024)", _yearController, icon: Icons.calendar_today),
 
@@ -154,10 +159,14 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
                         onPressed: () {
                              if (isEditing) {
                                  final updatedDoc = widget.document!.copyWith(
-                                     title: _titleController.text, // Allow title edit too
+                                     title: _titleController.text,
                                      description: _descriptionController.text,
-                                     school: _schoolController.text,
-                                     course: _subjectController.text,
+                                     // Fields hidden from UI, keep existing or default?
+                                     // User asked to remove them, but backend might need them.
+                                     // Keep existing if editing, or default if not changed.
+                                     // Since controllers are gone, we use existing entity value.
+                                     school: widget.document!.school, 
+                                     course: widget.document!.course,
                                      year: _yearController.text,
                                  );
                                  context.read<DocsManagementBloc>().add(UpdateDocEvent(widget.document!.id!, updatedDoc));

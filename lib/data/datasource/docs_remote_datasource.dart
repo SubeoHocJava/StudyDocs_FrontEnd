@@ -26,7 +26,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> getPublicDocuments({int page = 0, int size = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}/internal/documents',
+      '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}',
       queryParameters: {'page': page, 'size': size},
     );
     // Handle Page<DocumentResponse>
@@ -41,27 +41,39 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> getNewestDocuments({int limit = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}/internal/documents/newest',
+      '${ApiConstants.documentServiceUrl}${ApiConstants.recentDocuments}',
       queryParameters: {'limit': limit},
     );
     final data = response.data;
-    return (data as List).map((json) => DocumentModel.fromJson(json)).toList();
+    if (data is Map && data.containsKey('data')) {
+       // ApiResponse wrapper?
+       return (data['data'] as List).map((json) => DocumentModel.fromJson(json)).toList();
+    } else if (data is List) {
+       return data.map((json) => DocumentModel.fromJson(json)).toList();
+    }
+    // Fallback if wrapped in ApiResponse
+    return [];
   }
 
   @override
   Future<List<DocumentEntity>> getMostLikedDocuments({int limit = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}/internal/documents/most-liked',
+      '${ApiConstants.documentServiceUrl}${ApiConstants.popularDocuments}',
       queryParameters: {'limit': limit},
     );
     final data = response.data;
-    return (data as List).map((json) => DocumentModel.fromJson(json)).toList();
+     if (data is Map && data.containsKey('data')) {
+       return (data['data'] as List).map((json) => DocumentModel.fromJson(json)).toList();
+    } else if (data is List) {
+       return data.map((json) => DocumentModel.fromJson(json)).toList();
+    }
+    return [];
   }
 
   @override
   Future<DocumentEntity> getDocumentById(String id) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}/internal/documents/$id',
+      '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}/$id',
     );
     final doc = DocumentModel.fromJson(response.data);
     

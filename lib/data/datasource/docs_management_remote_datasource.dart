@@ -49,7 +49,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   Future<List<DocumentEntity>> getAllDocuments() async {
     try {
       final response = await dioClient.get(
-        '${ApiConstants.documentServiceUrl}/internal/documents', // internal API
+        '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}', // Use public API
       );
       final data = response.data; 
       // Assuming structure is similar to Page/List

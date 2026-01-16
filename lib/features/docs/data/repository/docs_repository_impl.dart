@@ -24,25 +24,28 @@ class DocsRepositoryImpl implements DocsRepository {
 
   @override
   Future<DocumentEntity> getDocumentById(String id) async {
+    // Execute fetches in parallel, but handle errors individually
     final results = await Future.wait([
       dataSource.getDocumentById(id),
-      dataSource.getDocumentStats(id),
-      dataSource.getMyDocumentReaction(id),
-      dataSource.getReviewsByDocumentId(id),
+      dataSource.getDocumentStats(id).catchError((_) => <String, dynamic>{}),
+      dataSource.getMyDocumentReaction(id).catchError((_) => null),
+      dataSource.getReviewsByDocumentId(id).catchError((_) => <CommentEntity>[]),
     ]);
 
     final doc = results[0] as DocumentEntity;
     final stats = results[1] as Map<String, dynamic>;
-    final reaction = results[2] as String?; // Could be null
+    final reaction = results[2] as String?; 
     final reviews = results[3] as List<CommentEntity>;
 
+    // Enrich document (school/subject name)
     final enrichedDoc = await _enrichDocument(doc);
 
     return enrichedDoc.copyWith(
       likes: (stats['likeCount'] as num?)?.toInt() ?? 0,
       dislikes: (stats['dislikeCount'] as num?)?.toInt() ?? 0,
       currentUserReaction: reaction,
-      comments: reviews, description: '',
+      comments: reviews,
+      description: doc.description, // Ensure description isn't wiped out
     );
   }
 
