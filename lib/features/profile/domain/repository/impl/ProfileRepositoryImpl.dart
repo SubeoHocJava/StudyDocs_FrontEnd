@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
@@ -8,11 +9,11 @@ import 'package:studydocs/features/profile/domain/repository/profile_repository.
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
 import '../../../../../core/network/dio_client.dart';
+import '../../../../../core/utils/helpers/document_url_helper.dart';
 import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
-
   /// Constructor rỗng
   ProfileRepositoryImpl() {
     userRemoteDataSource = UserDataSourceImpl(
@@ -75,6 +76,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           response.data != null) {
 
         final userData = response.data;
+        final thumbUrl = DocumentUrlHelper.getThumbnailUrl(
+          previewDataView: userData['avatarUrl'],
+          fallbackThumbnailUrl: userData['avatarUrl']?.toString(),
+        );
 
         return ProfileEntity(
           id: userData['id']?.toString() ?? '',
@@ -87,7 +92,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
               ? DateTime.tryParse(userData['dateOfBirth'])
               : null,
           address: userData['address'] ?? '',
-          avatarUrl: userData['avatarUrl'] ?? '',
+          avatarUrl: thumbUrl ?? '',
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school']??'',
