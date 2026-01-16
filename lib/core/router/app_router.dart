@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
@@ -44,6 +45,9 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_bloc.da
     show createStatisticBloc;
 import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.dart';
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
+import 'package:studydocs/features/docs/logic/docs_page.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
@@ -71,6 +75,7 @@ class AppRoutes {
 
   // statistic & subject library
   static const String statistic = '/statistic';
+  static const String documentDetail = '/document/:id';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -232,16 +237,28 @@ GoRouter createAppRouter() {
       ),
       // School subject library route - standalone screen
       GoRoute(
-        path: '/school/:schoolName',
+        path: '/school/:schoolId',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          // GoRouter đã tự động decode path parameters rồi
+          // Get ID from path, Name from query
+          final decodedSchoolId = state.pathParameters['schoolId'] ?? '';
           final decodedSchoolName =
-              state.pathParameters['schoolName'] ?? 'Unknown School';
+              state.uri.queryParameters['name'] ?? 'Unknown School';
+
+          // Create DataSources
+          final dioClient = context.read<DioClient>();
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
+          final academicDataSource = AcademicRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
 
           // Create repositories
-          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
-          final subjectRepo = SubjectRepositoryImpl();
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
+            documentDataSource: documentDataSource,
+          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
@@ -265,7 +282,12 @@ GoRouter createAppRouter() {
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
                       repository: subjectRepo,
                     ),
-                  )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
+                  )..add(
+                    SubjectLibraryLoadBySchool(
+                      decodedSchoolId,
+                      decodedSchoolName,
+                    ),
+                  ),
               child: SubjectLibraryScreen(schoolName: decodedSchoolName),
             ),
           );
@@ -282,9 +304,20 @@ GoRouter createAppRouter() {
           final decodedSubjectName =
               state.pathParameters['subjectName'] ?? 'Unknown Subject';
 
+          // Create DataSources
+          final dioClient = context.read<DioClient>();
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
+          final academicDataSource = AcademicRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
+
           // Create repositories
-          final subjectLibraryRepo = SubjectLibraryRepositoryImpl();
-          final subjectRepo = SubjectRepositoryImpl();
+          final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
+            documentDataSource: documentDataSource,
+          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
@@ -377,21 +410,17 @@ GoRouter createAppRouter() {
         redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final dioClient = DioClient();
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: dioClient),
+            dataSource: DocsManagementRemoteDataSourceImpl(),
           );
           return BlocProvider(
             create:
                 (context) => DocsManagementBloc(
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
-                  getAllDocsUseCase: GetAllDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
-                  deleteAdminDocUseCase: DeleteAdminDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
-                  uploadDocUseCase: UploadDocUseCase(repository),
                 ),
-            child: const DocsManagementScreen(isAdminMode: true),
+            child: const DocsManagementScreen(),
           );
         },
       ),
@@ -409,11 +438,11 @@ GoRouter createAppRouter() {
       ),
       // Document Detail Route
       GoRoute(
-        path: '/document/:id',
+        path: AppRoutes.documentDetail,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final documentId = state.pathParameters['id'] ?? '';
-          return DocsPage(documentId: documentId);
+          final docId = state.pathParameters['id'] ?? '';
+          return DocsPage(documentId: docId);
         },
       ),
     ],

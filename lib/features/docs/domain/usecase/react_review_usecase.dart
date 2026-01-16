@@ -6,10 +6,12 @@ class ReactReviewUseCase {
   ReactReviewUseCase(this.repository);
 
   Future<void> call({
+    required String documentId,
     required String reviewId,
     required bool isLike, // true = like, false = dislike
   }) async {
     await repository.reactToReview(
+      documentId: documentId,
       reviewId: reviewId,
       isLike: isLike,
     );

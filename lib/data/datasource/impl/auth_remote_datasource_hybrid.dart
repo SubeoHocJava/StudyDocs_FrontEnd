@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:studydocs/data/model/auth/request/login_request.dart' show LoginRequest;
+import 'package:studydocs/data/model/auth/request/register_request.dart' show RegisterRequest;
 
-import '../../core/network/dio_client.dart';
-import 'auth_remote_datasource.dart';
+import '../../../core/network/dio_client.dart';
+import '../auth_remote_datasource.dart';
 import 'auth_remote_datasource_impl.dart';
-import '../model/auth/request/login_request.dart';
-import '../model/auth/request/register_request.dart';
+import '../../model/auth/response/token_data.dart';
+import '../../model/auth/response/user_me_response.dart';
 
 /// Datasource "hybrid":
 /// - Login/Register: dùng API THẬT
@@ -31,7 +33,7 @@ class AuthRemoteDataSourceHybrid implements AuthRemoteDataSource {
             );
 
   @override
-  Future<String> login({required LoginRequest request}) {
+  Future<TokenData> login({required LoginRequest request}) {
     return _implementation.login(request: request);
   }
 
@@ -41,7 +43,7 @@ class AuthRemoteDataSourceHybrid implements AuthRemoteDataSource {
   }
 
   @override
-  Future<String> loginWithGoogle({String? idToken}) async {
+  Future<TokenData> loginWithGoogle({String? idToken}) async {
     // Nếu chưa có idToken, lấy từ Google Sign In
     String? googleIdToken = idToken;
     
@@ -68,5 +70,10 @@ class AuthRemoteDataSourceHybrid implements AuthRemoteDataSource {
     
     // Gửi idToken lên backend để verify và lấy accessToken/refreshToken
     return _implementation.loginWithGoogle(idToken: googleIdToken);
+  }
+
+  @override
+  Future<UserMeResponse> getMe() {
+    return _implementation.getMe();
   }
 }

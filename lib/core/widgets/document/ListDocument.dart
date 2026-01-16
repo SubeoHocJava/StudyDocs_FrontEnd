@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'model/list_document_ui.dart';
@@ -106,6 +109,8 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
               responsive: responsive,
               widthOverride: responsive.isMobile ? 120 : 150,
               heightOverride: responsive.isMobile ? 120 : 150,
+              imageUrl: widget.document.thumbnailUrl,
+              fileId: widget.document.fileId, // ✅ Pass fileId
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -179,31 +184,52 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 /// =======================
 /// IMAGE
 /// =======================
-class DocumentImage extends StatelessWidget {
+class DocumentImage extends StatefulWidget {
   final ResponsiveHelper responsive;
   final double? widthOverride;
   final double? heightOverride;
+  final String? imageUrl;
+  final String? fileId;
 
   const DocumentImage({
     super.key,
     required this.responsive,
     this.widthOverride,
     this.heightOverride,
+    this.imageUrl,
+    this.fileId,
   });
 
   @override
+  State<DocumentImage> createState() => _DocumentImageState();
+}
+
+class _DocumentImageState extends State<DocumentImage> {
+  String? _fetchedUrl;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Rely on the passed imageUrl or fallback logic handled by CachedNetworkImage/Image.asset
+    // If we need to fetch Asset info, it should be done at Data Layer, not here to avoid performance issues.
+
     final double width =
-        widthOverride ??
-            (responsive.isMobile ? responsive.widthPercent(35) : 200);
+        widget.widthOverride ??
+        (widget.responsive.isMobile ? widget.responsive.widthPercent(35) : 200);
 
     final double height =
-        heightOverride ??
-            (responsive.isMobile ? responsive.widthPercent(35) : 200);
+        widget.heightOverride ??
+        (widget.responsive.isMobile ? widget.responsive.widthPercent(35) : 200);
+
+    final displayUrl = widget.imageUrl;
 
     return Container(
       width: width,
-      height: height, // 👈 set height
+      height: height,
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.navy, width: 1.2),
         borderRadius: BorderRadius.circular(6),
@@ -214,17 +240,37 @@ class DocumentImage extends StatelessWidget {
           padding: const EdgeInsets.all(1.5),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: Image.asset(
-              "assets/icons/temp_image.jpg",
-              fit: BoxFit.fill, // 👈 quan trọng
-            ),
+            child:
+                displayUrl != null && displayUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                      imageUrl: displayUrl,
+                      fit: BoxFit.fill,
+                      placeholder:
+                          (context, url) => Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.navy.withOpacity(0.5),
+                              ),
+                            ),
+                          ),
+                      errorWidget:
+                          (context, url, error) => Image.asset(
+                            "assets/icons/temp_image.jpg",
+                            fit: BoxFit.fill,
+                          ),
+                    )
+                    : Image.asset(
+                      "assets/icons/temp_image.jpg",
+                      fit: BoxFit.fill,
+                    ),
           ),
         ),
       ),
     );
   }
 }
-
 
 class _ActionIcon extends StatefulWidget {
   final IconData icon;
@@ -405,9 +451,18 @@ class PageDateWidget extends StatelessWidget {
     required this.responsive,
   });
 
+  String _formatDate(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(rawDate);
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    } catch (_) {
+      return rawDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final displayDate = (date ?? '').trim();
     return Wrap(
       spacing: responsive.widthPercent(1.2),
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -430,7 +485,7 @@ class PageDateWidget extends StatelessWidget {
           color: Colors.grey.shade600,
         ),
         Text(
-          displayDate.isEmpty ? '--/--/----' : displayDate,
+          _formatDate(date),
           style: TextStyle(
             fontSize: responsive.fontSize(11),
             color: Colors.black87,

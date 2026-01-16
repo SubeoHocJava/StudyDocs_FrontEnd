@@ -5,6 +5,8 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
   @override
   final String id;
   @override
+  final String? fileId;
+  @override
   final String title;
   @override
   final String category;
@@ -27,6 +29,7 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
 
   const DocumentProfile({
     required this.id,
+    this.fileId,
     required this.title,
     required this.category,
     required this.institution,
@@ -45,6 +48,7 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
   @override
   List<Object?> get props => [
     id,
+    fileId,
     title,
     category,
     institution,
@@ -59,4 +63,32 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
 
   @override
   bool? get stringify => true;
+
+  DocumentProfile copyWith({
+    String? id,
+    String? title,
+    String? category,
+    String? institution,
+    int? pages,
+    String? createdAt,
+    int? likesCount,
+    int? commentsCount,
+    String? thumbnailUrl,
+    bool? isLiked,
+    bool? isSaved,
+  }) {
+    return DocumentProfile(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      category: category ?? this.category,
+      institution: institution ?? this.institution,
+      pages: pages ?? this.pages,
+      createdAt: createdAt ?? this.createdAt,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount ?? this.commentsCount,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      isLiked: isLiked ?? this.isLiked,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
 }

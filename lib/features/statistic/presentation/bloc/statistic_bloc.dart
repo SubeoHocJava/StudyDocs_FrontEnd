@@ -1,57 +1,54 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../data/datasource/statistic_remote_datasource.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../data/datasource/impl/statistic_remote_datasource_impl.dart';
 import '../../domain/repositories/impl/statistic_repository_impl.dart';
 import '../../domain/usecases/get_download_statistics_usecase.dart';
 import 'statistic_event.dart';
 import 'statistic_state.dart';
 
-/// BLoC for managing statistics feature state
-/// Handles loading and refreshing download statistics
 class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
-  final GetDownloadStatisticsUseCase getDownloadStatisticsUseCase;
+  final GetStatisticsUseCase getStatisticsUseCase;
 
-  StatisticBloc({required this.getDownloadStatisticsUseCase})
+  StatisticBloc({required this.getStatisticsUseCase})
       : super(const StatisticInitial()) {
-    on<LoadDownloadStatisticsEvent>(_onLoadDownloadStatistics);
-    on<RefreshDownloadStatisticsEvent>(_onRefreshDownloadStatistics);
+    on<LoadDownloadStatisticsEvent>(_onLoadStatistics);
+    on<RefreshDownloadStatisticsEvent>(_onRefreshStatistics);
   }
 
-  /// Handle loading download statistics
-  Future<void> _onLoadDownloadStatistics(
+  Future<void> _onLoadStatistics(
     LoadDownloadStatisticsEvent event,
     Emitter<StatisticState> emit,
   ) async {
     emit(const StatisticLoading());
 
     try {
-      final statistics = await getDownloadStatisticsUseCase();
+      final statistics = await getStatisticsUseCase();
       emit(StatisticLoaded(statistics: statistics));
     } catch (e) {
-      emit(StatisticError(message: e.toString()));
+      emit(StatisticError(message: 'Lỗi tải thống kê: $e')); // User friendly message
     }
   }
 
-  /// Handle refreshing download statistics
-  Future<void> _onRefreshDownloadStatistics(
+  Future<void> _onRefreshStatistics(
     RefreshDownloadStatisticsEvent event,
     Emitter<StatisticState> emit,
   ) async {
-    // Don't show loading state on refresh (better UX)
     try {
-      final statistics = await getDownloadStatisticsUseCase();
+      final statistics = await getStatisticsUseCase();
       emit(StatisticLoaded(statistics: statistics));
     } catch (e) {
-      emit(StatisticError(message: e.toString()));
+      emit(StatisticError(message: 'Lỗi tải thống kê: $e'));
     }
   }
 }
 
-/// Helper function to create StatisticBloc with all dependencies
-/// Following the same pattern as createHomeBloc()
+// Temporary Factory for DI (until main.dart refactor)
 StatisticBloc createStatisticBloc() {
-  final remoteDataSource = StatisticRemoteDataSource();
+  final dioClient = DioClient(); // Assuming DioClient is a singleton or safe to invoke
+  final remoteDataSource = StatisticRemoteDataSourceImpl(dioClient: dioClient);
   final repository = StatisticRepositoryImpl(remoteDataSource: remoteDataSource);
-  final useCase = GetDownloadStatisticsUseCase(repository: repository);
+  final useCase = GetStatisticsUseCase(repository: repository);
 
-  return StatisticBloc(getDownloadStatisticsUseCase: useCase);
+  return StatisticBloc(getStatisticsUseCase: useCase);
 }
+

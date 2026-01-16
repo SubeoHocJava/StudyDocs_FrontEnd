@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/datasource/explore_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
 import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
 import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
@@ -25,6 +26,9 @@ class HomeDocumentAdapter extends DocumentUiList {
 
   @override
   String get id => entity.id.toString();
+
+  @override
+  String? get fileId => entity.fileId;
 
   @override
   String get title => entity.title;
@@ -229,28 +233,52 @@ class _HomePageState extends State<HomePage> {
               ] else ...[
                 // Default categorized view
                 _buildSectionTitle('Tài liệu phổ biến'),
-                ListDocument(
-                  popularDocs,
-                  onDownload: (doc) {},
-                  onSave: (doc) {},
-                ),
+                if (popularDocs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Chưa có tài liệu phổ biến nào',
+                      style: TextStyle(
+                        color: AppColors.docSmallText,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  )
+                else
+                  ListDocument(
+                    popularDocs,
+                    onDownload: (doc) {},
+                    onSave: (doc) {},
+                  ),
 
                 const SizedBox(height: 24),
 
                 _buildSectionTitle('Tài liệu mới nhất'),
-                ListDocument(
-                  recentDocs,
-                  onDownload: (doc) {},
-                  onSave: (doc) {},
-                ),
+                if (recentDocs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Chưa có tài liệu mới nào',
+                      style: TextStyle(
+                        color: AppColors.docSmallText,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  )
+                else
+                  ListDocument(
+                    recentDocs,
+                    onDownload: (doc) {},
+                    onSave: (doc) {},
+                  ),
               ],
 
-                const SizedBox(height: 24),
-              ],
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
-        );
-      }
+        ),
+      );
+    }
 
     return const SizedBox();
   }
@@ -296,21 +324,24 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-
   }
 
   /// Xây dựng overlay Khám phá với BLoC và mock data.
   Widget _buildExploreOverlay() {
-    final remote = ExploreRemoteDataSource();
-    final repo = ExploreRepositoryImpl(remote: remote);
+    final dioClient = context.read<DioClient>();
+    final academicDataSource = AcademicRemoteDataSourceImpl(
+      dioClient: dioClient,
+    );
+    final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
 
     return BlocProvider(
-      create: (_) => ExploreBloc(
-        searchSchoolsUseCase: searchUseCase,
-        getCurrentSchoolUseCase: getCurrentSchoolUseCase,
-      ),
+      create:
+          (_) => ExploreBloc(
+            searchSchoolsUseCase: searchUseCase,
+            getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+          ),
       child: const ExploreBottomSheet(),
     );
   }

@@ -188,7 +188,9 @@ class MenuDrawer extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      state.school,
+                      (state.school != null && state.school!.isNotEmpty)
+                          ? state.school!
+                          : "Chưa có trường học",
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.secondaryBlue,

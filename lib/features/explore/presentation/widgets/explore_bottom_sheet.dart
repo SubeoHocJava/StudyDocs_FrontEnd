@@ -35,7 +35,8 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
     final bottomNavHeight = 70.0;
     final safeAreaBottom = mediaQuery.padding.bottom;
     final maxHeight = mediaQuery.size.height * 0.45; // Tối đa 45% màn hình
-    final heightWithMargin = mediaQuery.size.height - bottomNavHeight - safeAreaBottom - 20;
+    final heightWithMargin =
+        mediaQuery.size.height - bottomNavHeight - safeAreaBottom - 20;
     final height = heightWithMargin < maxHeight ? heightWithMargin : maxHeight;
 
     return Container(
@@ -105,15 +106,19 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                 TextField(
                   controller: _searchController,
                   onChanged: (value) {
-                    context
-                        .read<ExploreBloc>()
-                        .add(ExploreSearchChanged(value));
+                    context.read<ExploreBloc>().add(
+                      ExploreSearchChanged(value),
+                    );
                   },
                   decoration: InputDecoration(
-                    hintText: state.currentSchool != null
-                        ? 'Tìm kiếm trong ${state.currentSchool!.shortName ?? state.currentSchool!.name}...'
-                        : 'Tìm kiếm trường, khoa, tài liệu...',
-                    prefixIcon: const Icon(Icons.search, color: AppColors.docSmallText),
+                    hintText:
+                        state.currentSchool != null
+                            ? 'Tìm kiếm trong ${state.currentSchool!.shortName ?? state.currentSchool!.name}...'
+                            : 'Tìm kiếm trường, khoa, tài liệu...',
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: AppColors.docSmallText,
+                    ),
                     filled: true,
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
@@ -180,8 +185,11 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
 
                       return ListView.separated(
                         itemCount: state.results.length,
-                        separatorBuilder: (_, __) =>
-                            const Divider(height: 1, color: AppColors.headerBackground),
+                        separatorBuilder:
+                            (_, __) => const Divider(
+                              height: 1,
+                              color: AppColors.headerBackground,
+                            ),
                         itemBuilder: (context, index) {
                           final school = state.results[index];
                           return ListTile(
@@ -198,10 +206,15 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                               ),
                             ),
                             onTap: () {
-                              // Navigate đến trang subject library của trường
-                              final encodedSchoolName = Uri.encodeComponent(school.name);
+                              final goRouter = GoRouter.of(context);
+                              // Pass ID as path param, Name as query param
+                              final encodedSchoolName = Uri.encodeComponent(
+                                school.name,
+                              );
                               Navigator.of(context).pop(); // Đóng bottom sheet
-                              context.push('/school/$encodedSchoolName');
+                              goRouter.push(
+                                '/school/${school.id}?name=$encodedSchoolName',
+                              );
                             },
                           );
                         },
@@ -217,5 +230,3 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
     );
   }
 }
-
-

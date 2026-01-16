@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 
 /// =======================
 /// PROFILE EVENT
@@ -47,6 +48,7 @@ class UpdateProfile extends ProfileEvent {
   final String? gender;
   final DateTime? birthDate;
   final String address;
+  final String? school;
 
   const UpdateProfile({
     required this.userName,
@@ -56,6 +58,7 @@ class UpdateProfile extends ProfileEvent {
     this.gender,
     this.birthDate,
     required this.address,
+    this.school,
   });
 
   @override
@@ -67,22 +70,43 @@ class UpdateProfile extends ProfileEvent {
     gender,
     birthDate,
     address,
+    school,
   ];
 }
 
-/// Update avatar
-class UpdateAvatar extends ProfileEvent {
-  final String imagePath;
 
-  const UpdateAvatar(this.imagePath);
+
+class UpdateAvatar extends ProfileEvent {
+  final PlatformFile file;
+
+  const UpdateAvatar(this.file);
 
   @override
-  List<Object?> get props => [imagePath];
+  List<Object?> get props => [file];
 }
+
 
 /// Verify email
 class VerifyEmail extends ProfileEvent {
   const VerifyEmail();
+}
+
+/// Follow user
+class FollowUser extends ProfileEvent {
+  final String userId;
+  const FollowUser(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+/// Unfollow user
+class UnfollowUser extends ProfileEvent {
+  final String userId;
+  const UnfollowUser(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
 }
 
 /// =======================

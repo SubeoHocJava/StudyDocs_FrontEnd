@@ -1,10 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../domain/model/profile_entity.dart';
+import '../domain/model/document_profile.dart';
 import '../domain/repository/profile_repository.dart';
 import '../domain/usecase/get_profile_usecase.dart';
 import '../domain/usecase/update_avatar_usecase.dart';
 import '../domain/usecase/update_profile_usecase.dart';
 import '../domain/usecase/verify_email_usecase.dart';
+import '../domain/usecase/follow_user_usecase.dart';
+import '../domain/usecase/unfollow_user_usecase.dart';
+
 import 'helper.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
@@ -13,20 +18,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository repository;
 
   ProfileBloc(this.repository) : super(ProfileInitial()) {
-    // ================= USE CASES =================
     final getProfileUseCase = GetProfileUseCase(repository);
     final updateProfileUseCase = UpdateProfileUseCase(repository);
     final updateAvatarUseCase = UpdateAvatarUseCase(repository);
     final verifyEmailUseCase = VerifyEmailUseCase(repository);
+    final followUserUseCase = FollowUserUseCase(repository);
+    final unfollowUserUseCase = UnfollowUserUseCase(repository);
 
     // ================= LOAD PROFILE =================
     on<LoadProfile>((event, emit) async {
       emit(ProfileLoading());
-
       try {
         final profile = await getProfileUseCase(event.userId);
-        final documents =
-        await repository.getDocumentsByUser(profile.id);
+        final documents = await repository.getDocumentsByUser(profile.id);
 
         emit(
           HelperMap.mapProfileToLoaded(
@@ -43,8 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<RefreshProfile>((event, emit) async {
       try {
         final profile = await getProfileUseCase(event.userId);
-        final documents =
-        await repository.getDocumentsByUser(profile.id);
+        final documents = await repository.getDocumentsByUser(profile.id);
 
         emit(
           HelperMap.mapProfileToLoaded(
@@ -62,20 +65,28 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (state is! ProfileLoaded) return;
       final current = state as ProfileLoaded;
 
+      // bật loading
       emit(current.copyWith(isUpdating: true));
 
       try {
-        final updatedProfile = await updateProfileUseCase({
-          'userName': event.userName,
-          'fullName': event.fullName,
-          'school': current.school,
-          'email': event.email,
-          'phoneNumber': event.phoneNumber,
-          'gender': event.gender,
-          'birthDate': event.birthDate?.toIso8601String(),
-          'address': event.address,
-        });
+        final updatedProfile = await updateProfileUseCase(
+          ProfileEntity(
+            id: current.id,
+            username: event.userName,
+            fullName: event.fullName,
+            email: event.email,
+            phoneNumber: event.phoneNumber,
+            gender: event.gender ?? current.gender,
+            birthDate: event.birthDate ?? current.birthDate,
+            address: event.address,
+            avatarUrl: current.avatarUrl,
+            isVerified: current.isVerified,
+            isFollowing: current.isFollowing,
+            school: event.school ?? current.school,
+          ),
+        );
 
+        // ✅ QUAY LẠI PROFILELOADED (KHÔNG EMIT STATE KHÁC)
         emit(
           current.copyWith(
             userName: updatedProfile.username,
@@ -85,14 +96,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             gender: updatedProfile.gender,
             birthDate: updatedProfile.birthDate,
             address: updatedProfile.address,
+            school: updatedProfile.school,
             isUpdating: false,
           ),
         );
-
-        emit(const ProfileUpdateSuccess());
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileUpdateFailure('Cập nhật thất bại: $e'));
+        emit(ProfileError('Cập nhật thất bại: $e'));
       }
     });
 
@@ -104,23 +114,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(current.copyWith(isUpdating: true));
 
       try {
-        final avatarUrl = await updateAvatarUseCase(event.imagePath);
+        final image = await updateAvatarUseCase(event.file);
 
         emit(
           current.copyWith(
-            avatarUrl: avatarUrl,
+            avatarUrl: image.path,
             isUpdating: false,
-          ),
-        );
-
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Cập nhật avatar thành công',
           ),
         );
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileUpdateFailure('Cập nhật avatar thất bại: $e'));
+        emit(ProfileError('Cập nhật avatar thất bại: $e'));
       }
     });
 
@@ -131,85 +135,58 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
         await verifyEmailUseCase();
-
         emit(current.copyWith(isVerified: true));
-
-        emit(
-          const ProfileUpdateSuccess(
-            message: 'Email đã được xác thực',
-          ),
-        );
       } catch (e) {
-        emit(ProfileUpdateFailure('Xác thực email thất bại: $e'));
+        emit(ProfileError('Xác thực email thất bại: $e'));
       }
+    });
+
+    // ================= FOLLOW / UNFOLLOW =================
+    on<FollowUser>((event, emit) async {
+      if (state is! ProfileLoaded) return;
+      final current = state as ProfileLoaded;
+
+      try {
+        await followUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: true));
+      } catch (e) {
+        emit(ProfileError('Theo dõi thất bại: $e'));
+      }
+    });
+
+    on<UnfollowUser>((event, emit) async {
+      if (state is! ProfileLoaded) return;
+      final current = state as ProfileLoaded;
+
+      try {
+        await unfollowUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: false));
+      } catch (e) {
+        emit(ProfileError('Bỏ theo dõi thất bại: $e'));
+      }
+    });
+
+    // ================= DOCUMENT: LIKE =================
+    on<LikeDocumentRequested>((event, emit) {
+      if (state is! ProfileLoaded) return;
+      final current = state as ProfileLoaded;
+
+      final updatedDocuments = current.documents.map((doc) {
+        if (doc.id != event.documentId) return doc;
+
+        return doc.copyWith(
+          likesCount: doc.likesCount + 1,
+          isLiked: true,
+        );
+      }).toList();
+
+      emit(current.copyWith(documents: updatedDocuments));
     });
 
     // ================= DOCUMENT: DOWNLOAD =================
     on<DownloadDocumentRequested>((event, emit) async {
-      if (state is! ProfileLoaded) return;
-      final current = state as ProfileLoaded;
-
-      // TODO: await repository.downloadDocument(event.documentId);
-
-      final updatedDocs = _updateDocument(
-        current,
-        event.documentId as String,
-            (doc) => doc.copyWith(
-          downloadCount: (doc.downloadCount ?? 0) + 1,
-        ),
-      );
-
-      emit(current.copyWith(documents: updatedDocs));
+      // chỉ gọi API, không update state
+      // await repository.downloadDocument(event.documentId);
     });
-
-    // ================= DOCUMENT: SAVE =================
-    on<SaveDocumentRequested>((event, emit) async {
-      if (state is! ProfileLoaded) return;
-
-      // TODO: await repository.saveDocument(event.documentId);
-    });
-
-    // ================= DOCUMENT: LIKE =================
-    on<LikeDocumentRequested>((event, emit) async {
-      if (state is! ProfileLoaded) return;
-      final current = state as ProfileLoaded;
-
-      final updatedDocs = _updateDocument(
-        current,
-        event.documentId as String,
-            (doc) => doc.copyWith(
-          likesCount: (doc.likesCount ?? 0) + 1,
-        ),
-      );
-
-      emit(current.copyWith(documents: updatedDocs));
-    });
-
-    // ================= DOCUMENT: OPEN COMMENT =================
-    on<OpenCommentRequested>((event, emit) {
-      // One-shot event
-      // UI sẽ listen để navigate / show bottom sheet
-    });
-
-    // ================= CLEAR ACTION =================
-    on<ClearProfileActionState>((event, emit) {
-      if (state is ProfileLoaded) {
-        emit(state);
-      }
-    });
-  }
-
-  // ================= HELPER =================
-  List<dynamic> _updateDocument(
-      ProfileLoaded current,
-      String documentId,
-      dynamic Function(dynamic doc) update,
-      ) {
-    return current.documents.map((doc) {
-      if (doc.id == documentId) {
-        return update(doc);
-      }
-      return doc;
-    }).toList();
   }
 }

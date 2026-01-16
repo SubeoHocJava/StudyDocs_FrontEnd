@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/menu.dart';
 
 import '../../core/network/dio_client.dart';
-import '../../data/datasource/auth_remote_datasource_impl.dart';
-import '../../data/datasource/auth_remote_datasource_hybrid.dart';
+import '../../data/datasource/impl/auth_remote_datasource_impl.dart';
+import '../../data/datasource/impl/auth_remote_datasource_hybrid.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';

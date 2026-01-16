@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../services/token_storage_service.dart';
+import '../../../../data/model/auth/response/user_me_response.dart';
 
 /// State cho auth status toàn app
 abstract class AuthStatus extends Equatable {
@@ -80,8 +81,23 @@ class AuthStatusCubit extends Cubit<AuthStatus> {
     }
   }
 
-  /// Gọi sau khi login thành công
-  /// Token + user info đã được lưu bởi datasource, chỉ cần update UI state
+  /// Gọi sau khi login thành công bằng đối tượng UserMeResponse
+  void setAuthenticatedFromUser({
+    required String token,
+    required UserMeResponse user,
+  }) {
+    emit(
+      AuthAuthenticated(
+        token,
+        userId: user.id,
+        username: user.username,
+        displayName: user.displayName,
+        roles: user.roles,
+      ),
+    );
+  }
+
+  /// Gọi sau khi login thành công (giữ nguyên để tương thích)
   void setAuthenticated({
     required String token,
     String role = 'user',

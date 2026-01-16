@@ -114,44 +114,26 @@ class _LoginModalState extends State<LoginModal> {
         BlocListener<LoginBloc, LoginState>(
           listener: (context, state) async {
             if (state is LoginSuccess) {
-              // Xử lý chuỗi mock "token|role"
-              String token = state.token;
-              String role = 'user';
-              if (token.contains('|')) {
-                final parts = token.split('|');
-                token = parts[0];
-                role = parts[1];
-              }
+              // Lấy token và user từ state mới
+              final String token = state.accessToken;
+              final user = state.user;
 
-              // Đọc lại user info từ storage (AuthMockDataSourceImpl đã lưu vào)
-              final tokenStorage = TokenStorageService();
-              final userId = await tokenStorage.getUserId();
-              final username = await tokenStorage.getUsername();
-              final displayName = await tokenStorage.getDisplayName();
-              final roles = await tokenStorage.getRoles();
-
-              // CẬP NHẬT AUTH STATE - Quan trọng để Header update UI
+              // CẬP NHẬT AUTH STATE - Dùng phương thức mới setAuthenticatedFromUser
               if (!context.mounted) return;
-              context.read<AuthStatusCubit>().setAuthenticated(
+              context.read<AuthStatusCubit>().setAuthenticatedFromUser(
                 token: token,
-                role: role,
-                userId: userId ?? '',
-                username: username ?? '',
-                displayName: displayName ?? '',
-                roles: roles,
+                user: user,
               );
 
-              // Nếu token là JWT (Google idToken - bắt đầu bằng "ey"), điều hướng sang màn demo
-              // JWT luôn bắt đầu bằng "eyJ..." (base64 của {"alg":...})
-              // Mock token thì không bắt đầu bằng "ey"
-              if (state.token.startsWith('ey')) {
-                final claims = _tryDecodeJwt(state.token);
+              // Nếu token là JWT (Google idToken), điều hướng sang màn demo
+              if (token.startsWith('ey')) {
+                final claims = _tryDecodeJwt(token);
                 if (claims != null) {
                   final nav = Navigator.of(context, rootNavigator: true);
                   nav.pop(); // đóng modal
                   nav.push(
                     MaterialPageRoute<void>(
-                      builder: (_) => GoogleDebugScreen(idToken: state.token),
+                      builder: (_) => GoogleDebugScreen(idToken: token),
                     ),
                   );
                   return;
