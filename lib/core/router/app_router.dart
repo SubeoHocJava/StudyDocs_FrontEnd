@@ -245,7 +245,7 @@ GoRouter createAppRouter() {
           final documentDataSource = DocumentRemoteDataSourceImpl(
             dioClient: dioClient,
           );
-          final academicDataSource = AcademicRemoteDataSourceImpl();
+          final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
@@ -302,7 +302,7 @@ GoRouter createAppRouter() {
           final documentDataSource = DocumentRemoteDataSourceImpl(
             dioClient: dioClient,
           );
-          final academicDataSource = AcademicRemoteDataSourceImpl();
+          final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(

@@ -286,7 +286,8 @@ class _HomePageState extends State<HomePage> {
 
   /// Xây dựng overlay Khám phá với BLoC và mock data.
   Widget _buildExploreOverlay() {
-    final academicDataSource = AcademicRemoteDataSourceImpl();
+    final dioClient = context.read<DioClient>();
+    final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
     final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);

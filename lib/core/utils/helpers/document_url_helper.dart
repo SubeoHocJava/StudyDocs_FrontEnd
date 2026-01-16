@@ -1,0 +1,46 @@
+class DocumentUrlHelper {
+  /// Lấy URL Thumbnail (Trang 1) từ previewDataView
+  ///
+  /// Logic:
+  /// 1. Kiểm tra previewDataView có tồn tại và có baseUrl không
+  /// 2. Thay thế `PAGE_NUMBER_PLACEHOLDER` bằng '1'
+  /// 3. Nếu không có, trả về fallbackThumbnailUrl hoặc null
+  static String? getThumbnailUrl({
+    required dynamic previewDataView,
+    String? fallbackThumbnailUrl,
+  }) {
+    if (previewDataView != null && previewDataView is Map) {
+      final baseUrl = previewDataView['baseUrl'];
+      if (baseUrl != null) {
+        // Thay thế placeholder để lấy ảnh trang 1
+        return baseUrl.toString().replaceAll('PAGE_NUMBER_PLACEHOLDER', '1');
+      }
+    }
+
+    if (fallbackThumbnailUrl != null && fallbackThumbnailUrl.isNotEmpty) {
+      return fallbackThumbnailUrl;
+    }
+
+    return null;
+  }
+
+  /// Lấy danh sách URL cho tất cả các trang (Dùng cho màn xem chi tiết)
+  static List<String> getPreviewUrls({
+    required dynamic previewDataView,
+    required int totalPages,
+  }) {
+    if (previewDataView == null ||
+        previewDataView is! Map ||
+        previewDataView['baseUrl'] == null) {
+      return [];
+    }
+
+    final String baseUrl = previewDataView['baseUrl'].toString();
+    final List<String> urls = [];
+
+    for (int i = 1; i <= totalPages; i++) {
+      urls.add(baseUrl.replaceAll('PAGE_NUMBER_PLACEHOLDER', '$i'));
+    }
+    return urls;
+  }
+}

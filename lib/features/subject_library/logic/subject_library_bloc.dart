@@ -23,7 +23,7 @@ class SubjectLibraryBloc
     required this.getSubjectsBySchoolUseCase,
   }) : super(SubjectLibraryInitial()) {
     //
-    // 1️⃣ Load document theo keyword
+    // 1️ Load document theo keyword
     //
     on<SubjectLibraryLoadDocumentByKeyWord>((event, emit) async {
       emit(SubjectLibraryLoading());
@@ -49,7 +49,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 2️⃣ Tìm document (y như load, chỉ khác event loại khác)
+    // 2️ Tìm document (y như load, chỉ khác event loại khác)
     //
     on<FindDocument>((event, emit) async {
       emit(SubjectLibraryLoading());
@@ -75,7 +75,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 3️⃣ Like document
+    // 3️ Like document
     //
     on<SubjectLibraryLikeDocument>((event, emit) async {
       try {
@@ -87,7 +87,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 4️⃣ Open comments
+    // 4️ Open comments
     //
     on<SubjectLibraryOpenComments>((event, emit) async {
       try {
@@ -98,7 +98,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 5️⃣ Download document
+    // 5️ Download document
     //
     on<SubjectLibraryDownloadDocument>((event, emit) async {
       try {
@@ -109,7 +109,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 6️⃣ Bookmark document
+    // 6️ Bookmark document
     //
     on<SubjectLibraryBookmarkDocument>((event, emit) async {
       try {
@@ -120,7 +120,7 @@ class SubjectLibraryBloc
     });
 
     //
-    // 7️⃣ Load subjects và documents theo school name
+    // 7️ Load subjects và documents theo school name
     //
     on<SubjectLibraryLoadBySchool>((event, emit) async {
       emit(SubjectLibraryLoading());

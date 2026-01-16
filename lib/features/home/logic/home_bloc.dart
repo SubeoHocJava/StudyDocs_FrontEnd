@@ -1,6 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/impl/home_repository_impl.dart';
 import 'package:studydocs/features/home/domain/usecase/get_documents_usecase.dart';
 import 'package:studydocs/features/home/logic/home_event.dart';
@@ -30,19 +33,45 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(const HomeLoading());
+    
+    // Fetch từng section independently - nếu 1 section fail, các section khác vẫn OK
+    List<DocumentEntity> documents = [];
+    List<DocumentEntity> popularDocuments = [];
+    List<DocumentEntity> recentDocuments = [];
+    
     try {
-      final documents = await getDocumentsUseCase();
-      final popularDocuments = await getPopularDocumentsUseCase();
-      final recentDocuments = await getRecentDocumentsUseCase();
-
-      emit(HomeLoaded(
-        documents: documents,
-        popularDocuments: popularDocuments,
-        recentDocuments: recentDocuments,
-      ));
+      documents = await getDocumentsUseCase();
     } catch (e) {
-      emit(HomeError(e.toString()));
+      if (kDebugMode) {
+        print('Failed to load documents: $e');
+      }
+      // Keep empty list - UI sẽ hiển thị empty state
     }
+    
+    try {
+      popularDocuments = await getPopularDocumentsUseCase();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to load popular documents: $e');
+      }
+      // Keep empty list
+    }
+    
+    try {
+      recentDocuments = await getRecentDocumentsUseCase();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to load recent documents: $e');
+      }
+      // Keep empty list
+    }
+    
+    // Emit state với data có sẵn (có thể 1 số section empty)
+    emit(HomeLoaded(
+      documents: documents,
+      popularDocuments: popularDocuments,
+      recentDocuments: recentDocuments,
+    ));
   }
 
   void _onUpdateSearchQuery(UpdateSearchQueryEvent event, Emitter<HomeState> emit) {
@@ -74,7 +103,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 HomeBloc createHomeBloc() {
   final dioClient = DioClient();
   final remoteDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
-  final repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource);
+  final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);  // ✅ New
+  final repository = HomeRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    academicDataSource: academicDataSource,  //  Inject Academic DataSource
+  );
 
   return HomeBloc(
     getDocumentsUseCase: GetDocumentsUseCase(repository: repository),

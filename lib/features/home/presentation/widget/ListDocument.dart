@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
@@ -387,6 +388,16 @@ class PageDateWidget extends StatelessWidget {
     required this.responsive,
   });
 
+  String _formatDate(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(rawDate);
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    } catch (_) {
+      return rawDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -411,7 +422,7 @@ class PageDateWidget extends StatelessWidget {
           color: Colors.grey.shade600,
         ),
         Text(
-          date!,
+          _formatDate(date),
           style: TextStyle(
             fontSize: responsive.fontSize(11),
             color: Colors.black87,

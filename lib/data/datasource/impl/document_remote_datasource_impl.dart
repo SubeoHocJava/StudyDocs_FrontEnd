@@ -1,6 +1,6 @@
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
-import 'package:studydocs/features/subject_library/domain/ui_model/CommentEntity.dart' hide CommentEntity;
 import 'package:studydocs/data/model/document_model.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../document_remote_datasource.dart';
@@ -21,23 +21,40 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
   @override
   Future<List<DocumentModel>> getPopularDocuments() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final allDocs = _getMockDocuments();
-    allDocs.sort((a, b) => (b.viewCount ?? 0).compareTo(a.viewCount ?? 0));
-    return allDocs.take(5).toList();
+    // REAL API CALL - trả về documents với universityId và subjectId
+    final response = await dioClient.get(
+      ApiConstants.popularDocumentsReal,
+      queryParameters: {'limit': 10},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final List<dynamic> data = response.data;
+      return data.map((json) => DocumentModel.fromJson(json)).toList();
+    }
+
+    throw ServerException(
+      'Failed to fetch popular documents',
+      response.statusCode ?? 0,
+    );
   }
 
   @override
   Future<List<DocumentModel>> getRecentDocuments() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final allDocs = _getMockDocuments();
-    allDocs.sort((a, b) {
-      if (a.createdAt == null && b.createdAt == null) return 0;
-      if (a.createdAt == null) return 1;
-      if (b.createdAt == null) return -1;
-      return b.createdAt!.compareTo(a.createdAt!);
-    });
-    return allDocs.take(5).toList();
+    // ✅ REAL API CALL - tài liệu mới nhất
+    final response = await dioClient.get(
+      ApiConstants.recentDocumentsReal,
+      queryParameters: {'limit': 10},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final List<dynamic> data = response.data;
+      return data.map((json) => DocumentModel.fromJson(json)).toList();
+    }
+
+    throw ServerException(
+      'Failed to fetch recent documents',
+      response.statusCode ?? 0,
+    );
   }
 
   @override
@@ -58,12 +75,16 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   static const String mockDocumentId = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
 
   @override
-  Future<DocumentEntity> getDocumentDetails({required String documentId}) async {
+  Future<DocumentEntity> getDocumentDetails({
+    required String documentId,
+  }) async {
     // DỮ LIỆU TĨNH (do BE không có Document Service)
-    const String cloudUrl = "https://res.cloudinary.com/dzfynkkoc/image/upload/f_jpg,pg_1/rd4commsbz2vbzli4h3z";
+    const String cloudUrl =
+        "https://res.cloudinary.com/dzfynkkoc/image/upload/f_jpg,pg_1/rd4commsbz2vbzli4h3z";
     const int totalPages = 5;
     const String fileName = "DeCuongTieuLuan_TranNhutAnh_22130915_09082025.pdf";
-    const String downloadUrl = "https://res.cloudinary.com/dzfynkkoc/image/upload/fl_attachment/rd4commsbz2vbzli4h3z";
+    const String downloadUrl =
+        "https://res.cloudinary.com/dzfynkkoc/image/upload/fl_attachment/rd4commsbz2vbzli4h3z";
 
     List<String> previewUrls = [];
     for (int i = 1; i <= totalPages; i++) {
@@ -78,9 +99,11 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     try {
       // Sử dụng documentId được truyền vào hoặc fallback mockDocumentId
       final targetId = documentId.isEmpty ? mockDocumentId : documentId;
-      
+
       // 1. Get Stats (Review Service)
-      final statsRes = await dioClient.get('${ApiConstants.reviewBaseUrl}/reviews/document/$targetId/stats');
+      final statsRes = await dioClient.get(
+        '${ApiConstants.reviewBaseUrl}/reviews/document/$targetId/stats',
+      );
       if (statsRes.statusCode == 200 && statsRes.data['data'] != null) {
         final data = statsRes.data['data'];
         likes = data['likeCount'] ?? 0;
@@ -95,16 +118,17 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
       if (reviewsRes.statusCode == 200 && reviewsRes.data['data'] != null) {
         final content = reviewsRes.data['data']['content'] as List;
-        comments = content.map((item) {
-          final userId = item['userId']?.toString() ?? 'Unknown';
-          final shortId = userId.length > 5 ? userId.substring(0, 5) : userId;
-          return CommentEntity(
-            author: "User $shortId",
-            text: item['comment'] ?? "",
-          );
-        }).toList();
+        comments =
+            content.map((item) {
+              final userId = item['userId']?.toString() ?? 'Unknown';
+              final shortId =
+                  userId.length > 5 ? userId.substring(0, 5) : userId;
+              return CommentEntity(
+                author: "User $shortId",
+                text: item['comment'] ?? "",
+              );
+            }).toList();
       }
-
     } catch (e) {
       print("Lỗi khi fetch data từ Review Service: $e");
     }
@@ -136,7 +160,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }
 
   @override
-  Future<void> toggleLike({required String documentId, required bool isLike}) async {
+  Future<void> toggleLike({
+    required String documentId,
+    required bool isLike,
+  }) async {
     final targetId = documentId.isEmpty ? mockDocumentId : documentId;
     try {
       await dioClient.post(
@@ -149,15 +176,15 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }
 
   @override
-  Future<void> postComment({required String documentId, required String text}) async {
+  Future<void> postComment({
+    required String documentId,
+    required String text,
+  }) async {
     final targetId = documentId.isEmpty ? mockDocumentId : documentId;
     try {
       await dioClient.post(
         '${ApiConstants.reviewBaseUrl}/reviews',
-        data: {
-          'documentId': targetId,
-          'comment': text,
-        },
+        data: {'documentId': targetId, 'comment': text},
       );
     } catch (e) {
       rethrow;
@@ -187,7 +214,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       DocumentModel(
         id: '1',
         title: 'Báo Cáo Đồ Án Chuyên Ngành Trang web bán rượu',
-        description: 'Đồ án chuyên ngành về phát triển trang web bán rượu sử dụng công nghệ .NET',
+        description:
+            'Đồ án chuyên ngành về phát triển trang web bán rượu sử dụng công nghệ .NET',
         author: 'Lý Tuấn Dũng, Nguyễn Văn Hảo',
         authorId: 'author1',
         category: 'Lập trình .NET',
@@ -199,7 +227,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         likesCount: 15,
         commentsCount: 3,
         rating: 4.5,
-        createdAt: DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
+        createdAt:
+            DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
         fileType: 'PDF',
       ),
       DocumentModel(
@@ -217,7 +246,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
         likesCount: 23,
         commentsCount: 5,
         rating: 4.8,
-        createdAt: DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
+        createdAt:
+            DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
         fileType: 'PDF',
       ),
     ];
