@@ -20,7 +20,7 @@ class NotificationDataSourceImpl implements NotificationDataSource {
       "limit": 10,
     };
     if (cursor != null) {
-      queryParams['cursor'] = cursor;
+      queryParams['nextCursor'] = cursor;
     }
 
     final apiResponse = await dioClient.get(
