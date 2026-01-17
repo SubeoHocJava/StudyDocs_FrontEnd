@@ -48,6 +48,17 @@ class ApiConstants {
   static const String academicDocumentsFilter = 'academics/documents';
   static const String publicDocumentById = 'documents/public';
 
+  // Follow Endpoints
+  static const String follows = 'follows';
+  static const String followsFollowers = 'follows/followers';
+  static const String followsFollowing = 'follows/following';
+
+  // Statistic Endpoints
+  static const String adminStatsSystem = 'documents/admin/stats/system';
+
+
+
+
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
