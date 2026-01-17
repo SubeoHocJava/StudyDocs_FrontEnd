@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
@@ -408,7 +412,4 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
        throw ServerException('Failed to update document', 0);
     }
   }
-
-
-
 }
