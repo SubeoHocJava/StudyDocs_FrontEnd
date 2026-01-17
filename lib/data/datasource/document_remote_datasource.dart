@@ -21,6 +21,34 @@ abstract class DocumentRemoteDataSource {
     required String reviewId,
     required bool isLike,
   });
+
+  Future<List<DocumentModel>> updateDocument(
+    String documentId,
+    Map<String, dynamic> data, {
+    String? traceId,
+  });
+
+  Future<List<DocumentModel>> deleteDocument(
+    String documentId, {
+    String? traceId,
+  });
+
+  Future<List<DocumentModel>> getMyDocuments({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  });
+
+  Future<List<DocumentModel>> getMyNewestDocuments({
+    int limit = 10,
+    String? traceId,
+  });
+
+  Future<List<DocumentModel>> getViewHistory({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  });
   Future<DocumentModel> getPublicDocumentById(String id); // New: Get by ID for Explorer
 }
 

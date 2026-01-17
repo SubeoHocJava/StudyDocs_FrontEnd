@@ -18,8 +18,6 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
     );
   }
 
-  final String apiUrl = "https://your-api.com/upload";
-
   @override
   Future<bool> uploadDocument({
     required String filePath,
