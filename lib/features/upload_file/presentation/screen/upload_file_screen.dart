@@ -36,12 +36,13 @@ class UploadFileScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Upload thành công!")),
               );
-            //   chuyển đến trang home
+              Navigator.pop(context);
             }
             if (state is UploadFileError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
+              Navigator.pop(context);
             }
           },
           builder: (context, state) {
