@@ -5,10 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/model/api_response.dart';
-import 'package:studydocs/data/model/document_model.dart';
 import 'package:studydocs/data/model/request/upload_document_request.dart';
 
 import '../../core/constants/api_constants.dart';
+import '../../features/docs/data/model/document_model.dart';
 
 /// ===============================
 /// ABSTRACT INTERFACE
