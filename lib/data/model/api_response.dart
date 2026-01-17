@@ -21,8 +21,11 @@ class ApiResponse<T> {
   });
 
   /// Kiểm tra xem response có thành công không
-  /// Success khi errorCode = null và statusCode 2xx
-  bool get isSuccess => errorCode == null && statusCode >= 200 && statusCode < 300;
+  /// Success khi (errorCode = null hoặc 0) và statusCode 2xx
+  bool get isSuccess =>
+      (errorCode == null || errorCode == 0) &&
+      statusCode >= 200 &&
+      statusCode < 300;
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,

@@ -135,4 +135,26 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
 
     throw ServerException('Subject not found', response.statusCode ?? 0);
   }
+  @override
+  Future<List<String>> getDocumentIds({String? universityId, String? subjectId}) async {
+    final queryParams = <String, dynamic>{};
+    if (universityId != null) queryParams['universityId'] = universityId;
+    if (subjectId != null) queryParams['subjectId'] = subjectId;
+
+    final response = await dioClient.get(
+      ApiConstants.academicDocumentsFilter,
+      queryParameters: queryParams,
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      if (data['data'] != null && data['data']['documentIds'] != null) {
+        return List<String>.from(data['data']['documentIds']);
+      }
+      return [];
+    }
+
+    throw ServerException('Failed to fetch document IDs', response.statusCode ?? 0);
+  }
 }
+
