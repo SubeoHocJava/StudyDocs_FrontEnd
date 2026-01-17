@@ -45,7 +45,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<List<FollowModel>> getFollowers(String userId) async {
-    final response = await dioClient.get('${ApiConstants.followsFollowers}/$userId');
+    final response = await dioClient.get('${ApiConstants.follows}/$userId');
 
     if (response.isSuccess && response.data != null) {
       if (response.data is List) {

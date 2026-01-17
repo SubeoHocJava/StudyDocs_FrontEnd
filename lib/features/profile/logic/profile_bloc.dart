@@ -83,6 +83,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             isVerified: current.isVerified,
             isFollowing: current.isFollowing,
             school: event.school ?? current.school,
+            countFollower: 0,
+            countFollowing: 0,
           ),
         );
 
@@ -147,8 +149,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final current = state as ProfileLoaded;
 
       try {
-        await followUserUseCase(event.userId);
-        emit(current.copyWith(isFollowing: true));
+        final newCount = await followUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: true, numFollowMe: newCount));
       } catch (e) {
         emit(ProfileError('Theo dõi thất bại: $e'));
       }
@@ -159,8 +161,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final current = state as ProfileLoaded;
 
       try {
-        await unfollowUserUseCase(event.userId);
-        emit(current.copyWith(isFollowing: false));
+        final newCount = await unfollowUserUseCase(event.userId);
+        emit(current.copyWith(isFollowing: false, numFollowMe: newCount));
       } catch (e) {
         emit(ProfileError('Bỏ theo dõi thất bại: $e'));
       }

@@ -23,6 +23,11 @@ class HelperMap {
       avatarUrl: profile.avatarUrl,
       isVerified: profile.isVerified,
       isFollowing: profile.isFollowing,
+
+      numFollowMe: profile.countFollower,
+      numMeFollow: profile.countFollowing,
+      numMyUpload: profile.countDocument,
+      numMyLikes: profile.countLike,
       documents: documents,
     );
   }
@@ -40,7 +45,12 @@ class HelperMap {
       birthDate: user.dateOfBirth,
       address: user.address,
       avatarUrl: user.avatarUrl,
+
       isVerified: false,
+      countFollower: 0,
+      countFollowing: 0,
+      countDocument: 0,
+      countLike: 0,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../document_remote_datasource.dart';
 
 class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
+  static DocumentRemoteDataSourceImpl? _instance;
   final DioClient dioClient;
 
   DocumentRemoteDataSourceImpl({required this.dioClient});

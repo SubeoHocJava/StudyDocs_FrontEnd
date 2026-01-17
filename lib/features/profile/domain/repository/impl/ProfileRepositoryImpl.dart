@@ -2,7 +2,10 @@
 
 
 import 'package:file_picker/file_picker.dart';
+import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
@@ -19,12 +22,15 @@ import '../../../../../services/token_storage_service.dart';
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
   late final DocumentRemoteDataSource documentDataSource;
+  late final FollowRemoteDataSource followDataSource;
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
       assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
+    followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
+    documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
   }
 
 
@@ -43,7 +49,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
       final response =
       await userRemoteDataSource.getUserById(storedUserId);
-
+      final countFollower = await followDataSource.countFollowers(storedUserId);
+      final countFollowing = await followDataSource.countFollowing(storedUserId);
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {
@@ -66,6 +73,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school']??'',
+          countFollower: countFollower ?? 0,
+          countFollowing: countFollowing ?? 0,
+          countDocument: userData['countDocument'] ?? 0,
+          countLike: userData['countLike'] ?? 0,
         );
       } else {
         throw Exception(
@@ -114,6 +125,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school'] ?? "Chưa nhập thông tin trường",
+          countFollower: profile.countFollower,
+          countFollowing: profile.countFollowing,
+          countDocument: profile.countDocument,
+          countLike: profile.countLike,
         );
       } else {
         throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
@@ -152,25 +167,26 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<void> followUser(String userId) async {
-    try {
-      // TODO: Implement follow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Follow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error following user: $e');
+  Future<int> followUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    await followDataSource.follow(followerId: storedUserId, followingId: followingId);
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override
-  Future<void> unfollowUser(String userId) async {
-    try {
-      // TODO: Implement unfollow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Unfollow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error unfollowing user: $e');
+  Future<int> unfollowUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    await followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override

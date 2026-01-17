@@ -18,6 +18,11 @@ class ProfileEntity extends Equatable {
   final bool isVerified;
   final bool isFollowing;
 
+  final int? countFollower;
+  final int? countFollowing;
+  final int countDocument;
+  final int countLike;
+
   const ProfileEntity({
     required this.id,
     required this.username,
@@ -31,6 +36,10 @@ class ProfileEntity extends Equatable {
     this.school,
     this.isVerified = false,
     this.isFollowing = false,
+    this.countFollower,
+    this.countFollowing,
+    this.countDocument = 0,
+    this.countLike = 0,
   });
 
   /// copyWith cho domain layer
@@ -46,6 +55,10 @@ class ProfileEntity extends Equatable {
     String? school,
     bool? isVerified,
     bool? isFollowing,
+    int? countFollower,
+    int? countFollowing,
+    int? countDocument,
+    int? countLike,
   }) {
     return ProfileEntity(
       id: id,
@@ -60,6 +73,10 @@ class ProfileEntity extends Equatable {
       school: school ?? this.school,
       isVerified: isVerified ?? this.isVerified,
       isFollowing: isFollowing ?? this.isFollowing,
+      countFollower: countFollower ?? this.countFollower,
+      countFollowing: countFollowing ?? this.countFollowing,
+      countDocument: countDocument ?? this.countDocument,
+      countLike: countLike ?? this.countLike,
     );
   }
 
@@ -77,5 +94,9 @@ class ProfileEntity extends Equatable {
     school,
     isVerified,
     isFollowing,
+    countFollower,
+    countFollowing,
+    countDocument,
+    countLike,
   ];
 }

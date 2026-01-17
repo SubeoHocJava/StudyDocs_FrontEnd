@@ -28,7 +28,7 @@ class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
   Future<int> getSystemStats(String period) async {
     try {
       final response = await dioClient.get(
-        ApiConstants.adminStatsSystem,
+        ApiConstants.adminStatsTotalDocuments,
         queryParameters: {'period': period},
       );
       if (response.isSuccess && response.data != null) {
