@@ -16,6 +16,10 @@ class ApiConstants {
   static const String popularDocumentsReal = 'documents/public/most-liked';
   static const String recentDocumentsReal = 'documents/public/newest';
   static const String searchDocuments = 'documents/search';
+  static const String userUploadDocument = 'documents/upload';
+
+  // Notification Endpoints
+  static const String notifications = 'notifications';
 
   // Review Endpoints (Relative to baseUrl)
   static const String reviewBase = 'reviews';

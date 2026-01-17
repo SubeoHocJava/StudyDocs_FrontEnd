@@ -224,5 +224,8 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     
     throw ServerException('Failed to fetch document detail: $id', response.statusCode ?? 0);
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
