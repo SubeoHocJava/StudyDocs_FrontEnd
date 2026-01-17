@@ -17,10 +17,10 @@ abstract class ProfileRepository {
   Future<void> verifyEmail();
 
   /// Theo dõi người dùng
-  Future<void> followUser(String userId);
+  Future<int> followUser(String userId);
 
   /// Bỏ theo dõi người dùng
-  Future<void> unfollowUser(String userId);
+  Future<int> unfollowUser(String userId);
 
   Future<List<DocumentProfile>> getDocumentsByUser(String id);
 

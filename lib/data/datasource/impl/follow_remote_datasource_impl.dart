@@ -15,7 +15,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
   }) async {
     final response = await dioClient.post(
       ApiConstants.follows,
-      data: {
+      data:{
         'followerId': followerId,
         'followingId': followingId,
       },
@@ -45,7 +45,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<List<FollowModel>> getFollowers(String userId) async {
-    final response = await dioClient.get('${ApiConstants.followers}/$userId');
+    final response = await dioClient.get('${ApiConstants.follows}/$userId');
 
     if (response.isSuccess && response.data != null) {
       if (response.data is List) {
@@ -59,7 +59,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<List<FollowModel>> getFollowing(String userId) async {
-    final response = await dioClient.get('${ApiConstants.following}/$userId');
+    final response = await dioClient.get('${ApiConstants.follows}/$userId');
 
     if (response.isSuccess && response.data != null) {
       if (response.data is List) {
@@ -73,7 +73,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<int> countFollowers(String userId) async {
-    final response = await dioClient.get('${ApiConstants.followersCount}/$userId/count');
+    final response = await dioClient.get('${ApiConstants.followsFollowers}/$userId/count');
 
     if (response.isSuccess && response.data != null) {
       final data = response.data;
@@ -85,7 +85,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<int> countFollowing(String userId) async {
-    final response = await dioClient.get('${ApiConstants.followingCount}/$userId/count');
+    final response = await dioClient.get('${ApiConstants.followsFollowing}/$userId/count');
 
     if (response.isSuccess && response.data != null) {
       final data = response.data;
