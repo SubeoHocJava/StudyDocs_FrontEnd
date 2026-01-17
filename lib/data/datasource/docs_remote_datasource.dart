@@ -16,6 +16,8 @@ abstract class DocsRemoteDataSource {
   Future<Map<String, dynamic>> getDocumentStats(String docId);
   Future<String?> getMyDocumentReaction(String docId);
   Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10});
+  Future<List<DocumentEntity>> searchDocuments(String query);
+  Future<void> downloadDocument(String id);
 }
 
 class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
@@ -166,6 +168,29 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     return CommentEntity(
       author: json['userId'] ?? 'User', 
       text: json['comment'] ?? '',
+    );
+  }
+  @override
+  Future<List<DocumentEntity>> searchDocuments(String query) async {
+    final response = await dioClient.get(
+      '${ApiConstants.documentServiceUrl}${ApiConstants.searchDocuments}',
+      queryParameters: {'q': query},
+    );
+    final data = response.data;
+    if (data is List) {
+      return data.map((json) => DocumentModel.fromJson(json)).toList();
+    } else if (data is Map && data.containsKey('content')) {
+      final content = data['content'] as List;
+      return content.map((json) => DocumentModel.fromJson(json)).toList();
+    }
+    return [];
+  }
+
+  @override
+  Future<void> downloadDocument(String id) async {
+    // Basic implementation or placeholder
+    await dioClient.get(
+      '${ApiConstants.documentServiceUrl}/documents/$id/download',
     );
   }
 }

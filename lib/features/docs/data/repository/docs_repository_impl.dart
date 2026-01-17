@@ -56,7 +56,6 @@ class DocsRepositoryImpl implements DocsRepository {
     try {
       // Create Dio instance for Academic Service calls
       // Note: We use a new Dio instance here to avoid modifying the existing dataSource structure.
-      // In a cleaner architecture, this should be in a separate RemoteDataSource.
       final dio = Dio(BaseOptions(
         baseUrl: ApiConstants.academicBaseUrl,
         connectTimeout: const Duration(seconds: 10),
@@ -121,7 +120,6 @@ class DocsRepositoryImpl implements DocsRepository {
   @override
   Future<void> downloadDocument(String id) async {
     // TODO: Implement actual download logic when backend endpoint is ready
-    // For now, we prevent the app from crashing.
     print("Download requested for document: $id. Feature pending backend implementation.");
   }
 

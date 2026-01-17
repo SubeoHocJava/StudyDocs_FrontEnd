@@ -1,20 +1,20 @@
-import 'package:studydocs/data/model/document_model.dart';
+import 'package:studydocs/features/docs/data/model/document_model.dart';
 import '../domain/ui_model/doc_subject_lib_ui.dart';
 
 extension DocumentMapper on DocumentModel {
   DocumentSubjectLibUI toUI() {
     return DocumentSubjectLibUI(
-      id: id,
+      id: id ?? '',
       title: title,
-      category: category ?? 'Không rõ',
-      institution: institution ?? 'Không rõ',
-      pages: pageCount ?? 0,
-      createdAt: createdAt ?? '',
-      likesCount: likesCount ?? 0,
-      commentsCount: commentsCount ?? 0,
-      thumbnailUrl: thumbnailUrl,
-      isLiked: false,
-      isSaved: false,
+      category: this.course,
+      institution: this.school,
+      pages: this.pages, // Correct field
+      createdAt: this.year, // Correct field
+      likesCount: this.likes,
+      commentsCount: this.comments.length,
+      thumbnailUrl: this.previewUrls.isNotEmpty ? this.previewUrls.first : null,
+      isLiked: this.currentUserReaction == 'LIKE',
+      isSaved: this.isSaved,
     );
   }
 }

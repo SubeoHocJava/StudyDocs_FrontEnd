@@ -8,10 +8,9 @@ abstract class DocsEvent extends Equatable {
 }
 
 class LoadDocDetails extends DocsEvent {
-  final String id;
-  const LoadDocDetails(this.id);
+  const LoadDocDetails();
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [];
 }
 
 class ToggleSave extends DocsEvent {}

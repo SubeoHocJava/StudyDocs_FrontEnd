@@ -43,12 +43,13 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
 
     return BlocProvider(
       create: (_) => DocsBloc(
+        documentId: widget.document.id ?? '',
         getDocumentUseCase: GetDocumentUseCase(repository),
         toggleSaveUseCase: ToggleSaveUseCase(repository),
         toggleLikeUseCase: ToggleLikeUseCase(repository),
         postCommentUseCase: PostCommentUseCase(repository),
         reactReviewUseCase: ReactReviewUseCase(repository),
-      )..add(LoadDocDetails(widget.document.id ?? '')),
+      )..add(const LoadDocDetails()),
       child: BlocConsumer<DocsBloc, docs_state.DocsState>(
         listener: (context, state) {
            if (state is docs_state.DocsLoaded) {
@@ -132,7 +133,7 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
                     );
                     // Refresh data after returning from Edit
                     if (context.mounted) {
-                        context.read<DocsBloc>().add(LoadDocDetails(widget.document.id ?? ''));
+                        context.read<DocsBloc>().add(const LoadDocDetails());
                     }
                   },
                   child: const Text("Chỉnh sửa", style: TextStyle(color: Color(0xFF3F51B5))),

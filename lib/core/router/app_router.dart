@@ -47,7 +47,7 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.d
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
 import 'package:studydocs/features/docs/logic/docs_page.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
@@ -247,7 +247,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(
+          final documentDataSource = DocsRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(
@@ -306,7 +306,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(
+          final documentDataSource = DocsRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(
@@ -411,7 +411,7 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(),
+            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: context.read<DioClient>()),
           );
           return BlocProvider(
             create:
@@ -419,6 +419,7 @@ GoRouter createAppRouter() {
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
+                  uploadDocUseCase: UploadDocUseCase(repository),
                 ),
             child: const DocsManagementScreen(),
           );

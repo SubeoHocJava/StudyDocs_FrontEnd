@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/document/model/row_document_ui.dart';
-import 'package:studydocs/data/model/document_model.dart';
+import 'package:studydocs/features/docs/data/model/document_model.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
 import '../../logic/profile_state.dart';

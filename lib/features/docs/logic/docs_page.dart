@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
-import '../domain/repository/impl/docs_repository_impl.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
+import 'package:studydocs/features/docs/data/repository/docs_repository_impl.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
@@ -21,7 +21,7 @@ class DocsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Lấy DioClient từ context
     final dioClient = context.read<DioClient>();
-    final dataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
+    final dataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
     final repository = DocsRepositoryImpl(dataSource: dataSource);
 
     return BlocProvider(

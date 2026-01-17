@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/network/dio_client.dart';
-import '../../features/docs/data/model/document_model.dart';
+import 'package:studydocs/features/docs/data/model/document_model.dart';
 import '../../features/docs/domain/entity/document_entity.dart';
 
 abstract class DocsManagementRemoteDataSource {

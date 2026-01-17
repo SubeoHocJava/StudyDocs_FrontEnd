@@ -6,7 +6,6 @@ class ApiConstants {
   static const String baseUrl = 'http://10.10.3.165:8080/api/v1';
   static const String reviewBaseUrl = 'http://10.10.3.165:8080/api/v1';
 
-  static const String baseUrl = 'http://10.10.3.165:8080/api/v1';
   static const String documentServiceUrl = 'http://10.10.3.165:8080/api/v1'; // Use localhost for Web
   static const String reviewServiceUrl = 'http://10.10.3.165:8080/api/v1';   // Use localhost for Web
   // Auth Endpoints
@@ -15,15 +14,16 @@ class ApiConstants {
   static const String authLogin = '/auth/login';
   static const String authRegister = '/auth/register/local';
   static const String authRefresh = '/auth/refresh'; // Added Refresh Endpoint
-  static const String authForgotPasswordRequest =
-      '/auth/forgot-password/request';
-  static const String authForgotPasswordConfirm =
-      '/auth/forgot-password/confirm';
+  static const String authForgotPasswordRequest = '/auth/forgot-password/request';
+  static const String authForgotPasswordConfirm = '/auth/forgot-password/confirm';
   // Document Endpoints
   static const String documents = '/documents';
+  static const String publicDocument = '/documents'; // Alias for consistency
   static const String popularDocumentsReal =
       '/documents/public/most-liked'; //  Real API
+  static const String popularDocuments = '/documents/public/most-liked';
   static const String recentDocumentsReal = '/documents/public/newest'; //  Real API
+  static const String recentDocuments = '/documents/public/newest';
   static const String searchDocuments = '/documents/search';
 
   // Admin Endpoints
@@ -44,8 +44,7 @@ class ApiConstants {
   static const String uploadDocument = '/';
 
   // Academic Endpoints
-  static const String academicBaseUrl =
-      'http://172.16.17.80:8080/api/v1/academics/';
+  static const String academicBaseUrl ='http://172.16.17.80:8080/api/v1/academics/';
   static const String academicUniversitiesFilter = 'universities/filter';
   static const String academicSubjectsFilter = 'subjects/filter';
   static const String academicUniversities = 'universities';

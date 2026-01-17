@@ -11,7 +11,6 @@ class ReactReviewUseCase {
     required bool isLike, // true = like, false = dislike
   }) async {
     await repository.reactToReview(
-      documentId: documentId,
       reviewId: reviewId,
       isLike: isLike,
     );
