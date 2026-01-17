@@ -50,6 +50,18 @@ class ApiConstants {
   static const String academicUniversityById =
       '/academics/universities/id'; //  New
   static const String academicSubjectById = '/academics/subjects/id'; //  New
+  // =========================
+  // USER DOCUMENT ENDPOINTS
+  // =========================
+
+  /// Base user document path
+  static const String userDocuments = '/documents/user';
+  static const String userUploadDocument = '/documents/user';
+  static const String userUpdateDocument = '/documents/user';
+  static const String userDeleteDocument = '/documents/user';
+  static const String myDocuments = '/documents/user/me';
+  static const String myNewestDocuments = '/documents/user/me/newest';
+  static const String myDocumentHistory = '/documents/user/me/history';
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);

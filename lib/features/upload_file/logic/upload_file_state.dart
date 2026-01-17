@@ -33,11 +33,15 @@ class UploadFileLoaded extends UploadFileState {
 
 class UploadFileError extends UploadFileState {
   final String message;
+  final List<PlatformFile> file;
+  final String subject;
+  final String school;
 
-  const UploadFileError(this.message);
+
+  const UploadFileError(this.message, this.file, this.subject, this.school);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, file, subject, school];
 }
 
 class UploadFileSuccess extends UploadFileState {
