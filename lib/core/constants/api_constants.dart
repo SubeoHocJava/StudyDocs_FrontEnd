@@ -16,15 +16,18 @@ class ApiConstants {
       '/auth/forgot-password/request';
   static const String authForgotPasswordConfirm =
       '/auth/forgot-password/confirm';
+
   // Document Endpoints
   static const String documents = '/documents';
   static const String popularDocumentsReal =
       '/documents/public/most-liked'; //  Real API
-  static const String recentDocumentsReal = '/documents/public/newest'; //  Real API
+  static const String recentDocumentsReal =
+      '/documents/public/newest'; //  Real API
   static const String searchDocuments = '/documents/search';
 
   // Admin Endpoints
-  static const String adminStatsTotalDocuments = '/documents/admin/stats/documents/total';
+  static const String adminStatsTotalDocuments =
+      '/documents/admin/stats/documents/total';
 
   // User Endpoints
   static const String usersAll = '/users/all';
@@ -62,6 +65,13 @@ class ApiConstants {
   static const String myDocuments = '/documents/user/me';
   static const String myNewestDocuments = '/documents/user/me/newest';
   static const String myDocumentHistory = '/documents/user/me/history';
+
+  // Follow URL
+  static const String countFollower = '/followers/{{user2}}/count';
+  static const String countFollowing = '/following/{{user2}}/count';
+  static const String follow = '/follows';
+  static const String unfollow='/follows?followerId={{user1}}&followingId={{user2}}';
+
 
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);
