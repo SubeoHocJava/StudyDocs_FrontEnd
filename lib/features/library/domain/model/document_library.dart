@@ -1,7 +1,7 @@
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/model/row_document_ui.dart';
-import '../../../../data/model/document_model.dart';
+import '../../../../features/docs/data/model/document_model.dart';
 
 class DocumentLibraryUI implements RowDocumentItem, DocumentUiList {
   @override
@@ -66,24 +66,18 @@ class DocumentLibraryUI implements RowDocumentItem, DocumentUiList {
   bool? get stringify => true;
   DocumentLibraryUI _mapToDocumentLibraryUI(DocumentModel model) {
     return DocumentLibraryUI(
-      id: model.id,
+      id: model.id ?? '',
       fileId: model.fileId,
       title: model.title,
-      category:
-      model.category ??
-          model.subjectId ??
-          'Không xác định',
-      institution:
-      model.institution ??
-          model.universityId ??
-          'Không xác định',
-      pages: model.pageCount ?? 0,
-      createdAt: model.createdAt ?? '',
-      likesCount: model.likesCount ?? 0,
-      commentsCount: model.commentsCount ?? 0,
-      thumbnailUrl: model.thumbnailUrl,
-      isLiked: false, // API chưa có thì default
-      isSaved: false, // API chưa có thì default
+      category: model.course,
+      institution: model.school,
+      pages: model.pages,
+      createdAt: model.year,
+      likesCount: model.likes,
+      commentsCount: model.comments.length,
+      thumbnailUrl: model.previewUrls.isNotEmpty ? model.previewUrls.first : null,
+      isLiked: model.currentUserReaction == 'like',
+      isSaved: model.isSaved,
     );
   }
 
