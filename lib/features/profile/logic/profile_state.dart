@@ -30,8 +30,8 @@ class ProfileLoaded extends ProfileState {
   final bool isVerified;
   final bool isFollowing;
 
-  final int numFollowMe;
-  final int numMeFollow;
+  final int? numFollowMe;
+  final int? numMeFollow;
   final int numMyUpload;
   final int numMyLikes;
   final int numMyComment;
@@ -77,6 +77,11 @@ class ProfileLoaded extends ProfileState {
     bool? isFollowing,
     bool? isUpdating,
     List<DocumentProfile>? documents,
+    int? numFollowMe,
+    int? numMeFollow,
+    int? numMyUpload,
+    int? numMyLikes,
+    int? numMyComment,
   }) {
     return ProfileLoaded(
       id: id,
@@ -93,11 +98,11 @@ class ProfileLoaded extends ProfileState {
       isFollowing: isFollowing ?? this.isFollowing,
       isUpdating: isUpdating ?? this.isUpdating,
       documents: documents ?? this.documents,
-      numFollowMe: numFollowMe,
-      numMeFollow: numMeFollow,
-      numMyUpload: numMyUpload,
-      numMyLikes: numMyLikes,
-      numMyComment: numMyComment,
+      numFollowMe: numFollowMe ?? this.numFollowMe,
+      numMeFollow: numMeFollow ?? this.numMeFollow,
+      numMyUpload: numMyUpload ?? this.numMyUpload,
+      numMyLikes: numMyLikes ?? this.numMyLikes,
+      numMyComment: numMyComment ?? this.numMyComment,
     );
   }
 

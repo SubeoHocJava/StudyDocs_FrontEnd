@@ -49,7 +49,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
       final response =
       await userRemoteDataSource.getUserById(storedUserId);
-
+      final countFollower = await followDataSource.countFollowers(storedUserId);
+      final countFollowing = await followDataSource.countFollowing(storedUserId);
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {
@@ -72,6 +73,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school']??'',
+          countFollower: countFollower ?? 0,
+          countFollowing: countFollowing ?? 0,
+          countDocument: userData['countDocument'] ?? 0,
+          countLike: userData['countLike'] ?? 0,
         );
       } else {
         throw Exception(
@@ -120,6 +125,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school'] ?? "Chưa nhập thông tin trường",
+          countFollower: profile.countFollower,
+          countFollowing: profile.countFollowing,
+          countDocument: profile.countDocument,
+          countLike: profile.countLike,
         );
       } else {
         throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
@@ -158,24 +167,26 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<void> followUser(String followingId) async {
+  Future<int> followUser(String followingId) async {
     final tokenStorage = TokenStorageService();
     final storedUserId = await tokenStorage.getUserId();
 
     if (storedUserId == null) {
       throw Exception('User not logged in');
     }
-    followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    await followDataSource.follow(followerId: storedUserId, followingId: followingId);
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override
-  Future<void> unfollowUser(String followingId) async {
+  Future<int> unfollowUser(String followingId) async {
     final tokenStorage = TokenStorageService();
     final storedUserId = await tokenStorage.getUserId();
     if (storedUserId == null) {
       throw Exception('User not logged in');
     }
-    followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    await followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override

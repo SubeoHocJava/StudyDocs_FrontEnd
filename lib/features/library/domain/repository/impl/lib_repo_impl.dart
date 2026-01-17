@@ -15,7 +15,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
   @override
   Future<List<DocumentLibraryUI>> loadDocuments(String keyword) async {
-    final documents = await docRemoteDataSource.getMyDocuments();
+    final documents = await docRemoteDataSource.getRecentDocuments();
 
     return documents
         .map(
