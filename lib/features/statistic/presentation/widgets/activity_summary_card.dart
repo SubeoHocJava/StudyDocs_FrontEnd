@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/features/profile/logic/profile_bloc.dart';
-import 'package:studydocs/features/profile/logic/profile_state.dart';
+import 'package:studydocs/features/statistic/presentation/bloc/statistic_bloc.dart';
+import 'package:studydocs/features/statistic/presentation/bloc/statistic_state.dart';
+
 
 /// Widget that displays activity summary from ProfileBloc
 /// Shows: Upload count, Likes count, Comments count
@@ -11,21 +12,28 @@ class ActivitySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileBloc, ProfileState>(
+    return BlocBuilder<StatisticBloc, StatisticState>(
       builder: (context, state) {
-        if (state is ProfileLoaded) {
+        if (state is StatisticLoaded) {
+          final stats = state.statistics;
           return _buildCard(
-            numMyUpload: state.numMyUpload,
-            numMyLikes: state.numMyLikes,
-            numMyComment: state.numMyComment,
+            numMyUpload: stats.totalDocuments,
+            numMyLikes: stats.totalLikes,
+            numMyComment: stats.totalComments,
           );
-        } else if (state is ProfileLoading) {
+        } else if (state is StatisticLoading) {
           return _buildLoadingCard();
         } else {
-          return _buildErrorCard();
+          // Fallback or error state
+           return _buildCard(
+            numMyUpload: 0,
+            numMyLikes: 0,
+            numMyComment: 0,
+          );
         }
       },
     );
+
   }
 
   Widget _buildCard({

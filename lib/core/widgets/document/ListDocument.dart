@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'model/list_document_ui.dart';
@@ -108,8 +109,8 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
               responsive: responsive,
               widthOverride: responsive.isMobile ? 120 : 150,
               heightOverride: responsive.isMobile ? 120 : 150,
-              imageUrl:
-                  widget.document.thumbnailUrl, // ✅ Pass thumbnail URL here
+              imageUrl: widget.document.thumbnailUrl,
+              fileId: widget.document.fileId, // ✅ Pass fileId
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -183,29 +184,48 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 /// =======================
 /// IMAGE
 /// =======================
-class DocumentImage extends StatelessWidget {
+class DocumentImage extends StatefulWidget {
   final ResponsiveHelper responsive;
   final double? widthOverride;
   final double? heightOverride;
-  final String? imageUrl; // ✅ Added to receive URL
+  final String? imageUrl;
+  final String? fileId;
 
   const DocumentImage({
     super.key,
     required this.responsive,
     this.widthOverride,
     this.heightOverride,
-    this.imageUrl, // ✅ Added
+    this.imageUrl,
+    this.fileId,
   });
 
   @override
+  State<DocumentImage> createState() => _DocumentImageState();
+}
+
+class _DocumentImageState extends State<DocumentImage> {
+  String? _fetchedUrl;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Rely on the passed imageUrl or fallback logic handled by CachedNetworkImage/Image.asset
+    // If we need to fetch Asset info, it should be done at Data Layer, not here to avoid performance issues.
+
     final double width =
-        widthOverride ??
-        (responsive.isMobile ? responsive.widthPercent(35) : 200);
+        widget.widthOverride ??
+        (widget.responsive.isMobile ? widget.responsive.widthPercent(35) : 200);
 
     final double height =
-        heightOverride ??
-        (responsive.isMobile ? responsive.widthPercent(35) : 200);
+        widget.heightOverride ??
+        (widget.responsive.isMobile ? widget.responsive.widthPercent(35) : 200);
+
+    final displayUrl = widget.imageUrl;
 
     return Container(
       width: width,
@@ -221,9 +241,9 @@ class DocumentImage extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child:
-                imageUrl != null && imageUrl!.isNotEmpty
+                displayUrl != null && displayUrl.isNotEmpty
                     ? CachedNetworkImage(
-                      imageUrl: imageUrl!, // ✅ Use real URL
+                      imageUrl: displayUrl,
                       fit: BoxFit.fill,
                       placeholder:
                           (context, url) => Center(

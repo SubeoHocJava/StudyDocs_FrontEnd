@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/features/statistic/domain/entity/download_statistic_entity.dart';
+import 'package:studydocs/features/statistic/domain/entity/statistic_entity.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-/// Widget that displays bar chart of download statistics
-/// Using Syncfusion Charts library for beautiful visualization
+class StatisticChartData {
+  final String label;
+  final int count;
+
+  StatisticChartData(this.label, this.count);
+}
+
 class DownloadChartCard extends StatelessWidget {
-  final List<DownloadStatisticEntity> statistics;
+  final StatisticEntity statistics;
 
   const DownloadChartCard({
     super.key,
@@ -16,6 +20,13 @@ class DownloadChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Transform StatisticEntity into chart data
+    final chartData = [
+      StatisticChartData('Hôm nay', statistics.dayCount),
+      StatisticChartData('Tháng này', statistics.monthCount),
+      StatisticChartData('Năm nay', statistics.yearCount),
+    ];
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -70,11 +81,10 @@ class DownloadChartCard extends StatelessWidget {
               ),
               plotAreaBorderWidth: 0,
               series: <CartesianSeries>[
-                ColumnSeries<DownloadStatisticEntity, String>(
-                  dataSource: statistics,
-                  xValueMapper: (stat, _) =>
-                      DateFormat('dd/MM').format(stat.date),
-                  yValueMapper: (stat, _) => stat.count,
+                ColumnSeries<StatisticChartData, String>(
+                  dataSource: chartData,
+                  xValueMapper: (StatisticChartData data, _) => data.label,
+                  yValueMapper: (StatisticChartData data, _) => data.count,
                   gradient: const LinearGradient(
                     colors: [
                       Color(0xFF2196F3), // Blue
@@ -112,3 +122,4 @@ class DownloadChartCard extends StatelessWidget {
     );
   }
 }
+

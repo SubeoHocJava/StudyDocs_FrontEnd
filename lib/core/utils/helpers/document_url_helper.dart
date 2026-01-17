@@ -8,6 +8,7 @@ class DocumentUrlHelper {
   static String? getThumbnailUrl({
     required dynamic previewDataView,
     String? fallbackThumbnailUrl,
+    String? fileId,
   }) {
     if (previewDataView != null && previewDataView is Map) {
       final baseUrl = previewDataView['baseUrl'];

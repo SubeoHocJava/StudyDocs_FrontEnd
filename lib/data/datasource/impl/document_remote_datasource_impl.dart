@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
@@ -59,9 +55,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
   @override
   Future<List<DocumentModel>> getDocuments() async {
-    // Mock logic from HomeRemoteDataSource
-    await Future.delayed(const Duration(milliseconds: 500));
-    return _getMockDocuments();
+    // Default to popular or recent if no specific "all" endpoint is defined for home.
+    // Or return empty list if intended.
+    // For now, let's just use getRecentDocuments() as the default feed.
+    return getRecentDocuments();
   }
 
   @override

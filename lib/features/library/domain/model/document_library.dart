@@ -2,9 +2,11 @@ import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/model/row_document_ui.dart';
 
-class DocumentLibraryUI implements RowDocumentItem,DocumentUiList{
+class DocumentLibraryUI implements RowDocumentItem, DocumentUiList {
   @override
   final String id;
+  @override
+  final String? fileId;
   @override
   final String title;
   @override
@@ -28,6 +30,7 @@ class DocumentLibraryUI implements RowDocumentItem,DocumentUiList{
 
   const DocumentLibraryUI({
     required this.id,
+    this.fileId,
     required this.title,
     required this.category,
     required this.institution,

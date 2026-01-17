@@ -1,16 +1,21 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 
+import '../../../../../data/datasource/impl/asset_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
-import '../../../../../data/datasource/upload_datasource.dart';
-import '../../../../../data/model/request/upload_document_request.dart';
+import '../../../../../data/datasource/user_remote_datasource.dart';
 import '../upload_file_repository.dart';
 
 class UpLoadFileRepositoryImpl implements UploadFileRepository {
-  late final UploadRemoteDataSource uploadRemoteDataSource;
+  late final UserRemoteDataSource userRemoteDataSource;
 
   UpLoadFileRepositoryImpl() {
     final dioClient = DioClient();
-    uploadRemoteDataSource = UploadRemoteDataSourceImpl(dioClient: dioClient);
+    userRemoteDataSource = UserDataSourceImpl(
+      dioClient: dioClient,
+      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
+    );
   }
 
   @override
@@ -23,22 +28,23 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
     required String description,
   }) async {
     try {
-      final request = UploadDocumentRequest(
-        title: fileName,
-        description: description,
-        institution: school,
-        category: subject,
-        academicYear: year,
-      );
-      final file = File(filePath);
-
-      await uploadRemoteDataSource.uploadDocument(request, file);
-
-      return true;
+      final formData = FormData.fromMap({
+        'school': school,
+        'subject': subject,
+        'fileName': fileName,
+        'year': year,
+        'description': description,
+        'file': await MultipartFile.fromFile(
+          filePath,
+          filename: fileName,
+        ),
+      });
+      final response = await userRemoteDataSource.uploadImage("a", formData);
+      
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       print('Upload error: $e');
       return false;
     }
   }
 }
-

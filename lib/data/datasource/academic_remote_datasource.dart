@@ -6,9 +6,9 @@ abstract class AcademicRemoteDataSource {
   Future<List<SchoolEntity>> searchSchools(String query);
   Future<List<String>> getSchools();
   Future<SchoolEntity?> getCurrentUserSchool();
-  Future<SchoolEntity> getUniversityById(String id);  // ✅ New
+  Future<SchoolEntity> getUniversityById(String id);  //  New
 
   // Subject operations
   Future<List<SubjectEntity>> getSubjectsBySchool(String schoolId);
-  Future<SubjectEntity> getSubjectById(String id);    // ✅ New
+  Future<SubjectEntity> getSubjectById(String id);    //  New
 }

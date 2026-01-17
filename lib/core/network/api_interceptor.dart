@@ -27,10 +27,17 @@ class ApiInterceptor extends QueuedInterceptor {
       ApiConstants.authLoginLocal,
       ApiConstants.authLoginGoogle,
       ApiConstants.authRegister,
+      ApiConstants.authForgotPasswordRequest, //  Public
+      ApiConstants.authForgotPasswordConfirm, //  Public
+      '/documents/public', // Cho phép API public document đi xuyên
+      '/assets',
       '/internal', //  Cho phép tất cả các API internal đi xuyên
     ];
 
-    final isPublic = publicPaths.any((path) => options.path.contains(path));
+    // Check path or full URI path
+    final isPublic = publicPaths.any(
+      (path) => options.path.contains(path) || options.uri.path.contains(path),
+    );
 
     // Logic kiểm tra và refresh token trước khi gửi request (Áp dụng cho Authenticated Enpoint)
     if (!isPublic) {
@@ -67,13 +74,13 @@ class ApiInterceptor extends QueuedInterceptor {
                 );
 
                 if (kDebugMode) {
-                  print('✅ Refresh Token Success. New AccessToken obtained.');
+                  print('Refresh Token Success. New AccessToken obtained.');
                 }
               }
             }
           } catch (e) {
             if (kDebugMode) {
-              print('❌ Refresh Token Failed: $e');
+              print(' Refresh Token Failed: $e');
             }
             // Nếu Refresh lỗi -> Xóa token và để request 401 tự nhiên (hoặc chuyển về Login tùy logic)
             // Ở đây mình cứ để request trôi đi, nó sẽ trả về 401 và UI sẽ handle logout sau
@@ -87,6 +94,9 @@ class ApiInterceptor extends QueuedInterceptor {
       if (authHeader != null) {
         options.headers['Authorization'] = authHeader;
       }
+    } else {
+      // Nếu là Public Endpoint, đảm bảo KHÔNG gửi kèm Authorization header để tránh lỗi 401 do token hết hạn
+      options.headers.remove('Authorization');
     }
 
     if (kDebugMode) {

@@ -28,6 +28,7 @@ class DocumentModel extends Equatable {
   final String? updatedAt;
   final String? fileUrl;
   final String? fileType;
+  final String? fileId; // Added fileId
 
   const DocumentModel({
     required this.id,
@@ -51,18 +52,74 @@ class DocumentModel extends Equatable {
     this.updatedAt,
     this.fileUrl,
     this.fileType,
+    this.fileId,
   });
+
+  DocumentModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? author,
+    String? authorId,
+    String? thumbnailUrl,
+    String? universityId,
+    String? subjectId,
+    String? category,
+    String? institution,
+    int? pageCount,
+    String? academicYear,
+    int? viewCount,
+    int? downloadCount,
+    int? likesCount,
+    int? commentsCount,
+    double? rating,
+    String? createdAt,
+    String? updatedAt,
+    String? fileUrl,
+    String? fileType,
+    String? fileId,
+  }) {
+    return DocumentModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      author: author ?? this.author,
+      authorId: authorId ?? this.authorId,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      universityId: universityId ?? this.universityId,
+      subjectId: subjectId ?? this.subjectId,
+      category: category ?? this.category,
+      institution: institution ?? this.institution,
+      pageCount: pageCount ?? this.pageCount,
+      academicYear: academicYear ?? this.academicYear,
+      viewCount: viewCount ?? this.viewCount,
+      downloadCount: downloadCount ?? this.downloadCount,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount ?? this.commentsCount,
+      rating: rating ?? this.rating,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      fileUrl: fileUrl ?? this.fileUrl,
+      fileType: fileType ?? this.fileType,
+      fileId: fileId ?? this.fileId,
+    );
+  }
 
   // Parse JSON từ API
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
+    // Check for 'fileId' or 'id'
+    final extractedFileId = json['fileId']?.toString();
+
     // Sử dụng Helper để lấy thumbnail handle
     final thumbUrl = DocumentUrlHelper.getThumbnailUrl(
       previewDataView: json['previewDataView'],
       fallbackThumbnailUrl: json['thumbnail_url']?.toString(),
+      fileId: extractedFileId,
     );
 
     return DocumentModel(
       id: json['id']?.toString() ?? '',
+      fileId: extractedFileId,
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString(),
       author: json['author']?.toString(),

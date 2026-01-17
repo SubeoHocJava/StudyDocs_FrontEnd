@@ -105,6 +105,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
             DocumentImage(
               responsive: responsive,
               sizeOverride: responsive.isMobile ? 90 : 102,
+              imageUrl: widget.document.thumbnailUrl,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -181,8 +182,14 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
   final double? sizeOverride;
+  final String? imageUrl; // ✅ Added to support dynamic images
 
-  const DocumentImage({super.key, required this.responsive, this.sizeOverride});
+  const DocumentImage({
+    super.key,
+    required this.responsive,
+    this.sizeOverride,
+    this.imageUrl, // ✅ Inject
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -203,10 +210,22 @@ class DocumentImage extends StatelessWidget {
           padding: const EdgeInsets.all(1.5),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: Image.asset(
-              "assets/icons/temp_image.jpg",
-              fit: BoxFit.cover,
-            ),
+            child:
+                imageUrl != null && imageUrl!.isNotEmpty
+                    ? Image.network(
+                      imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/icons/temp_image.jpg",
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                    : Image.asset(
+                      "assets/icons/temp_image.jpg",
+                      fit: BoxFit.cover,
+                    ),
           ),
         ),
       ),
