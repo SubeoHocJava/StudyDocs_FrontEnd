@@ -21,4 +21,6 @@ abstract class DocumentRemoteDataSource {
     required String reviewId,
     required bool isLike,
   });
+  Future<DocumentModel> getPublicDocumentById(String id); // New: Get by ID for Explorer
 }
+

@@ -29,7 +29,7 @@ class ApiInterceptor extends QueuedInterceptor {
       ApiConstants.authRegister,
       ApiConstants.authForgotPasswordRequest, //  Public
       ApiConstants.authForgotPasswordConfirm, //  Public
-      '/documents/public', // Cho phép API public document đi xuyên
+      ApiConstants.publicDocumentById, // Cho phép API public document đi xuyên
       '/assets',
       '/internal', //  Cho phép tất cả các API internal đi xuyên
     ];

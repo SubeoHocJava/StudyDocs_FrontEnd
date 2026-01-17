@@ -53,7 +53,6 @@ class SubjectLibraryScreen extends StatelessWidget {
                     SubjectCategories(
                       state.subjects.map((s) => s.name).toList(),
                       onSubjectTap: (subjectName) {
-                        // Navigate đến trang danh sách tài liệu của môn học
                         final encodedSchoolName = Uri.encodeComponent(schoolName);
                         final encodedSubjectName = Uri.encodeComponent(subjectName);
                         context.push('/school/$encodedSchoolName/subject/$encodedSubjectName');
@@ -62,17 +61,22 @@ class SubjectLibraryScreen extends StatelessWidget {
                     SizedBox(height: responsive.heightPercent(3)),
                   ],
 
-                  // Section "Lượt thích cao nhất"
-                  if (state.the_most_liked_docs.isNotEmpty) ...[
-                    MostLikeDocs(state.the_most_liked_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
+                  // Danh sách tài liệu của trường
+                  if (state.documents.isNotEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 12.0),
+                      child: Text(
+                        'Tài liệu',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
                   ],
 
-                  // Section "Tải lên gần đây"
-                  if (state.uploaded_docs.isNotEmpty) ...[
-                    UploadDocument(state.uploaded_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
 
                   // Tài liệu đã lưu (nếu có)
                   if (state.documents.isNotEmpty)

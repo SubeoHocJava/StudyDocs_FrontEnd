@@ -252,6 +252,7 @@ GoRouter createAppRouter() {
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
           final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
@@ -272,6 +273,9 @@ GoRouter createAppRouter() {
                       repository: subjectLibraryRepo,
                     ),
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
                       repository: subjectLibraryRepo,
                     ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
@@ -311,6 +315,7 @@ GoRouter createAppRouter() {
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
           final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
@@ -331,6 +336,9 @@ GoRouter createAppRouter() {
                       repository: subjectLibraryRepo,
                     ),
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
                       repository: subjectLibraryRepo,
                     ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(

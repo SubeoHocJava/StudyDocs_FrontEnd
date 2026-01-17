@@ -12,4 +12,6 @@ abstract class SubjectLibraryRepository {
   Future<String> downloadDocument(String documentId);
 
   Future<void> bookmarkDocument(String documentId);
+  // New: Get Documents by University/Subject ID
+  Future<List<DocumentSubjectLibUI>> getDocumentsByAcademicId({String? universityId, String? subjectId});
 }

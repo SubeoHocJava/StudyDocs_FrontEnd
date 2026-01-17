@@ -60,8 +60,10 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
   @override
   Future<List<DocumentModel>> searchDocuments(String query) async {
+    // REAL API: should call search endpoint. 
+    // For now, let's just return empty list to avoid the crash found in review.
     await Future.delayed(const Duration(milliseconds: 500));
-    final allDocs = null;
+    final List<DocumentModel> allDocs = []; // Fixed: avoid null crash
     final lowerQuery = query.toLowerCase();
     return allDocs.where((doc) {
       return doc.title.toLowerCase().contains(lowerQuery) ||
@@ -103,7 +105,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
       // 1. Get Stats (Review Service)
       final statsRes = await dioClient.get(
-        '${ApiConstants.reviewBaseUrl}/reviews/document/$targetId/stats',
+        '${ApiConstants.reviewDocumentStats}/$targetId/stats',
       );
       if (statsRes.statusCode == 200 && statsRes.data['data'] != null) {
         final data = statsRes.data['data'];
@@ -113,7 +115,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
       // 2. Get Reviews (Comments)
       final reviewsRes = await dioClient.get(
-        '${ApiConstants.reviewBaseUrl}/reviews/document/$targetId',
+        '${ApiConstants.reviewBase}/document/$targetId',
         queryParameters: {'page': 0, 'size': 50},
       );
 
@@ -168,7 +170,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     final targetId = documentId.isEmpty ? mockDocumentId : documentId;
     try {
       await dioClient.post(
-        '${ApiConstants.reviewBaseUrl}/reviews/document/$targetId/react',
+        '${ApiConstants.reviewDocumentReact}/$targetId/react',
         queryParameters: {'type': isLike ? 'like' : 'dislike'},
       );
     } catch (e) {
@@ -184,7 +186,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     final targetId = documentId.isEmpty ? mockDocumentId : documentId;
     try {
       await dioClient.post(
-        '${ApiConstants.reviewBaseUrl}/reviews',
+        ApiConstants.reviewBase,
         data: {'documentId': targetId, 'comment': text},
       );
     } catch (e) {
@@ -200,7 +202,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     try {
       await dioClient.post(
-        '${ApiConstants.reviewBaseUrl}/reviews/$reviewId/react',
+        '${ApiConstants.reviewBase}/$reviewId/react',
         queryParameters: {'type': isLike ? 'like' : 'dislike'},
       );
     } catch (e) {
@@ -209,4 +211,18 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }
 
   // --- PRIVATE MOCK HELPERS --- (Removed)
+  @override
+  Future<DocumentModel> getPublicDocumentById(String id) async {
+    final response = await dioClient.get(
+      '${ApiConstants.publicDocumentById}/$id',
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final  data = response.data['data'] ?? response.data;
+      return DocumentModel.fromJson(data);
+    }
+    
+    throw ServerException('Failed to fetch document detail: $id', response.statusCode ?? 0);
+  }
 }
+

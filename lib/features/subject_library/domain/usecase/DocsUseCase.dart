@@ -6,7 +6,7 @@ import '../ui_model/doc_subject_lib_ui.dart';
 
 
 //
-// 1️⃣ Search Documents
+// 1️ Search Documents
 //
 class SearchDocumentsUseCase {
   final SubjectLibraryRepository repository;
@@ -19,7 +19,7 @@ class SearchDocumentsUseCase {
 }
 
 //
-// 2️⃣ Like Document
+// 2️ Like Document
 //
 class LikeDocumentUseCase {
   final SubjectLibraryRepository repository;
@@ -32,7 +32,7 @@ class LikeDocumentUseCase {
 }
 
 //
-// 3️⃣ Get Comments
+// 3️ Get Comments
 //
 class GetCommentsUseCase {
   final SubjectLibraryRepository repository;
@@ -45,7 +45,7 @@ class GetCommentsUseCase {
 }
 
 //
-// 4️⃣ Download Document
+// 4 Download Document
 //
 class DownloadDocumentUseCase {
   final SubjectLibraryRepository repository;
@@ -58,7 +58,7 @@ class DownloadDocumentUseCase {
 }
 
 //
-// 5️⃣ Bookmark Document
+// ️ Bookmark Document
 //
 class BookmarkDocumentUseCase {
   final SubjectLibraryRepository repository;
@@ -69,3 +69,17 @@ class BookmarkDocumentUseCase {
     return await repository.bookmarkDocument(documentId);
   }
 }
+
+//
+// ️ Get Documents By Academic ID (School/Subject)
+//
+class GetDocumentsByAcademicIdUseCase {
+  final SubjectLibraryRepository repository;
+
+  GetDocumentsByAcademicIdUseCase({required this.repository});
+
+  Future<List<DocumentSubjectLibUI>> call({String? universityId, String? subjectId}) async {
+    return await repository.getDocumentsByAcademicId(universityId: universityId, subjectId: subjectId);
+  }
+}
+
