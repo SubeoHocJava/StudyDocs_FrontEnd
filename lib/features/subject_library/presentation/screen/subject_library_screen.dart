@@ -52,10 +52,17 @@ class SubjectLibraryScreen extends StatelessWidget {
                   if (state.subjects.isNotEmpty) ...[
                     SubjectCategories(
                       state.subjects.map((s) => s.name).toList(),
-                      onSubjectTap: (subjectName) {
+                      onSubjectTap: (index) {
+                        final subject = state.subjects[index];
+                        final schoolId = state.schoolId ?? '';
+                        final schoolName = state.schoolName;
+                        
                         final encodedSchoolName = Uri.encodeComponent(schoolName);
-                        final encodedSubjectName = Uri.encodeComponent(subjectName);
-                        context.push('/school/$encodedSchoolName/subject/$encodedSubjectName');
+                        final encodedSubjectName = Uri.encodeComponent(subject.name);
+                        
+                        context.push(
+                          '/school/$schoolId/subject/${subject.id}?schoolName=$encodedSchoolName&subjectName=$encodedSubjectName'
+                        );
                       },
                     ),
                     SizedBox(height: responsive.heightPercent(3)),
@@ -63,24 +70,8 @@ class SubjectLibraryScreen extends StatelessWidget {
 
                   // Danh sách tài liệu của trường
                   if (state.documents.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 12.0),
-                      child: Text(
-                        'Tài liệu',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
                     StoredDocument(state.documents.cast<DocumentLibraryUI>()),
                   ],
-
-
-                  // Tài liệu đã lưu (nếu có)
-                  if (state.documents.isNotEmpty)
-                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
                 ],
               ),
             );

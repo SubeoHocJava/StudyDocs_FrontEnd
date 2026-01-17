@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart'; // ✅ Import Asset
@@ -9,12 +10,12 @@ import 'package:studydocs/core/utils/helpers/document_url_helper.dart';
 class HomeRepositoryImpl implements HomeRepository {
   final DocumentRemoteDataSource remoteDataSource;
   final AcademicRemoteDataSource academicDataSource;
-  final AssetRemoteDataSource assetDataSource; // ✅ New dependency
+  final AssetRemoteDataSource assetDataSource;
 
   HomeRepositoryImpl({
     required this.remoteDataSource,
     required this.academicDataSource,
-    required this.assetDataSource, // ✅ Inject
+    required this.assetDataSource,
   });
 
   @override
@@ -39,6 +40,13 @@ class HomeRepositoryImpl implements HomeRepository {
 
       // 1b. Enrich with assets (thumbnails)
       documents = await _enrichWithAssets(documents);
+
+      if (kDebugMode) {
+        print('--- HomeRepository.getPopularDocuments Debug ---');
+        for (var doc in documents) {
+          print('DocID: ${doc.id} | Title: ${doc.title} | UniID: ${doc.universityId} | SubID: ${doc.subjectId}');
+        }
+      }
 
       // 2. Extract unique university IDs và subject IDs
       final universityIds =
@@ -113,6 +121,13 @@ class HomeRepositoryImpl implements HomeRepository {
 
       // Enrich with assets (thumbnails)
       documents = await _enrichWithAssets(documents);
+
+      if (kDebugMode) {
+        print('--- HomeRepository.getRecentDocuments Debug ---');
+        for (var doc in documents) {
+          print('DocID: ${doc.id} | Title: ${doc.title} | UniID: ${doc.universityId} | SubID: ${doc.subjectId}');
+        }
+      }
 
       final universityIds =
           documents
@@ -219,7 +234,7 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔧 HELPER METHODS - Batch fetch names by IDs
+  //  HELPER METHODS - Batch fetch names by IDs
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   /// Fetch universities by IDs in parallel
@@ -234,6 +249,7 @@ class HomeRepositoryImpl implements HomeRepository {
         final university = await academicDataSource.getUniversityById(id);
         return MapEntry(id, university.name);
       } catch (e) {
+        e.toString();
         // Nếu 1 university fetch fail → không crash toàn bộ
         return MapEntry(id, 'Unknown University');
       }

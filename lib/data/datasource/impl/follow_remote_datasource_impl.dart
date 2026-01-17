@@ -15,7 +15,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
   }) async {
     final response = await dioClient.post(
       ApiConstants.follows,
-      data:{
+      data: {
         'followerId': followerId,
         'followingId': followingId,
       },
@@ -59,7 +59,7 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
 
   @override
   Future<List<FollowModel>> getFollowing(String userId) async {
-    final response = await dioClient.get('${ApiConstants.follows}/$userId');
+    final response = await dioClient.get('${ApiConstants.followsFollowing}/$userId');
 
     if (response.isSuccess && response.data != null) {
       if (response.data is List) {

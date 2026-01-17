@@ -292,14 +292,13 @@ GoRouter createAppRouter() {
       ),
       // Subject documents route - standalone screen
       GoRoute(
-        path: '/school/:schoolName/subject/:subjectName',
+        path: '/school/:schoolId/subject/:subjectId',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          // GoRouter đã tự động decode path parameters rồi
-          final decodedSchoolName =
-              state.pathParameters['schoolName'] ?? 'Unknown School';
-          final decodedSubjectName =
-              state.pathParameters['subjectName'] ?? 'Unknown Subject';
+          final schoolId = state.pathParameters['schoolId'] ?? '';
+          final subjectId = state.pathParameters['subjectId'] ?? '';
+          final schoolName = state.uri.queryParameters['schoolName'] ?? 'Unknown School';
+          final subjectName = state.uri.queryParameters['subjectName'] ?? 'Unknown Subject';
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
@@ -343,11 +342,16 @@ GoRouter createAppRouter() {
                       repository: subjectRepo,
                     ),
                   )..add(
-                    SubjectLibraryLoadDocumentByKeyWord(decodedSubjectName),
+                    SubjectLibraryLoadBySubject(
+                      schoolId: schoolId,
+                      subjectId: subjectId,
+                      subjectName: subjectName,
+                      schoolName: schoolName,
+                    ),
                   ),
               child: SubjectDocumentsScreen(
-                schoolName: decodedSchoolName,
-                subjectName: decodedSubjectName,
+                schoolName: schoolName,
+                subjectName: subjectName,
               ),
             ),
           );

@@ -78,3 +78,20 @@ class SubjectLibraryLoadBySchool extends SubjectLibraryEvent {
   @override
   List<Object?> get props => [schoolId, schoolName];
 }
+
+class SubjectLibraryLoadBySubject extends SubjectLibraryEvent {
+  final String? schoolId;
+  final String subjectId;
+  final String subjectName;
+  final String schoolName;
+
+  const SubjectLibraryLoadBySubject({
+    this.schoolId,
+    required this.subjectId,
+    required this.subjectName,
+    required this.schoolName,
+  });
+
+  @override
+  List<Object?> get props => [schoolId, subjectId, subjectName, schoolName];
+}

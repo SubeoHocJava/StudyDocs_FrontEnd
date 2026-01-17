@@ -16,8 +16,9 @@ class SubjectLibraryInitial extends SubjectLibraryState {}
 class SubjectLibraryLoading extends SubjectLibraryState {}
 
 class SubjectLibraryLoaded extends SubjectLibraryState {
-  final String school;
-  final String subject;
+  final String? schoolId; // New
+  final String schoolName;
+  final String subjectName;
   final int num_friends;
   final int num_docs;
   final List<DocumentSubjectLibUI> uploaded_docs;
@@ -25,19 +26,28 @@ class SubjectLibraryLoaded extends SubjectLibraryState {
   final List<DocumentSubjectLibUI> documents;
   final List<SubjectEntity> subjects;
 
-  const SubjectLibraryLoaded(
-    this.subject,
-    this.uploaded_docs,
-    this.the_most_liked_docs,
-    this.documents,
-    this.school,
-    this.num_friends,
-    this.num_docs,
-    this.subjects,
-  );
+  const SubjectLibraryLoaded({
+    this.schoolId,
+    required this.schoolName,
+    required this.subjectName,
+    this.num_friends = 0,
+    this.num_docs = 0,
+    required this.uploaded_docs,
+    required this.the_most_liked_docs,
+    required this.documents,
+    required this.subjects,
+  });
 
   @override
-  List<Object?> get props => [uploaded_docs, the_most_liked_docs, subjects];
+  List<Object?> get props => [
+        schoolId,
+        schoolName,
+        subjectName,
+        uploaded_docs,
+        the_most_liked_docs,
+        subjects,
+        documents
+      ];
 }
 
 class SubjectLibraryError extends SubjectLibraryState {
