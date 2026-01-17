@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'package:flutter/foundation.dart';
+
 import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
@@ -106,10 +109,19 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   //  NEW: Get University by ID
   @override
   Future<SchoolEntity> getUniversityById(String id) async {
-    final response = await dioClient.get('${ApiConstants.academicUniversityById}/$id');
+    final path = '${ApiConstants.academicUniversityById}/$id';
+    if (kDebugMode) {
+      print('AcademicRemoteDataSourceImpl.getUniversityById: $path');
+    }
+    
+    final response = await dioClient.get(path);
 
-    if (response.statusCode == 200 && response.data['data'] != null) {
-      final data = response.data['data'];
+    if (response.isSuccess && response.data != null) {
+      // Bóc tách linh hoạt: { data: { ... } } hoặc trực tiếp { ... }
+      final data = (response.data is Map && response.data['data'] != null)
+          ? response.data['data']
+          : response.data;
+
       return SchoolEntity(
         id: data['id']?.toString() ?? '',
         name: data['name']?.toString() ?? '',
@@ -117,23 +129,31 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
       );
     }
 
-    throw ServerException('University not found', response.statusCode ?? 0);
+    throw ServerException('University not found', response.statusCode);
   }
 
   // NEW: Get Subject by ID
   @override
   Future<SubjectEntity> getSubjectById(String id) async {
-    final response = await dioClient.get('${ApiConstants.academicSubjectById}/$id');
+    final path = '${ApiConstants.academicSubjectById}/$id';
+    if (kDebugMode) {
+      print('AcademicRemoteDataSourceImpl.getSubjectById: $path');
+    }
 
-    if (response.statusCode == 200 && response.data['data'] != null) {
-      final data = response.data['data'];
+    final response = await dioClient.get(path);
+
+    if (response.isSuccess && response.data != null) {
+      final data = (response.data is Map && response.data['data'] != null)
+          ? response.data['data']
+          : response.data;
+          
       return SubjectEntity(
         id: data['id']?.toString() ?? '',
         name: data['name']?.toString() ?? '',
       );
     }
 
-    throw ServerException('Subject not found', response.statusCode ?? 0);
+    throw ServerException('Subject not found', response.statusCode);
   }
   @override
   Future<List<String>> getDocumentIds({String? universityId, String? subjectId}) async {
@@ -146,15 +166,22 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
       queryParameters: queryParams,
     );
 
-    if (response.statusCode == 200 && response.data != null) {
+    if (response.isSuccess && response.data != null) {
       final data = response.data;
-      if (data['data'] != null && data['data']['documentIds'] != null) {
-        return List<String>.from(data['data']['documentIds']);
+      // Bóc tách linh hoạt: { data: { documentIds: [] } } hoặc trực tiếp { documentIds: [] }
+      final innerData = (data is Map && data['data'] != null) ? data['data'] : data;
+      
+      if (innerData is Map && innerData['documentIds'] != null) {
+        final ids = List<String>.from(innerData['documentIds']);
+        if (kDebugMode) {
+          print('AcademicRemoteDataSourceImpl.getDocumentIds: Found ${ids.length} docs for uni:$universityId, sub:$subjectId');
+        }
+        return ids;
       }
       return [];
     }
 
-    throw ServerException('Failed to fetch document IDs', response.statusCode ?? 0);
+    throw ServerException('Failed to fetch document IDs', response.statusCode);
   }
 }
 

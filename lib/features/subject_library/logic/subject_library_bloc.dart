@@ -37,7 +37,13 @@ class SubjectLibraryBloc
        try {
         final docs = await searchDocumentsUseCase(event.keyword);
         emit(SubjectLibraryLoaded(
-          event.keyword, [], [], docs, "Unknown School", 0, docs.length, [],
+          subjectName: event.keyword,
+          uploaded_docs: const [],
+          the_most_liked_docs: const [],
+          documents: docs,
+          schoolName: "Unknown School",
+          num_docs: docs.length,
+          subjects: const [],
         ));
        } catch (e) {
          emit(SubjectLibraryError(e.toString()));
@@ -55,7 +61,13 @@ class SubjectLibraryBloc
        try {
         final docs = await searchDocumentsUseCase(event.keyword);
         emit(SubjectLibraryLoaded(
-          event.keyword, [], [], docs, "Unknown School", 0, docs.length, [],
+          subjectName: event.keyword,
+          uploaded_docs: const [],
+          the_most_liked_docs: const [],
+          documents: docs,
+          schoolName: "Unknown School",
+          num_docs: docs.length,
+          subjects: const [],
         ));
        } catch (e) {
          emit(SubjectLibraryError(e.toString()));
@@ -95,14 +107,41 @@ class SubjectLibraryBloc
 
         emit(
           SubjectLibraryLoaded(
-            '', // subject
-            [], // uploaded_docs (removed)
-            [], // the_most_liked_docs (removed)
-            documents, // documents (The main list)
-            event.schoolName, // school
-            0, // num_friends
-            documents.length, // num_docs
-            subjects, // subjects
+            schoolId: event.schoolId,
+            schoolName: event.schoolName,
+            subjectName: '',
+            uploaded_docs: const [],
+            the_most_liked_docs: const [],
+            documents: documents,
+            num_docs: documents.length,
+            subjects: subjects,
+          ),
+        );
+      } catch (e) {
+        emit(SubjectLibraryError(e.toString()));
+      }
+    });
+
+    on<SubjectLibraryLoadBySubject>((event, emit) async {
+      emit(SubjectLibraryLoading());
+
+      try {
+        // Load documents theo subjectId (và universityId nếu có)
+        final documents = await getDocumentsByAcademicIdUseCase(
+          universityId: event.schoolId,
+          subjectId: event.subjectId,
+        );
+
+        emit(
+          SubjectLibraryLoaded(
+            schoolId: event.schoolId,
+            schoolName: event.schoolName,
+            subjectName: event.subjectName,
+            uploaded_docs: const [],
+            the_most_liked_docs: const [],
+            documents: documents,
+            num_docs: documents.length,
+            subjects: const [],
           ),
         );
       } catch (e) {

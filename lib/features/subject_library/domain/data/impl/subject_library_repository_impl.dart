@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
+import 'package:studydocs/data/model/document_model.dart';
 import '../../ui_model/CommentEntity.dart';
 import '../../ui_model/doc_subject_lib_ui.dart';
 import '../subject_library_repository.dart';
@@ -31,14 +33,27 @@ class SubjectLibraryRepositoryImpl implements SubjectLibraryRepository {
       
       if (ids.isEmpty) return [];
 
-      // 2. Fetch details parallel
-      final futures = ids.map((id) => documentDataSource.getPublicDocumentById(id));
-      final models = await Future.wait(futures);
+      // 2. Fetch details parallel - Thêm xử lý lỗi từng item để tránh fail cả list
+      final futures = ids.map((id) async {
+        try {
+          return await documentDataSource.getPublicDocumentById(id);
+        } catch (e) {
+          if (kDebugMode) {
+            print('SubjectLibraryRepositoryImpl: Failed to fetch doc detail for ID: $id - $e');
+          }
+          return null;
+        }
+      });
+      
+      final results = await Future.wait(futures);
+      final validModels = results.whereType<DocumentModel>().toList();
 
       // 3. Map to UI Model
-      return models.map((item) => _mapModelToUI(item)).toList();
+      return validModels.map((item) => _mapModelToUI(item)).toList();
     } catch (e) {
-      // Log error or rethrow
+      if (kDebugMode) {
+        print('SubjectLibraryRepositoryImpl.getDocumentsByAcademicId FATAL ERROR: $e');
+      }
       return [];
     }
   }
