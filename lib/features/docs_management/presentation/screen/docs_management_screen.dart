@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart'; // Reuse core colors
-import '../../../docs/domain/entity/document_entity.dart';
-import '../../logic/docs_management_bloc.dart';
-import '../../logic/docs_management_event.dart';
-import '../../logic/docs_management_state.dart';
-import '../widgets/filter_bottom_sheet.dart';
-import 'docs_management_detail_screen.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
+import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
+import 'package:studydocs/features/docs_management/logic/docs_management_event.dart' as dm_event;
+import 'package:studydocs/features/docs_management/logic/docs_management_state.dart';
+import 'package:studydocs/features/docs_management/presentation/widgets/filter_bottom_sheet.dart';
+import 'package:studydocs/features/docs_management/presentation/screen/docs_management_detail_screen.dart';
+import 'package:studydocs/features/docs_management/presentation/screen/docs_edit_screen.dart';
 
 class DocsManagementScreen extends StatefulWidget {
-  const DocsManagementScreen({super.key});
+  final bool isAdminMode;
+
+  const DocsManagementScreen({super.key, this.isAdminMode = false});
 
   @override
   State<DocsManagementScreen> createState() => _DocsManagementScreenState();
@@ -20,7 +23,11 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
   void initState() {
     super.initState();
     // Load data initially
-    context.read<DocsManagementBloc>().add(const LoadMyDocs());
+    if (widget.isAdminMode) {
+      context.read<DocsManagementBloc>().add(const dm_event.LoadAllDocs());
+    } else {
+      context.read<DocsManagementBloc>().add(const dm_event.LoadMyDocs());
+    }
   }
 
   @override
@@ -71,13 +78,23 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                               builder:
                                   (context) => FilterBottomSheet(
                                     onApply: (school, subject, year) {
-                                      context.read<DocsManagementBloc>().add(
-                                        LoadMyDocs(
-                                          filterSchool: school,
-                                          filterSubject: subject,
-                                          filterYear: year,
-                                        ),
-                                      );
+                                      if (widget.isAdminMode) {
+                                         context.read<DocsManagementBloc>().add(
+                                          dm_event.LoadAllDocs(
+                                            filterSchool: school,
+                                            filterSubject: subject,
+                                            filterYear: year,
+                                          ),
+                                        );
+                                      } else {
+                                        context.read<DocsManagementBloc>().add(
+                                          dm_event.LoadMyDocs(
+                                            filterSchool: school,
+                                            filterSubject: subject,
+                                            filterYear: year,
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
                             );
@@ -104,7 +121,16 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
-                      // Navigate to Add Document Screen (Reuse Edit Screen probably)
+                      final bloc = context.read<DocsManagementBloc>();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: bloc,
+                            child: DocsEditScreen(isAdmin: widget.isAdminMode),
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -179,42 +205,59 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DocsManagementDetailScreen(document: doc),
+              builder: (_) => BlocProvider.value(
+                value: context.read<DocsManagementBloc>(),
+                child: DocsManagementDetailScreen(
+                  document: doc,
+                  isAdminView: widget.isAdminMode,
+                ),
+              ),
             ),
           );
         },
         child: Row(
           children: [
-            const Icon(Icons.description, color: Colors.grey, size: 32),
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                 color: Colors.blue.shade50,
+                 borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.description, color: Color(0xFF3F51B5), size: 28),
+            ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                doc.title,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    doc.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center, // Aligns items vertically in the center
+                    spacing: 8, // Gap between items
+                    children: [
+                      _buildInfoTag(Icons.school, doc.school),
+                      if (doc.course.isNotEmpty) _buildInfoTag(Icons.book, doc.course),
+                      if (doc.year.isNotEmpty) _buildInfoTag(Icons.calendar_today, doc.year),
+                    ],
+                  ),
+                ],
               ),
             ),
             IconButton(
               icon: const Icon(
-                Icons.remove_red_eye_outlined,
-                color: Colors.grey,
+                Icons.delete_outline,
+                color: Colors.red,
               ),
               onPressed: () {
-                // Navigate to Detail
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => DocsManagementDetailScreen(document: doc),
-                  ),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () {
                 // Confirm delete
+                final parentContext = context; // Capture parent context which has Bloc
                 showDialog(
                   context: context,
                   builder:
@@ -228,10 +271,15 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Note: In real app, use Bloc event. Since we don't have ID, using title mock
-                              context.read<DocsManagementBloc>().add(
-                                DeleteDocEvent(doc.title),
-                              );
+                              if (widget.isAdminMode) {
+                                parentContext.read<DocsManagementBloc>().add(
+                                  dm_event.DeleteAdminDocEvent(doc.id ?? ''),
+                                );
+                              } else {
+                                parentContext.read<DocsManagementBloc>().add(
+                                  dm_event.DeleteDocEvent(doc.id ?? ''),
+                                );
+                              }
                               Navigator.pop(context);
                             },
                             child: const Text(
@@ -247,6 +295,19 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
           ],
         ),
       ),
+    );
+  }
+  Widget _buildInfoTag(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 12, color: Colors.grey),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
+        ),
+      ],
     );
   }
 }

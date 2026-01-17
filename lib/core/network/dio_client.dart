@@ -84,6 +84,8 @@ class DioClient {
     }
   }
 
+
+
   Future<ApiResponse<dynamic>> patch(
     String path, {
     dynamic data,
@@ -118,29 +120,29 @@ class DioClient {
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
         return NetworkException('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
-        
+
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode ?? 0;
         final responseData = error.response?.data;
-        
+
         // Parse error message từ backend (format: {message: "..."} hoặc {errorMessage: "..."})
         String message = 'Có lỗi xảy ra từ server';
         if (responseData is Map<String, dynamic>) {
-          message = responseData['message'] ?? 
-                    responseData['errorMessage'] ?? 
+          message = responseData['message'] ??
+                    responseData['errorMessage'] ??
                     message;
         }
-        
+
         // Phân biệt Auth errors (401, 403)
         if (statusCode == 401 || statusCode == 403) {
           return AuthException(message, statusCode);
         }
-        
+
         return ServerException(message, statusCode);
-        
+
       case DioExceptionType.cancel:
         return ApiException('Request đã bị hủy', code: 'REQUEST_CANCELLED');
-        
+
       default:
         return NetworkException('Lỗi kết nối: ${error.message ?? "Unknown error"}');
     }

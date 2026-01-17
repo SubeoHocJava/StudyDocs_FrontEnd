@@ -13,6 +13,7 @@ class ListDocument extends StatelessWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
 
   const ListDocument(
     this.documents, {
@@ -21,6 +22,7 @@ class ListDocument extends StatelessWidget {
     this.onSave,
     this.onLike,
     this.onComment,
+    this.onTap,
   });
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,9 @@ class ListDocument extends StatelessWidget {
             document: document,
             onDownload: onDownload,
             onSave: onSave,
+            onLike: onLike,
+            onComment: onComment,
+            onTap: onTap,
           ),
         );
       },
@@ -59,6 +64,7 @@ class MonoDocumentInList extends StatefulWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
   const MonoDocumentInList({
     super.key,
     required this.document,
@@ -66,6 +72,7 @@ class MonoDocumentInList extends StatefulWidget {
     this.onSave,
     this.onLike,
     this.onComment,
+    this.onTap,
   });
 
   @override
@@ -98,83 +105,90 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
-        child: Row(
-          // Avoid stretching children to an unbounded height when this card is
-          // laid out inside scrollables (can trigger BoxConstraints(h=Infinity)).
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            DocumentImage(
-              responsive: responsive,
-              widthOverride: responsive.isMobile ? 120 : 150,
-              heightOverride: responsive.isMobile ? 120 : 150,
-              imageUrl: widget.document.thumbnailUrl,
-              fileId: widget.document.fileId, // ✅ Pass fileId
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TitleWidget(
-                    title: widget.document.title,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  SubjectWidget(
-                    subject: widget.document.category,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  SchoolWidget(
-                    school: widget.document.institution,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  PageDateWidget(
-                    pages: 5,
-                    date: widget.document.createdAt,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onTap?.call(widget.document),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
+            child: Row(
+              // Avoid stretching children to an unbounded height when this card is
+              // laid out inside scrollables (can trigger BoxConstraints(h=Infinity)).
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DocumentImage(
+                  responsive: responsive,
+                  widthOverride: responsive.isMobile ? 120 : 150,
+                  heightOverride: responsive.isMobile ? 120 : 150,
+                  imageUrl: widget.document.thumbnailUrl,
+                  fileId: widget.document.fileId, // ✅ Pass fileId
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      LikeCommentWidget(
-                        likes: widget.document.likesCount,
-                        comments: widget.document.commentsCount,
+                      TitleWidget(
+                        title: widget.document.title,
                         responsive: responsive,
-                        onLikeTap: () => widget.onLike?.call(widget.document),
-                        onCommentTap:
-                            () => widget.onComment?.call(widget.document),
                       ),
-                      const Spacer(),
-                      _ActionIcon(
-                        icon: Icons.download_outlined,
-                        selected: _downloadSelected,
-                        onTap: () {
-                          setState(
-                            () => _downloadSelected = !_downloadSelected,
-                          );
-                          widget.onDownload?.call(widget.document);
-                        },
+                      const SizedBox(height: 2),
+                      SubjectWidget(
+                        subject: widget.document.category,
+                        responsive: responsive,
                       ),
-                      const SizedBox(width: 6),
-                      _ActionIcon(
-                        icon: Icons.bookmark_border,
-                        selected: _saveSelected,
-                        onTap: () {
-                          setState(() => _saveSelected = !_saveSelected);
-                          widget.onSave?.call(widget.document);
-                        },
+                      const SizedBox(height: 2),
+                      SchoolWidget(
+                        school: widget.document.institution,
+                        responsive: responsive,
+                      ),
+                      const SizedBox(height: 2),
+                      PageDateWidget(
+                        pages: 5,
+                        date: widget.document.createdAt,
+                        responsive: responsive,
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          LikeCommentWidget(
+                            likes: widget.document.likesCount,
+                            comments: widget.document.commentsCount,
+                            responsive: responsive,
+                            onLikeTap: () => widget.onLike?.call(widget.document),
+                            onCommentTap:
+                                () => widget.onComment?.call(widget.document),
+                          ),
+                          const Spacer(),
+                          _ActionIcon(
+                            icon: Icons.download_outlined,
+                            selected: _downloadSelected,
+                            onTap: () {
+                              setState(
+                                () => _downloadSelected = !_downloadSelected,
+                              );
+                              widget.onDownload?.call(widget.document);
+                            },
+                          ),
+                          const SizedBox(width: 6),
+                          _ActionIcon(
+                            icon: Icons.bookmark_border,
+                            selected: _saveSelected,
+                            onTap: () {
+                              setState(() => _saveSelected = !_saveSelected);
+                              widget.onSave?.call(widget.document);
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -14,30 +14,25 @@ class LikeDislikeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isSmallScreen = constraints.maxWidth < 380;
-
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildButton(context, doc.likes, true, isSmallScreen), // true = like
+            Expanded(child: _buildButton(context, doc.likes, true)),
             const SizedBox(width: 16),
-            _buildButton(context, doc.dislikes, false, isSmallScreen), // false = dislike
+            Expanded(child: _buildButton(context, doc.dislikes, false)),
           ],
         );
       },
     );
   }
 
-  Widget _buildButton(BuildContext context, int count, bool isLike, bool isSmallScreen) {
+  Widget _buildButton(BuildContext context, int count, bool isLike) {
     return GestureDetector(
       onTap: () {
         context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLike));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 20 : 36,
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.grey.shade300),
@@ -47,7 +42,7 @@ class LikeDislikeRow extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (!isLike)
               Transform.scale(

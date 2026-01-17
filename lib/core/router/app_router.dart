@@ -5,14 +5,18 @@ import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
-import 'package:studydocs/features/docs_management/data/datasource/docs_management_remote_datasource.dart'
-    show DocsManagementRemoteDataSourceImpl;
 import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/delete_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/get_all_docs_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/delete_admin_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/update_doc_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/update_admin_doc_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/upload_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
 import 'package:studydocs/features/docs_management/presentation/screen/docs_management_screen.dart';
+import 'package:studydocs/features/docs/logic/docs_page.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/main/main_screen.dart';
 import 'package:studydocs/features/manage_user/domain/repository/impl/ManageUserRepositoryImpl.dart';
 import 'package:studydocs/features/manage_user/domain/repository/manage_user_repository.dart';
@@ -42,7 +46,7 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.d
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
 import 'package:studydocs/features/docs/logic/docs_page.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
@@ -51,6 +55,8 @@ import 'package:studydocs/features/subject_library/logic/subject_library_bloc.da
 import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_documents_screen.dart';
 import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
+
+import '../../data/datasource/docs_management_remote_datasource.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -240,7 +246,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(
+          final documentDataSource = DocsRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(
@@ -302,7 +308,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(
+          final documentDataSource = DocsRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(
@@ -416,14 +422,18 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(),
+            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: context.read<DioClient>()),
           );
           return BlocProvider(
             create:
                 (context) => DocsManagementBloc(
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
+                  getAllDocsUseCase: GetAllDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
+                  deleteAdminDocUseCase: DeleteAdminDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
+                  updateAdminDocUseCase: UpdateAdminDocUseCase(repository),
+                  uploadDocUseCase: UploadDocUseCase(repository),
                 ),
             child: const DocsManagementScreen(),
           );

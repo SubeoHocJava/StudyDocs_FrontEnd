@@ -16,6 +16,7 @@ import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import '../../docs/presentation/screen/test_document_render_screen.dart' as test_screen;
 
 // Adapter to use DocumentEntity with the reused ListDocument widget
 class HomeDocumentAdapter extends DocumentUiList {
@@ -189,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                 height: 200,
               ),
 
-              const SizedBox(height: 24),
+
 
               // Search results view
               if (state.searchQuery.isNotEmpty) ...[
@@ -213,6 +214,9 @@ class _HomePageState extends State<HomePage> {
                     onSave: (doc) {
                       /* TODO */
                     },
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
               ] else ...[
                 // Default categorized view
@@ -233,6 +237,9 @@ class _HomePageState extends State<HomePage> {
                     popularDocs,
                     onDownload: (doc) {},
                     onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
 
                 const SizedBox(height: 24),
@@ -254,6 +261,9 @@ class _HomePageState extends State<HomePage> {
                     recentDocs,
                     onDownload: (doc) {},
                     onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
               ],
 

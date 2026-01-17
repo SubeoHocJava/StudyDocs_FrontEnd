@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
@@ -53,6 +54,9 @@ class StoredDocument extends StatelessWidget {
           },
           onComment: (doc) {
             context.read<LibraryBloc>().add(OpenCommentRequested(doc.id));
+          },
+          onTap: (doc) {
+             context.push('/document/${doc.id}');
           },
         ),
       ],
