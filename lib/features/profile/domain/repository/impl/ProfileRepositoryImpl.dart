@@ -197,6 +197,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       List<DocumentProfile> res= docs.map((doc) {
         return DocumentProfile(
           id: doc.id ?? '',
+          fileId: doc.fileId,
           title: doc.title,
           category: doc.course, // Mapped 'course' to 'category'
           institution: doc.school, // Mapped 'school' to 'institution'
@@ -205,6 +206,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
           likesCount: doc.likes,
           commentsCount: doc.comments.length, // use length of comments list
           thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+          isLiked: doc.currentUserReaction == 'like',
+          isSaved: doc.isSaved,
         );
       }).toList();
 

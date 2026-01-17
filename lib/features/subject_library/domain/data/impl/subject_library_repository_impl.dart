@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
-import 'package:studydocs/data/model/document_model.dart';
+import '../../../../docs/data/model/document_model.dart';
 import '../../ui_model/CommentEntity.dart';
 import '../../ui_model/doc_subject_lib_ui.dart';
 import '../subject_library_repository.dart';
@@ -58,19 +58,20 @@ class SubjectLibraryRepositoryImpl implements SubjectLibraryRepository {
     }
   }
 
-  DocumentSubjectLibUI _mapModelToUI(item) {
+  DocumentSubjectLibUI _mapModelToUI(DocumentModel item) {
      return DocumentSubjectLibUI(
-        id: item.id,
+        id: item.id ?? '',
+        fileId: item.fileId,
         title: item.title,
-        category: item.category ?? 'General',
-        institution: item.institution ?? 'Unknown School',
-        pages: item.pageCount ?? 0,
-        createdAt: item.createdAt ?? '',
-        likesCount: item.likesCount ?? 0,
-        commentsCount: item.commentsCount ?? 0,
-        thumbnailUrl: item.thumbnailUrl,
-        isLiked: false,
-        isSaved: false,
+        category: item.course, // Corrected from item.category
+        institution: item.school, // Corrected from item.institution
+        pages: item.pages, // Corrected from item.pageCount
+        createdAt: item.year, // Corrected from item.createdAt
+        likesCount: item.likes, // Corrected from item.likesCount
+        commentsCount: item.comments.length, // Corrected from item.commentsCount
+        thumbnailUrl: item.previewUrls.isNotEmpty ? item.previewUrls.first : null,
+        isLiked: item.currentUserReaction == 'like',
+        isSaved: item.isSaved,
       );
   }
 

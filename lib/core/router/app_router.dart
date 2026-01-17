@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
@@ -246,7 +247,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocsRemoteDataSourceImpl(
+          final documentDataSource = DocumentRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(
@@ -308,7 +309,7 @@ GoRouter createAppRouter() {
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocsRemoteDataSourceImpl(
+          final documentDataSource = DocumentRemoteDataSourceImpl(
             dioClient: dioClient,
           );
           final academicDataSource = AcademicRemoteDataSourceImpl(

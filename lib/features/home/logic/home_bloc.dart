@@ -4,6 +4,7 @@ import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart'; //  Import Asset Impl
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/impl/home_repository_impl.dart';
 import 'package:studydocs/features/home/domain/usecase/get_documents_usecase.dart';
@@ -114,7 +115,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
 HomeBloc createHomeBloc() {
   final dioClient = DioClient();
-  final remoteDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
+  final remoteDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
   final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
   final assetDataSource = AssetRemoteDataSourceImpl(
     dioClient: dioClient,

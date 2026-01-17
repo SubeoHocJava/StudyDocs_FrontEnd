@@ -3,7 +3,6 @@ import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/data/model/api_response.dart';
 import 'package:studydocs/data/model/request/upload_document_request.dart';
-import 'package:studydocs/data/model/document_model.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../../../features/docs/data/model/document_model.dart';
 import '../document_remote_datasource.dart';
@@ -123,7 +122,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
     try {
       final statsRes = await dioClient.get(
-        '${ApiConstants.reviewDocumentStats}/$targetId/stats',
+        '${ApiConstants.reviewDocumentStats}/$documentId/stats',
       );
       if (statsRes.statusCode == 200 && statsRes.data['data'] != null) {
         final data = statsRes.data['data'];
@@ -137,7 +136,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     // 3. Keep existing logic for comments...
     try {
       final reviewsRes = await dioClient.get(
-        '${ApiConstants.reviewBase}/document/$targetId',
+        '${ApiConstants.reviewBase}/document/$documentId',
         queryParameters: {'page': 0, 'size': 50},
       );
 
@@ -207,7 +206,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     try {
       await dioClient.post(
-        '${ApiConstants.reviewDocumentReact}/$targetId/react',
+        '${ApiConstants.reviewDocumentReact}/$documentId/react',
         queryParameters: {'type': isLike ? 'like' : 'dislike'},
       );
     } catch (e) {
@@ -223,7 +222,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     try {
       await dioClient.post(
         ApiConstants.reviewBase,
-        data: {'documentId': targetId, 'comment': text},
+        data: {'documentId': documentId, 'comment': text},
       );
     } catch (e) {
       rethrow;
@@ -247,6 +246,96 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }
 
   // --- PRIVATE MOCK HELPERS --- (Removed)
+  // --- USER DOCS (New Implementation) ---
+  @override
+  Future<List<DocumentModel>> getMyDocuments({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myDocuments,
+      queryParameters: {'page': page, 'size': size},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      if (data is Map && data.containsKey('content')) {
+        return (data['content'] as List)
+            .map((json) => DocumentModel.fromJson(json))
+            .toList();
+      } else if (data is List) {
+        return data.map((json) => DocumentModel.fromJson(json)).toList();
+      }
+    }
+    return [];
+    // throw ServerException('Failed to fetch user documents', response.statusCode ?? 0);
+  }
+
+  @override
+  Future<List<DocumentModel>> getMyNewestDocuments({
+    int limit = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myNewestDocuments,
+      queryParameters: {'limit': limit},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+       final data = response.data;
+       if (data is List) {
+          return data.map((json) => DocumentModel.fromJson(json)).toList();
+       } else if (data is Map && data.containsKey('content')) {
+          return (data['content'] as List).map((json) => DocumentModel.fromJson(json)).toList();
+       }
+    }
+    return [];
+  }
+
+  @override
+  Future<List<DocumentModel>> getViewHistory({
+    int page = 0,
+    int size = 10,
+    String? traceId,
+  }) async {
+    final response = await dioClient.get(
+      ApiConstants.myDocumentHistory,
+      queryParameters: {'page': page, 'size': size},
+    );
+    if (response.statusCode == 200 && response.data != null) {
+       final data = response.data;
+       if (data is List) {
+          return data.map((json) => DocumentModel.fromJson(json)).toList();
+       } else if (data is Map && data.containsKey('content')) {
+          return (data['content'] as List).map((json) => DocumentModel.fromJson(json)).toList();
+       }
+    }
+    return [];
+  }
+
+  @override
+  Future<List<DocumentModel>> updateDocument(
+    String documentId,
+    Map<String, dynamic> data, {
+    String? traceId,
+  }) async {
+     // TODO: Implement Update
+     // For now return empty or implement call
+    //  final response = await dioClient.put('${ApiConstants.userUpdateDocument}/$documentId', data: data);
+     return [];
+  }
+
+  @override
+  Future<List<DocumentModel>> deleteDocument(
+    String documentId, {
+    String? traceId,
+  }) async {
+      // TODO: Implement Delete
+      await dioClient.delete('${ApiConstants.userDeleteDocument}/$documentId');
+      return [];
+  }
+
   @override
   Future<DocumentModel> getPublicDocumentById(String id) async {
     final response = await dioClient.get(
@@ -260,8 +349,5 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     
     throw ServerException('Failed to fetch document detail: $id', response.statusCode ?? 0);
   }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

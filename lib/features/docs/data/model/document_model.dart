@@ -32,13 +32,15 @@ class DocumentModel extends DocumentEntity {
       title: json['title'] ?? 'Untitled',
       course: json['subjectName'] ?? 'Unknown Course', // Placeholder if backend missing
       school: json['universityName'] ?? 'Unknown School', // Placeholder
-      year: json['schoolYear'] ?? '2024-2025',
+      year: json['schoolYear']?.toString() ?? '2024-2025',
       uploader: json['uploadName'] ?? json['userId']?.toString() ?? 'Unknown User',
       likes: json['likes'] ?? 0,
       dislikes: json['dislikes'] ?? 0,
       comments: [], // Comments usually fetched separately
       isSaved: false,
-      pages: json['totalPages'] ?? 0, // Backend might not track pages
+      pages: (json['totalPages'] is int) 
+          ? json['totalPages'] 
+          : int.tryParse(json['totalPages']?.toString() ?? '0') ?? 0,
       fileSize: json['fileSize'] != null ? formatBytes(json['fileSize'], 2) : "Unknown", // Backend might not return size
       // downloadUrl is no longer directly in DocumentResponse.
       // FE must use fileId to fetch it.
@@ -69,6 +71,50 @@ class DocumentModel extends DocumentEntity {
       i++;
     }
     return '${d.toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+
+  DocumentModel copyWith({
+    String? id,
+    String? title,
+    String? course,
+    String? school,
+    String? year,
+    String? uploader,
+    int? likes,
+    int? dislikes,
+    List<CommentEntity>? comments,
+    bool? isSaved,
+    int? pages,
+    String? fileSize,
+    String? downloadUrl,
+    String? fileId,
+    String? currentUserReaction,
+    List<String>? previewUrls,
+    String? description,
+    String? subjectId,
+    String? universityId,
+  }) {
+    return DocumentModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      course: course ?? this.course,
+      school: school ?? this.school,
+      year: year ?? this.year,
+      uploader: uploader ?? this.uploader,
+      likes: likes ?? this.likes,
+      dislikes: dislikes ?? this.dislikes,
+      comments: comments ?? this.comments,
+      isSaved: isSaved ?? this.isSaved,
+      pages: pages ?? this.pages,
+      fileSize: fileSize ?? this.fileSize,
+      downloadUrl: downloadUrl ?? this.downloadUrl,
+      fileId: fileId ?? this.fileId,
+      currentUserReaction: currentUserReaction ?? this.currentUserReaction,
+      previewUrls: previewUrls ?? this.previewUrls,
+      description: description ?? this.description,
+      subjectId: subjectId ?? this.subjectId,
+      universityId: universityId ?? this.universityId,
+    );
   }
 
   static List<String> parsePreviews(Map<String, dynamic> json) {

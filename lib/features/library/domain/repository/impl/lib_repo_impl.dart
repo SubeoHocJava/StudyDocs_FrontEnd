@@ -20,19 +20,18 @@ class LibraryRepositoryImpl implements LibraryRepository {
     return documents
         .map(
           (doc) => DocumentLibraryUI(
-            id: doc.id,
+            id: doc.id ?? '',
             fileId: doc.fileId,
             title: doc.title,
-            category: doc.category ?? doc.subjectId ?? 'Không xác định',
-            institution:
-                doc.institution ?? doc.universityId ?? 'Không xác định',
-            pages: doc.pageCount ?? 0,
-            createdAt: doc.createdAt ?? '',
-            likesCount: doc.likesCount ?? 0,
-            commentsCount: doc.commentsCount ?? 0,
-            thumbnailUrl: doc.thumbnailUrl,
-            isLiked: false,
-            isSaved: false,
+            category: doc.course,
+            institution: doc.school,
+            pages: doc.pages,
+            createdAt: doc.year,
+            likesCount: doc.likes,
+            commentsCount: doc.comments.length,
+            thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+            isLiked: doc.currentUserReaction == 'like',
+            isSaved: doc.isSaved,
           ),
         )
         .toList();
@@ -45,19 +44,18 @@ class LibraryRepositoryImpl implements LibraryRepository {
     return documents
         .map(
           (doc) => DocumentLibraryUI(
-            id: doc.id,
+            id: doc.id ?? '',
             fileId: doc.fileId,
             title: doc.title,
-            category: doc.category ?? doc.subjectId ?? 'Không xác định',
-            institution:
-                doc.institution ?? doc.universityId ?? 'Không xác định',
-            pages: doc.pageCount ?? 0,
-            createdAt: doc.createdAt ?? '',
-            likesCount: doc.likesCount ?? 0,
-            commentsCount: doc.commentsCount ?? 0,
-            thumbnailUrl: doc.thumbnailUrl,
-            isLiked: false,
-            isSaved: false,
+            category: doc.course,
+            institution: doc.school,
+            pages: doc.pages,
+            createdAt: doc.year,
+            likesCount: doc.likes,
+            commentsCount: doc.comments.length,
+            thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+            isLiked: doc.currentUserReaction == 'like',
+            isSaved: doc.isSaved,
           ),
         )
         .toList();

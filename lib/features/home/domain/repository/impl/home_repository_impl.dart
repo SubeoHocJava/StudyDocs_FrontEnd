@@ -4,8 +4,10 @@ import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart'; // ✅ Import Asset
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/home_repository.dart';
-import 'package:studydocs/data/model/document_model.dart';
-import 'package:studydocs/core/utils/helpers/document_url_helper.dart';
+
+import '../../../../docs/data/model/document_model.dart';
+
+
 
 class HomeRepositoryImpl implements HomeRepository {
   final DocumentRemoteDataSource remoteDataSource;
@@ -82,30 +84,28 @@ class HomeRepositoryImpl implements HomeRepository {
         final institutionName =
             doc.universityId != null
                 ? universityMap[doc.universityId!] ??
-                    doc.institution ??
-                    'Unknown University'
-                : doc.institution ?? 'Unknown University';
+                    doc.school // Corrected
+                : doc.school; // Corrected
 
         final categoryName =
             doc.subjectId != null
                 ? subjectMap[doc.subjectId!] ??
-                    doc.category ??
-                    'Unknown Subject'
-                : doc.category ?? 'Unknown Subject';
+                    doc.course // Corrected
+                : doc.course; // Corrected
 
         return DocumentEntity(
-          id: doc.id,
+          id: doc.id ?? '',
           title: doc.title,
-          description: doc.description ?? '',
-          institution: institutionName, //  Tên đầy đủ từ Academic API
-          category: categoryName, //  Tên đầy đủ từ Academic API
-          academicYear: doc.createdAt ?? '',
-          viewCount: doc.viewCount,
-          downloadCount: doc.downloadCount,
-          likesCount: doc.likesCount,
-          commentsCount: doc.commentsCount,
-          rating: doc.rating,
-          thumbnailUrl: doc.thumbnailUrl,
+          description: doc.description,
+          institution: institutionName, 
+          category: categoryName, 
+          academicYear: doc.year, // Corrected
+          viewCount: 0, // Default
+          downloadCount: 0, // Default
+          likesCount: doc.likes, // Corrected
+          commentsCount: doc.comments.length, // Corrected
+          rating: 0.0, // Default
+          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null, // Corrected
         );
       }).toList();
     } catch (e) {
@@ -160,30 +160,28 @@ class HomeRepositoryImpl implements HomeRepository {
         final institutionName =
             doc.universityId != null
                 ? universityMap[doc.universityId!] ??
-                    doc.institution ??
-                    'Unknown University'
-                : doc.institution ?? 'Unknown University';
+                    doc.school 
+                : doc.school;
 
         final categoryName =
             doc.subjectId != null
                 ? subjectMap[doc.subjectId!] ??
-                    doc.category ??
-                    'Unknown Subject'
-                : doc.category ?? 'Unknown Subject';
+                    doc.course 
+                : doc.course;
 
         return DocumentEntity(
-          id: doc.id,
+          id: doc.id ?? '',
           title: doc.title,
-          description: doc.description ?? '',
+          description: doc.description,
           institution: institutionName,
           category: categoryName,
-          academicYear: doc.createdAt ?? '',
-          viewCount: doc.viewCount,
-          downloadCount: doc.downloadCount,
-          likesCount: doc.likesCount,
-          commentsCount: doc.commentsCount,
-          rating: doc.rating,
-          thumbnailUrl: doc.thumbnailUrl,
+          academicYear: doc.year,
+          viewCount: 0,
+          downloadCount: 0,
+          likesCount: doc.likes,
+          commentsCount: doc.comments.length,
+          rating: 0.0,
+          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
         );
       }).toList();
     } catch (e) {
@@ -213,7 +211,7 @@ class HomeRepositoryImpl implements HomeRepository {
     // Run in parallel for performance
     final futures = docs.map((doc) async {
       // Logic: If thumbnail is missing AND we have a fileId -> fetch asset info
-      if ((doc.thumbnailUrl == null || doc.thumbnailUrl!.isEmpty) &&
+      if (doc.previewUrls.isEmpty &&
           doc.fileId != null &&
           doc.fileId!.isNotEmpty) {
         try {
@@ -221,7 +219,7 @@ class HomeRepositoryImpl implements HomeRepository {
           final previewUrls = asset.previewUrls;
           if (previewUrls.isNotEmpty) {
             // Found a preview URL, update the document model
-            return doc.copyWith(thumbnailUrl: previewUrls.first);
+            return doc.copyWith(previewUrls: previewUrls);
           }
         } catch (_) {
           // Keep original doc on error
