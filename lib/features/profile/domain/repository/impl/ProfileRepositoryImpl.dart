@@ -2,7 +2,10 @@
 
 
 import 'package:file_picker/file_picker.dart';
+import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
@@ -19,12 +22,15 @@ import '../../../../../services/token_storage_service.dart';
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
   late final DocumentRemoteDataSource documentDataSource;
+  late final FollowRemoteDataSource followDataSource;
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
       assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
+    followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
+    documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
   }
 
 
@@ -152,25 +158,24 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<void> followUser(String userId) async {
-    try {
-      // TODO: Implement follow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Follow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error following user: $e');
+  Future<void> followUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
   }
 
   @override
-  Future<void> unfollowUser(String userId) async {
-    try {
-      // TODO: Implement unfollow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Unfollow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error unfollowing user: $e');
+  Future<void> unfollowUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
   }
 
   @override

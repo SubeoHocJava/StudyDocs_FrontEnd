@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:studydocs/data/datasource/upload_datasource.dart';
+
 import '../../../../../data/datasource/document_remote_datasource.dart';
 import '../../../../../data/datasource/impl/document_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
@@ -7,11 +9,11 @@ import '../upload_file_repository.dart';
 import '../../../../../data/model/request/upload_document_request.dart';
 
 class UpLoadFileRepositoryImpl implements UploadFileRepository {
-  late final DocumentRemoteDataSource docRemoteDataSource;
+  late final UploadRemoteDataSource uploadDatasource;
 
   UpLoadFileRepositoryImpl() {
     final dioClient = DioClient();
-    docRemoteDataSource = DocumentRemoteDataSourceImpl(
+    uploadDatasource = UploadRemoteDataSourceImpl(
       dioClient: dioClient,
     );
   }
@@ -39,7 +41,7 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
       );
 
       /// 3. Gọi RemoteDataSource
-      await docRemoteDataSource.uploadDocument(request, file);
+      await uploadDatasource.uploadDocument(request, file);
 
       return true;
     } catch (e) {
