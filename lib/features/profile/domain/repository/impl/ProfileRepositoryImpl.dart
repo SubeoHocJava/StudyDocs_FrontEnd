@@ -1,22 +1,24 @@
-import 'dart:async';
-import 'dart:convert';
+
+
 
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
+
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
 import '../../../../../core/network/dio_client.dart';
-import '../../../../../core/utils/helpers/document_url_helper.dart';
+
+import '../../../../../data/datasource/document_remote_datasource.dart';
 import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
-
+  late final DocumentRemoteDataSource documentDataSource;
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
     userRemoteDataSource = UserDataSourceImpl(
@@ -26,41 +28,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
 
-  final List<DocumentProfile> _mockDocuments = [
-    DocumentProfile(
-      id: 'doc_1',
-      title: 'Lập trình Flutter cơ bản',
-      category: 'Mobile',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 120,
-      createdAt: '2025-01-01',
-      likesCount: 45,
-      commentsCount: 10,
-      thumbnailUrl: 'https://picsum.photos/200/300',
-    ),
-    DocumentProfile(
-      id: 'doc_2',
-      title: 'Java OOP nâng cao',
-      category: 'Backend',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 200,
-      createdAt: '2025-02-10',
-      likesCount: 78,
-      commentsCount: 22,
-      thumbnailUrl: 'https://picsum.photos/200/301',
-    ),
-    DocumentProfile(
-      id: 'doc_3',
-      title: 'Cấu trúc dữ liệu & Giải thuật',
-      category: 'Computer Science',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 300,
-      createdAt: '2025-03-15',
-      likesCount: 120,
-      commentsCount: 35,
-      thumbnailUrl: 'https://picsum.photos/200/302',
-    ),
-  ];
+
   @override
   Future<ProfileEntity> getProfile(int userId) async {
     try {
@@ -71,7 +39,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
         throw Exception('User ID not found in local storage');
       }
 
-      print('User ID from storage: $storedUserId');
+      // print('User ID from storage: $storedUserId');
 
       final response =
       await userRemoteDataSource.getUserById(storedUserId);
@@ -206,8 +174,31 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  List<DocumentProfile> getDocumentsByUser(String id) {
-    // TODO: Implement real document fetching from API
-    return _mockDocuments;
+  Future<List<DocumentProfile>> getDocumentsByUser(String id) async {
+    try {
+      final docs = await documentDataSource.getMyDocuments();
+
+      List<DocumentProfile> res= docs.map((doc) {
+        return DocumentProfile(
+          id: doc.id,
+          title: doc.title,
+          category: doc.category ?? '',
+          institution: doc.institution ?? '',
+          pages: doc.pageCount ?? 0,
+          createdAt: doc.createdAt ?? '',
+          likesCount: doc.likesCount ?? 0,
+          commentsCount: doc.commentsCount ?? 0,
+          thumbnailUrl: doc.thumbnailUrl,
+        );
+      }).toList();
+
+      print("Log này của file: ProfileRepositoryImpl: đã load được document: "+res.length.toString());
+      return res;
+    } catch (e) {
+      // In case of error, you might want to return an empty list or rethrow
+      // For now, I'll log and return empty list or mock data if acceptable
+      print('Log này của file: ProfileRepositoryImpl: Error fetching user documents: $e');
+      return [];
+    }
   }
 }
