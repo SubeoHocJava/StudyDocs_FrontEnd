@@ -4,14 +4,23 @@ import '../../ui_model/doc_subject_lib_ui.dart';
 import '../subject_library_repository.dart';
 
 class SubjectLibraryRepositoryImpl implements SubjectLibraryRepository {
-  final DocsRemoteDataSource documentDataSource;
+  final DocumentRemoteDataSource documentDataSource;
+  final AcademicRemoteDataSource academicDataSource;
 
-  SubjectLibraryRepositoryImpl({required this.documentDataSource});
+  SubjectLibraryRepositoryImpl({
+    required this.documentDataSource,
+    required this.academicDataSource,
+  });
 
   @override
   Future<List<DocumentSubjectLibUI>> searchDocuments(String query) async {
     try {
       final models = await documentDataSource.searchDocuments(query);
+      return models.map<DocumentSubjectLibUI>((item) => _mapModelToUI(item)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
 
       return models.map<DocumentSubjectLibUI>((item) {
         return DocumentSubjectLibUI(
@@ -28,9 +37,40 @@ class SubjectLibraryRepositoryImpl implements SubjectLibraryRepository {
           isSaved: item.isSaved,
         );
       }).toList();
+  @override
+  Future<List<DocumentSubjectLibUI>> getDocumentsByAcademicId({String? universityId, String? subjectId}) async {
+    try {
+      // 1. Get List of IDs
+      final ids = await academicDataSource.getDocumentIds(universityId: universityId, subjectId: subjectId);
+      
+      if (ids.isEmpty) return [];
+
+      // 2. Fetch details parallel
+      final futures = ids.map((id) => documentDataSource.getPublicDocumentById(id));
+      final models = await Future.wait(futures);
+
+      // 3. Map to UI Model
+      return models.map((item) => _mapModelToUI(item)).toList();
     } catch (e) {
+      // Log error or rethrow
       return [];
     }
+  }
+
+  DocumentSubjectLibUI _mapModelToUI(item) {
+     return DocumentSubjectLibUI(
+        id: item.id,
+        title: item.title,
+        category: item.category ?? 'General',
+        institution: item.institution ?? 'Unknown School',
+        pages: item.pageCount ?? 0,
+        createdAt: item.createdAt ?? '',
+        likesCount: item.likesCount ?? 0,
+        commentsCount: item.commentsCount ?? 0,
+        thumbnailUrl: item.thumbnailUrl,
+        isLiked: false,
+        isSaved: false,
+      );
   }
 
   @override
@@ -65,3 +105,4 @@ class SubjectLibraryRepositoryImpl implements SubjectLibraryRepository {
     await documentDataSource.toggleSave(documentId);
   }
 }
+

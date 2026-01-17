@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
 import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
-import 'package:studydocs/features/docs_management/domain/repository/docs_management_repository.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/delete_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/get_all_docs_usecase.dart';
@@ -258,6 +256,7 @@ GoRouter createAppRouter() {
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
           final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
@@ -278,6 +277,9 @@ GoRouter createAppRouter() {
                       repository: subjectLibraryRepo,
                     ),
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
                       repository: subjectLibraryRepo,
                     ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
@@ -317,6 +319,7 @@ GoRouter createAppRouter() {
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
           final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
@@ -337,6 +340,9 @@ GoRouter createAppRouter() {
                       repository: subjectLibraryRepo,
                     ),
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
                       repository: subjectLibraryRepo,
                     ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(

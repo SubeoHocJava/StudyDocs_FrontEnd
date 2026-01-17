@@ -1,4 +1,4 @@
-
+import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import '../statistic_remote_datasource.dart';
 
@@ -11,14 +11,15 @@ class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
   Future<int> getTotalDocuments() async {
     try {
       final response = await dioClient.get(
-        '/api/v1/documents/admin/stats/documents/total',
+        ApiConstants.adminStatsTotalDocuments,
       );
       if (response.isSuccess && response.data != null) {
-        return response.data as int;
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
       }
-      return 0; // Default fallback
+      return 0;
     } catch (e) {
-      // Log or rethrow depending on strategy. Rethrowing for Repo to handle.
       throw Exception('Failed to fetch total documents: $e');
     }
   }
@@ -27,13 +28,15 @@ class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
   Future<int> getSystemStats(String period) async {
     try {
       final response = await dioClient.get(
-        '/api/v1/documents/admin/stats/system',
+        ApiConstants.adminStatsTotalDocuments,
         queryParameters: {'period': period},
       );
       if (response.isSuccess && response.data != null) {
-        return response.data as int;
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
       }
-      return 0; // Default fallback
+      return 0;
     } catch (e) {
       throw Exception('Failed to fetch system stats for $period: $e');
     }
