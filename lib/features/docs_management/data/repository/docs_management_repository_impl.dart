@@ -25,6 +25,10 @@ class DocsManagementRepositoryImpl implements DocsManagementRepository {
       dataSource.updateDocument(id, updatedDoc);
 
   @override
+  Future<void> updateAdminDocument(String id, DocumentEntity updatedDoc) =>
+      dataSource.updateAdminDocument(id, updatedDoc);
+
+  @override
   Future<void> uploadDocument(dynamic file, DocumentEntity metadata) =>
       dataSource.uploadDocument(file, metadata);
 }

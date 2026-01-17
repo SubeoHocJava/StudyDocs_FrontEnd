@@ -18,7 +18,7 @@ class ApiConstants {
   static const String authForgotPasswordConfirm = '/auth/forgot-password/confirm';
   // Document Endpoints
   static const String documents = '/documents';
-  static const String publicDocument = '/documents'; // Alias for consistency
+  static const String publicDocument = '/documents/public'; // Corrected Path
   static const String popularDocumentsReal =
       '/documents/public/most-liked'; //  Real API
   static const String popularDocuments = '/documents/public/most-liked';
@@ -44,11 +44,11 @@ class ApiConstants {
   static const String uploadDocument = '/';
 
   // Academic Endpoints
-  static const String academicBaseUrl ='http://172.16.17.80:8080/api/v1/academics/';
-  static const String academicUniversitiesFilter = 'universities/filter';
-  static const String academicSubjectsFilter = 'subjects/filter';
-  static const String academicUniversities = 'universities';
-  static const String academicSubjects = 'subjects';
+  static const String academicBaseUrl ='http://10.10.3.165:8080/api/v1/academics/';
+  static const String academicUniversitiesFilter = '/academics/universities/filter';
+  static const String academicSubjectsFilter = '/academics/subjects/filter';
+  static const String academicUniversities = '/academics/universities';
+  static const String academicSubjects = '/academics/subjects';
   static const String academicUniversityById =
       '/academics/universities/id'; //  New
   static const String academicSubjectById = '/academics/subjects/id'; //  New

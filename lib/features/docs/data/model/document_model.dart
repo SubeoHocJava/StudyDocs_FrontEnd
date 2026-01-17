@@ -33,7 +33,7 @@ class DocumentModel extends DocumentEntity {
       course: json['subjectName'] ?? 'Unknown Course', // Placeholder if backend missing
       school: json['universityName'] ?? 'Unknown School', // Placeholder
       year: json['schoolYear'] ?? '2024-2025',
-      uploader: json['uploadName'] ?? 'Unknown User', // Corrected key if needed, or keep uploaderName
+      uploader: json['uploadName'] ?? json['userId']?.toString() ?? 'Unknown User',
       likes: json['likes'] ?? 0,
       dislikes: json['dislikes'] ?? 0,
       comments: [], // Comments usually fetched separately

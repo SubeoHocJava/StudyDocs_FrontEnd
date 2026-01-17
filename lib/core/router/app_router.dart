@@ -13,6 +13,7 @@ import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_us
 import 'package:studydocs/features/docs_management/domain/usecase/get_all_docs_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/delete_admin_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/update_doc_usecase.dart';
+import 'package:studydocs/features/docs_management/domain/usecase/update_admin_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/upload_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
 import 'package:studydocs/features/docs_management/presentation/screen/docs_management_screen.dart';
@@ -417,8 +418,11 @@ GoRouter createAppRouter() {
             create:
                 (context) => DocsManagementBloc(
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
+                  getAllDocsUseCase: GetAllDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
+                  deleteAdminDocUseCase: DeleteAdminDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
+                  updateAdminDocUseCase: UpdateAdminDocUseCase(repository),
                   uploadDocUseCase: UploadDocUseCase(repository),
                 ),
             child: const DocsManagementScreen(),

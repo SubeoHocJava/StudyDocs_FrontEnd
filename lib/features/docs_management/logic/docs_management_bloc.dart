@@ -4,6 +4,7 @@ import '../domain/usecase/get_all_docs_usecase.dart';
 import '../domain/usecase/delete_doc_usecase.dart';
 import '../domain/usecase/delete_admin_doc_usecase.dart';
 import '../domain/usecase/update_doc_usecase.dart';
+import '../domain/usecase/update_admin_doc_usecase.dart';
 import '../domain/usecase/upload_doc_usecase.dart';
 import 'docs_management_event.dart';
 import 'docs_management_state.dart';
@@ -15,6 +16,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
   final DeleteAdminDocUseCase? deleteAdminDocUseCase;
   final UpdateDocUseCase updateDocUseCase;
   final UploadDocUseCase uploadDocUseCase;
+  final UpdateAdminDocUseCase? updateAdminDocUseCase;
 
   DocsManagementBloc({
     required this.getMyDocsUseCase,
@@ -23,6 +25,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
     this.deleteAdminDocUseCase,
     required this.updateDocUseCase,
     required this.uploadDocUseCase,
+    this.updateAdminDocUseCase,
   }) : super(DocsManagementInitial()) {
     on<LoadMyDocs>(_onLoadMyDocs);
     on<LoadAllDocs>(_onLoadAllDocs);
@@ -139,8 +142,14 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
     // Show Loading or remain loaded? Often better to show loading overlay or toast
     // For simplicity, we just process it.
     try {
-      await updateDocUseCase(event.docId, event.updatedDoc);
-      add(const LoadMyDocs()); // Reload to get fresh state
+      if (event.isAdmin) {
+         if (updateAdminDocUseCase == null) throw Exception("UpdateAdminDocUseCase not provided");
+         await updateAdminDocUseCase!(event.docId, event.updatedDoc);
+         add(const LoadAllDocs()); // Reload all for admin
+      } else {
+         await updateDocUseCase(event.docId, event.updatedDoc);
+         add(const LoadMyDocs()); // Reload user docs
+      }
     } catch (e) {
       emit(DocsManagementError("Failed to update: $e"));
     }

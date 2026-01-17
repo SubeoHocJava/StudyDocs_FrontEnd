@@ -26,8 +26,13 @@ import '../../../docs/domain/repository/docs_repository.dart';
 
 class DocsManagementDetailScreen extends StatefulWidget {
   final DocumentEntity document;
+  final bool isAdminView;
 
-  const DocsManagementDetailScreen({super.key, required this.document});
+  const DocsManagementDetailScreen({
+    super.key,
+    required this.document,
+    this.isAdminView = false,
+  });
 
   @override
   State<DocsManagementDetailScreen> createState() => _DocsManagementDetailScreenState();
@@ -62,12 +67,9 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
            }
         },
         builder: (context, state) {
-           if (state is docs_state.DocsError) {
-              return Scaffold(
-                 appBar: AppBar(title: const Text("Lỗi"), leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context))),
-                 body: Center(child: Text("Không thể tải dữ liệu: ${state.message}")),
-              );
-           }
+           // If state is DocsError, we just use the initial data (widget.document) 
+           // and let the listener show the SnackBar. We DO NOT replace the body.
+
            
            // Determine which document to show: enriched from state, or initial from widget
            DocumentEntity displayDoc = widget.document;
@@ -206,17 +208,19 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
                     child: Icon(Icons.person),
                 ),
                 const SizedBox(width: 12),
-                Column(
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                        Text(displayDoc.uploader, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text(displayDoc.school, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                        Text(displayDoc.uploader, style: const TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                        Text(displayDoc.school, style: const TextStyle(fontSize: 10, color: Colors.grey), overflow: TextOverflow.ellipsis),
                     ],
+                  ),
                 )
             ]),
 
             const SizedBox(height: 12),
-            LikeDislikeRow(doc: displayDoc),
+            if (!widget.isAdminView) LikeDislikeRow(doc: displayDoc),
 
             const SizedBox(height: 30),
             
@@ -232,7 +236,7 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
              ),
 
              // EXPANDED CONTENT: Comments
-             if (_isExpanded) ...[
+             if (_isExpanded && !widget.isAdminView) ...[
                 const SizedBox(height: 20),
                 const Divider(),
                 const Padding(

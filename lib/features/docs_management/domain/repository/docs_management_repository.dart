@@ -7,5 +7,6 @@ abstract class DocsManagementRepository {
   Future<void> deleteDocument(String id);
   Future<void> deleteAdminDocument(String id);
   Future<void> updateDocument(String id, DocumentEntity updatedDoc);
+  Future<void> updateAdminDocument(String id, DocumentEntity updatedDoc);
   Future<void> uploadDocument(dynamic file, DocumentEntity metadata);
 }

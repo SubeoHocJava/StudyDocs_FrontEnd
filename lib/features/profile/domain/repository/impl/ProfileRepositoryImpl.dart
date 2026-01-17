@@ -180,15 +180,15 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
       List<DocumentProfile> res= docs.map((doc) {
         return DocumentProfile(
-          id: doc.id,
+          id: doc.id ?? '',
           title: doc.title,
-          category: doc.category ?? '',
-          institution: doc.institution ?? '',
-          pages: doc.pageCount ?? 0,
-          createdAt: doc.createdAt ?? '',
-          likesCount: doc.likesCount ?? 0,
-          commentsCount: doc.commentsCount ?? 0,
-          thumbnailUrl: doc.thumbnailUrl,
+          category: doc.course, // Mapped 'course' to 'category'
+          institution: doc.school, // Mapped 'school' to 'institution'
+          pages: doc.pages,
+          createdAt: doc.year, // Mapped 'year' to 'createdAt'
+          likesCount: doc.likes,
+          commentsCount: doc.comments.length, // use length of comments list
+          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
         );
       }).toList();
 

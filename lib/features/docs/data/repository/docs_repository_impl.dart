@@ -70,7 +70,8 @@ class DocsRepositoryImpl implements DocsRepository {
       // Fetch University Name if ID exists and Name is missing/placeholder
       if (doc.universityId != null && (doc.school == 'Unknown School' || doc.school.isEmpty)) {
         try {
-          final response = await dio.get('${ApiConstants.academicUniversities}/${doc.universityId}');
+          // Endpoint: /academics/universities/id/{id}
+          final response = await dio.get('${ApiConstants.academicUniversityById}/${doc.universityId}');
           if (response.statusCode == 200 && response.data['data'] != null) {
              schoolName = response.data['data']['name'];
           }
@@ -82,7 +83,8 @@ class DocsRepositoryImpl implements DocsRepository {
       // Fetch Subject Name if ID exists and Name is missing/placeholder
       if (doc.subjectId != null && (doc.course == 'Unknown Course' || doc.course.isEmpty)) {
         try {
-           final response = await dio.get('${ApiConstants.academicSubjects}/${doc.subjectId}');
+           // Endpoint: /academics/subjects/id/{id}
+           final response = await dio.get('${ApiConstants.academicSubjectById}/${doc.subjectId}');
            if (response.statusCode == 200 && response.data['data'] != null) {
              courseName = response.data['data']['name'];
            }

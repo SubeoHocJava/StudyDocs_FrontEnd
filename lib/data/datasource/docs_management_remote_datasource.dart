@@ -14,6 +14,7 @@ abstract class DocsManagementRemoteDataSource {
   Future<void> deleteDocument(String id);
   Future<void> deleteAdminDocument(String id);
   Future<void> updateDocument(String id, DocumentEntity updatedDoc);
+  Future<void> updateAdminDocument(String id, DocumentEntity updatedDoc);
   Future<void> uploadDocument(dynamic file, DocumentEntity metadata);
 }
 
@@ -98,17 +99,34 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   }
 
   @override
+  Future<void> updateAdminDocument(String id, DocumentEntity updatedDoc) async {
+    await dioClient.put(
+      '${ApiConstants.documentServiceUrl}/internal/documents/$id',
+      data: {
+        'title': updatedDoc.title,
+        'description': updatedDoc.description, 
+        'schoolYear': updatedDoc.year,
+      },
+    );
+  }
+
+  @override
   Future<void> uploadDocument(dynamic file, DocumentEntity metadata) async {
     // Construct JSON data matching UploadDocumentRequest
-    // Try to parse School/Course as UUIDs if user entered them manually
-    String? universityId;
-    if (metadata.school.length == 36) {
+    // Helper to get ID: prioritize explicit ID, fallback to parsing if name looks like UUID
+    String? universityId = metadata.universityId;
+    if (universityId == null && metadata.school.length == 36) {
        universityId = metadata.school;
     }
-    String? subjectId;
-    if (metadata.course.length == 36) {
+
+    String? subjectId = metadata.subjectId;
+    if (subjectId == null && metadata.course.length == 36) {
        subjectId = metadata.course;
     }
+    
+    // Explicitly nullify if empty string to avoid backend errors if any
+    if (universityId != null && universityId.isEmpty) universityId = null;
+    if (subjectId != null && subjectId.isEmpty) subjectId = null;
 
     final metadataMap = {
       'title': metadata.title,
@@ -127,10 +145,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
 
     FormData formData = FormData.fromMap({
       'file': multipartFile,
-      'data': MultipartFile.fromString(
-          jsonEncode(metadataMap),
-          contentType: MediaType.parse("application/json"),
-      ),
+      'data': jsonEncode(metadataMap), // Align with standard String body
     });
 
     await dioClient.post(

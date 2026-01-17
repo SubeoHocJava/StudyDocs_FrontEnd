@@ -52,11 +52,12 @@ class DeleteAdminDocEvent extends DocsManagementEvent {
 class UpdateDocEvent extends DocsManagementEvent {
   final String docId;
   final DocumentEntity updatedDoc;
+  final bool isAdmin;
 
-  const UpdateDocEvent(this.docId, this.updatedDoc);
+  const UpdateDocEvent(this.docId, this.updatedDoc, {this.isAdmin = false});
 
   @override
-  List<Object?> get props => [docId, updatedDoc];
+  List<Object?> get props => [docId, updatedDoc, isAdmin];
 }
 
 class UploadDocEvent extends DocsManagementEvent {

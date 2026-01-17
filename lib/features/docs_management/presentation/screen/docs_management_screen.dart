@@ -127,7 +127,7 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                         MaterialPageRoute(
                           builder: (_) => BlocProvider.value(
                             value: bloc,
-                            child: const DocsEditScreen(),
+                            child: DocsEditScreen(isAdmin: widget.isAdminMode),
                           ),
                         ),
                       );
@@ -207,7 +207,10 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
             MaterialPageRoute(
               builder: (_) => BlocProvider.value(
                 value: context.read<DocsManagementBloc>(),
-                child: DocsManagementDetailScreen(document: doc),
+                child: DocsManagementDetailScreen(
+                  document: doc,
+                  isAdminView: widget.isAdminMode,
+                ),
               ),
             ),
           );

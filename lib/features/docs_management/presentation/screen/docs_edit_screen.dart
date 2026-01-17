@@ -6,11 +6,16 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../../logic/docs_management_event.dart';
 import '../../../docs/presentation/widgets/document_preview_widget.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/features/explore/domain/entity/school_entity.dart';
+import 'package:studydocs/features/subject_library/domain/entity/subject_entity.dart';
 
 class DocsEditScreen extends StatefulWidget {
   final DocumentEntity? document; // Null if creating new
+  final bool isAdmin;
 
-  const DocsEditScreen({super.key, this.document});
+  const DocsEditScreen({super.key, this.document, this.isAdmin = false});
 
   @override
   State<DocsEditScreen> createState() => _DocsEditScreenState();
@@ -24,14 +29,43 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
   late TextEditingController _yearController;
   late TextEditingController _subjectController;
 
+  late AcademicRemoteDataSourceImpl _academicDataSource;
+  String? _selectedUniversityId;
+  String? _selectedSubjectId;
+
   @override
   void initState() {
     super.initState();
+    _academicDataSource = AcademicRemoteDataSourceImpl(dioClient: context.read<DioClient>());
+    
     _titleController = TextEditingController(text: widget.document?.title ?? "");
     _descriptionController = TextEditingController(text: widget.document?.description ?? "");
-    _schoolController = TextEditingController(text: widget.document?.school ?? "Trường Đại học Nông Lâm Tp. HCM");
+    _schoolController = TextEditingController(text: widget.document?.school ?? "");
     _yearController = TextEditingController(text: widget.document?.year ?? "2024-2025");
     _subjectController = TextEditingController(text: widget.document?.course ?? "");
+    
+    _selectedUniversityId = widget.document?.universityId;
+    _selectedSubjectId = widget.document?.subjectId;
+    
+    // Auto-fetch names if missing
+    _enrichNamesIfNeeded();
+  }
+
+  Future<void> _enrichNamesIfNeeded() async {
+    if (widget.document != null) {
+       if (_selectedUniversityId != null && _schoolController.text.isEmpty) {
+          try {
+             final uni = await _academicDataSource.getUniversityById(_selectedUniversityId!);
+             if (mounted) setState(() => _schoolController.text = uni.name);
+          } catch (_) {}
+       }
+       if (_selectedSubjectId != null && _subjectController.text.isEmpty) {
+          try {
+             final subj = await _academicDataSource.getSubjectById(_selectedSubjectId!);
+             if (mounted) setState(() => _subjectController.text = subj.name);
+          } catch (_) {}
+       }
+    }
   }
 
   @override
@@ -127,11 +161,19 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
               // SCHOOL / SUBJECT - Only for New Documents (Hidden/Read-only in Edit)
                if (!isEditing) ...[
                    _buildLabel("Trường học"),
-                   _buildTextField("Trường học", _schoolController, icon: Icons.school),
+                   InkWell(
+                     onTap: () => _showSchoolSelection(),
+                     child: _buildTextField("Chọn trường học", _schoolController, icon: Icons.school, enabled: false),
+                   ),
                    const SizedBox(height: 16),
                    
                    _buildLabel("Môn học"),
-                   _buildTextField("Môn học", _subjectController, icon: Icons.folder),
+                   InkWell(
+                     onTap: _selectedUniversityId == null 
+                         ? () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vui lòng chọn trường trước")))
+                         : () => _showSubjectSelection(),
+                     child: _buildTextField("Chọn môn học", _subjectController, icon: Icons.folder, enabled: false),
+                   ),
                    const SizedBox(height: 16),
                ] else ...[
                    // Optional: Show them as read-only info if needed, or keep hidden as per request "chỉ cho chỉnh sửa..."
@@ -165,20 +207,22 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
                                      // User asked to remove them, but backend might need them.
                                      // Keep existing if editing, or default if not changed.
                                      // Since controllers are gone, we use existing entity value.
-                                     school: widget.document!.school, 
-                                     course: widget.document!.course,
                                      year: _yearController.text,
                                  );
-                                 context.read<DocsManagementBloc>().add(UpdateDocEvent(widget.document!.id!, updatedDoc));
+                                 context.read<DocsManagementBloc>().add(UpdateDocEvent(
+                                     widget.document!.id!, 
+                                     updatedDoc,
+                                     isAdmin: widget.isAdmin
+                                 ));
                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đã cập nhật tài liệu")));
                              } else {
                                if (_selectedFile != null) {
-                                  final newDoc = DocumentEntity(
+                                   final newDoc = DocumentEntity(
                                     id: '', 
                                     title: _titleController.text,
                                     description: _descriptionController.text,
-                                    school: _schoolController.text,
-                                    course: _subjectController.text,
+                                    school: _schoolController.text, // Use Name for display/fallback
+                                    course: _subjectController.text, // Use Name for display/fallback
                                     year: _yearController.text,
                                     uploader: 'Me',
                                     likes: 0,
@@ -189,6 +233,8 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
                                     downloadUrl: '',
                                     fileId: '',
                                     previewUrls: [],
+                                    universityId: _selectedUniversityId,
+                                    subjectId: _selectedSubjectId,
                                   );
                                   context.read<DocsManagementBloc>().add(UploadDocEvent(
                                     _selectedFile, 
@@ -246,4 +292,138 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
     );
   }
 
+  void _showSchoolSelection() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return _SelectionModal(
+          title: "Chọn trường học",
+          onSearch: (query) => _academicDataSource.searchSchools(query),
+          onSelect: (item) {
+             final school = item as SchoolEntity;
+             setState(() {
+               _selectedUniversityId = school.id;
+               _schoolController.text = school.name;
+               // Reset subject
+               _selectedSubjectId = null;
+               _subjectController.text = "";
+             });
+          },
+        );
+      },
+    );
+  }
+
+  void _showSubjectSelection() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return _SelectionModal(
+          title: "Chọn môn học",
+          onSearch: (query) async {
+             // Filter locally or fetch all?
+             // Academic datasource getSubjectsBySchool takes no query, just ID.
+             // We can implement client-side filter here.
+             final subjects = await _academicDataSource.getSubjectsBySchool(_selectedUniversityId!);
+             if (query.isEmpty) return subjects;
+             return subjects.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+          },
+          onSelect: (item) {
+             final subject = item as SubjectEntity;
+             setState(() {
+               _selectedSubjectId = subject.id;
+               _subjectController.text = subject.name;
+             });
+          },
+        );
+      },
+    );
+  }
+}
+
+class _SelectionModal<T> extends StatefulWidget {
+  final String title;
+  final Future<List<T>> Function(String query) onSearch;
+  final Function(T item) onSelect;
+
+  const _SelectionModal({required this.title, required this.onSearch, required this.onSelect});
+
+  @override
+  State<_SelectionModal<T>> createState() => _SelectionModalState<T>();
+}
+
+class _SelectionModalState<T> extends State<_SelectionModal<T>> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  List<T> _items = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _search("");
+  }
+
+  void _search(String query) async {
+    setState(() {
+       _isLoading = true;
+       _errorMessage = null; 
+    });
+    try {
+      final res = await widget.onSearch(query);
+      if (mounted) setState(() => _items = res);
+    } catch (e) {
+      if (mounted) setState(() => _errorMessage = e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+           Text(widget.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+           const SizedBox(height: 12),
+           TextField(
+             controller: _searchCtrl,
+             decoration: const InputDecoration(
+               hintText: "Tìm kiếm...",
+               prefixIcon: Icon(Icons.search),
+               border: OutlineInputBorder(),
+             ),
+             onChanged: (val) => _search(val),
+           ),
+           const SizedBox(height: 12),
+           Expanded(
+             child: _isLoading 
+                 ? const Center(child: CircularProgressIndicator())
+                 : _errorMessage != null
+                    ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
+                    : ListView.builder(
+                     itemCount: _items.length,
+                     itemBuilder: (context, index) {
+                        final item = _items[index];
+                        String name = "";
+                        if (item is SchoolEntity) name = item.name;
+                        if (item is SubjectEntity) name = item.name;
+                        return ListTile(
+                          title: Text(name),
+                          onTap: () {
+                            widget.onSelect(item);
+                            Navigator.pop(context);
+                          },
+                        );
+                     },
+                 ),
+           )
+        ],
+      ),
+    );
+  }
 }

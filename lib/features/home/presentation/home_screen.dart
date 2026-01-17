@@ -190,22 +190,7 @@ class _HomePageState extends State<HomePage> {
                 height: 200,
               ),
 
-              // Temporary Test Button
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                     Navigator.of(context).push(
-                       MaterialPageRoute(builder: (_) => const test_screen.TestRenderScreen()),
-                     );
-                  },
-                  icon: const Icon(Icons.bug_report),
-                  label: const Text("Test Cloudinary Render"),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
-                ),
-              ),
 
-              const SizedBox(height: 24),
 
               // Search results view
               if (state.searchQuery.isNotEmpty) ...[
@@ -229,6 +214,9 @@ class _HomePageState extends State<HomePage> {
                     onSave: (doc) {
                       /* TODO */
                     },
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
               ] else ...[
                 // Default categorized view
@@ -249,6 +237,9 @@ class _HomePageState extends State<HomePage> {
                     popularDocs,
                     onDownload: (doc) {},
                     onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
 
                 const SizedBox(height: 24),
@@ -270,6 +261,9 @@ class _HomePageState extends State<HomePage> {
                     recentDocs,
                     onDownload: (doc) {},
                     onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
               ],
 

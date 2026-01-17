@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:studydocs/data/model/document_model.dart';
 import 'package:studydocs/data/model/request/upload_document_request.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
+
+import '../../features/docs/data/model/document_model.dart';
 
 abstract class DocumentRemoteDataSource {
   // Upload
