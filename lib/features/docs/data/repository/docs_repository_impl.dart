@@ -32,19 +32,22 @@ class DocsRepositoryImpl implements DocsRepository {
       dataSource.getReviewsByDocumentId(id).catchError((_) => <CommentEntity>[]),
     ]);
 
-    final doc = results[0] as DocumentEntity;
+    var doc = results[0] as DocumentEntity;
     final stats = results[1] as Map<String, dynamic>;
     final reaction = results[2] as String?; 
     final reviews = results[3] as List<CommentEntity>;
 
-    // Enrich document (school/subject name)
+    // Attach reviews so they can be enriched with author names
+    doc = doc.copyWith(comments: reviews);
+
+    // Enrich document (school/subject name, uploader name, comment author names)
     final enrichedDoc = await _enrichDocument(doc);
 
     return enrichedDoc.copyWith(
       likes: (stats['likeCount'] as num?)?.toInt() ?? 0,
       dislikes: (stats['dislikeCount'] as num?)?.toInt() ?? 0,
       currentUserReaction: reaction,
-      comments: reviews,
+      // comments: reviews, // MOVED UP: Do not overwrite enriched comments!
       description: doc.description, // Ensure description isn't wiped out
     );
   }
@@ -135,59 +138,8 @@ class DocsRepositoryImpl implements DocsRepository {
 
       
       // Enrich Comments (fetch author names)
-      List<CommentEntity> enrichedComments = List.from(doc.comments);
-      if (enrichedComments.isNotEmpty) {
-           final userDio = Dio(BaseOptions(
-             baseUrl: ApiConstants.baseUrl, 
-             connectTimeout: const Duration(seconds: 10),
-           ));
-           if (token != null) {
-             userDio.options.headers['Authorization'] = token;
-           }
-           
-           // Collect unique User IDs that need fetching
-           final userIdsToFetch = enrichedComments
-               .map((c) => c.authorId)
-               .where((id) => id != null && id.isNotEmpty) // && (c.author == 'User' || c.author == c.authorId) check?
-               .toSet();
-
-           // Basic cache map to avoid duplicate calls in same batch
-           final Map<String, String> userNameCache = {};
-
-           for (final userId in userIdsToFetch) {
-              if (userId == null) continue;
-              try {
-                  final response = await userDio.get(
-                     ApiConstants.usersGetById,
-                     queryParameters: {'id': userId},
-                  );
-                  if (response.statusCode == 200 && response.data != null) {
-                      final root = response.data;
-                      final userData = (root is Map && root.containsKey('data')) ? root['data'] : root; // Fix here too
-                      
-                      if (userData is Map) {
-                          final name = userData['fullName'] ?? 
-                                       userData['userName'] ?? 
-                                       userData['uploadName'] ??
-                                       (userData['firstName'] != null ? "${userData['firstName']} ${userData['lastName'] ?? ''}".trim() : null);
-                          if (name != null) {
-                              userNameCache[userId] = name;
-                          }
-                      }
-                  }
-              } catch (e) {
-                  // Ignore error, keep original name/ID
-              }
-           }
-
-           // Update comments with fetched names
-           enrichedComments = enrichedComments.map((comment) {
-               if (comment.authorId != null && userNameCache.containsKey(comment.authorId)) {
-                   return comment.copyWith(author: userNameCache[comment.authorId]);
-               }
-               return comment;
-           }).toList();
-      }
+      // Use the helper method now
+      List<CommentEntity> enrichedComments = await _enrichCommentAuthors(doc.comments);
 
       return doc.copyWith(
         school: schoolName,
@@ -224,6 +176,67 @@ class DocsRepositoryImpl implements DocsRepository {
   }
 
   @override
-  Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10}) =>
-      dataSource.getReviewsByDocumentId(docId, page: page, size: size);
+  Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10}) async {
+    final comments = await dataSource.getReviewsByDocumentId(docId, page: page, size: size);
+    return _enrichCommentAuthors(comments);
+  }
+
+  Future<List<CommentEntity>> _enrichCommentAuthors(List<CommentEntity> comments) async {
+    if (comments.isEmpty) return comments;
+
+    try {
+      final userDio = Dio(BaseOptions(
+        baseUrl: ApiConstants.baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+      ));
+
+      final token = await TokenStorageService().getAuthorizationHeader();
+      if (token != null) {
+        userDio.options.headers['Authorization'] = token;
+      }
+
+      final userIdsToFetch = comments
+          .map((c) => c.authorId)
+          .where((id) => id != null && id.isNotEmpty)
+          .toSet();
+
+      final Map<String, String> userNameCache = {};
+
+      for (final userId in userIdsToFetch) {
+        if (userId == null) continue;
+        try {
+          final response = await userDio.get(
+            ApiConstants.usersGetById,
+            queryParameters: {'id': userId},
+          );
+          if (response.statusCode == 200 && response.data != null) {
+            final root = response.data;
+            final userData = (root is Map && root.containsKey('data')) ? root['data'] : root;
+
+            if (userData is Map) {
+              final name = userData['fullName'] ??
+                  userData['userName'] ??
+                  userData['uploadName'] ??
+                  (userData['firstName'] != null ? "${userData['firstName']} ${userData['lastName'] ?? ''}".trim() : null);
+              if (name != null) {
+                userNameCache[userId] = name;
+              }
+            }
+          }
+        } catch (e) {
+          // Ignore
+        }
+      }
+
+      return comments.map((comment) {
+        if (comment.authorId != null && userNameCache.containsKey(comment.authorId)) {
+          return comment.copyWith(author: userNameCache[comment.authorId]);
+        }
+        return comment;
+      }).toList();
+    } catch (e) {
+      print('Error enriching comments: $e');
+      return comments;
+    }
+  }
 }
