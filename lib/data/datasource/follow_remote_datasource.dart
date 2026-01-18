@@ -24,4 +24,7 @@ abstract class FollowRemoteDataSource {
 
   /// Count following
   Future<int> countFollowing(String userId);
+
+  /// Check if user is following
+  Future<bool> isFollowing(String followerId, String followingId);
 }

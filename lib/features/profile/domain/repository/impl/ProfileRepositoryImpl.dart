@@ -38,11 +38,13 @@ class ProfileRepositoryImpl extends ProfileRepository {
     try {
 
       // print('User ID from storage: $storedUserId');
-
+      final idUser = await TokenStorageService().getUserId();
       final response =
       await userRemoteDataSource.getUserById(userId);
       final countFollower = await followDataSource.countFollowers(userId);
       final countFollowing = await followDataSource.countFollowing(userId);
+      final theIsFollowing = await followDataSource.isFollowing(idUser!, userId);
+
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {
@@ -61,7 +63,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
           address: userData['address'] ?? '',
           avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
-          isFollowing: userData['isFollowing'] ?? false,
+          isFollowing: theIsFollowing,//kéo sourse trả về true
           school: userData['school']??'',
           countFollower: countFollower ?? 0,
           countFollowing: countFollowing ?? 0,
