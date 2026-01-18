@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:studydocs/features/notification/domain/repository/notification_repository.dart';
@@ -148,4 +149,25 @@ class FcmService {
   Future<String?> getToken() async {
     return await _firebaseMessaging.getToken();
   }
+
+  /// Đăng ký token hiện tại (dùng khi user login)
+  Future<void> registerCurrentToken() async {
+    try {
+      String? token = await _firebaseMessaging.getToken();
+      if (token != null) {
+        log('[FCM] Registering current token for logged-in user');
+        await _registerToken(token);
+      } else {
+        log('[FCM] Token is null, cannot register');
+      }
+    } catch (e) {
+      log('[FCM] Error registering current token: $e');
+    }
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  log('[FCM] Handling a background message: ${message.messageId}');
 }

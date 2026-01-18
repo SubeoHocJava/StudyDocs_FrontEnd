@@ -3,7 +3,7 @@ class ApiConstants {
   // Web/iOS: dùng localhost
   // Android Emulator: dùng 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8081/api/v1';
-  static const String baseUrl = 'http://192.168.1.244:8080/api/v1';
+  static const String baseUrl = 'http://10.0.20.173:8080/api/v1';
   static const String reviewBaseUrl = 'http://10.10.3.165:8080/api/v1'; // Same as base in current local config
 
   // Auth Endpoints

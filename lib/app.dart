@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/logic/home_bloc.dart';
 import 'features/auth/presentation/bloc/auth_status_cubit.dart';
+import 'features/notification/service/fcm_service.dart';
 import 'core/router/app_router.dart';
 
 final _router = createAppRouter();
@@ -48,7 +49,15 @@ class _MyAppState extends State<MyApp> {
                     create: (_) => AuthStatusCubit(),
                   ),
                 ],
-                child: child!,
+                child: BlocListener<AuthStatusCubit, AuthStatus>(
+                  listener: (context, state) {
+                    if (state is AuthAuthenticated) {
+                      // Khi user login thành công (hoặc auto login), đăng ký FCM token
+                      FcmService().registerCurrentToken();
+                    }
+                  },
+                  child: child!,
+                ),
               );
             },
           );
