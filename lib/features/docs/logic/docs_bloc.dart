@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../domain/usecase/get_document_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';

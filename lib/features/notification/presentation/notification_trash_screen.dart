@@ -203,37 +203,45 @@ class _NotificationTrashScreenState extends State<NotificationTrashScreen> {
                           ),
                         ),
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: sections.length,
-                          itemBuilder: (context, index) {
-                            final section = sections[index];
-                            return NotificationSection(
-                              title: section.title,
-                              notifications: section.items,
-                              type: NotificationSectionType.trash,
-                              selectedIds: _selectedIds.toList(),
-                              onCheck: _handleCheck,
-                              onRestore: (id) {
-                                context.read<NotificationBloc>().add(
-                                  RestoreNotificationEvent([id]),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                    Text('Khôi phục thông báo thành công'),
-                                  ),
-                                );
-                              },
-                              onHardDelete: (id) {
-                                context.read<NotificationBloc>().add(
-                                  DeleteNotificationEvent(
-                                    [id],
-                                    DeleteType.hard,
-                                  ),
-                                );
-                              },
+                        child: RefreshIndicator(
+                          onRefresh: () async {
+                            context.read<NotificationBloc>().add(
+                              const LoadNotificationEvent(isDeleted: true),
                             );
                           },
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: sections.length,
+                            itemBuilder: (context, index) {
+                              final section = sections[index];
+                              return NotificationSection(
+                                title: section.title,
+                                notifications: section.items,
+                                type: NotificationSectionType.trash,
+                                selectedIds: _selectedIds.toList(),
+                                onCheck: _handleCheck,
+                                onRestore: (id) {
+                                  context.read<NotificationBloc>().add(
+                                    RestoreNotificationEvent([id]),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                      Text('Khôi phục thông báo thành công'),
+                                    ),
+                                  );
+                                },
+                                onHardDelete: (id) {
+                                  context.read<NotificationBloc>().add(
+                                    DeleteNotificationEvent(
+                                      [id],
+                                      DeleteType.hard,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],

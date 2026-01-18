@@ -13,7 +13,7 @@ class SchoolLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final responsive = context.responsive;
     return Center(
-      child: Container(
+      child: SizedBox(
         width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,14 +35,14 @@ class SchoolLabel extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     final bloc = context.read<UploadFileBloc>();
-                    TextEditingController _controller = TextEditingController();
+                    TextEditingController controller = TextEditingController();
                     showDialog(
                       context: context,
                       builder: (BuildContext dialogContext) {
                         return AlertDialog(
                           title: Text("Chỉnh sửa trường học"),
                           content: TextField(
-                            controller: _controller,
+                            controller: controller,
                             decoration: InputDecoration(
                               labelText: "Nhập dữ liệu",
                               border: OutlineInputBorder(),
@@ -56,7 +56,7 @@ class SchoolLabel extends StatelessWidget {
                             ElevatedButton(
                               onPressed: () {
                                 bloc.add(
-                                  EditSchoolLabel(_controller.text),
+                                  EditSchoolLabel(controller.text),
                                 ); //
                                 Navigator.of(dialogContext).pop();
                               },

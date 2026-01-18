@@ -1,10 +1,5 @@
-import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/model/api_response.dart';
 
-import '../../core/constants/api_constants.dart';
 
 /// ===============================
 /// ABSTRACT INTERFACE

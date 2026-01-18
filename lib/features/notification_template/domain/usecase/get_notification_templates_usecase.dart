@@ -4,10 +4,10 @@ import 'package:studydocs/features/notification_template/domain/repository/notif
 
 class GetNotificationTemplatesParams {
   final String? query;
-  final String? type;
+  final String? category;
   final String? channel;
 
-  GetNotificationTemplatesParams({this.query, this.type, this.channel});
+  GetNotificationTemplatesParams({this.query, this.category, this.channel});
 }
 
 class GetNotificationTemplatesUseCase {
@@ -18,7 +18,7 @@ class GetNotificationTemplatesUseCase {
   Future<List<NotificationTemplateEntity>> call([GetNotificationTemplatesParams? params]) async {
     return await repository.getTemplates(
       query: params?.query,
-      type: params?.type,
+      category: params?.category,
       channel: params?.channel,
     );
   }

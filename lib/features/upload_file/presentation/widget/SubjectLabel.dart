@@ -15,7 +15,7 @@ class SubjectLabel extends StatelessWidget {
     final responsive = context.responsive;
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,14 +37,14 @@ class SubjectLabel extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     final bloc = context.read<UploadFileBloc>();
-                    TextEditingController _controller = TextEditingController();
+                    TextEditingController controller = TextEditingController();
                     showDialog(
                       context: context,
                       builder: (BuildContext dialogContext) {
                         return AlertDialog(
                           title: Text("Chỉnh sửa môn học"),
                           content: TextField(
-                            controller: _controller,
+                            controller: controller,
                             decoration: InputDecoration(
                               labelText: "Nhập dữ liệu",
                               border: OutlineInputBorder(),
@@ -58,7 +58,7 @@ class SubjectLabel extends StatelessWidget {
                             ElevatedButton(
                               onPressed: () {
                                 bloc.add(
-                                  EditSubjectLabel(_controller.text),
+                                  EditSubjectLabel(controller.text),
                                 ); // dùng bloc đã lưu
                                 Navigator.of(dialogContext).pop();
                               },

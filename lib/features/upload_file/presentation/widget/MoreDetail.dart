@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
@@ -26,7 +25,7 @@ class _MoreDetailState extends State<MoreDetail> {
     final responsive = context.responsive;
 
     return Center(
-      child: Container(
+      child: SizedBox(
         width: responsive.widthPercent(responsive.isMobile ? 80 : 160),
         child: Form(
           key: _formKey,

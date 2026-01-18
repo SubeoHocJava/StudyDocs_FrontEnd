@@ -1,10 +1,6 @@
 import 'dart:async';
 
-import '../../../../core/network/dio_client.dart';
-import '../../core/constants/review_api_constants.dart';
-import '../../core/constants/document_api_constants.dart';
 import '../../features/docs/domain/entity/document_entity.dart';
-import '../../features/subject_library/domain/ui_model/CommentEntity.dart' hide CommentEntity;
 
 abstract class DocsRemoteDataSource {
   Future<DocumentEntity> getDocumentDetails();

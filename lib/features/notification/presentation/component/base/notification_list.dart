@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
-import 'package:studydocs/features/notification/logic/notification_enum.dart';
 import 'package:studydocs/features/notification/presentation/component/normal/notification_item.dart';
 import 'package:studydocs/features/notification/presentation/component/trash/notification_trash_item.dart';
-import 'package:studydocs/features/notification/presentation/component/trash/notification_trash_modal.dart';
 
 
 class NotificationList extends StatelessWidget {

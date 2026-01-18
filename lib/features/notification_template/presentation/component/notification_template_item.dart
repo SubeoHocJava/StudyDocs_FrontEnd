@@ -76,6 +76,6 @@ class NotificationTemplateItem extends StatelessWidget {
   }
 
   Widget _buildIcon() {
-    return NotificationIconHelper.getIcon(template.type);
+    return NotificationIconHelper.getIcon(template.category.code);
   }
 }

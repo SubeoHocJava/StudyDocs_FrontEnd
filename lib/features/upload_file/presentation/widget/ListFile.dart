@@ -19,7 +19,7 @@ class FileUploadLabel extends StatelessWidget {
 
     return Center(
       child:
-            Container(
+            SizedBox(
                 height:files.length* 60, // responsive height per item
                 width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
                 child: ListView.builder(

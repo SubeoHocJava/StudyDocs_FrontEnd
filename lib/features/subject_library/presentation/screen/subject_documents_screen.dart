@@ -8,7 +8,6 @@ import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
-import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import '../../../library/presentation/widget/stored_document.dart';
 
 class SubjectDocumentsScreen extends StatelessWidget {

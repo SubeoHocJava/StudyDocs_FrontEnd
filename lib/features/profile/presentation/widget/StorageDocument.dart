@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/ListDocument.dart';
-import '../../../../data/model/document_model.dart';
 import '../../domain/model/document_profile.dart';
 import '../../logic/profile_bloc.dart';
 import '../../logic/profile_event.dart';

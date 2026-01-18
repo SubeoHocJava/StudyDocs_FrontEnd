@@ -8,7 +8,7 @@ import 'package:studydocs/features/notification_template/domain/usecase/create_n
 import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
-import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_categories_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/presentation/component/notification_template_item.dart';
@@ -25,7 +25,7 @@ class NotificationTemplateScreen extends StatelessWidget {
         final repository = context.read<NotificationTemplateRepository>();
         return NotificationTemplateBloc(
           getTemplatesUseCase: GetNotificationTemplatesUseCase(repository),
-          getTypesUseCase: GetNotificationTemplateTypesUseCase(repository),
+          getCategoriesUseCase: GetNotificationTemplateCategoriesUseCase(repository),
           getChannelsUseCase: GetNotificationTemplateChannelsUseCase(
             repository,
           ),
@@ -59,7 +59,7 @@ class _NotificationTemplateViewState extends State<_NotificationTemplateView> {
     context.read<NotificationTemplateBloc>().add(
       FilterNotificationTemplatesEvent(
         query: _searchQuery,
-        type: _selectedType,
+        category: _selectedType,
         channel: _selectedChannel,
       ),
     );

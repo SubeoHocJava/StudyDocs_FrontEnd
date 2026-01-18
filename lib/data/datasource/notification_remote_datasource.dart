@@ -1,4 +1,3 @@
-import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/model/cursor_pagination_result.dart';
 import 'package:studydocs/data/model/notification.dart';
 import 'package:studydocs/data/model/notification_metadata.dart';

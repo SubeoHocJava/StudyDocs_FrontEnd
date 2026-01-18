@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:studydocs/features/notification_template/domain/entity/category_entity.dart';
+import 'package:studydocs/features/notification_template/domain/entity/channel_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
+import 'package:studydocs/features/notification_template/domain/entity/notification_template_request.dart';
 import 'package:studydocs/features/notification_template/logic/notification_template_bloc.dart';
 import 'package:studydocs/features/notification_template/logic/notification_template_event.dart';
 import 'package:studydocs/features/notification_template/logic/notification_template_state.dart';
@@ -26,8 +29,8 @@ class _NotificationTemplateEditScreenState
   late TextEditingController _subjectController;
   late TextEditingController _bodyController;
   
-  String _selectedType = 'LIKE';
-  String _selectedChannel = 'EMAIL';
+  CategoryEntity? _selectedCategory;
+  ChannelEntity? _selectedChannel;
 
   late FocusNode _subjectFocus;
   late FocusNode _bodyFocus;
@@ -40,8 +43,8 @@ class _NotificationTemplateEditScreenState
     _subjectController = TextEditingController(text: widget.template?.templateSubject ?? '');
     _bodyController = TextEditingController(text: widget.template?.templateBody ?? '');
     
-    _selectedType = widget.template?.type ?? 'LIKE';
-    _selectedChannel = widget.template?.channel ?? 'EMAIL';
+    _selectedCategory = widget.template?.category;
+    _selectedChannel = widget.template?.channel;
     
     
     _subjectFocus = FocusNode()..addListener(() {
@@ -65,18 +68,22 @@ class _NotificationTemplateEditScreenState
   }
 
   void _onSave() {
+    if (_selectedCategory == null || _selectedChannel == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Vui lòng chọn Loại và Kênh")),
+      );
+      return;
+    }
+
     if (widget.template == null) {
       // Tạo mới
-      final newTemplate = NotificationTemplateEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // ID giả lập
+      final newTemplate = NotificationTemplateRequest(
         name: _nameController.text,
-        channel: _selectedChannel,
+        channel: _selectedChannel!,
         description: _descriptionController?.text ?? '',
         templateSubject: _subjectController.text,
         templateBody: _bodyController.text,
-        type: _selectedType,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        category: _selectedCategory!,
       );
       context.read<NotificationTemplateBloc>().add(
             CreateNotificationTemplateEvent(newTemplate),
@@ -86,11 +93,11 @@ class _NotificationTemplateEditScreenState
       final updatedTemplate = NotificationTemplateEntity(
         id: widget.template!.id,
         name: _nameController.text,
-        channel: _selectedChannel,
+        channel: _selectedChannel!,
         description: _descriptionController?.text ?? '',
         templateSubject: _subjectController.text,
         templateBody: _bodyController.text,
-        type: _selectedType,
+        category: _selectedCategory!,
         createdAt: widget.template!.createdAt,
         updatedAt: DateTime.now(),
       );
@@ -182,8 +189,6 @@ class _NotificationTemplateEditScreenState
              NotificationEditorSection(
               children: [
                 if (widget.template != null)
-                   NotificationInfoRow(label: 'ID', value: widget.template!.id),
-                
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
@@ -209,18 +214,21 @@ class _NotificationTemplateEditScreenState
                     Expanded(
                       child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                         builder: (context, state) {
-                          // Đảm bảo loại đã chọn có trong danh sách, hoặc mặc định
-                          final types = state.types.isNotEmpty ? state.types : ['LIKE', 'COMMENT', 'CUSTOM']; 
-                          
-                          return DropdownButtonFormField<String>(
-                            value: _selectedType, // Should verify this value exists in items or is handled
+                          // Ensure selected category is valid if possible, or reset
+                          if (_selectedCategory == null && state.categories.isNotEmpty) {
+                             // _selectedCategory = state.categories.first; 
+                             // Don't auto-set in build, let user select
+                          }
+
+                          return DropdownButtonFormField<CategoryEntity>(
+                            initialValue: _selectedCategory, 
                             decoration: const InputDecoration(
                               labelText: 'Loại',
                               border: OutlineInputBorder(),
                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
-                            items: types.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
-                            onChanged: (val) => setState(() => _selectedType = val!),
+                            items: state.categories.map((t) => DropdownMenuItem(value: t, child: Text(t.name))).toList(),
+                            onChanged: (val) => setState(() => _selectedCategory = val),
                           );
                         }
                       ),
@@ -229,17 +237,15 @@ class _NotificationTemplateEditScreenState
                     Expanded(
                       child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                         builder: (context, state) {
-                           final channels = state.channels.isNotEmpty ? state.channels : ['EMAIL', 'PUSH', 'SMS'];
-
-                          return DropdownButtonFormField<String>(
-                            value: _selectedChannel,
+                           return DropdownButtonFormField<ChannelEntity>(
+                            initialValue: _selectedChannel,
                             decoration: const InputDecoration(
                               labelText: 'Kênh',
                               border: OutlineInputBorder(),
                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
-                            items: channels.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                            onChanged: (val) => setState(() => _selectedChannel = val!),
+                            items: state.channels.map((c) => DropdownMenuItem(value: c, child: Text(c.name))).toList(),
+                            onChanged: (val) => setState(() => _selectedChannel = val),
                           );
                         }
                       ),

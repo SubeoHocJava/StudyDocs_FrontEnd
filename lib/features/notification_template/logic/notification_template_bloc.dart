@@ -1,11 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/features/notification_template/domain/entity/category_entity.dart';
+import 'package:studydocs/features/notification_template/domain/entity/channel_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/create_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
-import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_categories_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
 
@@ -14,7 +16,7 @@ import 'notification_template_state.dart';
 
 class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, NotificationTemplateState> {
   final GetNotificationTemplatesUseCase getTemplatesUseCase;
-  final GetNotificationTemplateTypesUseCase getTypesUseCase;
+  final GetNotificationTemplateCategoriesUseCase getCategoriesUseCase;
   final GetNotificationTemplateChannelsUseCase getChannelsUseCase;
   final SearchNotificationTemplateKeywordsUseCase searchKeywordsUseCase;
   final CreateNotificationTemplateUseCase createTemplateUseCase;
@@ -23,7 +25,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
 
   NotificationTemplateBloc({
     required this.getTemplatesUseCase,
-    required this.getTypesUseCase,
+    required this.getCategoriesUseCase,
     required this.getChannelsUseCase,
     required this.searchKeywordsUseCase,
     required this.createTemplateUseCase,
@@ -45,21 +47,21 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     try {
       final results = await Future.wait([
          getTemplatesUseCase(),
-         getTypesUseCase(),
+         getCategoriesUseCase(),
          getChannelsUseCase(),
          searchKeywordsUseCase(''),
       ]);
 
       final templates = results[0] as List<NotificationTemplateEntity>;
-      final types = results[1] as List<String>;
-      final channels = results[2] as List<String>;
+      final categories = results[1] as List<CategoryEntity>;
+      final channels = results[2] as List<ChannelEntity>;
       final keywords = results[3] as List<NotificationKeywordGroup>;
 
       emit(state.copyWith(
         status: NotificationTemplateStatus.success,
         templates: templates,
         allTemplates: templates,
-        types: types,
+        categories: categories,
         channels: channels,
         keywords: keywords,
       ));
@@ -80,7 +82,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
       final filtered = await getTemplatesUseCase(
         GetNotificationTemplatesParams(
           query: event.query,
-          type: event.type,
+          category: event.category,
           channel: event.channel,
         ),
       );

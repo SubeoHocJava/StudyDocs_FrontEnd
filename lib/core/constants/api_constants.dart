@@ -3,8 +3,8 @@ class ApiConstants {
   // Web/iOS: dùng localhost
   // Android Emulator: dùng 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8081/api/v1';
-  static const String baseUrl = 'http://172.16.17.80:8080/api/v1';
-  static const String reviewBaseUrl = 'http://172.16.17.80:8080/api/v1'; // Same as base in current local config
+  static const String baseUrl = 'http://192.168.1.244:8080/api/v1';
+  static const String reviewBaseUrl = 'http://10.10.3.165:8080/api/v1'; // Same as base in current local config
 
   // Auth Endpoints
   static const String authLoginLocal = '/auth/login/local';
@@ -35,7 +35,7 @@ class ApiConstants {
   //Academic Endpoints
   // Academic service (StudyDocs Academic microservice)
   // Web/iOS: use localhost; Android emulator: use 10.0.2.2
-  static const String academicBaseUrl = 'http://172.16.17.80:8080/api/v1'; // Base trùng với chính để dùng chung Dio
+  static const String academicBaseUrl = 'http://192.168.1.244:8080/api/v1'; // Base trùng với chính để dùng chung Dio
   static const String academicUniversitiesFilter = '/academics/universities/filter';
   static const String academicSubjectsFilter = '/academics/subjects/filter';
   static const String academicUniversities = '/academics/universities';

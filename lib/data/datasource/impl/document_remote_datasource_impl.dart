@@ -1,6 +1,5 @@
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
-import 'package:studydocs/features/subject_library/domain/ui_model/CommentEntity.dart' hide CommentEntity;
 import 'package:studydocs/data/model/document_model.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../document_remote_datasource.dart';

@@ -71,7 +71,7 @@ class CommentsSection extends StatelessWidget {
               ],
             ),
           ),
-        ).toList(),
+        ),
         // Phân trang
         if (totalPages > 1)
           Row(

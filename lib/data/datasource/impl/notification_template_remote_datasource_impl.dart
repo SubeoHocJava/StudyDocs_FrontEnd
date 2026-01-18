@@ -1,6 +1,8 @@
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
 import 'package:studydocs/data/model/notification_template_model.dart';
+import 'package:studydocs/features/notification_template/data/model/category_model.dart';
+import 'package:studydocs/features/notification_template/data/model/channel_model.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
 import 'package:studydocs/data/model/notification_metadata.dart';
 
@@ -21,7 +23,7 @@ class NotificationTemplateDataSourceImpl
     if (query != null && query.isNotEmpty) {
       queryParams['name'] = query;
     }
-    if (type != null && type.isNotEmpty) queryParams['type'] = type;
+    if (type != null && type.isNotEmpty) queryParams['category'] = type;
     if (channel != null && channel.isNotEmpty) queryParams['channel'] = channel;
 
     final endpoint = "$path/search";
@@ -48,15 +50,19 @@ class NotificationTemplateDataSourceImpl
   }
 
   @override
-  Future<List<String>> getTypes() async {
-    final response = await dioClient.get("/supports/types");
-    return List<String>.from(response.data);
+  Future<List<CategoryModel>> getCategories() async {
+    final response = await dioClient.get("/notifications/supports/types");
+    return (response.data as List)
+        .map((e) => CategoryModel.fromJson(e))
+        .toList();
   }
 
   @override
-  Future<List<String>> getChannels() async {
-    final response = await dioClient.get("/supports/channels");
-    return List<String>.from(response.data);
+  Future<List<ChannelModel>> getChannels() async {
+    final response = await dioClient.get("/notifications/supports/channels");
+    return (response.data as List)
+        .map((e) => ChannelModel.fromJson(e))
+        .toList();
   }
 
   @override
@@ -70,13 +76,6 @@ class NotificationTemplateDataSourceImpl
     // Map to domain entity and filter
     final allGroups = data.map((meta) {
       final keywords = meta.items.entries.map((entry) {
-        // Assuming Key is the placeholder code (e.g. {userName}) and Value is the Label
-        // Or vice-versa. Usually Value is the human readable text.
-        // Let's assume Entry Key = "User Name", Value = "{userName}" ??
-        // Actually, based on typical Map<String,String> usage in Java `items`,
-        // it's likely Key=Id/Key, Value=Label.
-        // But `NotificationKeyword` has `label` and `key`.
-        // Let's map Entry Key -> key, Entry Value -> label.
         return NotificationKeyword(label: entry.value, key: entry.key);
       }).toList();
 

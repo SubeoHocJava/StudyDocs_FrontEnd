@@ -4,7 +4,6 @@ import '../../../../core/constants/app_colors.dart';
 import 'email_field.dart';
 import 'login_button.dart';
 import 'password_field.dart';
-import 'username_field.dart';
 
 class RegisterForm extends StatefulWidget {
   final VoidCallback onBackToLogin;

@@ -115,7 +115,7 @@ class _AdminCard extends StatelessWidget {
     required this.label,
     required this.height,
     this.onTap,
-    this.fontSize = 18,
+    this.fontSize = 14.0,
   });
 
   @override

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/presentation/component/helpers/notification_modal_size_helper.dart';
 import 'package:studydocs/features/notification/presentation/component/base/notification_modal_action.dart';

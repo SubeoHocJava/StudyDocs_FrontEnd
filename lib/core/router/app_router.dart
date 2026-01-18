@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/data/datasource/notification_template_remote_datasource.dart';
+
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
 import 'package:studydocs/features/docs_management/data/datasource/docs_management_remote_datasource.dart'
     show DocsManagementRemoteDataSourceImpl;
 import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
-import 'package:studydocs/features/docs_management/domain/repository/docs_management_repository.dart';
+
 import 'package:studydocs/features/docs_management/domain/usecase/delete_doc_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/get_my_docs_usecase.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/update_doc_usecase.dart';
@@ -22,12 +22,12 @@ import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart'
     show createManageUserBloc;
 import 'package:studydocs/features/manage_user/logic/manage_user_event.dart';
 import 'package:studydocs/features/manage_user/presentation/screen/manage_user_screen.dart';
-import 'package:studydocs/features/notification_template/data/repository/notification_template_repository_impl.dart';
+
 import 'package:studydocs/features/notification_template/domain/repository/notification_template_repository.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/create_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
-import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_categories_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
@@ -368,7 +368,7 @@ GoRouter createAppRouter() {
                   getTemplatesUseCase: GetNotificationTemplatesUseCase(
                     repository,
                   ),
-                  getTypesUseCase: GetNotificationTemplateTypesUseCase(
+                  getCategoriesUseCase: GetNotificationTemplateCategoriesUseCase(
                     repository,
                   ),
                   getChannelsUseCase: GetNotificationTemplateChannelsUseCase(

@@ -1,4 +1,5 @@
 
+import 'package:studydocs/features/notification_template/domain/entity/channel_entity.dart';
 import 'package:studydocs/features/notification_template/domain/repository/notification_template_repository.dart';
 
 class GetNotificationTemplateChannelsUseCase {
@@ -6,7 +7,7 @@ class GetNotificationTemplateChannelsUseCase {
 
   GetNotificationTemplateChannelsUseCase(this.repository);
 
-  Future<List<String>> call() async {
+  Future<List<ChannelEntity>> call() async {
     return await repository.getChannels();
   }
 }

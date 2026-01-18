@@ -6,6 +6,7 @@
 /// context.watch<AuthStatusCubit>().state is AuthAuthenticated
 ///     && (context.watch<AuthStatusCubit>().state as AuthAuthenticated).isAdmin
 /// ```
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 
 class DocumentModel extends Equatable {
   final String id;

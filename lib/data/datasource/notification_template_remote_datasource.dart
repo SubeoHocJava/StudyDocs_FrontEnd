@@ -1,5 +1,6 @@
-import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/model/notification_template_model.dart';
+import 'package:studydocs/features/notification_template/data/model/category_model.dart';
+import 'package:studydocs/features/notification_template/data/model/channel_model.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
 
 abstract interface class NotificationTemplateDataSource {
@@ -15,9 +16,9 @@ abstract interface class NotificationTemplateDataSource {
 
   Future<void> deleteTemplate(String id);
 
-  Future<List<String>> getTypes();
+  Future<List<CategoryModel>> getCategories();
 
-  Future<List<String>> getChannels();
+  Future<List<ChannelModel>> getChannels();
 
   Future<List<NotificationKeywordGroup>> searchKeywords(String query);
 }

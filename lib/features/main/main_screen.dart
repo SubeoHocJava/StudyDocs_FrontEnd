@@ -11,7 +11,6 @@ import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/presentation/notification_screen.dart';
 import 'package:studydocs/features/notification/presentation/notification_trash_screen.dart';
 import 'package:studydocs/features/notification_template/presentation/notification_template_screen.dart';
-import 'package:studydocs/features/subject_library/presentation/screen/subject_library_screen.dart';
 import 'package:studydocs/features/manage_user/presentation/screen/manage_user_screen.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';

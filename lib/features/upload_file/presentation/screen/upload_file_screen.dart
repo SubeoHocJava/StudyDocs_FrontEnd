@@ -1,10 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
-import '../../../../core/widgets/bottom_nav.dart';
-import '../../../../core/widgets/header.dart';
 import '../../../library/presentation/widget/library_widgets.dart';
 import '../../domain/data/impl/upload_file_repository_implement.dart';
 import '../../domain/usecase/upload_file_usecase.dart';
@@ -17,6 +14,8 @@ import '../widget/SchoolLabel.dart';
 import '../widget/SubjectLabel.dart';
 
 class UploadFileScreen extends StatelessWidget {
+  const UploadFileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;

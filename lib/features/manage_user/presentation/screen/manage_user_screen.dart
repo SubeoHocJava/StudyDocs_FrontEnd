@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/widgets/bottom_nav.dart';
-import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/features/manage_user/domain/repository/impl/ManageUserRepositoryImpl.dart';
 import 'package:studydocs/features/manage_user/domain/repository/manage_user_repository.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart';

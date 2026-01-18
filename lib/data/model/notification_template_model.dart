@@ -1,5 +1,7 @@
 
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
+import 'package:studydocs/features/notification_template/data/model/category_model.dart';
+import 'package:studydocs/features/notification_template/data/model/channel_model.dart';
 
 class NotificationTemplateModel extends NotificationTemplateEntity {
   const NotificationTemplateModel({
@@ -9,7 +11,7 @@ class NotificationTemplateModel extends NotificationTemplateEntity {
     required super.description,
     required super.templateSubject,
     required super.templateBody,
-    required super.type,
+    required super.category,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -18,11 +20,15 @@ class NotificationTemplateModel extends NotificationTemplateEntity {
     return NotificationTemplateModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      channel: json['channel'] ?? '',
+      channel: json['channel'] != null
+          ? ChannelModel.fromJson(json['channel'])
+          : const ChannelModel(code: '', name: ''),
       description: json['description'] ?? '',
       templateSubject: json['templateSubject'] ?? '',
       templateBody: json['templateBody'] ?? '',
-      type: json['type'] ?? 'LIKE', // Giá trị mặc định
+      category: json['type'] != null
+          ? CategoryModel(code: json['type'], name: '')
+          : const CategoryModel(code: 'LIKE', name: ''),
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt']) ?? DateTime.now()
           : DateTime.now(),
@@ -40,7 +46,7 @@ class NotificationTemplateModel extends NotificationTemplateEntity {
       'description': description,
       'templateSubject': templateSubject,
       'templateBody': templateBody,
-      'type': type,
+      'type': category.code,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

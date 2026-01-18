@@ -1,5 +1,4 @@
 import '../model/document_library.dart';
-import '../model/result.dart';
 
 abstract class LibraryRepository {
   /// Load document theo keyword

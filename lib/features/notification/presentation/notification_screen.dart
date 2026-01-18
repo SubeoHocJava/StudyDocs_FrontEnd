@@ -68,21 +68,29 @@ class NotificationScreen extends StatelessWidget {
             },
             childBuilder: (notifications) {
               final sections = NotificationHelper.buildSections(notifications);
-              return ListView.builder(
-                itemCount: sections.length,
-                itemBuilder: (context, index) {
-                  final section = sections[index];
-                  return NotificationSection(
-                    title: section.title,
-                    notifications: section.items,
-                    type: NotificationSectionType.normal,
-                    onSoftDelete: (id) {
-                      context.read<NotificationBloc>().add(
-                        DeleteNotificationEvent([id], DeleteType.soft),
-                      );
-                    },
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<NotificationBloc>().add(
+                    const LoadNotificationEvent(isDeleted: false),
                   );
                 },
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: sections.length,
+                  itemBuilder: (context, index) {
+                    final section = sections[index];
+                    return NotificationSection(
+                      title: section.title,
+                      notifications: section.items,
+                      type: NotificationSectionType.normal,
+                      onSoftDelete: (id) {
+                        context.read<NotificationBloc>().add(
+                          DeleteNotificationEvent([id], DeleteType.soft),
+                        );
+                      },
+                    );
+                  },
+                ),
               );
             },
           );

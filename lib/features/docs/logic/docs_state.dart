@@ -20,6 +20,7 @@ class DocsLoading extends DocsState {}
 /// State đã load xong
 class DocsLoaded extends DocsState {
   final DocumentEntity docDetails;
+  @override
   final bool isSaved;
 
   const DocsLoaded(this.docDetails, {this.isSaved = false});

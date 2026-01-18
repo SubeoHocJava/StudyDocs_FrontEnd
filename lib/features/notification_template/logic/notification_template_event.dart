@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
+import 'package:studydocs/features/notification_template/domain/entity/notification_template_request.dart';
 
 abstract class NotificationTemplateEvent extends Equatable {
   const NotificationTemplateEvent();
@@ -14,17 +15,17 @@ class LoadNotificationTemplatesEvent extends NotificationTemplateEvent {
 
 class FilterNotificationTemplatesEvent extends NotificationTemplateEvent {
   final String query;
-  final String? type;
+  final String? category;
   final String? channel;
 
   const FilterNotificationTemplatesEvent({
     this.query = '',
-    this.type,
+    this.category,
     this.channel,
   });
 
   @override
-  List<Object?> get props => [query, type, channel];
+  List<Object?> get props => [query, category, channel];
 }
 
 class DeleteNotificationTemplateEvent extends NotificationTemplateEvent {
@@ -46,7 +47,7 @@ class UpdateNotificationTemplateEvent extends NotificationTemplateEvent {
 }
 
 class CreateNotificationTemplateEvent extends NotificationTemplateEvent {
-  final NotificationTemplateEntity template;
+  final NotificationTemplateRequest template;
 
   const CreateNotificationTemplateEvent(this.template);
 

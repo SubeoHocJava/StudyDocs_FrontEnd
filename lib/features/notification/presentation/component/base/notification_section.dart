@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
-import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_enum.dart';
-import 'package:studydocs/features/notification/logic/notification_event.dart';
 import 'package:studydocs/features/notification/presentation/component/base/notification_list.dart';
 
 class NotificationSection extends StatelessWidget {

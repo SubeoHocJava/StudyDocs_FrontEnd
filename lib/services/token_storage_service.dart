@@ -33,8 +33,9 @@ class TokenStorageService {
 
     if (userId != null) await prefs.setString(_keyUserId, userId);
     if (username != null) await prefs.setString(_keyUsername, username);
-    if (displayName != null)
+    if (displayName != null) {
       await prefs.setString(_keyDisplayName, displayName);
+    }
 
     // Lưu roles dưới dạng JSON string
     if (roles != null && roles.isNotEmpty) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart'; // Reuse core colors
+// Reuse core colors
 import '../../../docs/domain/entity/document_entity.dart';
 import '../../logic/docs_management_bloc.dart';
 import '../../logic/docs_management_event.dart';

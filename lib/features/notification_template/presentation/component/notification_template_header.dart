@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/notification_template/logic/notification_template_bloc.dart';
 import 'package:studydocs/features/notification_template/logic/notification_template_state.dart';
-import 'package:studydocs/features/notification_template/presentation/screen/notification_template_edit_screen.dart';
 
 class NotificationTemplateHeader extends StatefulWidget {
   final String searchQuery;
@@ -91,14 +90,25 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                   // Bộ lọc loại
 
                  BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
-                   buildWhen: (previous, current) => previous.types != current.types,
+                   buildWhen: (previous, current) => previous.categories != current.categories,
                    builder: (context, state) {
+                     final selectedCategoryName = state.categories
+                         .where((e) => e.code == widget.selectedType)
+                         .firstOrNull
+                         ?.name;
                      return _buildFilterChip(
                         context, 
-                        label: widget.selectedType ?? 'Tất cả loại',
+                        label: selectedCategoryName ?? 'Tất cả loại',
                         isSelected: widget.selectedType != null,
                         onTap: () {
-                           _showFilterOptions(context, 'Loại', state.types, widget.onTypeChanged);
+                           _showFilterOptions(
+                             context, 
+                             'Loại', 
+                             state.categories, 
+                             widget.onTypeChanged,
+                             (e) => e.name,
+                             (e) => e.code
+                           );
                         },
                         onClear: () {
                              widget.onTypeChanged(null);
@@ -112,12 +122,23 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                  BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                    buildWhen: (previous, current) => previous.channels != current.channels,
                    builder: (context, state) {
+                     final selectedChannelName = state.channels
+                         .where((e) => e.code == widget.selectedChannel)
+                         .firstOrNull
+                         ?.name;
                      return _buildFilterChip(
                         context, 
-                        label: widget.selectedChannel ?? 'Tất cả kênh',
+                        label: selectedChannelName ?? 'Tất cả kênh',
                         isSelected: widget.selectedChannel != null,
                         onTap: () {
-                           _showFilterOptions(context, 'Kênh', state.channels, widget.onChannelChanged);
+                           _showFilterOptions(
+                             context, 
+                             'Kênh', 
+                             state.channels, 
+                             widget.onChannelChanged,
+                             (e) => e.name,
+                             (e) => e.code
+                           );
                         },
                         onClear: () {
                              widget.onChannelChanged(null);
@@ -168,7 +189,14 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
       );
   }
 
-  void _showFilterOptions(BuildContext context, String title, List<String> options, ValueChanged<String?> onSelect) {
+  void _showFilterOptions<T>(
+    BuildContext context, 
+    String title, 
+    List<T> options, 
+    ValueChanged<String?> onSelect,
+    String Function(T) getName,
+    String Function(T) getCode,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (ctx) {
@@ -192,9 +220,9 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                     },
                   ),
                   ...options.map((opt) => ActionChip(
-                    label: Text(opt),
+                    label: Text(getName(opt)),
                     onPressed: () {
-                      onSelect(opt);
+                      onSelect(getCode(opt));
                       Navigator.pop(context);
                     },
                   )),

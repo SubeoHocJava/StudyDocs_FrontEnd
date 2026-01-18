@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_event.dart';
 import 'package:studydocs/features/notification/presentation/component/helpers/notification_modal_size_helper.dart';
 import 'package:studydocs/features/notification/presentation/component/base/notification_modal_action.dart';
-import 'package:go_router/go_router.dart';
 
 import '../base/notification_modal_layout.dart';
 

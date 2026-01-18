@@ -8,7 +8,6 @@ import 'package:studydocs/features/profile/domain/repository/impl/ProfileReposit
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_event.dart';
 import 'package:studydocs/features/profile/logic/profile_state.dart';
-import 'package:studydocs/features/profile/presentation/screen/profile_screen.dart';
 import 'package:studydocs/features/profile/presentation/widget/Statistical.dart';
 import 'package:studydocs/core/router/app_router.dart';
 

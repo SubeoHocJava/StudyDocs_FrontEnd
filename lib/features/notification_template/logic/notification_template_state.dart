@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:studydocs/features/notification_template/domain/entity/category_entity.dart';
+import 'package:studydocs/features/notification_template/domain/entity/channel_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_metadata_entity.dart';
 import 'package:studydocs/features/notification_template/domain/entity/notification_template_entity.dart';
 
@@ -8,8 +10,8 @@ class NotificationTemplateState extends Equatable {
   final NotificationTemplateStatus status;
   final List<NotificationTemplateEntity> templates;
   final List<NotificationTemplateEntity> allTemplates;
-  final List<String> types;
-  final List<String> channels;
+  final List<CategoryEntity> categories;
+  final List<ChannelEntity> channels;
   final List<NotificationKeywordGroup> keywords;
   final String? errorMessage;
 
@@ -17,7 +19,7 @@ class NotificationTemplateState extends Equatable {
     this.status = NotificationTemplateStatus.initial,
     this.templates = const [],
     this.allTemplates = const [],
-    this.types = const [],
+    this.categories = const [],
     this.channels = const [],
     this.keywords = const [],
     this.errorMessage,
@@ -27,8 +29,8 @@ class NotificationTemplateState extends Equatable {
     NotificationTemplateStatus? status,
     List<NotificationTemplateEntity>? templates,
     List<NotificationTemplateEntity>? allTemplates,
-    List<String>? types,
-    List<String>? channels,
+    List<CategoryEntity>? categories, // Renamed from types
+    List<ChannelEntity>? channels, // Type changed
     List<NotificationKeywordGroup>? keywords,
     String? errorMessage,
   }) {
@@ -36,7 +38,7 @@ class NotificationTemplateState extends Equatable {
       status: status ?? this.status,
       templates: templates ?? this.templates,
       allTemplates: allTemplates ?? this.allTemplates,
-      types: types ?? this.types,
+      categories: categories ?? this.categories, // Renamed from types
       channels: channels ?? this.channels,
       keywords: keywords ?? this.keywords,
       errorMessage: errorMessage ?? this.errorMessage,
@@ -44,5 +46,5 @@ class NotificationTemplateState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, templates, allTemplates, types, channels, keywords, errorMessage];
+  List<Object?> get props => [status, templates, allTemplates, categories, channels, keywords, errorMessage]; // Renamed types to categories
 }
