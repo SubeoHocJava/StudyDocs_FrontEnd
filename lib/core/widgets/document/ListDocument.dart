@@ -90,6 +90,20 @@ class MonoDocumentInList extends StatefulWidget {
 }
 
 class _MonoDocumentInListState extends State<MonoDocumentInList> {
+  @override
+  void initState() {
+    super.initState();
+    _saveSelected = widget.document.isSaved;
+  }
+
+  @override
+  void didUpdateWidget(covariant MonoDocumentInList oldWidget) {
+     super.didUpdateWidget(oldWidget);
+     if (oldWidget.document.isSaved != widget.document.isSaved) {
+       _saveSelected = widget.document.isSaved;
+     }
+  }
+
   bool _downloadSelected = false;
   bool _saveSelected = false;
 

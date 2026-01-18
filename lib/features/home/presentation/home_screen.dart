@@ -57,7 +57,7 @@ class HomeDocumentAdapter extends DocumentUiList {
   bool get isLiked => entity.isLiked;
 
   @override
-  bool get isSaved => false;
+  bool get isSaved => entity.isSaved;
 }
 
 class HomePage extends StatefulWidget {
@@ -211,7 +211,11 @@ class _HomePageState extends State<HomePage> {
                       /* TODO */
                     },
                     onSave: (doc) {
-                      /* TODO */
+                      if (doc is HomeDocumentAdapter) {
+                        context.read<HomeBloc>().add(
+                          ToggleHomeSaveEvent(doc.entity),
+                        );
+                      }
                     },
                     onLike: (doc) {
                       if (doc is HomeDocumentAdapter) {
@@ -242,7 +246,13 @@ class _HomePageState extends State<HomePage> {
                   ListDocument(
                     popularDocs,
                     onDownload: (doc) {},
-                    onSave: (doc) {},
+                    onSave: (doc) {
+                      if (doc is HomeDocumentAdapter) {
+                        context.read<HomeBloc>().add(
+                          ToggleHomeSaveEvent(doc.entity),
+                        );
+                      }
+                    },
                     onLike: (doc) {
                       if (doc is HomeDocumentAdapter) {
                         context.read<HomeBloc>().add(
@@ -273,7 +283,13 @@ class _HomePageState extends State<HomePage> {
                   ListDocument(
                     recentDocs,
                     onDownload: (doc) {},
-                    onSave: (doc) {},
+                    onSave: (doc) {
+                      if (doc is HomeDocumentAdapter) {
+                        context.read<HomeBloc>().add(
+                          ToggleHomeSaveEvent(doc.entity),
+                        );
+                      }
+                    },
                     onTap: (doc) {
                       context.push('/document/${doc.id}');
                     },

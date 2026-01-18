@@ -48,11 +48,17 @@ class VoiceListeningChangedEvent extends HomeEvent {
   List<Object?> get props => [isListening];
 }
 
-
-
 class ToggleHomeLikeEvent extends HomeEvent {
   final DocumentEntity document;
   const ToggleHomeLikeEvent(this.document);
+
+  @override
+  List<Object?> get props => [document];
+}
+
+class ToggleHomeSaveEvent extends HomeEvent {
+  final DocumentEntity document;
+  const ToggleHomeSaveEvent(this.document);
 
   @override
   List<Object?> get props => [document];

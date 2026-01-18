@@ -23,6 +23,7 @@ class DocumentEntity extends Equatable {
   final String? fileType;
   final String? fileId;
   final bool isLiked;
+  final bool isSaved;
 
   const DocumentEntity({
     required this.id,
@@ -46,6 +47,7 @@ class DocumentEntity extends Equatable {
     this.fileType,
     this.fileId,
     this.isLiked = false,
+    this.isSaved = false,
   });
 
   @override
@@ -70,6 +72,7 @@ class DocumentEntity extends Equatable {
     fileUrl,
     fileType,
     isLiked,
+    isSaved,
   ];
 
   // Convert Model → Entity
@@ -96,6 +99,7 @@ class DocumentEntity extends Equatable {
       fileType: null,
       fileId: model.fileId,
       isLiked: model.currentUserReaction == 'LIKE',
+      isSaved: model.isSaved,
     );
   }
 
@@ -121,6 +125,7 @@ class DocumentEntity extends Equatable {
     String? fileType,
     String? fileId,
     bool? isLiked,
+    bool? isSaved,
   }) {
     return DocumentEntity(
       id: id ?? this.id,
@@ -144,6 +149,7 @@ class DocumentEntity extends Equatable {
       fileType: fileType ?? this.fileType,
       fileId: fileId ?? this.fileId,
       isLiked: isLiked ?? this.isLiked,
+      isSaved: isSaved ?? this.isSaved,
     );
   }
 }

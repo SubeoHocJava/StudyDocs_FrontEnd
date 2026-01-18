@@ -25,6 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetRecentDocumentsUseCase getRecentDocumentsUseCase;
   final SearchDocumentsUseCase searchDocumentsUseCase;
   final ToggleLikeUseCase toggleLikeUseCase;
+  final ToggleSaveUseCase toggleSaveUseCase; // Add this
 
   HomeBloc({
     required this.getDocumentsUseCase,
@@ -32,6 +33,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required this.getRecentDocumentsUseCase,
     required this.searchDocumentsUseCase,
     required this.toggleLikeUseCase,
+    required this.toggleSaveUseCase, // Add this
   }) : super(const HomeInitial()) {
     on<LoadDocumentsEvent>(_onLoadDocuments);
     on<UpdateSearchQueryEvent>(_onUpdateSearchQuery);
@@ -39,6 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<RefreshDocumentsEvent>(_onRefreshDocuments);
     on<SearchDocumentsEvent>(_onSearchDocuments);
     on<ToggleHomeLikeEvent>(_onToggleLike);
+    on<ToggleHomeSaveEvent>(_onToggleSave); // Add this
   }
 
   Future<void> _onLoadDocuments(
@@ -104,6 +107,52 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) {
     if (state is HomeLoaded) {
       emit((state as HomeLoaded).copyWith(isListening: event.isListening));
+    }
+  }
+
+  Future<void> _onToggleSave(
+    ToggleHomeSaveEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final doc = event.document;
+    
+    if (state is HomeLoaded) {
+      final currentState = state as HomeLoaded;
+      
+      bool? newIsSavedState;
+
+      // Helper to update a list AND capture the new state
+      List<DocumentEntity> updateList(List<DocumentEntity> list) {
+        return list.map((e) {
+          if (e.id == doc.id) {
+             final nextIsSaved = !e.isSaved; // Toggle
+             
+             if (newIsSavedState == null) {
+                newIsSavedState = nextIsSaved;
+             }
+
+             return e.copyWith(isSaved: nextIsSaved);
+          }
+          return e;
+        }).toList();
+      }
+
+      final newDocuments = updateList(currentState.documents);
+      final newPopular = updateList(currentState.popularDocuments);
+      final newRecent = updateList(currentState.recentDocuments);
+
+      emit(currentState.copyWith(
+        documents: newDocuments,
+        popularDocuments: newPopular,
+        recentDocuments: newRecent,
+      ));
+      
+      try {
+        await toggleSaveUseCase(documentId: doc.id);
+      } catch (e) {
+         if (kDebugMode) print("Toggle save failed: $e");
+         // Ideally revert here
+      }
     }
   }
 
@@ -213,8 +262,6 @@ HomeBloc createHomeBloc() {
     docsRemoteDataSource: docsRemoteDataSource, // ✅ Inject Docs DataSource
   );
 
-
-
   final docsRepository = DocsRepositoryImpl(
       dataSource: docsRemoteDataSource, 
   );
@@ -229,5 +276,6 @@ HomeBloc createHomeBloc() {
     ),
     searchDocumentsUseCase: SearchDocumentsUseCase(repository: repository),
     toggleLikeUseCase: ToggleLikeUseCase(docsRepository),
+    toggleSaveUseCase: ToggleSaveUseCase(docsRepository),
   );
 }
