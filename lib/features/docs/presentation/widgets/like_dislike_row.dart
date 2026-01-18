@@ -12,49 +12,64 @@ class LikeDislikeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine active state
+    final bool isLiked = doc.currentUserReaction == 'LIKE';
+    final bool isDisliked = doc.currentUserReaction == 'DISLIKE';
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(child: _buildButton(context, doc.likes, true)),
+            Expanded(child: _buildButton(context, doc.likes, true, isLiked)),
             const SizedBox(width: 16),
-            Expanded(child: _buildButton(context, doc.dislikes, false)),
+            Expanded(child: _buildButton(context, doc.dislikes, false, isDisliked)),
           ],
         );
       },
     );
   }
 
-  Widget _buildButton(BuildContext context, int count, bool isLike) {
+  Widget _buildButton(BuildContext context, int count, bool isLikeButton, bool isActive) {
+    // Colors based on active state
+    final Color activeColor = isLikeButton ? Colors.green : Colors.redAccent;
+    final Color iconColor = isActive ? Colors.white : (isLikeButton ? Colors.green : Colors.redAccent);
+    final Color textColor = isActive ? Colors.white : Colors.black87;
+    final Color backgroundColor = isActive ? activeColor : Colors.white;
+    final Border border = isActive ? Border.all(color: Colors.transparent) : Border.all(color: Colors.grey.shade300);
+
     return GestureDetector(
       onTap: () {
-        context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLike));
+        context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLikeButton));
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200), // Smooth transition
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300),
+          color: backgroundColor,
+          border: border,
           borderRadius: BorderRadius.circular(30),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+          boxShadow: [
+            if (isActive)
+              BoxShadow(color: activeColor.withOpacity(0.4), blurRadius: 8, offset: const Offset(0, 4))
+            else
+              const BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (!isLike)
+            if (!isLikeButton)
               Transform.scale(
                 scaleY: -1,
-                child: Image.asset(AppAssets.like, width: 20, height: 20, color: Colors.redAccent),
+                child: Image.asset(AppAssets.like, width: 20, height: 20, color: iconColor),
               )
             else
-              Image.asset(AppAssets.like, width: 20, height: 20, color: Colors.green),
+              Image.asset(AppAssets.like, width: 20, height: 20, color: iconColor),
             const SizedBox(width: 8),
             Text(
               "$count",
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textColor),
             ),
           ],
         ),

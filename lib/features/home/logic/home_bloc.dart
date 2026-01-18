@@ -134,15 +134,31 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
       
-      // Helper to update a list
+      // Find the latest version of the document in the current state to ensure valid toggle
+      // We check all lists (documents, popular, recent)
+      // Note: A doc might appear in multiple lists. We need to find consistent state or just use the first found?
+      // Or simply, we iterate and update, and while iterating we determine the NEW state based on the CURRENT state of that item.
+      
+      bool? newIsLikedState; // To store the determined new state to use for API call
+
+      // Helper to update a list AND capture the new state
       List<DocumentEntity> updateList(List<DocumentEntity> list) {
         return list.map((e) {
           if (e.id == doc.id) {
-             final newLikes = isLike 
+             final currentIsLiked = e.isLiked;
+             final nextIsLiked = !currentIsLiked;
+             
+             // Capture this for the API call (only once is enough)
+             if (newIsLikedState == null) {
+                newIsLikedState = nextIsLiked;
+             }
+
+             final newLikes = nextIsLiked 
                  ? (e.likesCount ?? 0) + 1 
                  : (e.likesCount ?? 1) - 1;
+             
              return e.copyWith(
-               isLiked: isLike,
+               isLiked: nextIsLiked,
                likesCount: newLikes >= 0 ? newLikes : 0,
              );
           }
@@ -150,24 +166,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }).toList();
       }
 
-      emit(currentState.copyWith(
-        documents: updateList(currentState.documents),
-        popularDocuments: updateList(currentState.popularDocuments),
-        recentDocuments: updateList(currentState.recentDocuments),
-      ));
-    }
+      final newDocuments = updateList(currentState.documents);
+      final newPopular = updateList(currentState.popularDocuments);
+      final newRecent = updateList(currentState.recentDocuments);
+      
+      // If we found the doc and updated it, newIsLikedState will be set.
+      // If not (rare race condition or list changed), fallback to event.doc (but risky) or abort.
+      final finalIsLiked = newIsLikedState ?? !doc.isLiked;
 
-    try {
-      await toggleLikeUseCase(documentId: doc.id, isLike: isLike);
-    } catch (e) {
-      // Revert if failed (optional, but good practice)
-       if (state is HomeLoaded) {
-           // For simplicity, just reload or revert manually. 
-           // Given optimistic update complexity, we might skip full revert logic 
-           // or just trigger specific reload.
-           // For now, let's just log.
-           if (kDebugMode) print("Toggle like failed: $e");
-       }
+      emit(currentState.copyWith(
+        documents: newDocuments,
+        popularDocuments: newPopular,
+        recentDocuments: newRecent,
+      ));
+      
+      try {
+        await toggleLikeUseCase(documentId: doc.id, reactionType: 'LIKE');
+      } catch (e) {
+         if (kDebugMode) print("Toggle like failed: $e");
+         // Ideally revert here
+      }
+    } else {
+       // Backup if state is not Loaded (unlikely for click)
+       try {
+        await toggleLikeUseCase(documentId: doc.id, reactionType: 'LIKE');
+      } catch (e) {
+         if (kDebugMode) print("Toggle like failed: $e");
+      }
     }
   }
 }
