@@ -150,6 +150,15 @@ class DioClient {
 
   Future<ApiResponse<T>> fromResponse<T>(Response response) async {
     dynamic responseData = response.data;
+    // 🔥 DELETE / 204 No Content
+    if (responseData == null ||
+        (responseData is String && responseData.trim().isEmpty)) {
+      return ApiResponse<T>(
+        statusCode: response.statusCode ?? 200,
+        data: null,
+        errorCode: null,
+      );
+    }
     if (responseData is String) {
       responseData = jsonDecode(responseData);
     }

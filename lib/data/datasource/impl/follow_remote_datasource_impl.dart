@@ -34,14 +34,20 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
     required String followerId,
     required String followingId,
   }) async {
-    await dioClient.delete(
+    final response = await dioClient.delete(
       ApiConstants.follows,
       queryParameters: {
         'followerId': followerId,
         'followingId': followingId,
       },
     );
+    print('DELETE unfollow response: ${response.data}');
+    print('Type: ${response.data.runtimeType}');
+    if (!response.isSuccess) {
+      throw Exception('Failed to unfollow user');
+    }
   }
+
 
   @override
   Future<List<FollowModel>> getFollowers(String userId) async {
