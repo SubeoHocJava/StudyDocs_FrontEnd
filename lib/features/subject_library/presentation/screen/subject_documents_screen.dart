@@ -14,7 +14,6 @@ import '../../../library/presentation/widget/stored_document.dart';
 class SubjectDocumentsScreen extends StatelessWidget {
   final String schoolName;
   final String subjectName;
-
   const SubjectDocumentsScreen({
     super.key,
     required this.schoolName,
