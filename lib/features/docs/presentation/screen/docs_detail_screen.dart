@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/header.dart';
 import '../../logic/docs_bloc.dart';
 import '../../logic/docs_event.dart';
 import '../../logic/docs_state.dart';
@@ -13,6 +15,9 @@ import '../widgets/like_dislike_row.dart';
 import '../widgets/comments_section.dart';
 import '../widgets/comment_input.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/widgets/bottom_nav.dart';
+import '../../../../core/router/app_router.dart';
+import 'package:studydocs/features/docs/presentation/screen/reviews_screen.dart';
 
 class DocsDetailScreen extends StatefulWidget {
   const DocsDetailScreen({super.key});
@@ -24,6 +29,7 @@ class DocsDetailScreen extends StatefulWidget {
 class _DocsDetailScreenState extends State<DocsDetailScreen> {
   int _pdfPageIndex = 0;        // ← Biến riêng cho PDF preview
   int _commentPageIndex = 0;    // ← Biến riêng cho phân trang comment
+  bool _isExpanded = false;     // ← Trạng thái xem thêm
   final int _commentsPerPage = 5;
 
   @override
@@ -32,6 +38,7 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
     final isWide = size.width > 600;
 
     return Scaffold(
+      appBar: const Header(isDefault: false, headerTitle: 'Chi tiết tài liệu'),
       body: SafeArea(
         child: BlocBuilder<DocsBloc, DocsState>(
           builder: (context, state) {
@@ -63,6 +70,25 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
           },
         ),
       ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: -1,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go(AppRoutes.home);
+              break;
+            case 1:
+              context.go(AppRoutes.library);
+              break;
+            case 2:
+              context.go(AppRoutes.explore);
+              break;
+            case 3:
+              context.go(AppRoutes.notifications);
+              break;
+          }
+        },
+      ),
     );
   }
 
@@ -81,7 +107,8 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.65,
       child: PageView.builder(
-        itemCount: previewUrls.length,
+        itemCount: _isExpanded ? previewUrls.length : (previewUrls.isNotEmpty ? 1 : 0),
+        physics: _isExpanded ? null : const NeverScrollableScrollPhysics(), // Disable swipe if not expanded
         onPageChanged: (index) {
           setState(() {
             _pdfPageIndex = index;  // Chỉ cập nhật PDF page
@@ -146,26 +173,77 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
         LikeDislikeRow(doc: doc),
         const SizedBox(height: 20),
 
-        // Mobile: Hiển thị PDF viewer nếu màn hình nhỏ
+        // Mobile: Render PDF/Image Viewer
         if (MediaQuery.of(context).size.width <= 600)
           _buildPdfViewer(doc.previewUrls, doc.pages),
-        if (MediaQuery.of(context).size.width <= 600) const SizedBox(height: 20),
+        if (MediaQuery.of(context).size.width <= 600) const SizedBox(height: 16),
 
-        // Phần bình luận với biến riêng (không xung đột với PDF page)
-        CommentsSection(
-          comments: doc.comments,
-          currentPage: _commentPageIndex,
-          commentsPerPage: _commentsPerPage,
-          onPageChange: (page) => setState(() => _commentPageIndex = page),
-        ),
-        const SizedBox(height: 20),
+        // Button "Xem thêm" (See More) - Only visible when NOT expanded
+        if (!_isExpanded && MediaQuery.of(context).size.width <= 600)
+           Container(
+             width: double.infinity,
+             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+             child: OutlinedButton.icon(
+               onPressed: () {
+                 setState(() {
+                   _isExpanded = true;
+                 });
+               },
+               icon: const Icon(Icons.expand_more),
+               label: const Text("Xem thêm chi tiết & Bình luận"),
+               style: OutlinedButton.styleFrom(
+                 padding: const EdgeInsets.symmetric(vertical: 12),
+                 side: BorderSide(color: Theme.of(context).primaryColor),
+               ),
+             ),
+           ),
 
-        CommentInput(
-          onSend: (text) {
-            context.read<DocsBloc>().add(PostComment(text));
-          },
-        ),
-        const SizedBox(height: 40),
+        // Expanded Content: Comments and Input
+        if (_isExpanded || MediaQuery.of(context).size.width > 600) ...[
+            const SizedBox(height: 16),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text("Bình luận", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            
+            CommentsSection(
+              comments: doc.comments,
+              currentPage: _commentPageIndex,
+              commentsPerPage: _commentsPerPage,
+              onPageChange: (page) => setState(() => _commentPageIndex = page),
+            ),
+            
+            if (doc.comments.isNotEmpty)
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                     Navigator.push(
+                       context,
+                       MaterialPageRoute(
+                         builder: (_) => BlocProvider.value(
+                           value: context.read<DocsBloc>(),
+                           child: ReviewsScreen(
+                             documentId: doc.id!, 
+                             documentTitle: doc.title
+                           ),
+                         ),
+                       ),
+                     );
+                  },
+                  child: const Text("Xem tất cả bình luận"),
+                ),
+              ),
+              
+            const SizedBox(height: 10),
+            CommentInput(
+              onSend: (text) {
+                context.read<DocsBloc>().add(PostComment(text));
+              },
+            ),
+            const SizedBox(height: 40),
+        ],
       ],
     );
   }

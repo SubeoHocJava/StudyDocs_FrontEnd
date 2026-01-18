@@ -235,8 +235,8 @@ class _HeaderState extends State<Header> {
         if (widget.onLogoTap != null) {
           widget.onLogoTap!();
         } else {
-          // Navigate to Home reset logic if needed
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          // Navigate to Home using GoRouter
+          context.go(AppRoutes.home);
         }
       },
       child: Image.asset(AppAssets.logo, width: 56, height: 56),

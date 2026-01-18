@@ -5,7 +5,7 @@ class FollowUserUseCase {
 
   FollowUserUseCase(this.repository);
 
-  Future<void> call(String userId) async {
+  Future<int> call(String userId) async {
     return await repository.followUser(userId);
   }
 }

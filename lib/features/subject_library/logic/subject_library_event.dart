@@ -6,6 +6,7 @@ class SubjectLibraryEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
 // load document
 class SubjectLibraryLoadDocumentByKeyWord extends SubjectLibraryEvent {
   final String keyword;
@@ -15,7 +16,7 @@ class SubjectLibraryLoadDocumentByKeyWord extends SubjectLibraryEvent {
 }
 
 //tìm document
-class FindDocument extends SubjectLibraryEvent{
+class FindDocument extends SubjectLibraryEvent {
   final String keyword;
   const FindDocument(this.keyword);
   @override
@@ -70,9 +71,27 @@ class SubjectLibraryBookmarkDocument extends SubjectLibraryEvent {
 // Load subjects và documents theo school name
 //
 class SubjectLibraryLoadBySchool extends SubjectLibraryEvent {
+  final String schoolId;
   final String schoolName;
-  const SubjectLibraryLoadBySchool(this.schoolName);
+  const SubjectLibraryLoadBySchool(this.schoolId, this.schoolName);
 
   @override
-  List<Object?> get props => [schoolName];
+  List<Object?> get props => [schoolId, schoolName];
+}
+
+class SubjectLibraryLoadBySubject extends SubjectLibraryEvent {
+  final String? schoolId;
+  final String subjectId;
+  final String subjectName;
+  final String schoolName;
+
+  const SubjectLibraryLoadBySubject({
+    this.schoolId,
+    required this.subjectId,
+    required this.subjectName,
+    required this.schoolName,
+  });
+
+  @override
+  List<Object?> get props => [schoolId, subjectId, subjectName, schoolName];
 }

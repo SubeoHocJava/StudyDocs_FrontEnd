@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 abstract class DocumentUiList extends Equatable {
   /// ===== ID =====
   String get id;
+  String? get fileId;
 
   /// ===== BASIC INFO =====
   String get title;

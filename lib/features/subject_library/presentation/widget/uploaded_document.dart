@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
 import '../../domain/ui_model/doc_subject_lib_ui.dart';
@@ -51,6 +52,9 @@ class UploadDocument extends StatelessWidget {
                       desktop: 5,
                     ),
               ),
+          onTap: (doc) {
+            context.push('/document/${doc.id}');
+          },
         ),
       ],
     );

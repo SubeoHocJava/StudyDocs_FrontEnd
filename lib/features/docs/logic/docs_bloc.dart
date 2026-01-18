@@ -90,7 +90,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       try {
         await postCommentUseCase(documentId: documentId, text: event.text);
         // Reload lại doc để lấy comment mới (hoặc add manual vào list)
-        add(LoadDocDetails()); 
+        add(const LoadDocDetails()); 
       } catch (e) {
         emit(DocsError("Lỗi đăng bình luận: $e"));
         // Emit lại state cũ để không bị kẹt ở loading/error
@@ -114,5 +114,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
        // Silent error or toast
        print("Lỗi react review: $e");
      }
+
   }
+
 }

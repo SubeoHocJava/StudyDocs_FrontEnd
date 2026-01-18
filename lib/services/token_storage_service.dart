@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service để lưu trữ và quản lý tokens (accessToken, refreshToken) + user info
@@ -13,6 +14,63 @@ class TokenStorageService {
   static const String _keyUserId = 'user_id';
   static const String _keyUsername = 'username';
   static const String _keyDisplayName = 'display_name';
+
+  /// Kiểm tra xem Access Token sắp hết hạn chưa
+  /// Trả về true nếu token null, invalid hoặc sắp hết hạn (còn < 1 phút)
+  Future<bool> isAccessTokenExpired({int bufferSeconds = 60}) async {
+    final accessToken = await getAccessToken();
+    if (accessToken == null) return true;
+
+    try {
+      final payload = _parseJwt(accessToken);
+      if (payload['exp'] == null) return true;
+
+      // 'exp' là timestamp (giây)
+      final exp = payload['exp'] as int;
+      final now = DateTime.now().millisecondsSinceEpoch / 1000;
+
+      // Nếu (exp - now) < buffer (ví dụ 60s) -> coi như hết hạn để refresh trước
+      return (exp - now) < bufferSeconds;
+    } catch (e) {
+      // Decode lỗi -> coi như hết hạn
+      return true;
+    }
+  }
+
+  /// Helper giải mã JWT (không cần thư viện ngoài)
+  Map<String, dynamic> _parseJwt(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      throw Exception('invalid token');
+    }
+
+    final payload = _decodeBase64(parts[1]);
+    final payloadMap = json.decode(payload);
+    if (payloadMap is! Map<String, dynamic>) {
+      throw Exception('invalid payload');
+    }
+
+    return payloadMap;
+  }
+
+  String _decodeBase64(String str) {
+    String output = str.replaceAll('-', '+').replaceAll('_', '/');
+
+    switch (output.length % 4) {
+      case 0:
+        break;
+      case 2:
+        output += '==';
+        break;
+      case 3:
+        output += '=';
+        break;
+      default:
+        throw Exception('Illegal base64url string!"');
+    }
+
+    return utf8.decode(base64Url.decode(output));
+  }
 
   /// Lưu tokens sau khi login thành công
   Future<void> saveTokens({

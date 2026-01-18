@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
@@ -104,6 +105,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
             DocumentImage(
               responsive: responsive,
               sizeOverride: responsive.isMobile ? 90 : 102,
+              imageUrl: widget.document.thumbnailUrl,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -180,8 +182,14 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
   final double? sizeOverride;
+  final String? imageUrl; // ✅ Added to support dynamic images
 
-  const DocumentImage({super.key, required this.responsive, this.sizeOverride});
+  const DocumentImage({
+    super.key,
+    required this.responsive,
+    this.sizeOverride,
+    this.imageUrl, // ✅ Inject
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -202,10 +210,22 @@ class DocumentImage extends StatelessWidget {
           padding: const EdgeInsets.all(1.5),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: Image.asset(
-              "assets/icons/temp_image.jpg",
-              fit: BoxFit.cover,
-            ),
+            child:
+                imageUrl != null && imageUrl!.isNotEmpty
+                    ? Image.network(
+                      imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/icons/temp_image.jpg",
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                    : Image.asset(
+                      "assets/icons/temp_image.jpg",
+                      fit: BoxFit.cover,
+                    ),
           ),
         ),
       ),
@@ -387,6 +407,16 @@ class PageDateWidget extends StatelessWidget {
     required this.responsive,
   });
 
+  String _formatDate(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty) return 'N/A';
+    try {
+      final dateTime = DateTime.parse(rawDate);
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    } catch (_) {
+      return rawDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -411,7 +441,7 @@ class PageDateWidget extends StatelessWidget {
           color: Colors.grey.shade600,
         ),
         Text(
-          date!,
+          _formatDate(date),
           style: TextStyle(
             fontSize: responsive.fontSize(11),
             color: Colors.black87,

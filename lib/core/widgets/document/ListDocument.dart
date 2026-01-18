@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import '../../../features/docs/logic/docs_bloc.dart';
+import '../../../features/docs/logic/docs_event.dart';
+import 'package:studydocs/features/docs/domain/repository/docs_repository.dart';
+import 'package:studydocs/features/docs/domain/usecase/get_document_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/toggle_save_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/toggle_like_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/post_comment_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/react_review_usecase.dart';
+import '../../../features/docs/presentation/screen/docs_detail_screen.dart';
 import 'model/list_document_ui.dart';
 
+/// =======================
+/// LIST DOCUMENT
+/// =======================
 class ListDocument extends StatelessWidget {
   final List<DocumentUiList> documents;
 
@@ -10,6 +25,7 @@ class ListDocument extends StatelessWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
 
   const ListDocument(
     this.documents, {
@@ -18,6 +34,7 @@ class ListDocument extends StatelessWidget {
     this.onSave,
     this.onLike,
     this.onComment,
+    this.onTap,
   });
   @override
   Widget build(BuildContext context) {
@@ -27,18 +44,19 @@ class ListDocument extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: documents.length,
-      itemBuilder: (context, index) {
-        final document = documents[index];
-
+      itemBuilder: (_, index) {
         return Padding(
           padding: EdgeInsets.symmetric(
             vertical: responsive.heightPercent(1),
             horizontal: responsive.isMobile ? 12 : 16,
           ),
           child: MonoDocumentInList(
-            document: document,
+            document: documents[index],
             onDownload: onDownload,
             onSave: onSave,
+            onLike: onLike,
+            onComment: onComment,
+            onTap: onTap,
           ),
         );
       },
@@ -56,6 +74,7 @@ class MonoDocumentInList extends StatefulWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
   const MonoDocumentInList({
     super.key,
     required this.document,
@@ -63,6 +82,7 @@ class MonoDocumentInList extends StatefulWidget {
     this.onSave,
     this.onLike,
     this.onComment,
+    this.onTap,
   });
 
   @override
@@ -73,105 +93,134 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
   bool _downloadSelected = false;
   bool _saveSelected = false;
 
+  void _openDetail(BuildContext context) {
+    final docsRepository = context.read<DocsRepository>();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => DocsBloc(
+            documentId: widget.document.id!,
+            getDocumentUseCase: GetDocumentUseCase(docsRepository),
+            toggleSaveUseCase: ToggleSaveUseCase(docsRepository),
+            toggleLikeUseCase: ToggleLikeUseCase(docsRepository),
+            postCommentUseCase: PostCommentUseCase(docsRepository),
+            reactReviewUseCase: ReactReviewUseCase(docsRepository),
+          )..add(const LoadDocDetails()),
+          child: const DocsDetailScreen(),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    final double containerWidth =
-        responsive.isMobile ? responsive.widthPercent(92) : 720;
+    double width =
+    responsive.isMobile ? responsive.widthPercent(92) : 720;
 
-    return Container(
-      width: containerWidth,
-      margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
-      constraints: BoxConstraints(minHeight: responsive.isMobile ? 120 : 136),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
-        child: Row(
-          // Avoid stretching children to an unbounded height when this card is
-          // laid out inside scrollables (can trigger BoxConstraints(h=Infinity)).
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            DocumentImage(
-              responsive: responsive,
-              widthOverride: responsive.isMobile ? 120 : 150,
-              heightOverride: responsive.isMobile ? 120 : 150,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TitleWidget(
-                    title: widget.document.title,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  SubjectWidget(
-                    subject: widget.document.category,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  SchoolWidget(
-                    school: widget.document.institution,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 2),
-                  PageDateWidget(
-                    pages: 5,
-                    date: widget.document.createdAt,
-                    responsive: responsive,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      LikeCommentWidget(
-                        likes: widget.document.likesCount,
-                        comments: widget.document.commentsCount,
-                        responsive: responsive,
-                        onLikeTap: () => widget.onLike?.call(widget.document),
-                        onCommentTap:
-                            () => widget.onComment?.call(widget.document),
-                      ),
-                      const Spacer(),
-                      _ActionIcon(
-                        icon: Icons.download_outlined,
-                        selected: _downloadSelected,
-                        onTap: () {
-                          setState(
-                            () => _downloadSelected = !_downloadSelected,
-                          );
-                          widget.onDownload?.call(widget.document);
-                        },
-                      ),
-                      const SizedBox(width: 6),
-                      _ActionIcon(
-                        icon: Icons.bookmark_border,
-                        selected: _saveSelected,
-                        onTap: () {
-                          setState(() => _saveSelected = !_saveSelected);
-                          widget.onSave?.call(widget.document);
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!(widget.document);
+        } else {
+          _openDetail(context);
+        }
+      },
+      child: Container(
+        width: width,
+        margin: EdgeInsets.symmetric(
+          vertical: responsive.heightPercent(0.5),
+        ),
+        constraints: BoxConstraints(
+          minHeight: responsive.isMobile ? 120 : 136,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
+        child: Padding(
+          padding: EdgeInsets.all(responsive.isMobile ? 8 : 10),
+          child: Row(
+            children: [
+              DocumentImage(
+                responsive: responsive,
+                imageUrl: widget.document.thumbnailUrl,
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: _buildInfo(responsive)),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildInfo(ResponsiveHelper responsive) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TitleWidget(
+          title: widget.document.title,
+          responsive: responsive,
+        ),
+        const SizedBox(height: 2),
+        SubjectWidget(
+          subject: widget.document.category,
+          responsive: responsive,
+        ),
+        const SizedBox(height: 2),
+        SchoolWidget(
+          school: widget.document.institution,
+          responsive: responsive,
+        ),
+        const SizedBox(height: 2),
+        PageDateWidget(
+          pages: 5,
+          date: widget.document.createdAt,
+          responsive: responsive,
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            LikeCommentWidget(
+              likes: widget.document.likesCount,
+              comments: widget.document.commentsCount,
+              responsive: responsive,
+              onLikeTap: () => widget.onLike?.call(widget.document),
+              onCommentTap: () => widget.onComment?.call(widget.document),
+            ),
+            const Spacer(),
+            _ActionIcon(
+              icon: Icons.download_outlined,
+              selected: _downloadSelected,
+              onTap: () {
+                setState(() => _downloadSelected = !_downloadSelected);
+                widget.onDownload?.call(widget.document);
+              },
+            ),
+            const SizedBox(width: 6),
+            _ActionIcon(
+              icon: Icons.bookmark_border,
+              selected: _saveSelected,
+              onTap: () {
+                setState(() => _saveSelected = !_saveSelected);
+                widget.onSave?.call(widget.document);
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -181,52 +230,47 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 /// =======================
 class DocumentImage extends StatelessWidget {
   final ResponsiveHelper responsive;
-  final double? widthOverride;
-  final double? heightOverride;
+  final String? imageUrl;
 
   const DocumentImage({
     super.key,
     required this.responsive,
-    this.widthOverride,
-    this.heightOverride,
+    this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    final double width =
-        widthOverride ??
-            (responsive.isMobile ? responsive.widthPercent(35) : 200);
-
-    final double height =
-        heightOverride ??
-            (responsive.isMobile ? responsive.widthPercent(35) : 200);
+    double size =
+    responsive.isMobile ? responsive.widthPercent(30) : 150;
 
     return Container(
-      width: width,
-      height: height, // 👈 set height
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.navy, width: 1.2),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppColors.navy, width: 1.2),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: Padding(
-          padding: const EdgeInsets.all(1.5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Image.asset(
-              "assets/icons/temp_image.jpg",
-              fit: BoxFit.fill, // 👈 quan trọng
-            ),
-          ),
-        ),
+        child: imageUrl != null && imageUrl!.isNotEmpty
+            ? CachedNetworkImage(
+          imageUrl: imageUrl!,
+          fit: BoxFit.cover,
+          placeholder: (_, __) =>
+          const Center(child: CircularProgressIndicator()),
+          errorWidget: (_, __, ___) =>
+              Image.asset("assets/icons/temp_image.jpg"),
+        )
+            : Image.asset("assets/icons/temp_image.jpg"),
       ),
     );
   }
 }
 
-
-class _ActionIcon extends StatefulWidget {
+/// =======================
+/// ACTION ICON
+/// =======================
+class _ActionIcon extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool selected;
@@ -238,53 +282,23 @@ class _ActionIcon extends StatefulWidget {
   });
 
   @override
-  State<_ActionIcon> createState() => _ActionIconState();
-}
-
-class _ActionIconState extends State<_ActionIcon> {
-  bool _hovered = false;
-
-  @override
   Widget build(BuildContext context) {
-    // Hover effect applies to both selected and unselected states
-    final bool isSelected = widget.selected;
-    final bool showHover = _hovered;
-
-    Color borderColor;
-    Color iconColor;
-    Color? backgroundColor;
-
-    if (isSelected) {
-      // Selected state
-      borderColor = showHover ? Colors.amber.shade800 : Colors.amber.shade700;
-      iconColor = showHover ? Colors.amber.shade900 : Colors.amber.shade800;
-      backgroundColor =
-          showHover
-              ? Colors.amber.withOpacity(0.15)
-              : Colors.amber.withOpacity(0.1);
-    } else {
-      // Unselected state
-      borderColor = showHover ? Colors.grey.shade500 : const Color(0xFFD0D0D0);
-      iconColor = showHover ? Colors.grey.shade800 : Colors.grey.shade600;
-      backgroundColor =
-          showHover ? Colors.grey.withOpacity(0.08) : Colors.transparent;
-    }
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: borderColor, width: 1.2),
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(7),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: selected ? Colors.amber : const Color(0xFFD0D0D0),
+            width: 1.2,
           ),
-          child: Icon(widget.icon, size: 22, color: iconColor),
+        ),
+        child: Icon(
+          icon,
+          size: 22,
+          color: selected ? Colors.amber.shade800 : Colors.grey.shade700,
         ),
       ),
     );
@@ -292,7 +306,7 @@ class _ActionIconState extends State<_ActionIcon> {
 }
 
 /// =======================
-/// TEXT COMPONENTS
+/// TEXT WIDGETS
 /// =======================
 class TitleWidget extends StatelessWidget {
   final String title;
@@ -302,18 +316,13 @@ class TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String displayTitle =
-        title.length > 50 ? '${title.substring(0, 50)}...' : title;
-
     return Text(
-      displayTitle,
+      title,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: responsive.fontSize(13),
-        fontWeight: FontWeight.w700,
-        height: 1.2,
-        color: Colors.black87,
+        fontWeight: FontWeight.bold,
       ),
     );
   }
@@ -323,35 +332,13 @@ class SubjectWidget extends StatelessWidget {
   final String? subject;
   final ResponsiveHelper responsive;
 
-  const SubjectWidget({
-    super.key,
-    required this.subject,
-    required this.responsive,
-  });
+  const SubjectWidget({super.key, this.subject, required this.responsive});
 
   @override
   Widget build(BuildContext context) {
-    final display = (subject ?? '').trim();
-    return Row(
-      children: [
-        Icon(
-          Icons.folder_outlined,
-          size: responsive.fontSize(11.5),
-          color: Colors.blue.shade600,
-        ),
-        SizedBox(width: responsive.widthPercent(0.5)),
-        Expanded(
-          child: Text(
-            display.isEmpty ? 'Chưa phân loại' : display,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: responsive.fontSize(11),
-              color: Colors.black87,
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      subject ?? 'Chưa phân loại',
+      style: TextStyle(fontSize: responsive.fontSize(11)),
     );
   }
 }
@@ -360,35 +347,13 @@ class SchoolWidget extends StatelessWidget {
   final String? school;
   final ResponsiveHelper responsive;
 
-  const SchoolWidget({
-    super.key,
-    required this.school,
-    required this.responsive,
-  });
+  const SchoolWidget({super.key, this.school, required this.responsive});
 
   @override
   Widget build(BuildContext context) {
-    final display = (school ?? '').trim();
-    return Row(
-      children: [
-        Image.asset(
-          "assets/icons/school.png",
-          width: responsive.fontSize(11.5),
-          height: responsive.fontSize(11.5),
-        ),
-        SizedBox(width: responsive.widthPercent(0.5)),
-        Expanded(
-          child: Text(
-            display.isEmpty ? 'Chưa có trường' : display,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: responsive.fontSize(11),
-              color: Colors.black87,
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      school ?? 'Chưa có trường',
+      style: TextStyle(fontSize: responsive.fontSize(11)),
     );
   }
 }
@@ -407,47 +372,23 @@ class PageDateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayDate = (date ?? '').trim();
-    return Wrap(
-      spacing: responsive.widthPercent(1.2),
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        Icon(
-          Icons.description_outlined,
-          size: responsive.fontSize(11.5),
-          color: Colors.grey.shade600,
-        ),
-        Text(
-          "$pages trang",
-          style: TextStyle(
-            fontSize: responsive.fontSize(11),
-            color: Colors.black87,
-          ),
-        ),
-        Icon(
-          Icons.calendar_today_outlined,
-          size: responsive.fontSize(11.5),
-          color: Colors.grey.shade600,
-        ),
-        Text(
-          displayDate.isEmpty ? '--/--/----' : displayDate,
-          style: TextStyle(
-            fontSize: responsive.fontSize(11),
-            color: Colors.black87,
-          ),
-        ),
-      ],
+    final formatted =
+    date != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(date!)) : 'N/A';
+
+    return Text(
+      "$pages trang • $formatted",
+      style: TextStyle(fontSize: responsive.fontSize(11)),
     );
   }
 }
 
-// LikeComment
+/// =======================
+/// LIKE + COMMENT
+/// =======================
 class LikeCommentWidget extends StatelessWidget {
   final int? likes;
   final int? comments;
   final ResponsiveHelper responsive;
-
-  /// CALLBACK EVENTS
   final VoidCallback? onLikeTap;
   final VoidCallback? onCommentTap;
 
@@ -462,100 +403,17 @@ class LikeCommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = responsive.fontSize(15); // Tăng +2 từ 13 lên 15
-
     return Row(
       children: [
-        // ===== LIKE =====
         GestureDetector(
           onTap: onLikeTap,
-          child: Row(
-            children: [
-              Icon(
-                Icons.thumb_up_outlined,
-                size: iconSize,
-                color: Colors.grey.shade600,
-              ),
-              SizedBox(width: responsive.widthPercent(0.5)),
-              Text(
-                "$likes",
-                style: TextStyle(
-                  fontSize: responsive.fontSize(11),
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
+          child: Text("👍 ${likes ?? 0}"),
         ),
-
-        SizedBox(width: responsive.widthPercent(2)),
-
-        // ===== COMMENT =====
+        const SizedBox(width: 12),
         GestureDetector(
           onTap: onCommentTap,
-          child: Row(
-            children: [
-              Icon(
-                Icons.chat_bubble_outline,
-                size: iconSize,
-                color: Colors.grey.shade600,
-              ),
-              SizedBox(width: responsive.widthPercent(0.5)),
-              Text(
-                "$comments",
-                style: TextStyle(
-                  fontSize: responsive.fontSize(11),
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
+          child: Text("💬 ${comments ?? 0}"),
         ),
-      ],
-    );
-  }
-}
-
-/// =======================
-/// DOWNLOAD + SAVE
-/// =======================
-class DownloadSaveGroup extends StatelessWidget {
-  final ResponsiveHelper responsive;
-  final VoidCallback? onDownload;
-  final VoidCallback? onSave;
-  final bool showSave;
-
-  const DownloadSaveGroup({
-    super.key,
-    required this.responsive,
-    this.onDownload,
-    this.onSave,
-    this.showSave = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Enlarged icon size as requested (was 26)
-    final iconSize = responsive.fontSize(32);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          onTap: onDownload,
-          child: Icon(Icons.download_rounded, size: iconSize),
-        ),
-        const SizedBox(width: 6),
-        // Save button visibility toggled by showSave
-        if (showSave)
-          GestureDetector(
-            onTap: onSave,
-            child: Icon(
-              Icons.bookmark_rounded,
-              size: iconSize + 2,
-              color: Colors.amber,
-            ),
-          ),
       ],
     );
   }

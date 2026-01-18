@@ -6,6 +6,6 @@ class LikeDocumentUseCase {
   LikeDocumentUseCase(this.repository);
 
   Future<void> call(String documentId) async {
-    // TODO: repository.likeDocument(documentId)
+   repository.likeDocument(documentId);
   }
 }

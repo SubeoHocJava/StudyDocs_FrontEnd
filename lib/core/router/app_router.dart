@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 
@@ -22,12 +23,12 @@ import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart'
     show createManageUserBloc;
 import 'package:studydocs/features/manage_user/logic/manage_user_event.dart';
 import 'package:studydocs/features/manage_user/presentation/screen/manage_user_screen.dart';
-
+import 'package:studydocs/features/notification_template/data/repository/notification_template_repository_impl.dart';
 import 'package:studydocs/features/notification_template/domain/repository/notification_template_repository.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/create_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/delete_notification_template_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_channels_usecase.dart';
-import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_categories_usecase.dart';
+import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_types_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/search_notification_template_keywords_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
@@ -44,7 +45,7 @@ import 'package:studydocs/features/statistic/presentation/bloc/statistic_event.d
 import 'package:studydocs/features/statistic/presentation/screens/statistic_screen.dart';
 import 'package:studydocs/features/docs/logic/docs_page.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 import 'package:studydocs/features/subject_library/domain/data/impl/subject_library_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
 import 'package:studydocs/features/subject_library/domain/usecase/DocsUseCase.dart';
@@ -222,7 +223,7 @@ GoRouter createAppRouter() {
                   create:
                       (_) =>
                           ProfileBloc(ProfileRepositoryImpl())
-                            ..add(const LoadProfile(0)),
+                            ..add(const LoadProfile("")),
                 ),
               ],
               child: const StatisticScreen(),
@@ -232,25 +233,29 @@ GoRouter createAppRouter() {
       ),
       // School subject library route - standalone screen
       GoRoute(
-        path: '/school/:schoolName',
+        path: '/school/:schoolId',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          // GoRouter đã tự động decode path parameters rồi
+          // Get ID from path, Name from query
+          final decodedSchoolId = state.pathParameters['schoolId'] ?? '';
           final decodedSchoolName =
-              state.pathParameters['schoolName'] ?? 'Unknown School';
+              state.uri.queryParameters['name'] ?? 'Unknown School';
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
-          final academicDataSource = AcademicRemoteDataSourceImpl(dio: dioClient.dio);
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
+          final academicDataSource = AcademicRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
-          final subjectRepo = SubjectRepositoryImpl(
-            remote: academicDataSource,
-          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
@@ -271,10 +276,18 @@ GoRouter createAppRouter() {
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
                       repository: subjectLibraryRepo,
                     ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
                       repository: subjectRepo,
                     ),
-                  )..add(SubjectLibraryLoadBySchool(decodedSchoolName)),
+                  )..add(
+                    SubjectLibraryLoadBySchool(
+                      decodedSchoolId,
+                      decodedSchoolName,
+                    ),
+                  ),
               child: SubjectLibraryScreen(schoolName: decodedSchoolName),
             ),
           );
@@ -282,27 +295,29 @@ GoRouter createAppRouter() {
       ),
       // Subject documents route - standalone screen
       GoRoute(
-        path: '/school/:schoolName/subject/:subjectName',
+        path: '/school/:schoolId/subject/:subjectId',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
-          // GoRouter đã tự động decode path parameters rồi
-          final decodedSchoolName =
-              state.pathParameters['schoolName'] ?? 'Unknown School';
-          final decodedSubjectName =
-              state.pathParameters['subjectName'] ?? 'Unknown Subject';
+          final schoolId = state.pathParameters['schoolId'] ?? '';
+          final subjectId = state.pathParameters['subjectId'] ?? '';
+          final schoolName = state.uri.queryParameters['schoolName'] ?? 'Unknown School';
+          final subjectName = state.uri.queryParameters['subjectName'] ?? 'Unknown Subject';
 
           // Create DataSources
           final dioClient = context.read<DioClient>();
-          final documentDataSource = DocumentRemoteDataSourceImpl(dioClient: dioClient);
-          final academicDataSource = AcademicRemoteDataSourceImpl(dio: dioClient.dio);
+          final documentDataSource = DocumentRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
+          final academicDataSource = AcademicRemoteDataSourceImpl(
+            dioClient: dioClient,
+          );
 
           // Create repositories
           final subjectLibraryRepo = SubjectLibraryRepositoryImpl(
             documentDataSource: documentDataSource,
+            academicDataSource: academicDataSource,
           );
-          final subjectRepo = SubjectRepositoryImpl(
-            remote: academicDataSource,
-          );
+          final subjectRepo = SubjectRepositoryImpl(remote: academicDataSource);
 
           return MaterialPage(
             child: BlocProvider(
@@ -323,15 +338,23 @@ GoRouter createAppRouter() {
                     bookmarkDocumentUseCase: BookmarkDocumentUseCase(
                       repository: subjectLibraryRepo,
                     ),
+                    getDocumentsByAcademicIdUseCase: GetDocumentsByAcademicIdUseCase(
+                      repository: subjectLibraryRepo,
+                    ),
                     getSubjectsBySchoolUseCase: GetSubjectsBySchoolUseCase(
                       repository: subjectRepo,
                     ),
                   )..add(
-                    SubjectLibraryLoadDocumentByKeyWord(decodedSubjectName),
+                    SubjectLibraryLoadBySubject(
+                      schoolId: schoolId,
+                      subjectId: subjectId,
+                      subjectName: subjectName,
+                      schoolName: schoolName,
+                    ),
                   ),
               child: SubjectDocumentsScreen(
-                schoolName: decodedSchoolName,
-                subjectName: decodedSubjectName,
+                schoolName: schoolName,
+                subjectName: subjectName,
               ),
             ),
           );
@@ -396,14 +419,18 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(),
+            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: context.read<DioClient>()),
           );
           return BlocProvider(
             create:
                 (context) => DocsManagementBloc(
                   getMyDocsUseCase: GetMyDocsUseCase(repository),
+                  getAllDocsUseCase: GetAllDocsUseCase(repository),
                   deleteDocUseCase: DeleteDocUseCase(repository),
+                  deleteAdminDocUseCase: DeleteAdminDocUseCase(repository),
                   updateDocUseCase: UpdateDocUseCase(repository),
+                  updateAdminDocUseCase: UpdateAdminDocUseCase(repository),
+                  uploadDocUseCase: UploadDocUseCase(repository),
                 ),
             child: const DocsManagementScreen(),
           );
@@ -420,6 +447,15 @@ GoRouter createAppRouter() {
         redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
+        routes: [
+          GoRoute(
+            path: ':userId',
+            builder: (context, state) {
+              final userId = state.pathParameters['userId'];
+              return ProfileScreen(userId: userId);
+            },
+          ),
+        ],
       ),
       // Document Detail Route
       GoRoute(

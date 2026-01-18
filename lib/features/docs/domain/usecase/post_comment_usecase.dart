@@ -6,6 +6,6 @@ class PostCommentUseCase {
   PostCommentUseCase(this.repository);
 
   Future<void> call({required String documentId, required String text}) async {
-    await repository.postComment(documentId: documentId, text: text);
+    await repository.postComment(documentId, text);
   }
 }

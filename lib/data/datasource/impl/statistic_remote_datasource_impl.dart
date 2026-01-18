@@ -1,24 +1,44 @@
-import 'dart:math';
+import 'package:studydocs/core/constants/api_constants.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import '../statistic_remote_datasource.dart';
 
-/// Mock datasource for statistics feature
-/// Returns download statistics for the last 5 days
-class StatisticRemoteDataSource {
-  /// Mock API: Returns download count for the last 5 days
-  /// In production, this would call actual backend API
-  Future<List<Map<String, dynamic>>> getDownloadStatistics() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
+class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
+  final DioClient dioClient;
 
-    final now = DateTime.now();
-    final random = Random();
+  StatisticRemoteDataSourceImpl({required this.dioClient});
 
-    // Generate data for last 5 days
-    return List.generate(5, (i) {
-      final date = now.subtract(Duration(days: 4 - i));
-      return {
-        'date': date.toIso8601String(),
-        'count': random.nextInt(5) + 1, // Random 1-5 files per day
-      };
-    });
+  @override
+  Future<int> getTotalDocuments() async {
+    try {
+      final response = await dioClient.get(
+        ApiConstants.adminStatsTotalDocuments,
+      );
+      if (response.isSuccess && response.data != null) {
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      throw Exception('Failed to fetch total documents: $e');
+    }
+  }
+
+  @override
+  Future<int> getSystemStats(String period) async {
+    try {
+      final response = await dioClient.get(
+        ApiConstants.adminStatsTotalDocuments,
+        queryParameters: {'period': period},
+      );
+      if (response.isSuccess && response.data != null) {
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      throw Exception('Failed to fetch system stats for $period: $e');
+    }
   }
 }

@@ -35,12 +35,13 @@ class UploadFileScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Upload thành công!")),
               );
-            //   chuyển đến trang home
+              Navigator.pop(context);
             }
             if (state is UploadFileError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
+              Navigator.pop(context);
             }
           },
           builder: (context, state) {
@@ -63,9 +64,16 @@ class UploadFileScreen extends StatelessWidget {
                       SizedBox(height: responsive.heightPercent(2)),
                       FileUploadLabel(files: state.file),
                       SizedBox(),
-                      SchoolLabel(school: state.school),
+                      SchoolLabel(
+                        school: state.school,
+                        schoolId: state.schoolId,
+                      ),
                       SizedBox(height: responsive.heightPercent(2)),
-                      SubjectLabel(subject: state.subject),
+                      SubjectLabel(
+                        subject: state.subject,
+                        subjectId: state.subjectId,
+                        schoolId: state.schoolId,
+                      ),
                       SizedBox(height: responsive.heightPercent(2)),
                       MoreDetail(),
                     ],

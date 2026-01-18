@@ -1,10 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 
 import '../model/profile_entity.dart';
+import '../model/document_profile.dart';
 
 abstract class ProfileRepository {
   /// Lấy thông tin profile hiện tại
-  Future<ProfileEntity> getProfile(int userId);
+  Future<ProfileEntity> getProfile(String userId);
 
   /// Cập nhật thông tin profile (không bao gồm avatar)
   Future<ProfileEntity> updateProfile(ProfileEntity profile);
@@ -16,12 +17,12 @@ abstract class ProfileRepository {
   Future<void> verifyEmail();
 
   /// Theo dõi người dùng
-  Future<void> followUser(String userId);
+  Future<int> followUser(String userId);
 
   /// Bỏ theo dõi người dùng
-  Future<void> unfollowUser(String userId);
+  Future<int> unfollowUser(String userId);
 
-  getDocumentsByUser(String id) {}
+  Future<List<DocumentProfile>> getDocumentsByUser(String id);
 
 
 }

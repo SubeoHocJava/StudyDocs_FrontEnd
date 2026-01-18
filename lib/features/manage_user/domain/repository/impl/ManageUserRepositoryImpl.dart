@@ -1,21 +1,23 @@
 import 'dart:async';
 
-import 'package:studydocs/data/datasource/user_datasource.dart';
-import 'package:studydocs/data/model/auth/request/update_user_request.dart';
-import 'package:studydocs/data/model/user.dart';
-import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
-import '../../../../../core/network/dio_client.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import '../../../../../data/datasource/impl/asset_remote_datasource_impl.dart';
+import '../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
+import '../../../../../data/model/auth/request/update_user_request.dart';
+
+import '../../../../../data/model/user.dart';
 import '../manage_user_repository.dart';
 
+
 class ManageUserRepositoryImpl extends ManageUserRepository {
-  late final UserDataSource userDataSource;
+  late final UserDataSourceImpl userDataSource;
 
   /// Constructor rỗng
   ManageUserRepositoryImpl() {
     final dioClient = DioClient();
     userDataSource = UserDataSourceImpl(
       dioClient: dioClient,
-      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
+        assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient)
     );
   }
 

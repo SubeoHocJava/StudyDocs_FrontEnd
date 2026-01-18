@@ -1,84 +1,55 @@
-import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:studydocs/data/datasource/user_datasource.dart';
+import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/model/auth/request/update_user_request.dart';
+
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
 
 import '../../../../../core/network/dio_client.dart';
+
+import '../../../../../data/datasource/document_remote_datasource.dart';
 import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
-  late final UserDataSource userDataSource;
-
-  /// Constructor rỗng
+  late final UserRemoteDataSource userRemoteDataSource;
+  late final DocumentRemoteDataSource documentDataSource;
+  late final FollowRemoteDataSource followDataSource;
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
-    userDataSource = UserDataSourceImpl(
+    userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
       assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
+    followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
+    documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
   }
 
-  final List<DocumentProfile> _mockDocuments = [
-    DocumentProfile(
-      id: 'doc_1',
-      title: 'Lập trình Flutter cơ bản',
-      category: 'Mobile',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 120,
-      createdAt: '2025-01-01',
-      likesCount: 45,
-      commentsCount: 10,
-      thumbnailUrl: 'https://picsum.photos/200/300',
-    ),
-    DocumentProfile(
-      id: 'doc_2',
-      title: 'Java OOP nâng cao',
-      category: 'Backend',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 200,
-      createdAt: '2025-02-10',
-      likesCount: 78,
-      commentsCount: 22,
-      thumbnailUrl: 'https://picsum.photos/200/301',
-    ),
-    DocumentProfile(
-      id: 'doc_3',
-      title: 'Cấu trúc dữ liệu & Giải thuật',
-      category: 'Computer Science',
-      institution: 'ĐH Công Nghệ Thông Tin',
-      pages: 300,
-      createdAt: '2025-03-15',
-      likesCount: 120,
-      commentsCount: 35,
-      thumbnailUrl: 'https://picsum.photos/200/302',
-    ),
-  ];
+
+
   @override
-  Future<ProfileEntity> getProfile(int userId) async {
+  Future<ProfileEntity> getProfile(String userId) async {
     try {
-      final tokenStorage = TokenStorageService();
-      final storedUserId = await tokenStorage.getUserId();
 
-      if (storedUserId == null) {
-        throw Exception('User ID not found in local storage');
-      }
-
-      print('User ID from storage: $storedUserId');
-
+      // print('User ID from storage: $storedUserId');
+      final idUser = await TokenStorageService().getUserId();
       final response =
-      await userDataSource.getUserById(storedUserId);
+      await userRemoteDataSource.getUserById(userId);
+      final countFollower = await followDataSource.countFollowers(userId);
+      final countFollowing = await followDataSource.countFollowing(userId);
+      final theIsFollowing = await followDataSource.isFollowing(idUser!, userId);
 
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {
 
         final userData = response.data;
-
         return ProfileEntity(
           id: userData['id']?.toString() ?? '',
           username: userData['username'] ?? '',
@@ -92,8 +63,12 @@ class ProfileRepositoryImpl extends ProfileRepository {
           address: userData['address'] ?? '',
           avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
-          isFollowing: userData['isFollowing'] ?? false,
+          isFollowing: theIsFollowing,//kéo sourse trả về true
           school: userData['school']??'',
+          countFollower: countFollower ?? 0,
+          countFollowing: countFollowing ?? 0,
+          countDocument: userData['countDocument'] ?? 0,
+          countLike: userData['countLike'] ?? 0,
         );
       } else {
         throw Exception(
@@ -122,7 +97,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
         school: profile.school,
       );
 
-      final response = await userDataSource.updateUser(request);
+      final response = await userRemoteDataSource.updateUser(request);
       
       // Check if statusCode is in success range (200-299)
       if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
@@ -142,6 +117,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: userData['isFollowing'] ?? false,
           school: userData['school'] ?? "Chưa nhập thông tin trường",
+          countFollower: profile.countFollower,
+          countFollowing: profile.countFollowing,
+          countDocument: profile.countDocument,
+          countLike: profile.countLike,
         );
       } else {
         throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
@@ -160,7 +139,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       throw Exception('User not logged in');
     }
 
-   await userDataSource.uploadImage(
+   await userRemoteDataSource.uploadImage(
       storedUserId,
       imagePath,
     );
@@ -180,30 +159,58 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   @override
-  Future<void> followUser(String userId) async {
-    try {
-      // TODO: Implement follow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Follow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error following user: $e');
+  Future<int> followUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    await followDataSource.follow(followerId: storedUserId, followingId: followingId);
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override
-  Future<void> unfollowUser(String userId) async {
-    try {
-      // TODO: Implement unfollow user endpoint
-      // This should call a follow service endpoint
-      throw UnimplementedError('Unfollow user not yet implemented');
-    } catch (e) {
-      throw Exception('Error unfollowing user: $e');
+  Future<int> unfollowUser(String followingId) async {
+    final tokenStorage = TokenStorageService();
+    final storedUserId = await tokenStorage.getUserId();
+    if (storedUserId == null) {
+      throw Exception('User not logged in');
     }
+    await followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+
+    return await followDataSource.countFollowers(followingId);
   }
 
   @override
-  List<DocumentProfile> getDocumentsByUser(String id) {
-    // TODO: Implement real document fetching from API
-    return _mockDocuments;
+  Future<List<DocumentProfile>> getDocumentsByUser(String id) async {
+    try {
+      final docs = await documentDataSource.getMyDocuments();
+
+      List<DocumentProfile> res= docs.map((doc) {
+        return DocumentProfile(
+          id: doc.id ?? '',
+          fileId: doc.fileId,
+          title: doc.title,
+          category: doc.course, // Mapped 'course' to 'category'
+          institution: doc.school, // Mapped 'school' to 'institution'
+          pages: doc.pages,
+          createdAt: doc.year, // Mapped 'year' to 'createdAt'
+          likesCount: doc.likes,
+          commentsCount: doc.comments.length, // use length of comments list
+          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+          isLiked: doc.currentUserReaction == 'like',
+          isSaved: doc.isSaved,
+        );
+      }).toList();
+
+      print("Log này của file: ProfileRepositoryImpl: đã load được document: "+res.length.toString());
+      return res;
+    } catch (e) {
+      // In case of error, you might want to return an empty list or rethrow
+      // For now, I'll log and return empty list or mock data if acceptable
+      print('Log này của file: ProfileRepositoryImpl: Error fetching user documents: $e');
+      return [];
+    }
   }
 }

@@ -1,5 +1,7 @@
 class DocumentEntity {
+  final String? id; // Nullable for new uploads
   final String title;
+  final String description;
   final String course;
   final String school;
   final String year;
@@ -11,10 +13,17 @@ class DocumentEntity {
   final int pages;
   final String fileSize;
   final String downloadUrl;
+  final String? fileId; // Added fileId
+  final String? currentUserReaction; // Added for Review Service integration
   final List<String> previewUrls;
 
+  final String? subjectId; // Added subjectId
+  final String? universityId; // Added universityId
+
   DocumentEntity({
+    this.id,
     required this.title,
+    required this.description,
     required this.course,
     required this.school,
     required this.year,
@@ -26,11 +35,16 @@ class DocumentEntity {
     required this.pages,
     required this.fileSize,
     required this.downloadUrl,
+    this.fileId,
+    this.currentUserReaction,
     required this.previewUrls,
+    this.subjectId,
+    this.universityId,
   });
 
   DocumentEntity copyWith({
     String? title,
+    String? description, // Made optional
     String? course,
     String? school,
     String? year,
@@ -42,10 +56,16 @@ class DocumentEntity {
     int? pages,
     String? fileSize,
     String? downloadUrl,
+    String? fileId,
+    String? currentUserReaction,
     List<String>? previewUrls,
+    String? subjectId,
+    String? universityId,
   }) {
     return DocumentEntity(
+      id: this.id, // ID should not change typically in copyWith, or use id ?? this.id if we add it to arguments. But currently it's not in arguments, so preserve this.id
       title: title ?? this.title,
+      description: description ?? this.description,
       course: course ?? this.course,
       school: school ?? this.school,
       year: year ?? this.year,
@@ -57,7 +77,11 @@ class DocumentEntity {
       pages: pages ?? this.pages,
       fileSize: fileSize ?? this.fileSize,
       downloadUrl: downloadUrl ?? this.downloadUrl,
+      fileId: fileId ?? this.fileId,
+      currentUserReaction: currentUserReaction ?? this.currentUserReaction,
       previewUrls: previewUrls ?? this.previewUrls,
+      subjectId: subjectId ?? this.subjectId,
+      universityId: universityId ?? this.universityId,
     );
   }
 }

@@ -52,31 +52,26 @@ class SubjectLibraryScreen extends StatelessWidget {
                   if (state.subjects.isNotEmpty) ...[
                     SubjectCategories(
                       state.subjects.map((s) => s.name).toList(),
-                      onSubjectTap: (subjectName) {
-                        // Navigate đến trang danh sách tài liệu của môn học
+                      onSubjectTap: (index) {
+                        final subject = state.subjects[index];
+                        final schoolId = state.schoolId ?? '';
+                        final schoolName = state.schoolName;
+                        
                         final encodedSchoolName = Uri.encodeComponent(schoolName);
-                        final encodedSubjectName = Uri.encodeComponent(subjectName);
-                        context.push('/school/$encodedSchoolName/subject/$encodedSubjectName');
+                        final encodedSubjectName = Uri.encodeComponent(subject.name);
+                        
+                        context.push(
+                          '/school/$schoolId/subject/${subject.id}?schoolName=$encodedSchoolName&subjectName=$encodedSubjectName'
+                        );
                       },
                     ),
                     SizedBox(height: responsive.heightPercent(3)),
                   ],
 
-                  // Section "Lượt thích cao nhất"
-                  if (state.the_most_liked_docs.isNotEmpty) ...[
-                    MostLikeDocs(state.the_most_liked_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
-
-                  // Section "Tải lên gần đây"
-                  if (state.uploaded_docs.isNotEmpty) ...[
-                    UploadDocument(state.uploaded_docs),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
-
-                  // Tài liệu đã lưu (nếu có)
-                  if (state.documents.isNotEmpty)
+                  // Danh sách tài liệu của trường
+                  if (state.documents.isNotEmpty) ...[
                     StoredDocument(state.documents.cast<DocumentLibraryUI>()),
+                  ],
                 ],
               ),
             );

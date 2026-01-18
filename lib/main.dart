@@ -13,6 +13,13 @@ import 'features/notification_template/data/repository/notification_template_rep
 import 'features/notification_template/domain/repository/notification_template_repository.dart';
 import 'firebase_options.dart';
 
+import 'data/datasource/docs_management_remote_datasource.dart';
+import 'features/docs_management/data/repository/docs_management_repository_impl.dart';
+import 'features/docs_management/domain/repository/docs_management_repository.dart';
+import 'data/datasource/docs_remote_datasource.dart';
+import 'features/docs/data/repository/docs_repository_impl.dart';
+import 'features/docs/domain/repository/docs_repository.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,6 +33,14 @@ void main() async {
   final notificationTemplateDataSource = NotificationTemplateDataSourceImpl(dioClient: dioClient);
   final notificationTemplateRepository = NotificationTemplateRepositoryImpl(dataSource: notificationTemplateDataSource);
 
+  // Docs Management
+  final docsMgmtDataSource = DocsManagementRemoteDataSourceImpl(dioClient: dioClient);
+  final docsMgmtRepository = DocsManagementRepositoryImpl(dataSource: docsMgmtDataSource);
+
+  // Docs Viewing (Public)
+  final docsDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
+  final docsRepository = DocsRepositoryImpl(dataSource: docsDataSource);
+
   FcmService().initialize(notificationRepository);
   runApp(
     MultiRepositoryProvider(
@@ -38,6 +53,12 @@ void main() async {
         ),
         RepositoryProvider<NotificationTemplateRepository>.value(
           value: notificationTemplateRepository,
+        ),
+        RepositoryProvider<DocsManagementRepository>.value(
+          value: docsMgmtRepository,
+        ),
+        RepositoryProvider<DocsRepository>.value(
+          value: docsRepository,
         ),
       ],
       child: const MyApp(),

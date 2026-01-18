@@ -6,6 +6,6 @@ class SaveDocumentUseCase {
   SaveDocumentUseCase(this.repository);
 
   Future<void> call(String documentId) async {
-    // TODO: repository.saveDocument(documentId)
+   repository.saveDocument(documentId);
   }
 }

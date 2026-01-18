@@ -9,8 +9,8 @@ class SubjectRepositoryImpl implements SubjectRepository {
   SubjectRepositoryImpl({required this.remote});
 
   @override
-  Future<List<SubjectEntity>> getSubjectsBySchool(String schoolName) {
-    return remote.getSubjectsBySchool(schoolName);
+  Future<List<SubjectEntity>> getSubjectsBySchool(String schoolId) {
+    return remote.getSubjectsBySchool(schoolId);
   }
 
   @override

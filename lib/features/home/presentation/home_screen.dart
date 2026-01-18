@@ -15,6 +15,7 @@ import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import '../../docs/presentation/screen/test_document_render_screen.dart' as test_screen;
 
 // Adapter to use DocumentEntity with the reused ListDocument widget
 class HomeDocumentAdapter extends DocumentUiList {
@@ -24,6 +25,9 @@ class HomeDocumentAdapter extends DocumentUiList {
 
   @override
   String get id => entity.id.toString();
+
+  @override
+  String? get fileId => entity.fileId;
 
   @override
   String get title => entity.title;
@@ -185,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                 height: 200,
               ),
 
-              const SizedBox(height: 24),
+
 
               // Search results view
               if (state.searchQuery.isNotEmpty) ...[
@@ -209,32 +213,65 @@ class _HomePageState extends State<HomePage> {
                     onSave: (doc) {
                       /* TODO */
                     },
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
                   ),
               ] else ...[
                 // Default categorized view
                 _buildSectionTitle('Tài liệu phổ biến'),
-                ListDocument(
-                  popularDocs,
-                  onDownload: (doc) {},
-                  onSave: (doc) {},
-                ),
+                if (popularDocs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Chưa có tài liệu phổ biến nào',
+                      style: TextStyle(
+                        color: AppColors.docSmallText,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  )
+                else
+                  ListDocument(
+                    popularDocs,
+                    onDownload: (doc) {},
+                    onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
+                  ),
 
                 const SizedBox(height: 24),
 
                 _buildSectionTitle('Tài liệu mới nhất'),
-                ListDocument(
-                  recentDocs,
-                  onDownload: (doc) {},
-                  onSave: (doc) {},
-                ),
+                if (recentDocs.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Chưa có tài liệu mới nào',
+                      style: TextStyle(
+                        color: AppColors.docSmallText,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  )
+                else
+                  ListDocument(
+                    recentDocs,
+                    onDownload: (doc) {},
+                    onSave: (doc) {},
+                    onTap: (doc) {
+                      context.push('/document/${doc.id}');
+                    },
+                  ),
               ],
 
-                const SizedBox(height: 24),
-              ],
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
-        );
-      }
+        ),
+      );
+    }
 
     return const SizedBox();
   }
@@ -280,21 +317,24 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-
   }
 
   /// Xây dựng overlay Khám phá với BLoC và mock data.
   Widget _buildExploreOverlay() {
-    final academicDataSource = AcademicRemoteDataSourceImpl(dio: context.read<DioClient>().dio);
+    final dioClient = context.read<DioClient>();
+    final academicDataSource = AcademicRemoteDataSourceImpl(
+      dioClient: dioClient,
+    );
     final repo = ExploreRepositoryImpl(remote: academicDataSource);
     final searchUseCase = SearchSchoolsUseCase(repository: repo);
     final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
 
     return BlocProvider(
-      create: (_) => ExploreBloc(
-        searchSchoolsUseCase: searchUseCase,
-        getCurrentSchoolUseCase: getCurrentSchoolUseCase,
-      ),
+      create:
+          (_) => ExploreBloc(
+            searchSchoolsUseCase: searchUseCase,
+            getCurrentSchoolUseCase: getCurrentSchoolUseCase,
+          ),
       child: const ExploreBottomSheet(),
     );
   }

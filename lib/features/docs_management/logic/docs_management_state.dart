@@ -23,6 +23,13 @@ class DocsManagementLoaded extends DocsManagementState {
   List<Object?> get props => [docs, lastDeletedId];
 }
 
+class DocsManagementDetailLoaded extends DocsManagementState {
+  final DocumentEntity document;
+  const DocsManagementDetailLoaded(this.document);
+  @override
+  List<Object?> get props => [document];
+}
+
 class DocsManagementError extends DocsManagementState {
   final String message;
 

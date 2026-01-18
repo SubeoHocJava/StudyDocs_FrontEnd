@@ -1,49 +1,59 @@
-import 'package:dio/dio.dart';
+import 'dart:io';
 
-import '../../../../../data/datasource/impl/asset_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/upload_datasource.dart';
+
+import '../../../../../data/datasource/document_remote_datasource.dart';
+import '../../../../../data/datasource/impl/document_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
-import '../../../../../data/datasource/user_datasource.dart';
 import '../upload_file_repository.dart';
+import '../../../../../data/model/request/upload_document_request.dart';
 
 class UpLoadFileRepositoryImpl implements UploadFileRepository {
-  late final UserDataSource userDataSource;
+  late final UploadRemoteDataSource uploadDatasource;
 
   UpLoadFileRepositoryImpl() {
     final dioClient = DioClient();
-    userDataSource = UserDataSourceImpl(
+    uploadDatasource = UploadRemoteDataSourceImpl(
       dioClient: dioClient,
-      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
     );
   }
 
-  final String apiUrl = "https://your-api.com/upload";
-
   @override
-  Future<bool> uploadDocument({
+  Future<bool> uploadFile({
     required String filePath,
-    required String school,
-    required String subject,
+    required String schoolId,
+    required String subjectId,
     required String fileName,
     required String year,
     required String description,
   }) async {
     try {
-      final formData = FormData.fromMap({
-        'school': school,
-        'subject': subject,
-        'fileName': fileName,
-        'year': year,
-        'description': description,
-        'file': await MultipartFile.fromFile(
-          filePath,
-          filename: fileName,
-        ),
-      });
-      final response = await userDataSource.uploadImage("a", formData);
+      print(' [UPLOAD] Starting upload...');
+      print('  schoolId: "$schoolId" (length: ${schoolId.length})');
+      print('  subjectId: "$subjectId" (length: ${subjectId.length})');
+      print('  fileName: $fileName');
       
-      return response.statusCode == 200 || response.statusCode == 201;
+      /// 1. Tạo File
+      final file = File(filePath);
+
+      /// 2. Map sang UploadDocumentRequest với IDs
+      final request = UploadDocumentRequest(
+        title: fileName,
+        description: description,
+        universityId: schoolId.isNotEmpty ? schoolId : null,
+        subjectId: subjectId.isNotEmpty ? subjectId : null,
+        academicYear: year,
+      );
+      
+      print('  Request JSON: ${request.toJson()}');
+
+      /// 3. Gọi RemoteDataSource
+      await uploadDatasource.uploadDocument(request, file);
+
+      print(' [UPLOAD] Success!');
+      return true;
     } catch (e) {
-      print('Upload error: $e');
+      print(' [UPLOAD] Error: $e');
       return false;
     }
   }

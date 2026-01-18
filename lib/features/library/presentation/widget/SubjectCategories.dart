@@ -4,7 +4,7 @@ import 'package:studydocs/core/utils/responsive_helper.dart';
 
 class SubjectCategories extends StatelessWidget {
   final List<String> categories;
-  final Function(String)? onSubjectTap;
+  final Function(int index)? onSubjectTap;
   
   const SubjectCategories(
     this.categories, {
@@ -44,7 +44,7 @@ class SubjectCategories extends StatelessWidget {
               child: Center(
                 child: MonoSubject(
                   name: categories[index],
-                  onTap: () => onSubjectTap?.call(categories[index]),
+                  onTap: () => onSubjectTap?.call(index),
                 ),
               )
             );

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/data/model/document_model.dart';
+import 'package:studydocs/features/docs/data/model/document_model.dart';
 
 class DocumentEntity extends Equatable {
   final String id;
@@ -21,6 +21,7 @@ class DocumentEntity extends Equatable {
   final DateTime? updatedAt;
   final String? fileUrl;
   final String? fileType;
+  final String? fileId; // Added fileId
 
   const DocumentEntity({
     required this.id,
@@ -42,58 +43,101 @@ class DocumentEntity extends Equatable {
     this.updatedAt,
     this.fileUrl,
     this.fileType,
+    this.fileId,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        description,
-        author,
-        authorId,
-        thumbnailUrl,
-        category,
-        institution,
-        pageCount,
-        academicYear,
-        viewCount,
-        downloadCount,
-        likesCount,
-        commentsCount,
-        rating,
-        createdAt,
-        updatedAt,
-        fileUrl,
-        fileType,
-      ];
+    id,
+    title,
+    description,
+    author,
+    authorId,
+    thumbnailUrl,
+    category,
+    institution,
+    pageCount,
+    academicYear,
+    viewCount,
+    downloadCount,
+    likesCount,
+    commentsCount,
+    rating,
+    createdAt,
+    updatedAt,
+    fileUrl,
+    fileType,
+  ];
 
   // Convert Model → Entity
   static DocumentEntity fromModel(DocumentModel model) {
     return DocumentEntity(
-      id: model.id,
+      id: model.id ?? '', // Handle nullable ID from model
       title: model.title,
       description: model.description,
-      author: model.author,
-      authorId: model.authorId,
-      thumbnailUrl: model.thumbnailUrl,
-      category: model.category,
-      institution: model.institution,
-      pageCount: model.pageCount,
-      academicYear: model.academicYear,
-      viewCount: model.viewCount,
-      downloadCount: model.downloadCount,
-      likesCount: model.likesCount,
-      commentsCount: model.commentsCount,
-      rating: model.rating,
-      createdAt: model.createdAt != null
-          ? DateTime.tryParse(model.createdAt!)  // Convert String → DateTime
-          : null,
-      updatedAt: model.updatedAt != null
-          ? DateTime.tryParse(model.updatedAt!)
-          : null,
-      fileUrl: model.fileUrl,
-      fileType: model.fileType,
+      author: model.uploader, // Map uploader -> author
+      authorId: null, // Model doesn't seem to have authorId
+      thumbnailUrl: model.previewUrls.isNotEmpty ? model.previewUrls.first : null,
+      category: model.course, // Map course -> category
+      institution: model.school, // Map school -> institution
+      pageCount: model.pages,
+      academicYear: model.year,
+      viewCount: 0, // Model lacks viewCount
+      downloadCount: 0,
+      likesCount: model.likes,
+      commentsCount: model.comments.length,
+      rating: 0.0,
+      createdAt: null, // Model uses String year, not DateTime
+      updatedAt: null,
+      fileUrl: model.downloadUrl,
+      fileType: null,
+      fileId: model.fileId,
+    );
+  }
+
+  DocumentEntity copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? author,
+    String? authorId,
+    String? thumbnailUrl,
+    String? category,
+    String? institution,
+    int? pageCount,
+    String? academicYear,
+    int? viewCount,
+    int? downloadCount,
+    int? likesCount,
+    int? commentsCount,
+    double? rating,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? fileUrl,
+    String? fileType,
+    String? fileId,
+  }) {
+    return DocumentEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      author: author ?? this.author,
+      authorId: authorId ?? this.authorId,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      category: category ?? this.category,
+      institution: institution ?? this.institution,
+      pageCount: pageCount ?? this.pageCount,
+      academicYear: academicYear ?? this.academicYear,
+      viewCount: viewCount ?? this.viewCount,
+      downloadCount: downloadCount ?? this.downloadCount,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount ?? this.commentsCount,
+      rating: rating ?? this.rating,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      fileUrl: fileUrl ?? this.fileUrl,
+      fileType: fileType ?? this.fileType,
+      fileId: fileId ?? this.fileId,
     );
   }
 }
-

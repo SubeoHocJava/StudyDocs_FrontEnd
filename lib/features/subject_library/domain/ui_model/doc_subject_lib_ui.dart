@@ -6,6 +6,8 @@ class DocumentSubjectLibUI implements RowDocumentItem, DocumentUiList {
   @override
   final String id;
   @override
+  final String? fileId;
+  @override
   final String title;
   @override
   final String category;
@@ -28,6 +30,7 @@ class DocumentSubjectLibUI implements RowDocumentItem, DocumentUiList {
 
   const DocumentSubjectLibUI({
     required this.id,
+    this.fileId,
     required this.title,
     required this.category,
     required this.institution,

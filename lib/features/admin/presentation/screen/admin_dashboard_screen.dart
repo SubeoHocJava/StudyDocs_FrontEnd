@@ -19,8 +19,11 @@ class AdminDashboardScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF1A237E)),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Color(0xFF1A237E),
+                    ),
                     onPressed: () => context.pop(),
                   ),
                   const Text(
@@ -50,7 +53,11 @@ class AdminDashboardScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                         _AdminCard(
                           color: const Color(0xFFC5CAE9),
-                          icon: const Icon(Icons.description, size: 60, color: Color(0xFF4FC3F7)),
+                          icon: const Icon(
+                            Icons.description,
+                            size: 60,
+                            color: Color(0xFF4FC3F7),
+                          ),
                           label: 'Quản lý\ntài liệu',
                           height: 220,
                           onTap: () => context.push(AppRoutes.docsManagement),
@@ -58,7 +65,11 @@ class AdminDashboardScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                         _AdminCard(
                           color: const Color(0xFF7986CB),
-                          icon: const Icon(Icons.bar_chart, size: 60, color: Color(0xFF1A237E)),
+                          icon: const Icon(
+                            Icons.bar_chart,
+                            size: 60,
+                            color: Color(0xFF1A237E),
+                          ),
                           label: 'Thống kê',
                           height: 220,
                           onTap: () => context.push(AppRoutes.statistic),
@@ -73,7 +84,11 @@ class AdminDashboardScreen extends StatelessWidget {
                       children: [
                         _AdminCard(
                           color: const Color(0xFF00E5FF),
-                          icon: const Icon(Icons.group, size: 60, color: Color(0xFF1A237E)),
+                          icon: const Icon(
+                            Icons.group,
+                            size: 60,
+                            color: Color(0xFF1A237E),
+                          ),
                           label: 'Quản lý\nngười dùng',
                           height: 220,
                           onTap: () => context.push(AppRoutes.manageUser),
@@ -81,10 +96,16 @@ class AdminDashboardScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                         _AdminCard(
                           color: const Color(0xFF81C784),
-                          icon: const Icon(Icons.home_work, size: 60, color: Color(0xFF1A237E)),
+                          icon: const Icon(
+                            Icons.home_work,
+                            size: 60,
+                            color: Color(0xFF1A237E),
+                          ),
                           label: 'Mẫu\nthông báo',
                           height: 220,
-                          onTap: () => context.push(AppRoutes.notificationTemplates),
+                          onTap:
+                              () =>
+                                  context.push(AppRoutes.notificationTemplates),
                         ),
                         const SizedBox(height: 20),
                         const UploadBox(),

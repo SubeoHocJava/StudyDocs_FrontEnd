@@ -1,10 +1,9 @@
 
-
 abstract class UploadFileRepository{
-  Future<bool> uploadDocument({
+  Future<bool> uploadFile({
     required String filePath,
-    required String school,
-    required String subject,
+    required String schoolId,
+    required String subjectId,
     required String fileName,
     required String year,
     required String description,

@@ -5,6 +5,8 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
   @override
   final String id;
   @override
+  final String? fileId;
+  @override
   final String title;
   @override
   final String category;
@@ -27,6 +29,7 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
 
   const DocumentProfile({
     required this.id,
+    this.fileId,
     required this.title,
     required this.category,
     required this.institution,
@@ -45,6 +48,7 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
   @override
   List<Object?> get props => [
     id,
+    fileId,
     title,
     category,
     institution,
@@ -87,6 +91,4 @@ class DocumentProfile implements RowDocumentItem, DocumentUiList {
       isSaved: isSaved ?? this.isSaved,
     );
   }
-
-
 }

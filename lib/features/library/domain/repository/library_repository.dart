@@ -16,4 +16,7 @@ abstract class LibraryRepository {
   /// Like document
   Future<void> likeDocument(String documentId);
 
+  /// Get saved documents
+  Future<List<DocumentLibraryUI>> getSavedDocuments();
+
 }

@@ -1,10 +1,13 @@
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/model/row_document_ui.dart';
+import '../../../../features/docs/data/model/document_model.dart';
 
-class DocumentLibraryUI implements RowDocumentItem,DocumentUiList{
+class DocumentLibraryUI implements RowDocumentItem, DocumentUiList {
   @override
   final String id;
+  @override
+  final String? fileId;
   @override
   final String title;
   @override
@@ -28,6 +31,7 @@ class DocumentLibraryUI implements RowDocumentItem,DocumentUiList{
 
   const DocumentLibraryUI({
     required this.id,
+    this.fileId,
     required this.title,
     required this.category,
     required this.institution,
@@ -60,4 +64,21 @@ class DocumentLibraryUI implements RowDocumentItem,DocumentUiList{
 
   @override
   bool? get stringify => true;
+  DocumentLibraryUI _mapToDocumentLibraryUI(DocumentModel model) {
+    return DocumentLibraryUI(
+      id: model.id ?? '',
+      fileId: model.fileId,
+      title: model.title,
+      category: model.course,
+      institution: model.school,
+      pages: model.pages,
+      createdAt: model.year,
+      likesCount: model.likes,
+      commentsCount: model.comments.length,
+      thumbnailUrl: model.previewUrls.isNotEmpty ? model.previewUrls.first : null,
+      isLiked: model.currentUserReaction == 'like',
+      isSaved: model.isSaved,
+    );
+  }
+
 }

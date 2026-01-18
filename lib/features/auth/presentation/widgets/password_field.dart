@@ -4,10 +4,12 @@ import '../../../../core/constants/app_colors.dart';
 
 class PasswordField extends StatefulWidget {
   final TextEditingController controller;
-  
+  final String label;
+
   const PasswordField({
     super.key,
     required this.controller,
+    this.label = 'Mật khẩu',
   });
 
   @override
@@ -23,7 +25,7 @@ class _PasswordFieldState extends State<PasswordField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Mật khẩu',
+          widget.label,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -36,10 +38,7 @@ class _PasswordFieldState extends State<PasswordField> {
           obscureText: _obscureText,
           decoration: InputDecoration(
             hintText: 'Nhập mật khẩu',
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
@@ -52,7 +51,10 @@ class _PasswordFieldState extends State<PasswordField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.headerForeground, width: 2),
+              borderSide: BorderSide(
+                color: AppColors.headerForeground,
+                width: 2,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
