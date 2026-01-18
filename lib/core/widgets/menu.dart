@@ -50,7 +50,7 @@ class MenuDrawer extends StatelessWidget {
     return BlocProvider(
       create:
           (_) =>
-              ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile(0)),
+              ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile("")),
       child: Material(
         elevation: 16,
         color: Colors.white,

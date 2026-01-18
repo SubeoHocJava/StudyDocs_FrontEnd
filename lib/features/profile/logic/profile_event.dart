@@ -17,7 +17,7 @@ abstract class ProfileEvent extends Equatable {
 
 /// Load profile lần đầu
 class LoadProfile extends ProfileEvent {
-  final int userId;
+  final String userId;
 
   const LoadProfile(this.userId);
 
@@ -27,7 +27,7 @@ class LoadProfile extends ProfileEvent {
 
 /// Refresh profile
 class RefreshProfile extends ProfileEvent {
-  final int userId;
+  final String userId;
 
   const RefreshProfile(this.userId);
 

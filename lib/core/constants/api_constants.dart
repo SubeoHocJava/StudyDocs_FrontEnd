@@ -1,13 +1,13 @@
 class ApiConstants {
   // Base URL: Always end with / to work correctly with Dio relative paths
-  static const String baseUrl = 'http://10.10.3.165:8080/api/v1/';
+  static const String baseUrl = 'http://10.0.20.173:8080/api/v1/';
 // Follow Endpoints
   static const String follows = 'follows';
   static const String followsFollowers = 'follows/followers';
   static const String followsFollowing = 'follows/following';
 
-  static const String documentServiceUrl = 'http://10.10.3.165:8080/api/v1'; // Use localhost for Web
-  static const String reviewServiceUrl = 'http://10.10.3.165:8080/api/v1';   // Use localhost for Web
+  static const String documentServiceUrl = 'http://10.0.20.173:8080/api/v1'; // Use localhost for Web
+  static const String reviewServiceUrl = 'http://10.0.20.173:8080/api/v1';   // Use localhost for Web
 
   // Document Endpoints
   static const String documents = '/documents';
@@ -46,7 +46,7 @@ class ApiConstants {
   static const String usersIsPrivate = '/users/isPrivate';
   static const String usersExists = '/users/exists';
 
-  static const String uploadDocument = '/';
+  static const String uploadDocument = '/documents/user';
 
  //  New
   // =========================

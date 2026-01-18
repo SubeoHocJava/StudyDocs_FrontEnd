@@ -7,7 +7,7 @@ class GetProfileUseCase {
 
   GetProfileUseCase(this.repository);
 
-  Future<ProfileEntity> call(int userId) async {
+  Future<ProfileEntity> call(String userId) async {
     return await repository.getProfile(userId);
   }
 }

@@ -87,6 +87,9 @@ final GlobalKey<NavigatorState> _exploreNavigatorKey =
 final GlobalKey<NavigatorState> _notificationsNavigatorKey =
     GlobalKey<NavigatorState>();
 
+
+
+
 String? _checkAuthRedirect(BuildContext context, GoRouterState state) {
   final authCubit = context.read<AuthStatusCubit>();
   if (!authCubit.isAuthenticated) {
@@ -227,7 +230,7 @@ GoRouter createAppRouter() {
                   create:
                       (_) =>
                           ProfileBloc(ProfileRepositoryImpl())
-                            ..add(const LoadProfile(0)),
+                            ..add(const LoadProfile("")),
                 ),
               ],
               child: const StatisticScreen(),
@@ -446,11 +449,23 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AdminDashboardScreen(),
       ),
+
+      //
+
       GoRoute(
         path: AppRoutes.profile,
         redirect: _checkAuthRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfileScreen(),
+        routes: [
+          GoRoute(
+            path: ':userId',
+            builder: (context, state) {
+              final userId = state.pathParameters['userId'];
+              return ProfileScreen(userId: userId);
+            },
+          ),
+        ],
       ),
       // Document Detail Route
       GoRoute(
