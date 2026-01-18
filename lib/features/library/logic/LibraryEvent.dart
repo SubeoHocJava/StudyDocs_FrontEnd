@@ -90,3 +90,8 @@ class OpenCommentRequested extends LibraryEvent {
   @override
   List<Object?> get props => [documentId];
 }
+
+/// Load saved documents
+class LoadSavedDocuments extends LibraryEvent {
+  const LoadSavedDocuments();
+}

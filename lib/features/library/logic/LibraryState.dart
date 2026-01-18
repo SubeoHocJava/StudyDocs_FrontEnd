@@ -17,27 +17,31 @@ class LibraryLoaded extends LibraryState {
   final List<DocumentLibraryUI> documents;
   final List<String> categories;
   final PlatformFile? pickedFile;
+  final List<DocumentLibraryUI> savedDocuments;
 
   const LibraryLoaded({
     required this.documents,
     required this.categories,
     this.pickedFile,
+    this.savedDocuments = const [],
   });
 
   LibraryLoaded copyWith({
     List<DocumentLibraryUI>? documents,
     List<String>? categories,
     PlatformFile? pickedFile,
+    List<DocumentLibraryUI>? savedDocuments,
   }) {
     return LibraryLoaded(
       documents: documents ?? this.documents,
       categories: categories ?? this.categories,
       pickedFile: pickedFile,
+      savedDocuments: savedDocuments ?? this.savedDocuments,
     );
   }
 
   @override
-  List<Object?> get props => [documents, categories, pickedFile];
+  List<Object?> get props => [documents, categories, pickedFile, savedDocuments];
 }
 
 class LibraryError extends LibraryState {

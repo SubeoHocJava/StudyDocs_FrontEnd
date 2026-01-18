@@ -24,4 +24,11 @@ abstract interface class UserRemoteDataSource {
     int toIndex, {
     String? traceId,
   });
+  
+  /// Save/Unsave document (toggle)
+  /// Returns true if document is now saved, false if unsaved
+  Future<ApiResponse> saveDocument(String documentId, {String? traceId});
+  
+  /// Get list of saved document IDs for current user
+  Future<ApiResponse> getSavedDocuments({String? traceId});
 }

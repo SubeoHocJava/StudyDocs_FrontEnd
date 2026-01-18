@@ -4,6 +4,7 @@ import '../domain/usecase/search_document_usecase.dart';
 import '../domain/usecase/download_document_usecase.dart';
 import '../domain/usecase/save_document_usecase.dart';
 import '../domain/usecase/like_document_usecase.dart';
+import '../domain/usecase/get_saved_documents_usecase.dart';
 
 import 'LibraryEvent.dart';
 import 'LibraryState.dart';
@@ -14,6 +15,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   final DownloadDocumentUseCase downloadDocumentUseCase;
   final SaveDocumentUseCase saveDocumentUseCase;
   final LikeDocumentUseCase likeDocumentUseCase;
+  final GetSavedDocumentsUseCase getSavedDocumentsUseCase;
 
 
   LibraryBloc({
@@ -22,13 +24,14 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     required this.downloadDocumentUseCase,
     required this.saveDocumentUseCase,
     required this.likeDocumentUseCase,
-
+    required this.getSavedDocumentsUseCase,
   }) : super(LibraryInitial()) {
     on<LoadDocumentByKeyWord>(_onLoadDocument);
     on<SearchDocument>(_onSearchDocument);
     on<DownloadDocumentRequested>(_onDownloadDocument);
     on<SaveDocumentRequested>(_onSaveDocument);
     on<LikeDocumentRequested>(_onLikeDocument);
+    on<LoadSavedDocuments>(_onLoadSavedDocuments);
   }
 
   Future<void> _onLoadDocument(
@@ -96,6 +99,31 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       await likeDocumentUseCase(event.documentId);
     } catch (e) {
       emit(LibraryError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadSavedDocuments(
+      LoadSavedDocuments event,
+      Emitter<LibraryState> emit,
+      ) async {
+    try {
+      final savedDocs = await getSavedDocumentsUseCase();
+      
+      // Update the current state with saved documents
+      if (state is LibraryLoaded) {
+        emit((state as LibraryLoaded).copyWith(savedDocuments: savedDocs));
+      } else {
+        // If not loaded yet, emit a new loaded state with saved documents
+        List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+        emit(LibraryLoaded(
+          documents: const [],
+          categories: cate,
+          savedDocuments: savedDocs,
+        ));
+      }
+    } catch (e) {
+      print('Error loading saved documents: $e');
+      // Don't emit error state, just log it
     }
   }
 }
