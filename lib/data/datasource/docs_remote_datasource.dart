@@ -18,6 +18,7 @@ abstract class DocsRemoteDataSource {
   Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10});
   Future<List<DocumentEntity>> searchDocuments(String query);
   Future<void> downloadDocument(String id);
+  Future<int> getReviewCount(String docId);
 }
 
 class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
@@ -153,10 +154,32 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     // Response: Page<ReviewResponse>
     final data = response.data;
     if (data is Map && data.containsKey('content')) {
+       // Return Map with content and metadata if needed by repository.
+       // However, to avoid breaking signature, we might need a separate method for Count.
+       // Or we change return type. But that affects interface.
+       // Let's add a new method: getReviewCount(docId)
+       // For now, adhere to existing interface.
       final content = data['content'] as List;
       return content.map((json) => _mapReviewToComment(json)).toList();
     }
     return [];
+  }
+
+  @override
+  Future<int> getReviewCount(String docId) async {
+     try {
+       final response = await dioClient.get(
+        '${ApiConstants.reviewServiceUrl}/reviews/document/$docId',
+        queryParameters: {'page': 0, 'size': 1}, // Fetch minimal data
+      );
+      final data = response.data;
+      if (data is Map && data.containsKey('totalElements')) {
+        return (data['totalElements'] as num).toInt();
+      }
+      return 0;
+     } catch (e) {
+       return 0;
+     }
   }
 
   CommentEntity _mapReviewToComment(Map<String, dynamic> json) {
@@ -168,6 +191,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     return CommentEntity(
       author: json['userId'] ?? 'User', 
       text: json['comment'] ?? '',
+      authorId: json['userId'], // Store ID for fetching name
     );
   }
   @override

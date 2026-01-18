@@ -18,7 +18,7 @@ class UploaderInfo extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       onTap: () {
         context.go(
-          '${AppRoutes.profile}/${doc.uploader}',
+          '${AppRoutes.profile}/${doc.uploaderId ?? doc.uploader}',
         );
       },
       child: Row(

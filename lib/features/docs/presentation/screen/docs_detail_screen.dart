@@ -202,10 +202,7 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
         if (_isExpanded || MediaQuery.of(context).size.width > 600) ...[
             const SizedBox(height: 16),
             const Divider(),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text("Bình luận", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
+            // Comment Header is inside CommentsSection now (or we remove from here to avoid duplicate)
             
             CommentsSection(
               comments: doc.comments,

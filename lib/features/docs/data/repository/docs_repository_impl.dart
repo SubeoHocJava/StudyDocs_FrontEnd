@@ -52,6 +52,7 @@ class DocsRepositoryImpl implements DocsRepository {
   Future<DocumentEntity> _enrichDocument(DocumentEntity doc) async {
     String? schoolName = doc.school;
     String? courseName = doc.course;
+    String? uploaderName = doc.uploader;
 
     try {
       // Create Dio instance for Academic Service calls
@@ -93,9 +94,106 @@ class DocsRepositoryImpl implements DocsRepository {
         }
       }
 
+      // Fetch Uploader Name if "Unknown User" or empty, and we have uploaderId
+      if (doc.uploaderId != null && (doc.uploader == 'Unknown User' || doc.uploader.isEmpty)) {
+        try {
+           final userDio = Dio(BaseOptions(
+             baseUrl: ApiConstants.baseUrl, // Use main API base URL
+             connectTimeout: const Duration(seconds: 10),
+           ));
+           
+           if (token != null) {
+             userDio.options.headers['Authorization'] = token;
+           }
+
+           final response = await userDio.get(
+             ApiConstants.usersGetById,
+             queryParameters: {'id': doc.uploaderId},
+           );
+
+           if (response.statusCode == 200 && response.data != null) {
+              final root = response.data;
+              // Extract inner data if wrapped
+              final userData = (root is Map && root.containsKey('data')) ? root['data'] : root;
+
+              if (userData is Map) {
+                  final name = userData['fullName'] ?? 
+                               userData['userName'] ?? 
+                               userData['uploadName'] ??
+                               (userData['firstName'] != null ? "${userData['firstName']} ${userData['lastName'] ?? ''}".trim() : null);
+                  
+                  if (name != null) {
+                     uploaderName = name;
+                  }
+              }
+           }
+        } catch (e) {
+          print('Error fetching uploader: $e');
+        }
+      }
+
+
+      
+      // Enrich Comments (fetch author names)
+      List<CommentEntity> enrichedComments = List.from(doc.comments);
+      if (enrichedComments.isNotEmpty) {
+           final userDio = Dio(BaseOptions(
+             baseUrl: ApiConstants.baseUrl, 
+             connectTimeout: const Duration(seconds: 10),
+           ));
+           if (token != null) {
+             userDio.options.headers['Authorization'] = token;
+           }
+           
+           // Collect unique User IDs that need fetching
+           final userIdsToFetch = enrichedComments
+               .map((c) => c.authorId)
+               .where((id) => id != null && id.isNotEmpty) // && (c.author == 'User' || c.author == c.authorId) check?
+               .toSet();
+
+           // Basic cache map to avoid duplicate calls in same batch
+           final Map<String, String> userNameCache = {};
+
+           for (final userId in userIdsToFetch) {
+              if (userId == null) continue;
+              try {
+                  final response = await userDio.get(
+                     ApiConstants.usersGetById,
+                     queryParameters: {'id': userId},
+                  );
+                  if (response.statusCode == 200 && response.data != null) {
+                      final root = response.data;
+                      final userData = (root is Map && root.containsKey('data')) ? root['data'] : root; // Fix here too
+                      
+                      if (userData is Map) {
+                          final name = userData['fullName'] ?? 
+                                       userData['userName'] ?? 
+                                       userData['uploadName'] ??
+                                       (userData['firstName'] != null ? "${userData['firstName']} ${userData['lastName'] ?? ''}".trim() : null);
+                          if (name != null) {
+                              userNameCache[userId] = name;
+                          }
+                      }
+                  }
+              } catch (e) {
+                  // Ignore error, keep original name/ID
+              }
+           }
+
+           // Update comments with fetched names
+           enrichedComments = enrichedComments.map((comment) {
+               if (comment.authorId != null && userNameCache.containsKey(comment.authorId)) {
+                   return comment.copyWith(author: userNameCache[comment.authorId]);
+               }
+               return comment;
+           }).toList();
+      }
+
       return doc.copyWith(
         school: schoolName,
         course: courseName,
+        uploader: uploaderName,
+        comments: enrichedComments,
       );
 
     } catch (e) {

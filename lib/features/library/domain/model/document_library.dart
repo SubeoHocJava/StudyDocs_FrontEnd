@@ -14,6 +14,8 @@ class DocumentLibraryUI implements RowDocumentItem, DocumentUiList {
   final String category;
   @override
   final String institution;
+  @override
+  int get pageCount => pages;
   final int pages;
   @override
   final String createdAt;

@@ -17,41 +17,58 @@ class DocumentModel extends DocumentEntity {
     required super.downloadUrl,
     required super.previewUrls,
     super.fileId,
-    super.currentUserReaction, 
+    super.currentUserReaction,
     required super.description,
     String? subjectId, // Explicitly declare argument
     String? universityId, // Explicitly declare argument
+    int? commentsCount, // Add commentsCount
+    String? uploaderId, // Add uploaderId
   }) : super(
-         subjectId: subjectId,
-         universityId: universityId,
-       );
+    subjectId: subjectId,
+    universityId: universityId,
+    commentsCount: commentsCount,
+    uploaderId: uploaderId,
+  );
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
     return DocumentModel(
       id: json['id']?.toString(),
       title: json['title'] ?? 'Untitled',
-      course: json['subjectName'] ?? 'Unknown Course', // Placeholder if backend missing
-      school: json['universityName'] ?? 'Unknown School', // Placeholder
+      course: json['subjectName'] ?? 'Unknown Course',
+      // Placeholder if backend missing
+      school: json['universityName'] ?? 'Unknown School',
+      // Placeholder
       year: json['schoolYear']?.toString() ?? '2024-2025',
-      uploader: json['uploadName'] ?? json['userId']?.toString() ?? 'Unknown User',
+      uploader: _parseUploaderName(json),
+      uploaderId: json['userId']?.toString(),
       likes: json['likes'] ?? 0,
       dislikes: json['dislikes'] ?? 0,
-      comments: [], // Comments usually fetched separately
+      comments: [],
+      // Comments usually fetched separately
+      commentsCount: json['commentCount'] ?? json['totalComments'] ?? 0,
+      // Try to parse count
       isSaved: false,
-      pages: (json['totalPages'] is int) 
-          ? json['totalPages'] 
+      pages:
+      (json['totalPages'] is int)
+          ? json['totalPages']
           : int.tryParse(json['totalPages']?.toString() ?? '0') ?? 0,
-      fileSize: json['fileSize'] != null ? formatBytes(json['fileSize'], 2) : "Unknown", // Backend might not return size
+      fileSize:
+      json['fileSize'] != null
+          ? formatBytes(json['fileSize'], 2)
+          : "Unknown",
+      // Backend might not return size
       // downloadUrl is no longer directly in DocumentResponse.
       // FE must use fileId to fetch it.
       subjectId: json['subjectId']?.toString(),
       universityId: json['universityId']?.toString(),
       // Use backend URL if available, else construct fallback if fileId exists
-      downloadUrl: json['downloadUrl'] ?? (json['fileId'] != null 
-          ? 'http://172.16.17.86:8081/api/v1/files/${json['fileId']}' // Assuming Gateway/UploadService path
-          : ''),
+      downloadUrl:
+      json['downloadUrl'] ??
+          (json['fileId'] != null
+              ? 'http://172.16.17.86:8081/api/v1/files/${json['fileId']}' // Assuming Gateway/UploadService path
+              : ''),
       fileId: json['fileId'],
-      currentUserReaction: json['currentUserReaction'], 
+      currentUserReaction: json['currentUserReaction'],
       previewUrls: parsePreviews(json),
       description: json['description'] ?? '',
     );
@@ -93,6 +110,8 @@ class DocumentModel extends DocumentEntity {
     String? description,
     String? subjectId,
     String? universityId,
+    int? commentsCount,
+    String? uploaderId,
   }) {
     return DocumentModel(
       id: id ?? this.id,
@@ -104,6 +123,8 @@ class DocumentModel extends DocumentEntity {
       likes: likes ?? this.likes,
       dislikes: dislikes ?? this.dislikes,
       comments: comments ?? this.comments,
+      commentsCount: commentsCount ?? (comments?.length ?? 0),
+      // Preserve or update
       isSaved: isSaved ?? this.isSaved,
       pages: pages ?? this.pages,
       fileSize: fileSize ?? this.fileSize,
@@ -114,6 +135,7 @@ class DocumentModel extends DocumentEntity {
       description: description ?? this.description,
       subjectId: subjectId ?? this.subjectId,
       universityId: universityId ?? this.universityId,
+      uploaderId: uploaderId ?? this.uploaderId,
     );
   }
 
@@ -127,50 +149,59 @@ class DocumentModel extends DocumentEntity {
       if (baseUrl != null && key != null && totalPages > 0) {
         return List.generate(totalPages, (index) {
           String url = baseUrl.replaceFirst(key, '${index + 1}');
-           // Remove .pdf if present
+          // Remove .pdf if present
           if (url.endsWith('.pdf')) {
             url = url.substring(0, url.length - 4);
           }
-           // Force .jpg extension so Cloudinary converts PDF page to Image
+          // Force .jpg extension so Cloudinary converts PDF page to Image
           if (!url.endsWith('.jpg')) {
             url += '.jpg';
           }
           return url;
         });
       }
-      
+
       // Handle case with 'PAGE_NUMBER_PLACEHOLDER'
-      if (baseUrl != null && totalPages > 0 && baseUrl.contains('PAGE_NUMBER_PLACEHOLDER')) {
-         return List.generate(totalPages, (index) {
-          String url = baseUrl.replaceFirst('PAGE_NUMBER_PLACEHOLDER', '${index + 1}');
+      if (baseUrl != null &&
+          totalPages > 0 &&
+          baseUrl.contains('PAGE_NUMBER_PLACEHOLDER')) {
+        return List.generate(totalPages, (index) {
+          String url = baseUrl.replaceFirst(
+            'PAGE_NUMBER_PLACEHOLDER',
+            '${index + 1}',
+          );
           // Note: If using R2 and files are PDFs, CachedNetworkImage won't work.
           // Assuming UploadService generates image previews or we use a viewer.
           // For now, removing the forced .jpg logic if it seems like a direct file link that might not be Cloudinary key-based.
           // But preserving it if it's likely needed.
           // Safer to check extensions.
-          
+
           if (url.endsWith('.pdf')) {
-            // If it's a PDF link, CachedNetworkImage will fail. 
+            // If it's a PDF link, CachedNetworkImage will fail.
             // We hope the backend provided an Image URL.
             // If we MUST convert, typically we need an image endpoint.
             // Leaving as is, but removing the double extension risk.
-          } else if (!url.endsWith('.jpg') && !url.endsWith('.png') && !url.endsWith('.jpeg')) {
-             // If no extension, maybe append jpg? 
-             // url += '.jpg';
+          } else if (!url.endsWith('.jpg') &&
+              !url.endsWith('.png') &&
+              !url.endsWith('.jpeg')) {
+            // If no extension, maybe append jpg?
+            // url += '.jpg';
           }
           return url;
         });
       }
     }
-    
+
     // Fallback: Cloudinary (if fileId exists)
     // URL format: https://res.cloudinary.com/<cloud_name>/image/upload/<fileId>.jpg
-    // Note: 'dnk892k4r' is a placeholder/guessed cloud name. 
+    // Note: 'dnk892k4r' is a placeholder/guessed cloud name.
     // If your cloud name is different, please update it here or in a config file.
     if (json['fileId'] != null) {
       final fileId = json['fileId'].toString();
       // Assuming PDF preview for page 1 (pg_1)
-      return ['https://res.cloudinary.com/dnk892k4r/image/upload/pg_1/$fileId.jpg']; 
+      return [
+        'https://res.cloudinary.com/dnk892k4r/image/upload/pg_1/$fileId.jpg',
+      ];
     }
 
     // Fallback to old list if exists
@@ -178,5 +209,14 @@ class DocumentModel extends DocumentEntity {
       return List<String>.from(json['previewUrls']);
     }
     return [];
+  }
+
+  static String _parseUploaderName(Map<String, dynamic> json) {
+    if (json['uploadName'] != null) return json['uploadName'];
+    if (json['fullName'] != null) return json['fullName'];
+    if (json['userName'] != null) return json['userName'];
+    if (json['uploaderName'] != null) return json['uploaderName']; // Added check for uploaderName key seen in logs
+    
+    return 'Unknown User'; 
   }
 }

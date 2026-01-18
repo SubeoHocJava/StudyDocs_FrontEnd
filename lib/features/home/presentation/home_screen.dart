@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:go_router/go_router.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/core/widgets/document/ListDocument.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
 import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
 import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
 import 'package:studydocs/features/explore/presentation/widgets/explore_bottom_sheet.dart';
-import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
-import 'package:studydocs/core/widgets/document/ListDocument.dart';
-import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/logic/home_bloc.dart';
 import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
-import 'package:studydocs/features/home/domain/entity/document_entity.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../../docs/presentation/screen/test_document_render_screen.dart' as test_screen;
+import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
 
 // Adapter to use DocumentEntity with the reused ListDocument widget
 class HomeDocumentAdapter extends DocumentUiList {
@@ -51,7 +51,10 @@ class HomeDocumentAdapter extends DocumentUiList {
   int get commentsCount => entity.commentsCount ?? 0;
 
   @override
-  bool get isLiked => false;
+  int get pageCount => entity.pageCount ?? 0;
+
+  @override
+  bool get isLiked => entity.isLiked;
 
   @override
   bool get isSaved => false;
@@ -188,9 +191,6 @@ class _HomePageState extends State<HomePage> {
                 onMicTap: _toggleListening,
                 height: 200,
               ),
-
-
-
               // Search results view
               if (state.searchQuery.isNotEmpty) ...[
                 _buildSectionTitle('Kết quả tìm kiếm: "${state.searchQuery}"'),
@@ -212,6 +212,13 @@ class _HomePageState extends State<HomePage> {
                     },
                     onSave: (doc) {
                       /* TODO */
+                    },
+                    onLike: (doc) {
+                      if (doc is HomeDocumentAdapter) {
+                        context.read<HomeBloc>().add(
+                          ToggleHomeLikeEvent(doc.entity),
+                        );
+                      }
                     },
                     onTap: (doc) {
                       context.push('/document/${doc.id}');
@@ -236,6 +243,13 @@ class _HomePageState extends State<HomePage> {
                     popularDocs,
                     onDownload: (doc) {},
                     onSave: (doc) {},
+                    onLike: (doc) {
+                      if (doc is HomeDocumentAdapter) {
+                        context.read<HomeBloc>().add(
+                          ToggleHomeLikeEvent(doc.entity),
+                        );
+                      }
+                    },
                     onTap: (doc) {
                       context.push('/document/${doc.id}');
                     },

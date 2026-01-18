@@ -6,6 +6,7 @@ class DocumentEntity {
   final String school;
   final String year;
   final String uploader;
+  final String? uploaderId; // Added for navigation
   final int likes;
   final int dislikes;
   final List<CommentEntity> comments;
@@ -19,6 +20,7 @@ class DocumentEntity {
 
   final String? subjectId; // Added subjectId
   final String? universityId; // Added universityId
+  final int? commentsCount; // Added commentsCount
 
   DocumentEntity({
     this.id,
@@ -28,6 +30,7 @@ class DocumentEntity {
     required this.school,
     required this.year,
     required this.uploader,
+    this.uploaderId,
     required this.likes,
     required this.dislikes,
     required this.comments,
@@ -40,6 +43,7 @@ class DocumentEntity {
     required this.previewUrls,
     this.subjectId,
     this.universityId,
+    this.commentsCount,
   });
 
   DocumentEntity copyWith({
@@ -49,6 +53,7 @@ class DocumentEntity {
     String? school,
     String? year,
     String? uploader,
+    String? uploaderId,
     int? likes,
     int? dislikes,
     List<CommentEntity>? comments,
@@ -61,6 +66,7 @@ class DocumentEntity {
     List<String>? previewUrls,
     String? subjectId,
     String? universityId,
+    int? commentsCount,
   }) {
     return DocumentEntity(
       id: this.id, // ID should not change typically in copyWith, or use id ?? this.id if we add it to arguments. But currently it's not in arguments, so preserve this.id
@@ -70,6 +76,7 @@ class DocumentEntity {
       school: school ?? this.school,
       year: year ?? this.year,
       uploader: uploader ?? this.uploader,
+      uploaderId: uploaderId ?? this.uploaderId,
       likes: likes ?? this.likes,
       dislikes: dislikes ?? this.dislikes,
       comments: comments ?? this.comments,
@@ -82,6 +89,7 @@ class DocumentEntity {
       previewUrls: previewUrls ?? this.previewUrls,
       subjectId: subjectId ?? this.subjectId,
       universityId: universityId ?? this.universityId,
+      commentsCount: commentsCount ?? this.commentsCount,
     );
   }
 }
@@ -89,11 +97,25 @@ class DocumentEntity {
 class CommentEntity {
   final String author;
   final String text;
+  final String? authorId; // Added authorId
 
   const CommentEntity({
     required this.author,
     required this.text,
+    this.authorId,
   });
+
+  CommentEntity copyWith({
+    String? author,
+    String? text,
+    String? authorId,
+  }) {
+    return CommentEntity(
+      author: author ?? this.author,
+      text: text ?? this.text,
+      authorId: authorId ?? this.authorId,
+    );
+  }
 
   @override
   String toString() => '$author: $text';

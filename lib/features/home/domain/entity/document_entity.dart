@@ -21,7 +21,8 @@ class DocumentEntity extends Equatable {
   final DateTime? updatedAt;
   final String? fileUrl;
   final String? fileType;
-  final String? fileId; // Added fileId
+  final String? fileId;
+  final bool isLiked;
 
   const DocumentEntity({
     required this.id,
@@ -44,6 +45,7 @@ class DocumentEntity extends Equatable {
     this.fileUrl,
     this.fileType,
     this.fileId,
+    this.isLiked = false,
   });
 
   @override
@@ -67,6 +69,7 @@ class DocumentEntity extends Equatable {
     updatedAt,
     fileUrl,
     fileType,
+    isLiked,
   ];
 
   // Convert Model → Entity
@@ -85,13 +88,14 @@ class DocumentEntity extends Equatable {
       viewCount: 0, // Model lacks viewCount
       downloadCount: 0,
       likesCount: model.likes,
-      commentsCount: model.comments.length,
+      commentsCount: model.commentsCount ?? model.comments.length,
       rating: 0.0,
       createdAt: null, // Model uses String year, not DateTime
       updatedAt: null,
       fileUrl: model.downloadUrl,
       fileType: null,
       fileId: model.fileId,
+      isLiked: model.currentUserReaction == 'LIKE',
     );
   }
 
@@ -116,6 +120,7 @@ class DocumentEntity extends Equatable {
     String? fileUrl,
     String? fileType,
     String? fileId,
+    bool? isLiked,
   }) {
     return DocumentEntity(
       id: id ?? this.id,
@@ -138,6 +143,7 @@ class DocumentEntity extends Equatable {
       fileUrl: fileUrl ?? this.fileUrl,
       fileType: fileType ?? this.fileType,
       fileId: fileId ?? this.fileId,
+      isLiked: isLiked ?? this.isLiked,
     );
   }
 }

@@ -10,6 +10,7 @@ abstract class DocumentUiList extends Equatable {
   String? get category;
   String? get institution;
   String? get createdAt;
+  int get pageCount;
 
   /// ===== MEDIA =====
   String? get thumbnailUrl;
@@ -31,6 +32,7 @@ abstract class DocumentUiList extends Equatable {
     category,
     institution,
     createdAt,
+    pageCount,
     thumbnailUrl,
     likesCount,
     commentsCount,

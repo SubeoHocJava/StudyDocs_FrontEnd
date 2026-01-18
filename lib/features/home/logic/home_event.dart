@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-
+import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
 
@@ -46,4 +46,14 @@ class VoiceListeningChangedEvent extends HomeEvent {
 
   @override
   List<Object?> get props => [isListening];
+}
+
+
+
+class ToggleHomeLikeEvent extends HomeEvent {
+  final DocumentEntity document;
+  const ToggleHomeLikeEvent(this.document);
+
+  @override
+  List<Object?> get props => [document];
 }

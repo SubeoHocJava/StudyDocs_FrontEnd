@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -186,7 +186,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
         ),
         const SizedBox(height: 2),
         PageDateWidget(
-          pages: 5,
+          pages: widget.document.pageCount,
           date: widget.document.createdAt,
           responsive: responsive,
         ),
@@ -195,6 +195,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
           children: [
             LikeCommentWidget(
               likes: widget.document.likesCount,
+              isLiked: widget.document.isLiked,
               comments: widget.document.commentsCount,
               responsive: responsive,
               onLikeTap: () => widget.onLike?.call(widget.document),
@@ -388,6 +389,7 @@ class PageDateWidget extends StatelessWidget {
 class LikeCommentWidget extends StatelessWidget {
   final int? likes;
   final int? comments;
+  final bool isLiked;
   final ResponsiveHelper responsive;
   final VoidCallback? onLikeTap;
   final VoidCallback? onCommentTap;
@@ -397,6 +399,7 @@ class LikeCommentWidget extends StatelessWidget {
     required this.likes,
     required this.comments,
     required this.responsive,
+    this.isLiked = false,
     this.onLikeTap,
     this.onCommentTap,
   });
@@ -407,7 +410,23 @@ class LikeCommentWidget extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: onLikeTap,
-          child: Text("👍 ${likes ?? 0}"),
+          child: Row(
+            children: [
+               Icon(
+                isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
+                size: 16,
+                color: isLiked ? Colors.blue : Colors.grey[700], 
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "${likes ?? 0}",
+                style: TextStyle(
+                   color: isLiked ? Colors.blue : Colors.black,
+                   fontWeight: isLiked ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(width: 12),
         GestureDetector(

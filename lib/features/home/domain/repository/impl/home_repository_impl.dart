@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart'; // ✅ Import Asset
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart'; // ✅ Import Docs
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/home_repository.dart';
 
@@ -13,11 +14,13 @@ class HomeRepositoryImpl implements HomeRepository {
   final DocumentRemoteDataSource remoteDataSource;
   final AcademicRemoteDataSource academicDataSource;
   final AssetRemoteDataSource assetDataSource;
+  final DocsRemoteDataSource docsRemoteDataSource;
 
   HomeRepositoryImpl({
     required this.remoteDataSource,
     required this.academicDataSource,
     required this.assetDataSource,
+    required this.docsRemoteDataSource,
   });
 
   @override
@@ -42,6 +45,9 @@ class HomeRepositoryImpl implements HomeRepository {
 
       // 1b. Enrich with assets (thumbnails)
       documents = await _enrichWithAssets(documents);
+
+      // 1c. Enrich with stats (likes, reaction)
+      documents = await _enrichWithStats(documents);
 
       if (kDebugMode) {
         print('--- HomeRepository.getPopularDocuments Debug ---');
@@ -76,8 +82,8 @@ class HomeRepositoryImpl implements HomeRepository {
         _fetchSubjectsByIds(subjectIds),
       ]);
 
-      final universityMap = results[0] as Map<String, String>;
-      final subjectMap = results[1] as Map<String, String>;
+      final universityMap = results[0];
+      final subjectMap = results[1];
 
       // 4. Map documents → entities với tên đầy đủ
       return documents.map((doc) {
@@ -102,10 +108,12 @@ class HomeRepositoryImpl implements HomeRepository {
           academicYear: doc.year, // Corrected
           viewCount: 0, // Default
           downloadCount: 0, // Default
-          likesCount: doc.likes, // Corrected
-          commentsCount: doc.comments.length, // Corrected
-          rating: 0.0, // Default
-          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null, // Corrected
+          likesCount: doc.likes,
+          commentsCount: doc.commentsCount ?? doc.comments.length,
+          rating: 0.0,
+          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+          isLiked: doc.currentUserReaction == 'LIKE',
+          pageCount: doc.pages,
         );
       }).toList();
     } catch (e) {
@@ -121,6 +129,9 @@ class HomeRepositoryImpl implements HomeRepository {
 
       // Enrich with assets (thumbnails)
       documents = await _enrichWithAssets(documents);
+
+      // Enrich with stats (likes, reaction)
+      documents = await _enrichWithStats(documents);
 
       if (kDebugMode) {
         print('--- HomeRepository.getRecentDocuments Debug ---');
@@ -153,8 +164,8 @@ class HomeRepositoryImpl implements HomeRepository {
         _fetchSubjectsByIds(subjectIds),
       ]);
 
-      final universityMap = results[0] as Map<String, String>;
-      final subjectMap = results[1] as Map<String, String>;
+      final universityMap = results[0];
+      final subjectMap = results[1];
 
       return documents.map((doc) {
         final institutionName =
@@ -179,9 +190,11 @@ class HomeRepositoryImpl implements HomeRepository {
           viewCount: 0,
           downloadCount: 0,
           likesCount: doc.likes,
-          commentsCount: doc.comments.length,
+          commentsCount: doc.commentsCount ?? doc.comments.length,
           rating: 0.0,
           thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+          isLiked: doc.currentUserReaction == 'LIKE',
+          pageCount: doc.pages,
         );
       }).toList();
     } catch (e) {
@@ -194,6 +207,7 @@ class HomeRepositoryImpl implements HomeRepository {
     try {
       var models = await remoteDataSource.searchDocuments(query);
       models = await _enrichWithAssets(models);
+      models = await _enrichWithStats(models);
       return models.map((model) => DocumentEntity.fromModel(model)).toList();
     } catch (e) {
       throw Exception('Repository: Failed to search documents - $e');
@@ -226,6 +240,44 @@ class HomeRepositoryImpl implements HomeRepository {
         }
       }
       return doc;
+    });
+
+    return Future.wait(futures);
+  }
+
+  /// Enrich document list with interaction stats (likes, user reaction) from Review Service
+  Future<List<DocumentModel>> _enrichWithStats(
+    List<DocumentModel> docs,
+  ) async {
+    final futures = docs.map((doc) async {
+      // Skip if no ID
+      if (doc.id == null) return doc;
+
+      try {
+        // Parallel fetch stats, reaction, and comment count
+        final results = await Future.wait([
+          docsRemoteDataSource.getDocumentStats(doc.id!),
+          docsRemoteDataSource.getMyDocumentReaction(doc.id!),
+          docsRemoteDataSource.getReviewCount(doc.id!),
+        ]);
+
+        final stats = results[0] as Map<String, dynamic>;
+        final reaction = results[1] as String?;
+        final commentCount = results[2] as int;
+
+        final likes = (stats['likeCount'] as num?)?.toInt() ?? 0;
+        final dislikes = (stats['dislikeCount'] as num?)?.toInt() ?? 0;
+
+        return doc.copyWith(
+          likes: likes,
+          dislikes: dislikes,
+          commentsCount: commentCount,
+          currentUserReaction: reaction,
+        );
+      } catch (e) {
+        // Fail silently and return original doc
+        return doc;
+      }
     });
 
     return Future.wait(futures);
