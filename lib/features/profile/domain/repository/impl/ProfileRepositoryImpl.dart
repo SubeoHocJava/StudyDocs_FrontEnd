@@ -1,6 +1,4 @@
 
-
-
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
@@ -52,8 +50,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
           response.data != null) {
 
         final userData = response.data;
-
-
         return ProfileEntity(
           id: userData['id']?.toString() ?? '',
           username: userData['username'] ?? '',
