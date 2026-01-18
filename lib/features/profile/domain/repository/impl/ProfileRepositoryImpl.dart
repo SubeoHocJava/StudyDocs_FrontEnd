@@ -180,6 +180,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       throw Exception('User not logged in');
     }
     await followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    print("Log này của file: ProfileRepositoryImpl: đã unfollow-[--------------------------------------");
     return await followDataSource.countFollowers(followingId);
   }
 
