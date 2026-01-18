@@ -4,11 +4,36 @@ import '../../logic/docs_bloc.dart';
 import '../../logic/docs_event.dart';
 import '../../domain/entity/document_entity.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../features/auth/presentation/bloc/auth_status_cubit.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/auth_utils.dart';
 
 class LikeDislikeRow extends StatelessWidget {
   final DocumentEntity doc;
 
   const LikeDislikeRow({super.key, required this.doc});
+
+  bool _checkAuth(BuildContext context) {
+    final authCubit = context.read<AuthStatusCubit>();
+    if (!authCubit.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Vui lòng đăng nhập để thực hiện tính năng này'),
+          backgroundColor: AppColors.headerForeground,
+          duration: const Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Đăng nhập',
+            textColor: Colors.white,
+            onPressed: () {
+               showLoginModal(context);
+            },
+          ),
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +65,9 @@ class LikeDislikeRow extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLikeButton));
+        if (_checkAuth(context)) {
+          context.read<DocsBloc>().add(ToggleDocumentLike(isLike: isLikeButton));
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200), // Smooth transition

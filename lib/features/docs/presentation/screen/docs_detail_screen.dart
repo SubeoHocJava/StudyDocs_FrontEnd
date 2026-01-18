@@ -18,6 +18,9 @@ import '../../../../core/constants/app_icons.dart';
 import '../../../../core/widgets/bottom_nav.dart';
 import '../../../../core/router/app_router.dart';
 import 'package:studydocs/features/docs/presentation/screen/reviews_screen.dart';
+import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/utils/auth_utils.dart'; // Import helper
 
 class DocsDetailScreen extends StatefulWidget {
   const DocsDetailScreen({super.key});
@@ -31,6 +34,28 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
   int _commentPageIndex = 0;    // ← Biến riêng cho phân trang comment
   bool _isExpanded = false;     // ← Trạng thái xem thêm
   final int _commentsPerPage = 5;
+
+  bool _checkAuth() {
+    final authCubit = context.read<AuthStatusCubit>();
+    if (!authCubit.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Vui lòng đăng nhập để thực hiện tính năng này'),
+          backgroundColor: AppColors.headerForeground,
+          duration: const Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Đăng nhập',
+            textColor: Colors.white,
+            onPressed: () {
+               showLoginModal(context);
+            },
+          ),
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +186,7 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
         ),
         const SizedBox(height: 16),
         DocActions(state: state),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Text("Năm học: ${doc.year}"),
         const SizedBox(height: 12),
         const Text(
@@ -202,7 +227,6 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
         if (_isExpanded || MediaQuery.of(context).size.width > 600) ...[
             const SizedBox(height: 16),
             const Divider(),
-            // Comment Header is inside CommentsSection now (or we remove from here to avoid duplicate)
             
             CommentsSection(
               comments: doc.comments,
@@ -236,7 +260,9 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
             const SizedBox(height: 10),
             CommentInput(
               onSend: (text) {
-                context.read<DocsBloc>().add(PostComment(text));
+                if (_checkAuth()) {
+                  context.read<DocsBloc>().add(PostComment(text));
+                }
               },
             ),
             const SizedBox(height: 40),
