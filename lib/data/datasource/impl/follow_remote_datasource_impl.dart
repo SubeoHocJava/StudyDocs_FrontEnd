@@ -100,4 +100,16 @@ class FollowRemoteDataSourceImpl implements FollowRemoteDataSource {
     }
     return 0;
   }
+
+  //is flollowing
+@override
+  Future<bool> isFollowing(String followerId, String followingId) async {
+    final response = await dioClient.get('${ApiConstants.follows}/is-following?followerId=$followerId&followingId=$followingId');
+    if (response.isSuccess && response.data != null) {
+      final data = response.data;
+      if (data is bool) return data;
+      if (data is String) return data.toLowerCase() == 'true';
+    }
+    return false;
+  }
 }
