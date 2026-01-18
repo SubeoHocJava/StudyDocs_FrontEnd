@@ -56,6 +56,7 @@ class ListDocument extends StatelessWidget {
             onSave: onSave,
             onLike: onLike,
             onComment: onComment,
+            onTap: onTap,
           ),
         );
       },
@@ -73,13 +74,15 @@ class MonoDocumentInList extends StatefulWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
   const MonoDocumentInList({
     super.key,
     required this.document,
     this.onDownload,
     this.onSave,
     this.onLike,
-    this.onComment
+    this.onComment,
+    this.onTap,
   });
 
   @override
@@ -118,7 +121,13 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
 
     return InkWell(
       borderRadius: BorderRadius.circular(8),
-      onTap: () => _openDetail(context),
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!(widget.document);
+        } else {
+          _openDetail(context);
+        }
+      },
       child: Container(
         width: width,
         margin: EdgeInsets.symmetric(
