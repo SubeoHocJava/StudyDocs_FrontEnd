@@ -19,33 +19,41 @@ class UpLoadFileRepositoryImpl implements UploadFileRepository {
   }
 
   @override
-  Future<bool> uploadDocument({
+  Future<bool> uploadFile({
     required String filePath,
-    required String school,
-    required String subject,
+    required String schoolId,
+    required String subjectId,
     required String fileName,
     required String year,
     required String description,
   }) async {
     try {
+      print(' [UPLOAD] Starting upload...');
+      print('  schoolId: "$schoolId" (length: ${schoolId.length})');
+      print('  subjectId: "$subjectId" (length: ${subjectId.length})');
+      print('  fileName: $fileName');
+      
       /// 1. Tạo File
       final file = File(filePath);
 
-      /// 2. Map sang UploadDocumentRequest
+      /// 2. Map sang UploadDocumentRequest với IDs
       final request = UploadDocumentRequest(
         title: fileName,
         description: description,
-        institution: school,
-        category: subject,
+        universityId: schoolId.isNotEmpty ? schoolId : null,
+        subjectId: subjectId.isNotEmpty ? subjectId : null,
         academicYear: year,
       );
+      
+      print('  Request JSON: ${request.toJson()}');
 
       /// 3. Gọi RemoteDataSource
       await uploadDatasource.uploadDocument(request, file);
 
+      print(' [UPLOAD] Success!');
       return true;
     } catch (e) {
-      print('Upload error: $e');
+      print(' [UPLOAD] Error: $e');
       return false;
     }
   }

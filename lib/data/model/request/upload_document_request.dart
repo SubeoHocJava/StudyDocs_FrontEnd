@@ -1,15 +1,15 @@
 class UploadDocumentRequest {
   final String title;
   final String description;
-  final String institution; // School
-  final String category; // Subject
+  final String? universityId; // School ID (not name!)
+  final String? subjectId;    // Subject ID (not name!)
   final String academicYear;
 
   UploadDocumentRequest({
     required this.title,
     required this.description,
-    required this.institution,
-    required this.category,
+    this.universityId,
+    this.subjectId,
     required this.academicYear,
   });
 
@@ -17,8 +17,8 @@ class UploadDocumentRequest {
     return {
       'title': title,
       'description': description,
-      'institution': institution,
-      'category': category,
+      'universityId': universityId,
+      'subjectId': subjectId,
       'academicYear': academicYear,
     };
   }

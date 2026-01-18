@@ -69,7 +69,7 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
         currentFiles.addAll(result.files);
 
-        // Subject + school lấy từ current state hoặc gán mặc định
+        // Subject + school + IDs lấy từ current state hoặc gán mặc định
         final subject = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).subject
             : lastLoadedState?.subject ?? "subject";
@@ -78,7 +78,22 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
             ? (state as UploadFileLoaded).school
             : lastLoadedState?.school ?? "school";
 
-        final newState = UploadFileLoaded(currentFiles, subject, school);
+        // CRITICAL: Preserve schoolId and subjectId!
+        final schoolId = (state is UploadFileLoaded)
+            ? (state as UploadFileLoaded).schoolId
+            : lastLoadedState?.schoolId;
+
+        final subjectId = (state is UploadFileLoaded)
+            ? (state as UploadFileLoaded).subjectId
+            : lastLoadedState?.subjectId;
+
+        final newState = UploadFileLoaded(
+          currentFiles,
+          subject,
+          school,
+          schoolId: schoolId,
+          subjectId: subjectId,
+        );
         lastLoadedState = newState;
 
         emit(newState);
@@ -116,6 +131,8 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
           updatedFiles,
           current.subject,
           current.school,
+          schoolId: current.schoolId,  // Preserve IDs!
+          subjectId: current.subjectId,
         );
 
         lastLoadedState = newState;
@@ -124,16 +141,18 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
     });
 
     // ============================
-    // Edit School Label
+    // Select School (with ID)
     // ============================
-    on<EditSchoolLabel>((event, emit) {
+    on<SelectSchool>((event, emit) {
       if (state is UploadFileLoaded) {
         final current = state as UploadFileLoaded;
 
         final newState = UploadFileLoaded(
           current.file,
-          current.subject,
-          event.school,
+          "", // Reset subject when school changes
+          event.schoolName,
+          subjectId: null, // Reset subject ID
+          schoolId: event.schoolId,
         );
 
         lastLoadedState = newState;
@@ -142,7 +161,27 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
     });
 
     // ============================
-    // Edit Subject Label
+    // Select Subject (with ID)
+    // ============================
+    on<SelectSubject>((event, emit) {
+      if (state is UploadFileLoaded) {
+        final current = state as UploadFileLoaded;
+
+        final newState = UploadFileLoaded(
+          current.file,
+          event.subjectName,
+          current.school,
+          subjectId: event.subjectId,
+          schoolId: current.schoolId,
+        );
+
+        lastLoadedState = newState;
+        emit(newState);
+      }
+    });
+    
+    // ============================
+    // Edit Subject Label (kept for backward compatibility)
     // ============================
     on<EditSubjectLabel>((event, emit) {
       if (state is UploadFileLoaded) {
@@ -152,6 +191,8 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
           current.file,
           event.subject,
           current.school,
+          subjectId: current.subjectId,
+          schoolId: current.schoolId,
         );
 
         lastLoadedState = newState;
@@ -166,11 +207,11 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
         final success = await uploadFileUseCase(
           filePath: current.file.first.path ?? "",
-          school: current.school,
-          subject: current.subject,
-          fileName: event.fileName ,
-          year: event.year ,
-          description: event.description ,
+          schoolId: current.schoolId ?? "", // Send ID instead of name
+          subjectId: current.subjectId ?? "", // Send ID instead of name
+          fileName: event.fileName,
+          year: event.year,
+          description: event.description,
         );
 
         if (success) {

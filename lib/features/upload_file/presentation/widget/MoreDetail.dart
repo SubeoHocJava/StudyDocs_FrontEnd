@@ -124,9 +124,9 @@ class _MoreDetailState extends State<MoreDetail> {
                     if (_formKey.currentState!.validate()) {
                       context.read<UploadFileBloc>().add(
                         SendFormUpload(
-                          nameCtrl.text.trim(),
-                          yearCtrl.text.trim(),
-                          descCtrl.text.trim(),
+                          fileName: nameCtrl.text.trim(),
+                          year: yearCtrl.text.trim(),
+                          description: descCtrl.text.trim(),
                         ),
                       );
                     }

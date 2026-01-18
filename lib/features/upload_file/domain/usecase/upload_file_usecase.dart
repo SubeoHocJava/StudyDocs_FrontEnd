@@ -9,16 +9,16 @@ class UploadFileUseCase{
 
   Future<bool> call({
     required String filePath,
-    required String school,
-    required String subject,
+    required String schoolId,
+    required String subjectId,
     required String fileName,
     required String year,
     required String description,
   }) async {
-    return await repository.uploadDocument(
+    return await repository.uploadFile(
       filePath: filePath,
-      school: school,
-      subject: subject,
+      schoolId: schoolId,
+      subjectId: subjectId,
       fileName: fileName,
       year: year,
       description: description,

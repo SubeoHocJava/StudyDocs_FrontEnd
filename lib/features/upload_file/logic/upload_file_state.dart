@@ -24,11 +24,19 @@ class UploadFileLoaded extends UploadFileState {
   final List<PlatformFile> file;
   final String subject;
   final String school;
+  final String? subjectId;
+  final String? schoolId;
 
-  const UploadFileLoaded(this.file, this.subject,this.school);
+  const UploadFileLoaded(
+    this.file,
+    this.subject,
+    this.school, {
+    this.subjectId,
+    this.schoolId,
+  });
 
   @override
-  List<Object?> get props => [file, subject,school];
+  List<Object?> get props => [file, subject, school, subjectId, schoolId];
 }
 
 class UploadFileError extends UploadFileState {

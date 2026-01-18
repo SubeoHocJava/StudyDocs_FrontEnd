@@ -46,26 +46,40 @@ class EditSubjectLabel extends UploadFileEvent {
   List<Object?> get props => [subject];
 }
 
-// Chỉnh sửa tên trường học
-class EditSchoolLabel extends UploadFileEvent {
-  final String school;
+// Select School Event (với ID và Name)
+class SelectSchool extends UploadFileEvent {
+  final String schoolId;
+  final String schoolName;
 
-  const EditSchoolLabel(this.school);
+  const SelectSchool(this.schoolId, this.schoolName);
 
   @override
-  List<Object?> get props => [school];
+  List<Object?> get props => [schoolId, schoolName];
 }
+
+// Select Subject Event (với ID và Name)
+class SelectSubject extends UploadFileEvent {
+  final String subjectId;
+  final String subjectName;
+
+  const SelectSubject(this.subjectId, this.subjectName);
+
+  @override
+  List<Object?> get props => [subjectId, subjectName];
+}
+
 // Gửi form upload
 class SendFormUpload extends UploadFileEvent {
   final String fileName;
   final String year;
   final String description;
 
-  const SendFormUpload(
-    this.fileName,
-    this.year,
-    this.description,
-  );
+  const SendFormUpload({
+    required this.fileName,
+    required this.year,
+    required this.description,
+  });
+
   @override
-  List<Object?> get props => [ fileName, year, description];
+  List<Object?> get props => [fileName, year, description];
 }
