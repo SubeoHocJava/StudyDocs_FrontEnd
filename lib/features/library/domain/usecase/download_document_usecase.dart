@@ -6,6 +6,6 @@ class DownloadDocumentUseCase {
   DownloadDocumentUseCase(this.repository);
 
   Future<void> call(String documentId) async {
-    // TODO: repository.downloadDocument(documentId)
+   repository.downloadDocument(documentId);
   }
 }

@@ -82,6 +82,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       ) async {
     try {
       await saveDocumentUseCase(event.documentId);
+
     } catch (e) {
       emit(LibraryError(e.toString()));
     }
