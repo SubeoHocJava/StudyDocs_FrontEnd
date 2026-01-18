@@ -5,7 +5,7 @@ import '../model/document_profile.dart';
 
 abstract class ProfileRepository {
   /// Lấy thông tin profile hiện tại
-  Future<ProfileEntity> getProfile(int userId);
+  Future<ProfileEntity> getProfile(String userId);
 
   /// Cập nhật thông tin profile (không bao gồm avatar)
   Future<ProfileEntity> updateProfile(ProfileEntity profile);

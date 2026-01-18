@@ -46,7 +46,7 @@ class ApiConstants {
   static const String usersIsPrivate = '/users/isPrivate';
   static const String usersExists = '/users/exists';
 
-  static const String uploadDocument = '/';
+  static const String uploadDocument = '/documents/user';
 
  //  New
   // =========================

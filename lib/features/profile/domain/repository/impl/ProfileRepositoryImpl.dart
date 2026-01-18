@@ -36,21 +36,15 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
 
   @override
-  Future<ProfileEntity> getProfile(int userId) async {
+  Future<ProfileEntity> getProfile(String userId) async {
     try {
-      final tokenStorage = TokenStorageService();
-      final storedUserId = await tokenStorage.getUserId();
-
-      if (storedUserId == null) {
-        throw Exception('User ID not found in local storage');
-      }
 
       // print('User ID from storage: $storedUserId');
 
       final response =
-      await userRemoteDataSource.getUserById(storedUserId);
-      final countFollower = await followDataSource.countFollowers(storedUserId);
-      final countFollowing = await followDataSource.countFollowing(storedUserId);
+      await userRemoteDataSource.getUserById(userId);
+      final countFollower = await followDataSource.countFollowers(userId);
+      final countFollowing = await followDataSource.countFollowing(userId);
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {

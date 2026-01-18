@@ -20,7 +20,7 @@ class BasicInfor extends StatelessWidget {
   Widget build(BuildContext context) {
     final responsive = context.responsive;
 
-    final image = "assets/icons/avt.png";
+    // final image = "assets/icons/avt.png";
     final name = state.fullName;
     final school = state.school;
 

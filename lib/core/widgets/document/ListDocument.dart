@@ -6,6 +6,12 @@ import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import '../../../features/docs/logic/docs_bloc.dart';
 import '../../../features/docs/logic/docs_event.dart';
+import 'package:studydocs/features/docs/domain/repository/docs_repository.dart';
+import 'package:studydocs/features/docs/domain/usecase/get_document_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/toggle_save_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/toggle_like_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/post_comment_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/react_review_usecase.dart';
 import '../../../features/docs/presentation/screen/docs_detail_screen.dart';
 import 'model/list_document_ui.dart';
 
@@ -85,7 +91,7 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
   bool _saveSelected = false;
 
   void _openDetail(BuildContext context) {
-    final parentBloc = context.read<DocsBloc>();
+    final docsRepository = context.read<DocsRepository>();
 
     Navigator.push(
       context,
@@ -93,11 +99,11 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
         builder: (_) => BlocProvider(
           create: (_) => DocsBloc(
             documentId: widget.document.id!,
-            getDocumentUseCase: parentBloc.getDocumentUseCase,
-            toggleSaveUseCase: parentBloc.toggleSaveUseCase,
-            toggleLikeUseCase: parentBloc.toggleLikeUseCase,
-            postCommentUseCase: parentBloc.postCommentUseCase,
-            reactReviewUseCase: parentBloc.reactReviewUseCase,
+            getDocumentUseCase: GetDocumentUseCase(docsRepository),
+            toggleSaveUseCase: ToggleSaveUseCase(docsRepository),
+            toggleLikeUseCase: ToggleLikeUseCase(docsRepository),
+            postCommentUseCase: PostCommentUseCase(docsRepository),
+            reactReviewUseCase: ReactReviewUseCase(docsRepository),
           )..add(const LoadDocDetails()),
           child: const DocsDetailScreen(),
         ),
