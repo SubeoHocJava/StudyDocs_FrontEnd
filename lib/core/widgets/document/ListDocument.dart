@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import '../../../features/docs/logic/docs_bloc.dart';
+import '../../../features/docs/logic/docs_event.dart';
+import '../../../features/docs/presentation/screen/docs_detail_screen.dart';
 import 'model/list_document_ui.dart';
 
 /// =======================
@@ -46,7 +50,6 @@ class ListDocument extends StatelessWidget {
             onSave: onSave,
             onLike: onLike,
             onComment: onComment,
-            onTap: onTap,
           ),
         );
       },
@@ -64,15 +67,13 @@ class MonoDocumentInList extends StatefulWidget {
   final void Function(DocumentUiList)? onSave;
   final void Function(DocumentUiList)? onLike;
   final void Function(DocumentUiList)? onComment;
-  final void Function(DocumentUiList)? onTap;
   const MonoDocumentInList({
     super.key,
     required this.document,
     this.onDownload,
     this.onSave,
     this.onLike,
-    this.onComment,
-    this.onTap,
+    this.onComment
   });
 
   @override
@@ -84,17 +85,25 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
   bool _saveSelected = false;
 
   void _openDetail(BuildContext context) {
-    // Navigator.push(
-    //   context,
-      // MaterialPageRoute(
-      //   builder: (_) =>
-        // DocDetailPage(
-        //   documentId: widget.document.id,
-        // ),
-      // ),
-    // );
-  }
+    final parentBloc = context.read<DocsBloc>();
 
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => DocsBloc(
+            documentId: widget.document.id!,
+            getDocumentUseCase: parentBloc.getDocumentUseCase,
+            toggleSaveUseCase: parentBloc.toggleSaveUseCase,
+            toggleLikeUseCase: parentBloc.toggleLikeUseCase,
+            postCommentUseCase: parentBloc.postCommentUseCase,
+            reactReviewUseCase: parentBloc.reactReviewUseCase,
+          )..add(const LoadDocDetails()),
+          child: const DocsDetailScreen(),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
