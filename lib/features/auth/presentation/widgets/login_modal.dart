@@ -8,7 +8,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../services/token_storage_service.dart';
 import '../bloc/login_bloc.dart';
 import '../bloc/auth_status_cubit.dart';
-import '../screens/google_debug_screen.dart';
 import 'login_form.dart';
 import 'forgot_password_form.dart';
 import 'register_form.dart';
@@ -125,22 +124,7 @@ class _LoginModalState extends State<LoginModal> {
                 user: user,
               );
 
-              // Nếu token là JWT (Google idToken), điều hướng sang màn demo
-              if (token.startsWith('ey')) {
-                final claims = _tryDecodeJwt(token);
-                if (claims != null) {
-                  final nav = Navigator.of(context, rootNavigator: true);
-                  nav.pop(); // đóng modal
-                  nav.push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => GoogleDebugScreen(idToken: token),
-                    ),
-                  );
-                  return;
-                }
-              }
-
-              // Login thường: đóng modal và show snackbar
+              // Đóng modal và show snackbar (cả login thường và Google login)
               final nav = Navigator.of(context, rootNavigator: true);
               nav.pop();
               ScaffoldMessenger.of(context).showSnackBar(

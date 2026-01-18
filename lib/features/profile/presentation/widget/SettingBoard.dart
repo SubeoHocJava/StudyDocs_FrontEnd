@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/router/app_router.dart';
 import '../../logic/profile_bloc.dart';
 import '../../../auth/presentation/bloc/auth_status_cubit.dart';
 import 'UpdateInforDialog.dart';
@@ -144,6 +146,9 @@ class _SettingBoardState extends State<SettingBoard> {
               // Đóng dialog
               if (context.mounted) {
                 Navigator.of(context, rootNavigator: true).pop();
+                
+                // Navigate về home page
+                context.go(AppRoutes.home);
                 
                 // Show thông báo
                 ScaffoldMessenger.of(context).showSnackBar(

@@ -82,11 +82,13 @@ class ApiInterceptor extends QueuedInterceptor {
             }
           } catch (e) {
             if (kDebugMode) {
-              print(' Refresh Token Failed: $e');
+              print('⚠️ Refresh Token Failed: $e');
             }
-            // Nếu Refresh lỗi -> Xóa token và để request 401 tự nhiên (hoặc chuyển về Login tùy logic)
-            // Ở đây mình cứ để request trôi đi, nó sẽ trả về 401 và UI sẽ handle logout sau
-            // await _tokenStorage.clearTokens();
+            // Auto logout khi cả access token và refresh token đều hết hạn
+            await _tokenStorage.clearTokens();
+            if (kDebugMode) {
+              print('🔒 Auto logout: Tokens cleared due to refresh failure');
+            }
           }
         }
       }

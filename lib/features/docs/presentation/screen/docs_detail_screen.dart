@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/header.dart';
 import '../../logic/docs_bloc.dart';
 import '../../logic/docs_event.dart';
 import '../../logic/docs_state.dart';
@@ -13,6 +15,8 @@ import '../widgets/like_dislike_row.dart';
 import '../widgets/comments_section.dart';
 import '../widgets/comment_input.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/widgets/bottom_nav.dart';
+import '../../../../core/router/app_router.dart';
 import 'package:studydocs/features/docs/presentation/screen/reviews_screen.dart';
 
 class DocsDetailScreen extends StatefulWidget {
@@ -34,6 +38,7 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
     final isWide = size.width > 600;
 
     return Scaffold(
+      appBar: const Header(isDefault: false, headerTitle: 'Chi tiết tài liệu'),
       body: SafeArea(
         child: BlocBuilder<DocsBloc, DocsState>(
           builder: (context, state) {
@@ -64,6 +69,25 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
             );
           },
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        currentIndex: -1,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go(AppRoutes.home);
+              break;
+            case 1:
+              context.go(AppRoutes.library);
+              break;
+            case 2:
+              context.go(AppRoutes.explore);
+              break;
+            case 3:
+              context.go(AppRoutes.notifications);
+              break;
+          }
+        },
       ),
     );
   }
