@@ -164,4 +164,17 @@ class UserDataSourceImpl implements UserRemoteDataSource {
     // TODO: implement getThisUser
     throw UnimplementedError();
   }
+
+  @override
+  Future<ApiResponse> saveDocument(String documentId, {String? traceId}) {
+    return dioClient.post(
+      ApiConstants.userDocumentSave,
+      queryParameters: {'documentId': documentId},
+    );
+  }
+
+  @override
+  Future<ApiResponse> getSavedDocuments({String? traceId}) {
+    return dioClient.get(ApiConstants.userDocumentSaved);
+  }
 }

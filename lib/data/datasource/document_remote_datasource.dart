@@ -52,5 +52,8 @@ abstract class DocumentRemoteDataSource {
     String? traceId,
   });
   Future<DocumentModel> getPublicDocumentById(String id); // New: Get by ID for Explorer
+  
+  /// Get multiple documents by their IDs (makes individual requests for each ID)
+  Future<List<DocumentModel>> getDocumentsByIds(List<String> ids);
 }
 

@@ -61,6 +61,10 @@ class ApiConstants {
   static const String myDocuments = '/documents/user/me';
   static const String myNewestDocuments = '/documents/user/me/newest';
   static const String myDocumentHistory = '/documents/user/me/history';
+  
+  /// Document save/unsave endpoints
+  static const String userDocumentSave = '/users/document/save';
+  static const String userDocumentSaved = '/users/document/saved';
 
 
   // Academic Endpoints (Relative to baseUrl)

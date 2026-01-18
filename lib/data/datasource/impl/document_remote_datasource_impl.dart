@@ -349,5 +349,23 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     
     throw ServerException('Failed to fetch document detail: $id', response.statusCode ?? 0);
   }
+
+  @override
+  Future<List<DocumentModel>> getDocumentsByIds(List<String> ids) async {
+    final List<DocumentModel> documents = [];
+    
+    // Make individual requests for each ID
+    for (final id in ids) {
+      try {
+        final document = await getPublicDocumentById(id);
+        documents.add(document);
+      } catch (e) {
+        // Skip documents that fail to load
+        print('Failed to load document with ID $id: $e');
+      }
+    }
+    
+    return documents;
+  }
 }
 

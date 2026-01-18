@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/library/domain/usecase/download_document_usecase.dart';
 import 'package:studydocs/features/library/domain/usecase/save_document_usecase.dart'
     show SaveDocumentUseCase;
+import 'package:studydocs/features/library/domain/usecase/get_saved_documents_usecase.dart';
 
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
@@ -21,6 +22,8 @@ import 'package:studydocs/features/library/presentation/widget/library_widgets.d
 import 'package:studydocs/features/library/presentation/widget/recently_upload.dart';
 import 'package:studydocs/features/library/presentation/widget/stored_document.dart';
 import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
+import 'package:studydocs/core/widgets/document/ListDocument.dart';
+import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -39,7 +42,10 @@ class LibraryScreen extends StatelessWidget {
             ),
             saveDocumentUseCase: SaveDocumentUseCase(LibraryRepositoryImpl()),
             likeDocumentUseCase: LikeDocumentUseCase(LibraryRepositoryImpl()),
-          )..add(LoadDocumentByKeyWord("keyword")),
+            getSavedDocumentsUseCase: GetSavedDocumentsUseCase(LibraryRepositoryImpl()),
+          )
+            ..add(LoadDocumentByKeyWord("keyword"))
+            ..add(const LoadSavedDocuments()),
       child: Scaffold(
         body: BlocBuilder<LibraryBloc, LibraryState>(
           builder: (context, state) {
@@ -87,6 +93,41 @@ class LibraryScreen extends StatelessWidget {
 
                     SubjectCategories(state.categories),
                     RecentlyUpload(state.documents),
+                    
+                    // Saved Documents Section
+                    if (state.savedDocuments.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Text(
+                          'Tài liệu đã lưu',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ListDocument(
+                        state.savedDocuments
+                            .map((doc) => doc as DocumentUiList)
+                            .toList(),
+                        onDownload: (doc) {
+                          context.read<LibraryBloc>().add(
+                            DownloadDocumentRequested(doc.id!),
+                          );
+                        },
+                        onSave: (doc) {
+                          context.read<LibraryBloc>().add(
+                            SaveDocumentRequested(doc.id!),
+                          );
+                        },
+                        onLike: (doc) {
+                          context.read<LibraryBloc>().add(
+                            LikeDocumentRequested(doc.id!),
+                          );
+                        },
+                      ),
+                    ],
+                    
                     StoredDocument(state.documents, crossAxisCount: 0),
                   ],
                 ),
