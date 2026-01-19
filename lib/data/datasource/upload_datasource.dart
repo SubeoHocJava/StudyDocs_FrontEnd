@@ -12,10 +12,7 @@ import '../../core/constants/api_constants.dart';
 /// ABSTRACT INTERFACE
 /// ===============================
 abstract interface class UploadRemoteDataSource {
-  Future<bool> uploadDocument(
-    UploadDocumentRequest request,
-    File file,
-  );
+  Future<bool> uploadDocument(UploadDocumentRequest request, File file);
 }
 
 /// ===============================
@@ -27,10 +24,7 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
   UploadRemoteDataSourceImpl({required this.dioClient});
 
   @override
-  Future<bool> uploadDocument(
-    UploadDocumentRequest request,
-    File file,
-  ) async {
+  Future<bool> uploadDocument(UploadDocumentRequest request, File file) async {
     try {
       final formData = FormData.fromMap({
         'data': jsonEncode(request.toJson()), // Send metadata as JSON string
@@ -46,8 +40,8 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
       );
 
       // Relaxed success check: Any 2xx status is success
-      if (response.statusCode != null && 
-          response.statusCode! >= 200 && 
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
           response.statusCode! < 300) {
         return true;
       }
