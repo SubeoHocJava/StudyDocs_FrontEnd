@@ -8,4 +8,7 @@ abstract class SubjectRepository {
 
   /// Lấy danh sách tên các trường
   Future<List<String>> getSchools();
+
+  /// Lấy tất cả môn học (cho Library)
+  Future<List<SubjectEntity>> getAllSubjects();
 }

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
+import 'package:studydocs/features/subject_library/domain/entity/subject_entity.dart';
 
 abstract class LibraryState extends Equatable {
   const LibraryState();
@@ -15,7 +16,7 @@ class LibraryLoading extends LibraryState {}
 
 class LibraryLoaded extends LibraryState {
   final List<DocumentLibraryUI> documents;
-  final List<String> categories;
+  final List<SubjectEntity> categories;
   final PlatformFile? pickedFile;
   final List<DocumentLibraryUI> savedDocuments;
 
@@ -28,7 +29,7 @@ class LibraryLoaded extends LibraryState {
 
   LibraryLoaded copyWith({
     List<DocumentLibraryUI>? documents,
-    List<String>? categories,
+    List<SubjectEntity>? categories,
     PlatformFile? pickedFile,
     List<DocumentLibraryUI>? savedDocuments,
   }) {

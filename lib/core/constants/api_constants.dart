@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URL: Always end with / to work correctly with Dio relative paths
-  static const String baseUrl = 'http://192.168.1.244:8080/api/v1/';
+  static const String baseUrl = 'http://10.0.0.58:8080/api/v1/';
 // Follow Endpoints
   static const String follows = 'follows';
   static const String followsFollowers = 'follows/followers';

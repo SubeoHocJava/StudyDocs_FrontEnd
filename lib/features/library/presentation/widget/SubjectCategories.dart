@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/features/subject_library/domain/entity/subject_entity.dart';
 
 class SubjectCategories extends StatelessWidget {
-  final List<String> categories;
+  final List<SubjectEntity> categories;
   final Function(int index)? onSubjectTap;
   
   const SubjectCategories(
@@ -43,7 +44,7 @@ class SubjectCategories extends StatelessWidget {
               ),
               child: Center(
                 child: MonoSubject(
-                  name: categories[index],
+                  name: categories[index].name,
                   onTap: () => onSubjectTap?.call(index),
                 ),
               )

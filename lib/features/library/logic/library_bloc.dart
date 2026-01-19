@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../domain/model/document_library.dart';
 import '../domain/usecase/load_document_usecase.dart';
 import '../domain/usecase/search_document_usecase.dart';
 import '../domain/usecase/download_document_usecase.dart';
 import '../domain/usecase/save_document_usecase.dart';
 import '../domain/usecase/like_document_usecase.dart';
 import '../domain/usecase/get_saved_documents_usecase.dart';
+import '../../subject_library/domain/usecase/get_all_subjects_usecase.dart';
+import '../../subject_library/domain/entity/subject_entity.dart';
 
 import 'LibraryEvent.dart';
 import 'LibraryState.dart';
@@ -16,6 +19,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   final SaveDocumentUseCase saveDocumentUseCase;
   final LikeDocumentUseCase likeDocumentUseCase;
   final GetSavedDocumentsUseCase getSavedDocumentsUseCase;
+  final GetAllSubjectsUseCase getAllSubjectsUseCase;
 
 
   LibraryBloc({
@@ -25,6 +29,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     required this.saveDocumentUseCase,
     required this.likeDocumentUseCase,
     required this.getSavedDocumentsUseCase,
+    required this.getAllSubjectsUseCase,
   }) : super(LibraryInitial()) {
     on<LoadDocumentByKeyWord>(_onLoadDocument);
     on<SearchDocument>(_onSearchDocument);
@@ -38,13 +43,30 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       LoadDocumentByKeyWord event,
       Emitter<LibraryState> emit,
       ) async {
+    print('>>> LIBRARY_BLOC: _onLoadDocument started with keyword: ${event.keyword}');
     emit(LibraryLoading());
     try {
       final result = await loadDocumentUseCase(event.keyword);
-      List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+      
+      // Fetch subjects safely
+      List<SubjectEntity> subjects = [];
+      try {
+        subjects = await getAllSubjectsUseCase();
+      } catch (e) {
+        print('Error loading subjects: $e');
+        // Fallback or keep empty
+      }
+      
+      // Preserve savedDocuments
+      List<DocumentLibraryUI> savedDocs = [];
+      if (state is LibraryLoaded) {
+        savedDocs = (state as LibraryLoaded).savedDocuments;
+      }
+      
       emit(LibraryLoaded(
         documents: result,
-        categories:cate
+        categories: subjects,
+        savedDocuments: savedDocs,
       ));
     } catch (e) {
       emit(LibraryError(e.toString()));
@@ -58,10 +80,26 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     emit(LibraryLoading());
     try {
       final result = await searchDocumentUseCase(event.keyword);
-      List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+      
+      List<SubjectEntity> subjects = [];
+      List<DocumentLibraryUI> savedDocs = [];
+      
+      if (state is LibraryLoaded) {
+        final loadedState = state as LibraryLoaded;
+        subjects = loadedState.categories;
+        savedDocs = loadedState.savedDocuments;
+      } else {
+         try {
+           subjects = await getAllSubjectsUseCase();
+         } catch (e) {
+           print('Error loading subjects in search: $e');
+         }
+      }
+
       emit(LibraryLoaded(
         documents: result,
-        categories: cate,
+        categories: subjects,
+        savedDocuments: savedDocs,
       ));
     } catch (e) {
       emit(LibraryError(e.toString()));
@@ -114,10 +152,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         emit((state as LibraryLoaded).copyWith(savedDocuments: savedDocs));
       } else {
         // If not loaded yet, emit a new loaded state with saved documents
-        List<String> cate=["Flutter","Backend","Mobile","Clean Architecture","DevOps"];
+        List<SubjectEntity> subjects = [];
+        try {
+          subjects = await getAllSubjectsUseCase();
+        } catch (e) {
+          print('Error loading subjects in saved docs: $e');
+        }
+
         emit(LibraryLoaded(
           documents: const [],
-          categories: cate,
+          categories: subjects,
           savedDocuments: savedDocs,
         ));
       }

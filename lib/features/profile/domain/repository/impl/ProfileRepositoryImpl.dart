@@ -1,6 +1,7 @@
 
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
+import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
@@ -11,6 +12,7 @@ import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
 import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
+import 'package:studydocs/features/docs/data/model/document_model.dart';
 
 import '../../../../../core/network/dio_client.dart';
 
@@ -21,11 +23,16 @@ class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
   late final DocumentRemoteDataSource documentDataSource;
   late final FollowRemoteDataSource followDataSource;
+  late final AssetRemoteDataSource assetRemoteDataSource; // Add this
+
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
+    // Initialize assetRemoteDataSource first to pass it if needed, or just allow sharing dioClient
+    assetRemoteDataSource = AssetRemoteDataSourceImpl(dioClient: dioClient);
+    
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
-      assetRemoteDataSource: AssetRemoteDataSourceImpl(dioClient: dioClient),
+      assetRemoteDataSource: assetRemoteDataSource,
     );
     followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
     documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
@@ -185,9 +192,12 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<List<DocumentProfile>> getDocumentsByUser(String id) async {
     try {
-      final docs = await documentDataSource.getMyDocuments();
+      var docs = await documentDataSource.getMyDocuments();
 
-      List<DocumentProfile> res= docs.map((doc) {
+      // Enrich with assets (thumbnails) same as Home/Library
+      docs = await _enrichWithAssets(docs);
+
+      final List<DocumentProfile> res = docs.map((doc) {
         return DocumentProfile(
           id: doc.id ?? '',
           fileId: doc.fileId,
@@ -212,5 +222,39 @@ class ProfileRepositoryImpl extends ProfileRepository {
       print('Log này của file: ProfileRepositoryImpl: Error fetching user documents: $e');
       return [];
     }
+  }
+
+  /// Enrich document list with thumbnails from Asset Service if missing
+  Future<List<DocumentModel>> _enrichWithAssets(
+    List<DocumentModel> docs,
+  ) async {
+    // Run in parallel for performance
+    final futures = docs.map((doc) async {
+      // Logic: Always fetch from Asset Service to ensure valid URLs, even if previewUrls exists
+      if (doc.fileId != null &&
+          doc.fileId!.isNotEmpty) {
+        print('ProfileRepositoryImpl Debug: Requesting asset for fileId: ${doc.fileId} (Forced)');
+        try {
+          final asset = await assetRemoteDataSource.getAssetById(doc.fileId!);
+          final previewUrls = asset.previewUrls;
+          print('ProfileRepositoryImpl Debug: Asset fetched for ${doc.title}. URLs: $previewUrls');
+          
+          if (previewUrls.isNotEmpty) {
+            // Found a preview URL, update the document model
+            return doc.copyWith(previewUrls: previewUrls);
+          } else {
+             print('ProfileRepositoryImpl Debug: Asset fetched but previewUrls is empty for ${doc.title}');
+          }
+        } catch (e) {
+          print('ProfileRepositoryImpl Debug: Failed to fetch asset for ${doc.title}, error: $e');
+          // Keep original doc on error
+        }
+      } else {
+         print('ProfileRepositoryImpl Debug: No fileId for ${doc.title}. Keeping original URLs: ${doc.previewUrls}');
+      }
+      return doc;
+    });
+
+    return Future.wait(futures);
   }
 }

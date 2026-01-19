@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studydocs/services/token_storage_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/header.dart';
-import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
-import 'package:studydocs/data/datasource/user_remote_datasource.dart';
-import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
 import 'package:studydocs/features/profile/logic/profile_event.dart';

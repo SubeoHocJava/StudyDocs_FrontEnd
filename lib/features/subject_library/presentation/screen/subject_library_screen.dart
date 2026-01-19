@@ -51,7 +51,7 @@ class SubjectLibraryScreen extends StatelessWidget {
                   // Section "Môn học"
                   if (state.subjects.isNotEmpty) ...[
                     SubjectCategories(
-                      state.subjects.map((s) => s.name).toList(),
+                      state.subjects,
                       onSubjectTap: (index) {
                         final subject = state.subjects[index];
                         final schoolId = state.schoolId ?? '';

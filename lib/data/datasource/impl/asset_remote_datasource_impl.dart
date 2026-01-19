@@ -11,23 +11,9 @@ class AssetRemoteDataSourceImpl implements AssetRemoteDataSource {
   Future<AssetModel> getAssetById(String id) async {
     try{    final response = await dioClient.get('/assets/$id');
     return AssetModel.fromJson(response.data);
-    }
-    catch(err)
-{
-  return  AssetModel(
-    id: "asset_001",
-    assetName: "sample_document.pdf",
-    size: 2456789,
-    contentType: "application/pdf",
-    totalPages: 3,
-    downloadUrl: "https://picsum.photos/seed/download/800/600",
-    status: "COMPLETED",
-    uploadProgress: 100,
-      previewData: {
-      "baseUrl": "https://picsum.photos/seed/page_{page}/800/600",
-      "key": "{page}"
-    }
-  );
+    } catch (e) {
+      // Rethrow to let repository handle it
+      throw Exception('Failed to load asset: $e');
     }
   }
 }

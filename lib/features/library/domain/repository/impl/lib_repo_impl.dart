@@ -122,7 +122,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
             commentsCount: doc.comments.length,
             thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
             isLiked: doc.currentUserReaction == 'like',
-            isSaved: doc.isSaved,
+            isSaved: true,
           ),
         )
         .toList();

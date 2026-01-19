@@ -10,6 +10,7 @@ abstract class AcademicRemoteDataSource {
 
   // Subject operations
   Future<List<SubjectEntity>> getSubjectsBySchool(String schoolId);
+  Future<List<SubjectEntity>> getAllSubjects(); // New
   Future<SubjectEntity> getSubjectById(String id);    //  New
   Future<List<String>> getDocumentIds({String? universityId, String? subjectId});
 }

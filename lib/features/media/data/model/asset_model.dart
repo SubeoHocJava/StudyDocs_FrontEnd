@@ -45,7 +45,11 @@ class AssetModel extends Equatable {
 
       if (baseUrl != null && key != null) {
         for (int i = 1; i <= totalPages; i++) {
-          urls.add(baseUrl.replaceAll(key, i.toString()));
+          String url = baseUrl.replaceAll(key, i.toString());
+          if (!url.endsWith('.jpg') && !url.endsWith('.png')) {
+            url = '$url.jpg';
+          }
+          urls.add(url);
         }
       }
     }

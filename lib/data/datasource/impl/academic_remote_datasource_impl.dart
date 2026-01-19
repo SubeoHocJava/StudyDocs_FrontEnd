@@ -87,6 +87,35 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   }
 
   @override
+  Future<List<SubjectEntity>> getAllSubjects() async {
+    print('>>> DATASOURCE: getAllSubjects called with URL: ${ApiConstants.academicSubjects}');
+    if (kDebugMode) {
+      print('AcademicRemoteDataSourceImpl.getAllSubjects: Fetching all subjects');
+    }
+    final resp = await dioClient.get(ApiConstants.academicSubjects);
+
+    if (resp.statusCode == 200) {
+      final body = resp.data;
+      final data =
+          (body is Map && body['data'] != null)
+              ? body['data'] as List
+              : (body is List ? body : []);
+
+      return data
+          .map<SubjectEntity>(
+            (item) => SubjectEntity(
+              id: (item['id'] ?? '').toString(),
+              name: (item['name'] ?? item['title'] ?? '').toString(),
+            ),
+          )
+          .where((s) => s.id.isNotEmpty && s.name.isNotEmpty)
+          .toList();
+    }
+
+    throw ServerException('Failed to fetch all subjects', resp.statusCode ?? 0);
+  }
+
+  @override
   Future<List<String>> getSchools() async {
     final resp = await dioClient.get(ApiConstants.academicUniversitiesFilter);
     

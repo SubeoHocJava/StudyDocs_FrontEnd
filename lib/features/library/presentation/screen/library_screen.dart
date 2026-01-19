@@ -13,12 +13,17 @@ import 'package:studydocs/features/upload_file/logic/upload_file_bloc.dart';
 import 'package:studydocs/features/upload_file/logic/upload_file_event.dart';
 import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
 import 'package:studydocs/features/library/domain/repository/impl/lib_repo_impl.dart';
+import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
+import 'package:studydocs/features/subject_library/domain/usecase/get_all_subjects_usecase.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
+import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/features/library/domain/usecase/like_document_usecase.dart';
 import 'package:studydocs/features/library/domain/usecase/load_document_usecase.dart';
 import 'package:studydocs/features/library/domain/usecase/search_document_usecase.dart';
 import 'package:studydocs/features/library/logic/LibraryState.dart';
 import 'package:studydocs/features/library/logic/library_bloc.dart';
 import 'package:studydocs/features/library/presentation/widget/library_widgets.dart';
+import 'package:studydocs/features/subject_library/domain/entity/subject_entity.dart';
 import 'package:studydocs/features/library/presentation/widget/recently_upload.dart';
 import 'package:studydocs/features/library/presentation/widget/stored_document.dart';
 import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
@@ -43,6 +48,11 @@ class LibraryScreen extends StatelessWidget {
             saveDocumentUseCase: SaveDocumentUseCase(LibraryRepositoryImpl()),
             likeDocumentUseCase: LikeDocumentUseCase(LibraryRepositoryImpl()),
             getSavedDocumentsUseCase: GetSavedDocumentsUseCase(LibraryRepositoryImpl()),
+            getAllSubjectsUseCase: GetAllSubjectsUseCase(
+              SubjectRepositoryImpl(
+                remote: AcademicRemoteDataSourceImpl(dioClient: DioClient()),
+              ),
+            ),
           )
             ..add(LoadDocumentByKeyWord("keyword"))
             ..add(const LoadSavedDocuments()),
@@ -53,83 +63,92 @@ class LibraryScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
 
+
+
             if (state is LibraryLoaded) {
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SearchInput(
-                      onSearch: () {
-                        context.read<LibraryBloc>().add(
-                          SearchDocument("keyword"),
-                        );
-                      },
-                    ),
-
-                    UploadFileButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => BlocProvider(
-                                  create:
-                                      (_) => UploadFileBloc(
-                                        uploadFileUseCase: UploadFileUseCase(
-                                          repository:
-                                              UpLoadFileRepositoryImpl(),
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<LibraryBloc>().add(LoadDocumentByKeyWord("keyword"));
+                  context.read<LibraryBloc>().add(const LoadSavedDocuments());
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SearchInput(
+                        onSearch: () {
+                          context.read<LibraryBloc>().add(
+                            SearchDocument("keyword"),
+                          );
+                        },
+                      ),
+  
+                      UploadFileButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => BlocProvider(
+                                    create:
+                                        (_) => UploadFileBloc(
+                                          uploadFileUseCase: UploadFileUseCase(
+                                            repository:
+                                                UpLoadFileRepositoryImpl(),
+                                          ),
+                                        )..add(
+                                          UploadFileLoadDocumentByKeyWord(
+                                            "keyword",
+                                          ),
                                         ),
-                                      )..add(
-                                        UploadFileLoadDocumentByKeyWord(
-                                          "keyword",
-                                        ),
-                                      ),
-                                  child: UploadFileScreen(),
-                                ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    SubjectCategories(state.categories),
-                    RecentlyUpload(state.documents),
-                    
-                    // Saved Documents Section
-                    if (state.savedDocuments.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Text(
-                          'Tài liệu đã lưu',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                                    child: UploadFileScreen(),
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+  
+                      SubjectCategories(state.categories),
+                      RecentlyUpload(state.documents),
+                      
+                      // Saved Documents Section
+                      if (state.savedDocuments.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Text(
+                            'Tài liệu đã lưu',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      ListDocument(
-                        state.savedDocuments
-                            .map((doc) => doc as DocumentUiList)
-                            .toList(),
-                        onDownload: (doc) {
-                          context.read<LibraryBloc>().add(
-                            DownloadDocumentRequested(doc.id!),
-                          );
-                        },
-                        onSave: (doc) {
-                          context.read<LibraryBloc>().add(
-                            SaveDocumentRequested(doc.id!),
-                          );
-                        },
-                        onLike: (doc) {
-                          context.read<LibraryBloc>().add(
-                            LikeDocumentRequested(doc.id!),
-                          );
-                        },
-                      ),
+                        ListDocument(
+                          state.savedDocuments
+                              .map((doc) => doc as DocumentUiList)
+                              .toList(),
+                          onDownload: (doc) {
+                            context.read<LibraryBloc>().add(
+                              DownloadDocumentRequested(doc.id!),
+                            );
+                          },
+                          onSave: (doc) {
+                            context.read<LibraryBloc>().add(
+                              SaveDocumentRequested(doc.id!),
+                            );
+                          },
+                          onLike: (doc) {
+                            context.read<LibraryBloc>().add(
+                              LikeDocumentRequested(doc.id!),
+                            );
+                          },
+                        ),
+                      ],
+                      
+                      StoredDocument(state.documents, crossAxisCount: 0),
                     ],
-                    
-                    StoredDocument(state.documents, crossAxisCount: 0),
-                  ],
+                  ),
                 ),
               );
             }

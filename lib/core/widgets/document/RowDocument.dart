@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
@@ -71,11 +72,30 @@ class MonoDocumentInRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.navy),
             ),
-            child: Image.asset(
-              "assets/icons/search-icon.png",
-              width: cardWidth * 0.8,
-              height: cardHeight * 0.8,
-              fit: BoxFit.contain,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: document.thumbnail != null && document.thumbnail!.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: document.thumbnail!,
+                      width: cardWidth,
+                      height: cardHeight,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) => Image.asset(
+                        "assets/icons/temp_image.jpg",
+                        width: cardWidth,
+                        height: cardHeight,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Image.asset(
+                      "assets/icons/temp_image.jpg",
+                      width: cardWidth,
+                      height: cardHeight,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           SizedBox(height: responsive.heightPercent(1)),
