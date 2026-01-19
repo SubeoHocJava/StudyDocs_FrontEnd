@@ -4,17 +4,15 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/model/api_response.dart';
 import 'package:studydocs/data/model/request/upload_document_request.dart';
 
 import '../../core/constants/api_constants.dart';
-import '../../features/docs/data/model/document_model.dart';
 
 /// ===============================
 /// ABSTRACT INTERFACE
 /// ===============================
 abstract interface class UploadRemoteDataSource {
-  Future<DocumentModel> uploadDocument(
+  Future<bool> uploadDocument(
     UploadDocumentRequest request,
     File file,
   );
@@ -29,7 +27,7 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
   UploadRemoteDataSourceImpl({required this.dioClient});
 
   @override
-  Future<DocumentModel> uploadDocument(
+  Future<bool> uploadDocument(
     UploadDocumentRequest request,
     File file,
   ) async {
@@ -38,7 +36,7 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
         'data': jsonEncode(request.toJson()), // Send metadata as JSON string
         'file': await MultipartFile.fromFile(
           file.path,
-          filename: file.path.split('/').last,
+          filename: file.path.split(Platform.pathSeparator).last,
         ),
       });
 
@@ -47,15 +45,11 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
         data: formData,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 202) {
-        final apiResponse = ApiResponse<DocumentModel>.fromJson(
-          response.data,
-          (json) => DocumentModel.fromJson(json),
-        );
-
-        if (apiResponse.isSuccess && apiResponse.data != null) {
-          return apiResponse.data!;
-        }
+      // Relaxed success check: Any 2xx status is success
+      if (response.statusCode != null && 
+          response.statusCode! >= 200 && 
+          response.statusCode! < 300) {
+        return true;
       }
 
       throw ServerException(
