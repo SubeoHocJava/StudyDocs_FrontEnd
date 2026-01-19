@@ -47,6 +47,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
                 );
               })
               .where((s) => s.name.isNotEmpty)
+              .where((s) => s.name.toLowerCase().contains(query.trim().toLowerCase())) // Client-side fallback filter
               .toList();
 
       return allSchools;
