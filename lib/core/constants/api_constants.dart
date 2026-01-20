@@ -1,7 +1,7 @@
 class ApiConstants {
   // Base URL: Always end with / to work correctly with Dio relative paths
   // Private base for internal reuse
-  static const String _base = 'http://10.0.0.58:8080/api/v1';
+  static const String _base = 'http://172.16.17.156:8080/api/v1';
 
   // Base URL: Always end with / to work correctly with Dio relative paths
   static const String baseUrl = '$_base/';

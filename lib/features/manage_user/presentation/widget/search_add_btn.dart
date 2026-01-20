@@ -33,14 +33,14 @@ class SearchAndAddUser extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(
-            Icons.add_circle,
-            color: AppColors.primary,
-          ),
-          iconSize: 35,
-          onPressed: () {},
-        ),
+        // IconButton(
+        //   icon: const Icon(
+        //     Icons.add_circle,
+        //     color: AppColors.primary,
+        //   ),
+        //   iconSize: 35,
+        //   onPressed: () {},
+        // ),
       ],
     );
   }
