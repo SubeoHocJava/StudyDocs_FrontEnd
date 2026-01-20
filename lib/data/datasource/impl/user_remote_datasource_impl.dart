@@ -187,8 +187,8 @@ class UserDataSourceImpl implements UserRemoteDataSource {
     return dioClient.patch(
       UserEndpoints.updateUserByAdmin,
       data: request.toJson(),
-      queryParameters: request.id != null ? {'id': request.id} : null,
-
+      queryParameters: request.id != null ? {'id': request.id} : null);
+    }
   @override
   Future<ApiResponse> getMyDocumentCount({String? traceId}) {
     return dioClient.get(
