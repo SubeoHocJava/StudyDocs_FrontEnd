@@ -22,6 +22,7 @@ class ProfileEntity extends Equatable {
   final int? countFollowing;
   final int countDocument;
   final int countLike;
+  final int countReview;
 
   const ProfileEntity({
     required this.id,
@@ -40,6 +41,7 @@ class ProfileEntity extends Equatable {
     this.countFollowing,
     this.countDocument = 0,
     this.countLike = 0,
+    this.countReview = 0,
   });
 
   /// copyWith cho domain layer
@@ -59,6 +61,7 @@ class ProfileEntity extends Equatable {
     int? countFollowing,
     int? countDocument,
     int? countLike,
+    int? countReview,
   }) {
     return ProfileEntity(
       id: id,
@@ -77,6 +80,7 @@ class ProfileEntity extends Equatable {
       countFollowing: countFollowing ?? this.countFollowing,
       countDocument: countDocument ?? this.countDocument,
       countLike: countLike ?? this.countLike,
+      countReview: countReview ?? this.countReview,
     );
   }
 
@@ -98,5 +102,6 @@ class ProfileEntity extends Equatable {
     countFollowing,
     countDocument,
     countLike,
+    countReview
   ];
 }

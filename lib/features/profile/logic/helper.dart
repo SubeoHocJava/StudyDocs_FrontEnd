@@ -52,7 +52,7 @@ class HelperMap {
       countFollower: 0,
       countFollowing: 0,
       countDocument: 0,
-      countLike: 0,
+      countLike: 0, countReview: 0,
     );
   }
 }

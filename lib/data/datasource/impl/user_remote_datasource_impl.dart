@@ -188,6 +188,38 @@ class UserDataSourceImpl implements UserRemoteDataSource {
       UserEndpoints.updateUserByAdmin,
       data: request.toJson(),
       queryParameters: request.id != null ? {'id': request.id} : null,
+
+  @override
+  Future<ApiResponse> getMyDocumentCount({String? traceId}) {
+    return dioClient.get(
+      DocumentEndpoints.myDocumentCount,
+    );
+  }
+
+  /// ===============================
+  /// REVIEW / REACTION
+  /// ===============================
+  @override
+  Future<ApiResponse> getMyReactionCount(
+      String type, {
+        String? traceId,
+      }) {
+    return dioClient.get(
+      ReviewEndpoints.myReactionCount,
+      queryParameters: {'type': type},
+    );
+  }
+
+  @override
+  Future<ApiResponse> getUserReviewCount(
+      String userId, {
+        String? traceId,
+      }) {
+    return dioClient.get(
+      ReviewEndpoints.userReviewCount.replaceAll(
+        '{{userId}}',
+        userId,
+      ),
     );
   }
 }
