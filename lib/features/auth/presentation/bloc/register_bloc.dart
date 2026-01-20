@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/usecases/register_usecase.dart';
 import '../../domain/params/register_params.dart';
+import '../../../../core/error/error_mapper.dart';
+import '../../../../core/exceptions/api_exception.dart';
 
 
 /// -----------------------------
@@ -61,11 +63,12 @@ class RegisterSuccess extends RegisterState {
 
 class RegisterFailure extends RegisterState {
   final String message;
+  final int? errorCode;
 
-  const RegisterFailure(this.message);
+  const RegisterFailure(this.message, {this.errorCode});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, errorCode];
 }
 
 /// -----------------------------
@@ -94,7 +97,13 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       );
       emit(const RegisterSuccess());
     } catch (e) {
-      emit(RegisterFailure(e.toString()));
+      if (e is ApiException) {
+        final errorCode = int.tryParse(e.code ?? '');
+        final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
+        emit(RegisterFailure(mappedMessage, errorCode: errorCode));
+      } else {
+        emit(RegisterFailure(e.toString()));
+      }
     }
   }
 }

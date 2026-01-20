@@ -17,15 +17,17 @@ class ActivitySummaryCard extends StatelessWidget {
         if (state is StatisticLoaded) {
           final stats = state.statistics;
           return _buildCard(
+            context,
             numMyUpload: stats.totalDocuments,
             numMyLikes: stats.totalLikes,
             numMyComment: stats.totalComments,
           );
         } else if (state is StatisticLoading) {
-          return _buildLoadingCard();
+          return _buildLoadingCard(context);
         } else {
           // Fallback or error state
-           return _buildCard(
+          return _buildCard(
+            context,
             numMyUpload: 0,
             numMyLikes: 0,
             numMyComment: 0,
@@ -36,7 +38,8 @@ class ActivitySummaryCard extends StatelessWidget {
 
   }
 
-  Widget _buildCard({
+  Widget _buildCard(
+    BuildContext context, {
     required int numMyUpload,
     required int numMyLikes,
     required int numMyComment,
@@ -44,12 +47,12 @@ class ActivitySummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        color: Theme.of(context).cardTheme.color,
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).shadowColor,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -75,12 +78,12 @@ class ActivitySummaryCard extends StatelessWidget {
                   label: "Đăng tải",
                   value: numMyUpload,
                 ),
-                const VerticalDivider(color: Colors.grey, thickness: 1),
+                VerticalDivider(color: Theme.of(context).dividerColor, thickness: 1),
                 _buildStatColumn(
                   label: "Lượt thích",
                   value: numMyLikes,
                 ),
-                const VerticalDivider(color: Colors.grey, thickness: 1),
+                VerticalDivider(color: Theme.of(context).dividerColor, thickness: 1),
                 _buildStatColumn(
                   label: "Bình luận",
                   value: numMyComment,
@@ -117,12 +120,12 @@ class ActivitySummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingCard() {
+  Widget _buildLoadingCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        color: Theme.of(context).cardTheme.color,
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: const Center(
@@ -131,12 +134,12 @@ class ActivitySummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorCard() {
+  Widget _buildErrorCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300, width: 1),
+        color: Theme.of(context).cardTheme.color,
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: const Center(

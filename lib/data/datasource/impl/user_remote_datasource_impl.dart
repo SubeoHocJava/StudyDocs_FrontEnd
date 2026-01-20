@@ -33,18 +33,18 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> registerUser(RegisterRequest request, {String? traceId}) {
-    return dioClient.post(ApiConstants.usersRegister, data: request.toJson());
+    return dioClient.post(UserEndpoints.register, data: request.toJson());
   }
 
   @override
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId}) {
-    return dioClient.patch(ApiConstants.usersUpdate, data: request.toJson());
+    return dioClient.patch(UserEndpoints.update, data: request.toJson());
   }
 
   @override
   Future<ApiResponse> getUserById(String id, {String? traceId}) async {
     final response = await dioClient.get(
-      ApiConstants.usersGetById,
+      UserEndpoints.getById,
       queryParameters: {'id': id},
     );
 
@@ -83,14 +83,14 @@ class UserDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<ApiResponse> isUserPrivate(String id, {String? traceId}) {
     return dioClient.get(
-      ApiConstants.usersIsPrivate,
+      UserEndpoints.isPrivate,
       queryParameters: {'id': id},
     );
   }
 
   @override
   Future<ApiResponse> isUserExists(String id, {String? traceId}) {
-    return dioClient.get(ApiConstants.usersExists, queryParameters: {'id': id});
+    return dioClient.get(UserEndpoints.exists, queryParameters: {'id': id});
   }
 
   @override
@@ -120,7 +120,7 @@ class UserDataSourceImpl implements UserRemoteDataSource {
     }
 
     return dioClient.post(
-      ApiConstants.usersUpdateImage,
+      UserEndpoints.updateImage,
       queryParameters: {'id': id},
       data: formData,
     );
@@ -128,18 +128,18 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> getAllUsers({String? traceId}) {
-    return dioClient.get(ApiConstants.usersAll);
+    return dioClient.get(UserEndpoints.all);
   }
 
   @override
   Future<ApiResponse> getUserCount({String? traceId}) {
-    return dioClient.get(ApiConstants.usersCount);
+    return dioClient.get(UserEndpoints.count);
   }
 
   @override
   Future<ApiResponse> deleteUser(String id, {String? traceId}) {
     return dioClient.delete(
-      ApiConstants.usersDelete,
+      UserEndpoints.delete,
       queryParameters: {'id': id},
     );
   }
@@ -151,7 +151,7 @@ class UserDataSourceImpl implements UserRemoteDataSource {
         String? traceId,
       }) {
     return dioClient.get(
-      ApiConstants.usersAll,
+      UserEndpoints.all,
       // queryParameters: {
       //   'fromIndex': fromIndex,
       //   'toIndex': toIndex,
@@ -168,13 +168,13 @@ class UserDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<ApiResponse> saveDocument(String documentId, {String? traceId}) {
     return dioClient.post(
-      ApiConstants.userDocumentSave,
+      UserEndpoints.documentSave,
       queryParameters: {'documentId': documentId},
     );
   }
 
   @override
   Future<ApiResponse> getSavedDocuments({String? traceId}) {
-    return dioClient.get(ApiConstants.userDocumentSaved);
+    return dioClient.get(UserEndpoints.documentSaved);
   }
 }

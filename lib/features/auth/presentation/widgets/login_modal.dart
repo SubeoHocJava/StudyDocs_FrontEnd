@@ -10,6 +10,7 @@ import '../bloc/auth_status_cubit.dart';
 import 'login_form.dart';
 import 'forgot_password_form.dart';
 import 'register_form.dart';
+import '../../../../core/widgets/error_notification_widget.dart';
 
 enum AuthModalView { login, forgotPassword, register }
 
@@ -22,6 +23,8 @@ class LoginModal extends StatefulWidget {
 
 class _LoginModalState extends State<LoginModal> {
   AuthModalView _currentView = AuthModalView.login;
+  String? _errorCode;
+  String? _errorMessage;
 
   Map<String, dynamic>? _tryDecodeJwt(String token) {
     final parts = token.split('.');
@@ -41,6 +44,8 @@ class _LoginModalState extends State<LoginModal> {
   void _switchView(AuthModalView view) {
     setState(() {
       _currentView = view;
+      _errorMessage = null;
+      _errorCode = null;
     });
   }
 
@@ -73,6 +78,10 @@ class _LoginModalState extends State<LoginModal> {
           onShowRegister: () => _switchView(AuthModalView.register),
           isSubmitting: loginState is LoginLoading,
           onSubmit: (username, password) {
+            setState(() {
+              _errorMessage = null;
+              _errorCode = null;
+            });
             // Gửi event đăng nhập vào LoginBloc
             context.read<LoginBloc>().add(
               LoginSubmitted(username: username, password: password),
@@ -80,6 +89,10 @@ class _LoginModalState extends State<LoginModal> {
           },
           //login gooogle
           onGoogleLogin: () {
+            setState(() {
+              _errorMessage = null;
+              _errorCode = null;
+            });
             context.read<LoginBloc>().add(const GoogleLoginSubmitted());
           },
         );
@@ -92,6 +105,10 @@ class _LoginModalState extends State<LoginModal> {
           onBackToLogin: () => _switchView(AuthModalView.login),
           isSubmitting: registerState is RegisterLoading,
           onSubmit: (username, email, password, displayName) {
+            setState(() {
+              _errorMessage = null;
+              _errorCode = null;
+            });
             context.read<RegisterBloc>().add(
               RegisterSubmitted(
                 username: username,
@@ -133,12 +150,10 @@ class _LoginModalState extends State<LoginModal> {
                 ),
               );
             } else if (state is LoginFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              setState(() {
+                _errorCode = state.errorCode != null ? 'Lỗi ${state.errorCode}' : 'Lỗi xác thực';
+                _errorMessage = state.message;
+              });
             }
           },
         ),
@@ -147,6 +162,8 @@ class _LoginModalState extends State<LoginModal> {
             if (state is RegisterSuccess) {
               setState(() {
                 _currentView = AuthModalView.login;
+                _errorMessage = null; 
+                _errorCode = null;
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -155,12 +172,10 @@ class _LoginModalState extends State<LoginModal> {
                 ),
               );
             } else if (state is RegisterFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              setState(() {
+                _errorCode = state.errorCode != null ? 'Lỗi ${state.errorCode}' : 'Lỗi đăng ký';
+                _errorMessage = state.message;
+              });
             }
           },
         ),
@@ -237,6 +252,21 @@ class _LoginModalState extends State<LoginModal> {
                                       if (isLoading)
                                         const LinearProgressIndicator(),
                                       if (isLoading) const SizedBox(height: 16),
+
+                                      if (_errorMessage != null)
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 16),
+                                          child: ErrorNotificationWidget(
+                                            errorCode: _errorCode ?? 'Error',
+                                            errorDescription: _errorMessage!,
+                                            onDismissed: () {
+                                              setState(() {
+                                                _errorMessage = null;
+                                                _errorCode = null;
+                                              });
+                                            },
+                                          ),
+                                        ),
 
                                       _buildContent(
                                         context: context,

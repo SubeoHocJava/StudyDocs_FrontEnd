@@ -28,7 +28,7 @@ class Statistical extends StatelessWidget {
               _buildFollowButton(
                 context: context,
                 label: "${state.numFollowMe} Người theo dõi",
-                color: AppColors.secondaryTeal,
+                color: Theme.of(context).colorScheme.secondary,
                 index: 0,
                 responsive: responsive,
               ),
@@ -37,7 +37,7 @@ class Statistical extends StatelessWidget {
               _buildFollowButton(
                 context: context,
                 label: "${state.numMeFollow} Đang theo dõi",
-                color: AppColors.secondaryTeal,
+                color: Theme.of(context).colorScheme.secondary,
                 index: 1,
                 responsive: responsive,
               ),
@@ -71,7 +71,7 @@ class Statistical extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.primaryLight,
+          color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.5)),
         ),
@@ -80,7 +80,7 @@ class Statistical extends StatelessWidget {
           style: TextStyle(
             fontSize: responsive.fontSize(14),
             fontWeight: FontWeight.bold,
-            color: AppColors.headerForeground,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
           textAlign: TextAlign.center,
         ),
@@ -100,7 +100,7 @@ class ActivityStatistics extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.grey, // màu border
+          color: Theme.of(context).dividerColor, // màu border
           width: 1, // độ dày
         ),
         borderRadius: BorderRadius.circular(8),
@@ -124,7 +124,7 @@ class ActivityStatistics extends StatelessWidget {
                      numMyUpload.toString(),
                       style: TextStyle(
                         fontSize: 25,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -132,7 +132,7 @@ class ActivityStatistics extends StatelessWidget {
                   ],
                 ),
 
-                const VerticalDivider(color: Colors.grey, thickness: 1),
+                VerticalDivider(color: Theme.of(context).dividerColor, thickness: 1),
 
                 Column(
                   mainAxisSize: MainAxisSize.min,
@@ -141,7 +141,7 @@ class ActivityStatistics extends StatelessWidget {
                      numMyLikes.toString(),
                       style: TextStyle(
                         fontSize: 25,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -149,7 +149,7 @@ class ActivityStatistics extends StatelessWidget {
                   ],
                 ),
 
-                const VerticalDivider(color: Colors.grey, thickness: 1),
+                VerticalDivider(color: Theme.of(context).dividerColor, thickness: 1),
 
                 Column(
                   mainAxisSize: MainAxisSize.min,
@@ -158,7 +158,7 @@ class ActivityStatistics extends StatelessWidget {
                       numMyComment.toString(),
                       style: TextStyle(
                         fontSize: 25,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/data/model/auth/response/user_me_response.dart';
 import 'package:studydocs/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:studydocs/services/token_storage_service.dart';
@@ -69,11 +70,12 @@ class LoginSuccess extends LoginState {
 
 class LoginFailure extends LoginState {
   final String message;
+  final int? errorCode;
 
-  const LoginFailure(this.message);
+  const LoginFailure(this.message, {this.errorCode});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, errorCode];
 }
 
 /// -----------------------------
@@ -105,11 +107,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       
       emit(LoginSuccess(user: user, accessToken: token));
     } catch (e) {
-      // Sử dụng ErrorMapper để dịch lỗi từ backend hoặc Dio
-      final errorMsg = ErrorMapper.fromErrorCode(null); // Hoặc bóc tách code từ e nếu có
-      emit(LoginFailure(e.toString().contains('Exception:') 
-          ? e.toString().replaceAll('Exception:', '') 
-          : e.toString()));
+      if (e is ApiException) {
+        final errorCode = int.tryParse(e.code ?? '');
+        final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
+        emit(LoginFailure(mappedMessage, errorCode: errorCode));
+      } else {
+        emit(LoginFailure(e.toString()));
+      }
     }
   }
 
@@ -124,7 +128,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final token = await TokenStorageService().getAccessToken() ?? '';
       emit(LoginSuccess(user: user, accessToken: token));
     } catch (e) {
-      emit(LoginFailure(e.toString()));
+      if (e is ApiException) {
+        final errorCode = int.tryParse(e.code ?? '');
+        final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
+        emit(LoginFailure(mappedMessage, errorCode: errorCode));
+      } else {
+        emit(LoginFailure(e.toString()));
+      }
     }
   }
 }

@@ -46,7 +46,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Dialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
       insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -54,7 +54,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: screenWidth * 0.9),
         child: AlertDialog(
-          backgroundColor: AppColors.white,
+          backgroundColor: Theme.of(context).cardTheme.color,
           insetPadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
           titlePadding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -68,17 +68,17 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Cập nhật thông tin",
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close_rounded,
-                    size: 35, color: Colors.black87),
+                icon: Icon(Icons.close_rounded,
+                    size: 35, color: Theme.of(context).iconTheme.color),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () => Navigator.pop(context),
@@ -267,8 +267,8 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding:
                 const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(

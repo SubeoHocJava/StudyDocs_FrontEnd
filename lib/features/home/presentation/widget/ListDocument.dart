@@ -87,11 +87,16 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
       margin: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
-        color: Colors.white,
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.gray.withOpacity(0.3)
+              : const Color(0xFFD0D0D0),
+          width: 1.2,
+        ),
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Theme.of(context).shadowColor.withOpacity(0.08),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -201,7 +206,12 @@ class DocumentImage extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.navy, width: 1.2),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.gray.withOpacity(0.3)
+              : AppColors.navy,
+          width: 1.2,
+        ),
         borderRadius: BorderRadius.circular(6),
       ),
       child: ClipRRect(
@@ -317,7 +327,7 @@ class TitleWidget extends StatelessWidget {
         fontSize: responsive.fontSize(13),
         fontWeight: FontWeight.w700,
         height: 1.2,
-        color: Colors.black87,
+        color: Theme.of(context).textTheme.bodyLarge?.color,
       ),
     );
   }
@@ -350,7 +360,7 @@ class SubjectWidget extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: responsive.fontSize(11),
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
         ),
@@ -386,7 +396,7 @@ class SchoolWidget extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: responsive.fontSize(11),
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
         ),
@@ -432,7 +442,7 @@ class PageDateWidget extends StatelessWidget {
           "$pages trang",
           style: TextStyle(
             fontSize: responsive.fontSize(11),
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
         ),
         Icon(
@@ -444,7 +454,7 @@ class PageDateWidget extends StatelessWidget {
           _formatDate(date),
           style: TextStyle(
             fontSize: responsive.fontSize(11),
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
         ),
       ],
@@ -492,7 +502,7 @@ class LikeCommentWidget extends StatelessWidget {
                 "$likes",
                 style: TextStyle(
                   fontSize: responsive.fontSize(11),
-                  color: Colors.black87,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
             ],
@@ -516,7 +526,7 @@ class LikeCommentWidget extends StatelessWidget {
                 "$comments",
                 style: TextStyle(
                   fontSize: responsive.fontSize(11),
-                  color: Colors.black87,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
             ],

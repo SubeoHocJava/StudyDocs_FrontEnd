@@ -61,7 +61,7 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Dialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
       insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -69,7 +69,7 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: screenWidth * 0.9),
         child: AlertDialog(
-          backgroundColor: AppColors.white,
+          backgroundColor: Theme.of(context).cardTheme.color,
           insetPadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
           titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
@@ -83,10 +83,10 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 "Cập nhật thông tin",
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -190,16 +190,16 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
             ElevatedButton(
               onPressed: _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding:
                 const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Cập nhật",
-                style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+                style: TextStyle(fontWeight: FontWeight.bold,color: Theme.of(context).colorScheme.onPrimary),
               ),
             ),
           ],

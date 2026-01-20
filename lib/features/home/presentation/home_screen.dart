@@ -3,14 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/widgets/document/ListDocument.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
-import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
-import 'package:studydocs/features/explore/domain/repository/impl/explore_repository_impl.dart';
-import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
-import 'package:studydocs/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:studydocs/features/explore/presentation/widgets/explore_bottom_sheet.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/logic/home_bloc.dart';
 import 'package:studydocs/features/home/logic/home_event.dart';
@@ -85,8 +79,14 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initSpeech() async {
     try {
-      _speechEnabled = await _speech.initialize();
-    } catch (_) {
+      debugPrint('Initializing speech to text...');
+      _speechEnabled = await _speech.initialize(
+        onStatus: (status) => debugPrint('Speech Status: $status'),
+        onError: (errorNotification) => debugPrint('Speech Error: $errorNotification'),
+      );
+      debugPrint('Speech initialization result: $_speechEnabled');
+    } catch (e) {
+      debugPrint('Speech initialization error: $e');
       _speechEnabled = false;
     }
     if (mounted) {
@@ -105,12 +105,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _toggleListening() async {
+    debugPrint('Mic tapped. Speech enabled: $_speechEnabled, isListening: $_isListening');
+
     if (!_speechEnabled) {
       await _initSpeech();
-      if (!_speechEnabled) return;
+      if (!_speechEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Không thể khởi động ghi âm. Vui lòng cấp quyền Microphone.')),
+          );
+        }
+        return;
+      }
     }
 
-    if (_isListening) {
+    if (_isListening || _speech.isListening) {
+      debugPrint('Stopping listening...');
       await _speech.stop();
       if (mounted) {
         setState(() => _isListening = false);
@@ -162,8 +172,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody(HomeState state) {
     if (state is HomeLoading || state is HomeInitial) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      return Center(
+        child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
       );
     }
 
@@ -181,7 +191,7 @@ class _HomePageState extends State<HomePage> {
 
       return SingleChildScrollView(
         child: Container(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -311,10 +321,10 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: AppColors.profileName,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
       ),
     );
@@ -346,26 +356,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-    );
-  }
-
-  /// Xây dựng overlay Khám phá với BLoC và mock data.
-  Widget _buildExploreOverlay() {
-    final dioClient = context.read<DioClient>();
-    final academicDataSource = AcademicRemoteDataSourceImpl(
-      dioClient: dioClient,
-    );
-    final repo = ExploreRepositoryImpl(remote: academicDataSource);
-    final searchUseCase = SearchSchoolsUseCase(repository: repo);
-    final getCurrentSchoolUseCase = GetCurrentSchoolUseCase(repository: repo);
-
-    return BlocProvider(
-      create:
-          (_) => ExploreBloc(
-            searchSchoolsUseCase: searchUseCase,
-            getCurrentSchoolUseCase: getCurrentSchoolUseCase,
-          ),
-      child: const ExploreBottomSheet(),
     );
   }
 }

@@ -89,7 +89,7 @@ class MainScreen extends StatelessWidget {
     final currentIndex = navigationShell.currentIndex;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -138,10 +138,10 @@ class MainTabExplorePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Tab "Khám phá" chỉ hiển thị empty state
     // User phải click vào tab để mở bottom sheet tìm trường
-    return const Center(
+    return Center(
       child: Text(
         'Nhấn vào tab "Khám phá" để tìm kiếm trường',
-        style: TextStyle(fontSize: 16, color: Colors.grey),
+        style: TextStyle(fontSize: 16, color: Theme.of(context).disabledColor),
       ),
     );
   }

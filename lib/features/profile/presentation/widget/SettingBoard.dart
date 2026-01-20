@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:studydocs/features/profile/logic/profile_state.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/router/app_router.dart';
@@ -40,6 +43,77 @@ class _SettingBoardState extends State<SettingBoard> {
         return BlocProvider.value(
           value: bloc,
           child: UpdateInforDialog(bloc: bloc),
+        );
+      },
+    );
+  }
+
+
+  void _showQRDialog(BuildContext context) {
+    // Get actual User ID from Bloc state
+    final state = widget.bloc.state;
+    String userId = '';
+    
+    if (state is ProfileLoaded) {
+      userId = state.id;
+    }
+
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không tìm thấy thông tin người dùng')),
+      );
+      return;
+    }
+
+    final Map<String, dynamic> data = {
+      'type': 'user',
+      'id': userId,
+    };
+    final qrData = jsonEncode(data);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          contentPadding: const EdgeInsets.all(24),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Mã QR của tôi',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: QrImageView(
+                  data: qrData,
+                  version: QrVersions.auto,
+                  gapless: false,
+                  foregroundColor: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Quét mã này để truy cập hồ sơ',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Đóng'),
+            ),
+          ],
         );
       },
     );
@@ -124,6 +198,32 @@ class _SettingBoardState extends State<SettingBoard> {
               ),
               child: const Text(
                 "Liên kết tài khoản Google",
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Share QR
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _showQRDialog(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryLight,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                "Chia sẻ mã QR",
                 style: TextStyle(
                   color: AppColors.black,
                   fontWeight: FontWeight.bold,

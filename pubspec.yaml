@@ -61,6 +61,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_widget_from_html: ^0.17.1
   url_launcher: ^6.3.2
+  mobile_scanner: ^5.2.3  # Dùng để quét QR
+  qr_flutter: ^4.1.0      # Dùng để tạo mã QR
 
 dev_dependencies:
   flutter_test:

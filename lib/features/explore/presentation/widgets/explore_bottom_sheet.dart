@@ -41,9 +41,9 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
 
     return Container(
       height: height,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -58,19 +58,19 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Theme.of(context).dividerColor,
                       borderRadius: BorderRadius.circular(999),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
 
-                const Text(
+                Text(
                   'Khám phá',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.profileName,
+                    color: Theme.of(context).textTheme.titleLarge?.color,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -88,10 +88,10 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                       Expanded(
                         child: Text(
                           state.currentSchool!.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.profileName,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -115,34 +115,34 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                         state.currentSchool != null
                             ? 'Tìm kiếm trong ${state.currentSchool!.shortName ?? state.currentSchool!.name}...'
                             : 'Tìm kiếm trường, khoa, tài liệu...',
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.search,
-                      color: AppColors.docSmallText,
+                      color: Theme.of(context).hintColor,
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardTheme.color,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 10,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: AppColors.headerForeground,
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
                         width: 1.5,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: AppColors.headerForeground,
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
                         width: 1.5,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: AppColors.headerForeground,
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
                         width: 2,
                       ),
                     ),
@@ -160,12 +160,12 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                   child: Builder(
                     builder: (context) {
                       if (state.query.trim().isEmpty) {
-                        return const Center(
+                        return Center(
                           child: Text(
                             'Nhập tên trường để tìm kiếm',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.docSmallText,
+                              color: Theme.of(context).hintColor,
                             ),
                           ),
                         );
@@ -186,23 +186,23 @@ class _ExploreBottomSheetState extends State<ExploreBottomSheet> {
                       return ListView.separated(
                         itemCount: state.results.length,
                         separatorBuilder:
-                            (_, __) => const Divider(
+                            (_, __) => Divider(
                               height: 1,
-                              color: AppColors.headerBackground,
+                              color: Theme.of(context).dividerColor,
                             ),
                         itemBuilder: (context, index) {
                           final school = state.results[index];
                           return ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.school_outlined,
-                              color: AppColors.headerForeground,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                             title: Text(
                               school.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.profileName,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                               ),
                             ),
                             onTap: () {

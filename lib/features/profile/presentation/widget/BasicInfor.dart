@@ -42,6 +42,7 @@ class BasicInfor extends StatelessWidget {
 
           /// ================= AVATAR =================
           _buildAvatar(
+            context,
             responsive,
             state.avatarUrl ?? '',
             onTap: () async {
@@ -79,7 +80,7 @@ class BasicInfor extends StatelessWidget {
                 ? school
                 : "Chưa có trường học",
             style: TextStyle(
-              color: Colors.blueAccent,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: responsive.fontSize(15.0),
             ),
             textAlign: TextAlign.center,
@@ -91,6 +92,7 @@ class BasicInfor extends StatelessWidget {
 
   /// ================= AVATAR BUTTON =================
   Widget _buildAvatar(
+    BuildContext context,
     ResponsiveHelper responsive,
     String image, {
     required VoidCallback onTap,
@@ -106,14 +108,14 @@ class BasicInfor extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: _buildAvatarImage(image),
-              color: Colors.grey.shade300,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             child:
                 image.isEmpty
                     ? Icon(
                       Icons.person,
                       size: responsive.widthPercent(20.0),
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).iconTheme.color,
                     )
                     : null,
           ),
@@ -124,14 +126,14 @@ class BasicInfor extends StatelessWidget {
             right: 6,
             child: Container(
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Colors.black54,
+              decoration: BoxDecoration(
+                color: Theme.of(context).shadowColor.withOpacity(0.6),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.camera_alt,
                 size: 16,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
           ),
@@ -218,19 +220,19 @@ class BasicInfor extends StatelessWidget {
       icon: Icon(
         isFollowing ? Icons.person_remove : Icons.person_add,
         size: responsive.fontSize(16.0),
-        color: isFollowing ? Colors.grey : Colors.blue,
+        color: isFollowing ? Theme.of(context).disabledColor : Theme.of(context).colorScheme.primary,
       ),
       label: Text(
         isFollowing ? "Bỏ theo dõi" : "Theo dõi",
         style: TextStyle(
           fontSize: responsive.fontSize(13.0),
-          color: isFollowing ? Colors.grey : Colors.blue,
+          color: isFollowing ? Theme.of(context).disabledColor : Theme.of(context).colorScheme.primary,
         ),
       ),
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
-          side: BorderSide(color: isFollowing ? Colors.grey : Colors.blue),
+          side: BorderSide(color: isFollowing ? Theme.of(context).disabledColor : Theme.of(context).colorScheme.primary),
         ),
       ),
     );

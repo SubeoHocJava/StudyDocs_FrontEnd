@@ -62,12 +62,17 @@ class _DocumentHorizontalState extends State<DocumentHorizontal> {
         height: widget.height,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.primaryLight, width: 1),
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.gray.withOpacity(0.3)
+                : AppColors.primaryLight,
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Theme.of(context).shadowColor.withOpacity(0.06),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -93,7 +98,7 @@ class _DocumentHorizontalState extends State<DocumentHorizontal> {
                         style: TextStyle(
                           fontSize: isDesktop ? 18 : isTablet ? 17 : 16,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.profileName,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           height: 1.3,
                         ),
                       ),
@@ -194,20 +199,26 @@ class _DocumentHorizontalState extends State<DocumentHorizontal> {
 
   // Widget hiển thị một dòng metadata với icon
   Widget _buildMetadataRow({required IconData icon, required String text}) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: AppColors.black),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style:
-            const TextStyle(fontSize: 13, color: AppColors.docSmallText),
-          ),
-        ),
-      ],
+    return Builder(
+      builder: (context) {
+        return Row(
+          children: [
+            Icon(icon, size: 16, color: Theme.of(context).iconTheme.color),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -257,25 +268,29 @@ class _DocumentHorizontalState extends State<DocumentHorizontal> {
     int? count,
     VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: AppColors.black),
-          if (count != null) ...[
-            const SizedBox(width: 4),
-            Text(
-              count.toString(),
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.black,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ],
-      ),
+    return Builder(
+      builder: (context) {
+        return GestureDetector(
+          onTap: onTap,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18, color: Theme.of(context).iconTheme.color),
+              if (count != null) ...[
+                const SizedBox(width: 4),
+                Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -320,10 +335,10 @@ class DocumentHorizontalList extends StatelessWidget {
               children: [
                 Text(
                   sectionTitle!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.profileName,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
                 if (onSeeAllTap != null)

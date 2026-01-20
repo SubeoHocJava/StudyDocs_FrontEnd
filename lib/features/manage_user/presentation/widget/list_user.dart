@@ -45,10 +45,10 @@ class MonoUser extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
@@ -80,7 +80,7 @@ class MonoUser extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   user.username,
-                  style: TextStyle(fontSize: 13, color: AppColors.primary),
+                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
                 ),
               ],
             ),

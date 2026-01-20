@@ -20,7 +20,7 @@ class NotificationItemMetadata extends StatelessWidget {
           notification.formattedCreatedTime(),
           style: TextStyle(
             fontSize: fontSize,
-            color: Colors.grey, // Preserving color from original code
+            color: Theme.of(context).hintColor,
           ),
         ),
         if (notification.deletedAt != null)
@@ -29,13 +29,13 @@ class NotificationItemMetadata extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFE5E5),
+                color: Theme.of(context).colorScheme.errorContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 "Đã xóa vào ${notification.formattedDeletedTime()}",
                 style: TextStyle(
-                  color: const Color(0xFFFF3B30),
+                  color: Theme.of(context).colorScheme.error,
                   fontSize: fontSize,
                 ),
               ),

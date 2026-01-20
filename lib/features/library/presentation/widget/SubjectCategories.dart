@@ -77,9 +77,11 @@ class MonoSubject extends StatelessWidget {
         width: responsive.widthPercent(responsive.isMobile ? 85 : 80),
         padding: EdgeInsets.all(responsive.isMobile ? 10 : 12),
         decoration: BoxDecoration(
-          color: AppColors.headerBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.headerBackground),
+          border: Border.all(
+            color: Theme.of(context).dividerColor,
+          ),
         ),
         child: Row(
           children: [

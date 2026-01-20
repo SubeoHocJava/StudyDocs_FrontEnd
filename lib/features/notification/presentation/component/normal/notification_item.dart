@@ -27,12 +27,14 @@ class _NotificationItemState extends State<NotificationItem>
     with NotificationPressStateMixin {
   Color _backgroundColor(BuildContext context) {
     if (isPressed) {
-      return AppColors.notificationUnread.withOpacity(0.7);
+      return Theme.of(context).highlightColor;
     }
     if (!widget.notification.isRead) {
-      return AppColors.notificationUnread;
+      return Theme.of(context).brightness == Brightness.dark
+          ? AppColors.notificationUnreadDark
+          : AppColors.notificationUnreadLight;
     }
-    return Colors.white;
+    return Theme.of(context).scaffoldBackgroundColor;
   }
 
   void _showModal() {
@@ -40,7 +42,7 @@ class _NotificationItemState extends State<NotificationItem>
 
     showModalBottomSheet(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.6),
+      barrierColor: Theme.of(context).shadowColor.withOpacity(0.6),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -104,9 +106,9 @@ class _NotificationItemState extends State<NotificationItem>
                       width: 10,
                       height: 10,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 1.5),
+                        border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 1.5),
                       ),
                     ),
                   ),
@@ -132,7 +134,10 @@ class _NotificationItemState extends State<NotificationItem>
             SizedBox(width: layout.spacing),
             IconButton(
               onPressed: _showModal,
-              icon: Image.asset(AppAssets.moreHoriz),
+              icon: Icon(
+                Icons.more_horiz,
+                color: Theme.of(context).iconTheme.color,
+              ),
             ),
           ],
         ),

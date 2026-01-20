@@ -16,6 +16,9 @@ import 'firebase_options.dart';
 import 'data/datasource/docs_management_remote_datasource.dart';
 import 'features/docs_management/data/repository/docs_management_repository_impl.dart';
 import 'features/docs_management/domain/repository/docs_management_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'core/theme/data/repository/theme_repository_impl.dart';
+import 'core/theme/domain/repository/theme_repository.dart';
 import 'data/datasource/docs_remote_datasource.dart';
 import 'features/docs/data/repository/docs_repository_impl.dart';
 import 'features/docs/domain/repository/docs_repository.dart';
@@ -42,6 +45,11 @@ void main() async {
   final docsRepository = DocsRepositoryImpl(dataSource: docsDataSource);
 
   FcmService().initialize(notificationRepository);
+  
+  // Theme Setup
+  final prefs = await SharedPreferences.getInstance();
+  final themeRepository = ThemeRepositoryImpl(sharedPreferences: prefs);
+
   runApp(
     MultiRepositoryProvider(
       providers: [
@@ -59,6 +67,9 @@ void main() async {
         ),
         RepositoryProvider<DocsRepository>.value(
           value: docsRepository,
+        ),
+        RepositoryProvider<ThemeRepository>.value(
+          value: themeRepository,
         ),
       ],
       child: const MyApp(),

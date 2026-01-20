@@ -1,96 +1,92 @@
 class ApiConstants {
-  // Base URL: Always end with / to work correctly with Dio relative paths
-  // Private base for internal reuse
-  static const String _base = 'http://10.0.0.58:8080/api/v1';
 
-  // Base URL: Always end with / to work correctly with Dio relative paths
   static const String baseUrl = '$_base/';
-
-  static const String documentServiceUrl = _base; // No trailing slash
-  static const String reviewServiceUrl = _base;   // No trailing slash
-
-  // Follow Endpoints
-  static const String follows = 'follows';
-  static const String followsFollowers = 'follows/followers';
-  static const String followsFollowing = 'follows/following';
-
-  // Document Endpoints
-  static const String documents = '/documents';
-  static const String publicDocument = '/documents/public'; // Corrected Path
-  static const String popularDocumentsReal =
-      '/documents/public/most-liked'; //  Real API
-  static const String popularDocuments = '/documents/public/most-liked';
-  static const String recentDocumentsReal = '/documents/public/newest'; //  Real API
-  static const String recentDocuments = '/documents/public/newest';
-  static const String searchDocuments = '/documents/search';
-  static const String authLoginLocal = 'auth/login/local';
-  static const String authLoginGoogle = 'auth/login/provider/google';
-  static const String authLogin = 'auth/login';
-  static const String authRegister = 'auth/register/local';
-  static const String authRefresh = 'auth/refresh';
-  static const String authForgotPasswordRequest = 'auth/forgot-password/request';
-  static const String authForgotPasswordConfirm = 'auth/forgot-password/confirm';
-
-  // Review Endpoints (Relative to baseUrl)
-  static const String reviewBase = 'reviews';
-  static const String reviewDocumentStats = 'reviews/document'; // Append /$id/stats
-  static const String reviewDocumentReact = 'reviews/document'; // Append /$id/react
-
-  // Admin Endpoints
-  static const String adminStatsTotalDocuments = 'documents/admin/stats/documents/total';
-
-  // User Endpoints
-  static const String usersAll = '/users/all';
-  static const String usersCount = '/users/count';
-  static const String usersRegister = '/users/register';
-  static const String usersUpdate = '/users/update';
-  static const String usersUpdateImage = '/users/updateImage';
-  static const String usersDelete = '/users/delete';
-
-  static const String usersGetById = '/users/getUserByID';
-  static const String usersIsPrivate = '/users/isPrivate';
-  static const String usersExists = '/users/exists';
-
-  static const String uploadDocument = '/documents/user';
-
- //  New
-  // =========================
-  // USER DOCUMENT ENDPOINTS
-  // =========================
-
-  /// Base user document path
-  static const String userDocuments = '/documents/user';
-  static const String userUploadDocument = '/documents/user';
-  static const String userUpdateDocument = '/documents/user';
-  static const String userDeleteDocument = '/documents/user';
-  static const String myDocuments = '/documents/user/me';
-  static const String myNewestDocuments = '/documents/user/me/newest';
-  static const String myDocumentHistory = '/documents/user/me/history';
   
-  /// Document save/unsave endpoints
-  static const String userDocumentSave = '/users/document/save';
-  static const String userDocumentSaved = '/users/document/saved';
-
-
-  // Academic Endpoints (Relative to baseUrl)
-  static const String academicUniversitiesFilter = 'academics/universities/filter';
-  static const String academicSubjectsFilter = 'academics/subjects/filter';
-  static const String academicUniversities = 'academics/universities';
-  static const String academicSubjects = 'academics/subjects';
-  static const String academicUniversityById = 'academics/public/universities/id';
-  static const String academicSubjectById = 'academics/public/subjects/id';
-  static const String academicDocumentsFilter = 'academics/documents';
-  static const String publicDocumentById = 'documents/public';
-
-
-
-  // Statistic Endpoints
-  static const String adminStatsSystem = 'documents/admin/stats/system';
-  static const academicBaseUrl='';
-
-
-
   // Timeout
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
+}
+
+class AuthEndpoints {
+  static const String base = 'auth';
+  
+  static const String login = '$base/login';
+  static const String loginLocal = '$base/login/local';
+  static const String loginGoogle = '$base/login/provider/google';
+  static const String register = '$base/register/local';
+  static const String refresh = '$base/refresh';
+  static const String forgotPasswordRequest = '$base/forgot-password/request';
+  static const String forgotPasswordConfirm = '$base/forgot-password/confirm';
+}
+
+class UserEndpoints {
+  static const String base = 'users';
+  
+  static const String all = '$base/all';
+  static const String count = '$base/count';
+  static const String register = '$base/register';
+  static const String update = '$base/update';
+  static const String updateImage = '$base/updateImage';
+  static const String delete = '$base/delete';
+  static const String getById = '$base/getUserByID';
+  static const String isPrivate = '$base/isPrivate';
+  static const String exists = '$base/exists';
+  
+  // Document interactions via User service
+  static const String documentSave = '$base/document/save';
+  static const String documentSaved = '$base/document/saved';
+}
+
+class DocumentEndpoints {
+  static const String base = 'documents';
+  static const String public = '$base/public';
+  static const String internal = '$base/internal'; // Reserved for internal use
+  static const String user = '$base/user';
+  
+  // Public
+  static const String publicMostLiked = '$public/most-liked';
+  static const String publicNewest = '$public/newest';
+  static const String publicById = public; // Append /$id
+  
+  static const String search = '$base/search';
+  
+  // User specific
+  static const String userBase = user;
+  static const String myDocuments = '$user/me';
+  static const String myNewest = '$user/me/newest';
+  static const String myHistory = '$user/me/history';
+  
+  // Admin
+  static const String adminStats = '$base/admin/stats';
+  static const String adminStatsDocuments = '$adminStats/documents/total';
+  static const String adminStatsSystem = '$adminStats/system';
+}
+
+class ReviewEndpoints {
+  static const String base = 'reviews';
+  
+  static const String documentStats = '$base/document'; // Append /$id/stats
+  static const String documentReact = '$base/document'; // Append /$id/react
+}
+
+class AcademicEndpoints {
+  static const String base = 'academics';
+  static const String public = '$base/public';
+  
+  static const String universitiesFilter = '$base/universities/filter';
+  static const String subjectsFilter = '$base/subjects/filter';
+  static const String universities = '$base/universities';
+  static const String subjects = '$base/subjects';
+  
+  static const String publicUniversityById = '$public/universities/id';
+  static const String publicSubjectById = '$public/subjects/id';
+  
+  static const String documentsFilter = '$base/documents';
+}
+
+class FollowEndpoints {
+  static const String base = 'follows';
+  
+  static const String followers = '$base/followers';
+  static const String following = '$base/following';
 }

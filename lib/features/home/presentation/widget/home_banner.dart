@@ -59,6 +59,7 @@ class HomeBanner extends StatelessWidget {
   final String? hintText;
   final double height;
   final double overlayOpacity;
+  final bool isListening;
 
   const HomeBanner({
     super.key,
@@ -71,6 +72,7 @@ class HomeBanner extends StatelessWidget {
     this.hintText = 'Tìm kiếm tài liệu...',
     this.height = 200,
     this.overlayOpacity = 0.5,
+    this.isListening = false,
   });
 
   @override
@@ -160,10 +162,15 @@ class HomeBanner extends StatelessWidget {
                 onTap: onSearchTap != null ? () => onSearchTap!() : null,
                 onChanged: onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: hintText,
+                  hintText: isListening ? 'Đang nghe...' : hintText,
                   hintStyle: TextStyle(
-                    color: AppColors.gray.withOpacity(0.6),
+                    color:
+                        isListening
+                            ? Colors.redAccent
+                            : AppColors.gray.withOpacity(0.6),
                     fontSize: 13.5,
+                    fontStyle:
+                        isListening ? FontStyle.italic : FontStyle.normal,
                   ),
                   prefixIcon: Icon(
                     Icons.search,
@@ -173,7 +180,11 @@ class HomeBanner extends StatelessWidget {
                   suffixIcon: IconButton(
                     onPressed: onMicTap,
                     padding: EdgeInsets.zero,
-                    icon: Icon(Icons.mic, color: AppColors.primary, size: 20),
+                    icon: Icon(
+                      isListening ? Icons.mic_off : Icons.mic,
+                      color: isListening ? Colors.red : AppColors.primary,
+                      size: 20,
+                    ),
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(

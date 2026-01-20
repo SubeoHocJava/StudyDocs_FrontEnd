@@ -35,7 +35,7 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
       });
 
       final response = await dioClient.post(
-        ApiConstants.uploadDocument,
+        DocumentEndpoints.user,
         data: formData,
       );
 

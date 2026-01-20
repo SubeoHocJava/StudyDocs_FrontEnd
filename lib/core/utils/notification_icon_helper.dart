@@ -12,12 +12,18 @@ class NotificationIconHelper {
         color = Colors.blue;
         break;
       case 'DOWNLOAD':
-        iconData = Icons.download_rounded;
+      case 'UPLOAD':
+        iconData = Icons.cloud_download_rounded;
         color = Colors.green;
+        break;
+      case 'SAVE':
+      case 'BOOKMARK':
+        iconData = Icons.bookmark_rounded;
+        color = Colors.amber;
         break;
       case 'COMMENT':
         iconData = Icons.comment_rounded;
-        color = Colors.orange;
+        color = Colors.cyan;
         break;
       case 'SYSTEM':
         iconData = Icons.info_outline_rounded;
@@ -36,10 +42,10 @@ class NotificationIconHelper {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color,
         shape: BoxShape.circle,
       ),
-      child: Icon(iconData, color: color, size: actualIconSize),
+      child: Icon(iconData, color: Colors.white, size: actualIconSize),
     );
   }
 }

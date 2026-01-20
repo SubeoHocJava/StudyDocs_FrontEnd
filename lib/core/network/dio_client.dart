@@ -127,18 +127,20 @@ class DioClient {
 
         // Parse error message từ backend (format: {message: "..."} hoặc {errorMessage: "..."})
         String message = 'Có lỗi xảy ra từ server';
+        String? errorCode;
         if (responseData is Map<String, dynamic>) {
           message = responseData['message'] ??
                     responseData['errorMessage'] ??
                     message;
+          errorCode = responseData['errorCode']?.toString();
         }
 
         // Phân biệt Auth errors (401, 403)
         if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message, statusCode);
+          return AuthException(message, statusCode, code: errorCode);
         }
 
-        return ServerException(message, statusCode);
+        return ServerException(message, statusCode, code: errorCode);
 
       case DioExceptionType.cancel:
         return ApiException('Request đã bị hủy', code: 'REQUEST_CANCELLED');

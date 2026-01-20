@@ -30,7 +30,9 @@ class UploadBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DottedBorder(
-      color: Colors.black26,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.white
+          : Colors.black26,
       borderType: BorderType.RRect,
       radius: const Radius.circular(16),
       dashPattern: const [8, 6],
@@ -41,23 +43,27 @@ class UploadBox extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
-            children: const [
+            children: [
               AppIconButton(
                 assetPath: AppAssets.upload,
-                onPressed: null, // hiển thị như một “icon” tĩnh
+                onPressed: null,
                 size: 30,
-                color: AppColors.headerForeground,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.white
+                    : AppColors.headerForeground,
               ),
-
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Đăng tải bài giảng, tài liệu, khoá học, đề thi, ...',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
               ),
             ],
           ),
