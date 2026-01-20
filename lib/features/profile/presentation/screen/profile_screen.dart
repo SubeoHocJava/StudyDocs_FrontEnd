@@ -6,6 +6,7 @@ import 'package:studydocs/services/token_storage_service.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/router/app_router.dart';
+import 'package:studydocs/core/widgets/global_error_listener.dart'; // Import this
 
 import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
@@ -78,72 +79,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return BlocProvider(
             create: (_) =>
             ProfileBloc(profileRepository)..add(LoadProfile(userId)),
-            child: BlocBuilder<ProfileBloc, ProfileState>(
-              builder: (context, state) {
-                if (state is ProfileLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            child: GlobalErrorListener<ProfileBloc, ProfileState>(
+              errorExtractor: (state) => state is ProfileError ? state.message : null,
+              child: BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  if (state is ProfileLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (state is ProfileError) {
-                  return Center(
-                    child: Text(
-                      "Lỗi: ${state.message}",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  );
-                }
+                  if (state is ProfileError) {
+                    return Center(
+                      child: Text(
+                        "Lỗi: ${state.message}",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    );
+                  }
 
-                if (state is ProfileLoaded) {
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      context
-                          .read<ProfileBloc>()
-                          .add(LoadProfile(userId));
-                    },
-                    child: SingleChildScrollView(
-                      physics:
-                      const AlwaysScrollableScrollPhysics(), // bắt buộc
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            BasicInfor(state: state),
-                            Statistical(state: state),
-                            UploadFileButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => BlocProvider(
-                                      create: (_) => UploadFileBloc(
-                                        uploadFileUseCase: UploadFileUseCase(
-                                          repository:
-                                          UpLoadFileRepositoryImpl(),
+                  if (state is ProfileLoaded) {
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context
+                            .read<ProfileBloc>()
+                            .add(LoadProfile(userId));
+                      },
+                      child: SingleChildScrollView(
+                        physics:
+                        const AlwaysScrollableScrollPhysics(), // bắt buộc
+                        child: Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BasicInfor(state: state),
+                              Statistical(state: state),
+                              UploadFileButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider(
+                                        create: (_) => UploadFileBloc(
+                                          uploadFileUseCase: UploadFileUseCase(
+                                            repository:
+                                            UpLoadFileRepositoryImpl(),
+                                          ),
+                                        )..add(
+                                          const UploadFileLoadDocumentByKeyWord(
+                                            "keyword",
+                                          ),
                                         ),
-                                      )..add(
-                                        const UploadFileLoadDocumentByKeyWord(
-                                          "keyword",
-                                        ),
+                                        child: const UploadFileScreen(),
                                       ),
-                                      child: const UploadFileScreen(),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            UpLoadDocument(state: state),
-                            StorageDocument(state: state),
-                          ],
+                                  );
+                                },
+                              ),
+                              UpLoadDocument(state: state),
+                              StorageDocument(state: state),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                return const Center(
-                  child: Text("Chưa có dữ liệu trang profile"),
-                );
-              },
+                  return const Center(
+                    child: Text("Chưa có dữ liệu trang profile"),
+                  );
+                },
+              ),
             ),
           );
         },

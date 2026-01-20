@@ -3,6 +3,8 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../data/datasource/impl/statistic_remote_datasource_impl.dart';
 import '../../domain/repositories/impl/statistic_repository_impl.dart';
 import '../../domain/usecases/get_download_statistics_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'statistic_event.dart';
 import 'statistic_state.dart';
 
@@ -25,7 +27,7 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
       final statistics = await getStatisticsUseCase();
       emit(StatisticLoaded(statistics: statistics));
     } catch (e) {
-      emit(StatisticError(message: 'Lỗi tải thống kê: $e')); // User friendly message
+      emit(StatisticError(message: _getErrorMessage(e)));
     }
   }
 
@@ -37,8 +39,15 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
       final statistics = await getStatisticsUseCase();
       emit(StatisticLoaded(statistics: statistics));
     } catch (e) {
-      emit(StatisticError(message: 'Lỗi tải thống kê: $e'));
+      emit(StatisticError(message: _getErrorMessage(e)));
     }
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 }
 
@@ -51,4 +60,3 @@ StatisticBloc createStatisticBloc() {
 
   return StatisticBloc(getStatisticsUseCase: useCase);
 }
-

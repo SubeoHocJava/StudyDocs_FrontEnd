@@ -112,7 +112,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
         emit(LoginFailure(mappedMessage, errorCode: errorCode));
       } else {
-        emit(LoginFailure(e.toString()));
+        emit(LoginFailure(ErrorMapper.map(500)));
       }
     }
   }
@@ -133,7 +133,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
         emit(LoginFailure(mappedMessage, errorCode: errorCode));
       } else {
-        emit(LoginFailure(e.toString()));
+        emit(LoginFailure(ErrorMapper.map(500)));
       }
     }
   }
