@@ -28,6 +28,11 @@ class NotificationScreen extends StatelessWidget {
             isDeleted: false,
             headerTitle: "Thông báo",
             emptyMessage: "Chưa có dữ liệu",
+            onRefresh: () async {
+              context.read<NotificationBloc>().add(
+                const LoadNotificationEvent(isDeleted: false),
+              );
+            },
             extraAction: Material(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),

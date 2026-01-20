@@ -122,6 +122,11 @@ class _NotificationTrashScreenState extends State<NotificationTrashScreen> {
                 emptyMessage: "Thùng rác trống",
                 isDefault: false,
                 headerTitle: "Thùng rác",
+                onRefresh: () async {
+                  context.read<NotificationBloc>().add(
+                    const LoadNotificationEvent(isDeleted: true),
+                  );
+                },
                 childBuilder: (notifications) {
                   final sections =
                   NotificationHelper.buildSections(notifications);
