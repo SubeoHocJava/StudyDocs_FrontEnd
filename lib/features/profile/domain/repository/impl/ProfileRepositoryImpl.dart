@@ -73,7 +73,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     await userRemoteDataSource.getMyReactionCount('LIKE');
 
     final reviewCountResponse =
-    await userRemoteDataSource.getUserReviewCount(myUserId);
+    await userRemoteDataSource.getUserReviewCount(userId);
     if (response.statusCode >= 200 &&
         response.statusCode < 300 &&
         response.data != null) {
