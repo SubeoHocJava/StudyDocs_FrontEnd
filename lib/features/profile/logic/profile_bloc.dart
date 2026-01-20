@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/error/error_mapper.dart';
-import 'package:studydocs/core/exceptions/api_exception.dart';
 
 import '../domain/model/profile_entity.dart';
 import '../domain/repository/profile_repository.dart';
@@ -44,7 +42,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           ),
         );
       } catch (e) {
-        emit(ProfileError('Không thể tải profile: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Không thể tải profile: $e'));
       }
     });
 
@@ -63,7 +61,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           ),
         );
       } catch (e) {
-        emit(ProfileError('Không thể refresh profile: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Không thể refresh profile: $e'));
       }
     });
 
@@ -109,7 +107,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileError('Cập nhật thất bại: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Cập nhật thất bại: $e'));
       }
     });
 
@@ -131,7 +129,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       } catch (e) {
         emit(current.copyWith(isUpdating: false));
-        emit(ProfileError('Cập nhật avatar thất bại: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Cập nhật avatar thất bại: $e'));
       }
     });
 
@@ -144,7 +142,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         await verifyEmailUseCase();
         emit(current.copyWith(isVerified: true));
       } catch (e) {
-        emit(ProfileError('Xác thực email thất bại: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Xác thực email thất bại: $e'));
       }
     });
 
@@ -157,7 +155,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final newCount = await followUserUseCase(event.userId);
         emit(current.copyWith(isFollowing: true, numFollowMe: newCount));
       } catch (e) {
-        emit(ProfileError('Theo dõi thất bại: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Theo dõi thất bại: $e'));
       }
     });
 
@@ -169,7 +167,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final newCount = await unfollowUserUseCase(event.userId);
         emit(current.copyWith(isFollowing: false, numFollowMe: newCount));
       } catch (e) {
-        emit(ProfileError('Bỏ theo dõi thất bại: ${_getErrorMessage(e)}'));
+        emit(ProfileError('Bỏ theo dõi thất bại: $e'));
       }
     });
 
@@ -194,12 +192,5 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<DownloadDocumentRequested>((event, emit) async {
       // chỉ gọi API, không update state
     });
-  }
-
-  String _getErrorMessage(Object error) {
-    if (error is ApiException) {
-      return ErrorMapper.map(int.tryParse(error.code ?? ''));
-    }
-    return ErrorMapper.map(500);
   }
 }

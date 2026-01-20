@@ -5,6 +5,7 @@ import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
@@ -27,6 +28,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
   late final FollowRemoteDataSource followDataSource;
   late final AssetRemoteDataSource assetRemoteDataSource;
   late final AcademicRemoteDataSource academicRemoteDataSource;
+  late final DocsRemoteDataSource docsRemoteDataSource;
 
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
@@ -36,6 +38,9 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
     academicRemoteDataSource =
         AcademicRemoteDataSourceImpl(dioClient: dioClient);
+
+    docsRemoteDataSource =
+        DocsRemoteDataSourceImpl(dioClient: dioClient);
 
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
@@ -54,92 +59,92 @@ class ProfileRepositoryImpl extends ProfileRepository {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<ProfileEntity> getProfile(String userId) async {
-    try {
-      final myUserId = await TokenStorageService().getUserId();
+    final myUserId = await TokenStorageService().getUserId();
 
-      final response = await userRemoteDataSource.getUserById(userId);
-      final countFollower = await followDataSource.countFollowers(userId);
-      final countFollowing = await followDataSource.countFollowing(userId);
-      final isFollowing =
-      await followDataSource.isFollowing(myUserId!, userId);
+    final response = await userRemoteDataSource.getUserById(userId);
+    final countFollower = await followDataSource.countFollowers(userId);
+    final countFollowing = await followDataSource.countFollowing(userId);
+    final isFollowing =
+    await followDataSource.isFollowing(myUserId!, userId);
+    final documentCountResponse =
+    await userRemoteDataSource.getMyDocumentCount();
 
-      if (response.statusCode >= 200 &&
-          response.statusCode < 300 &&
-          response.data != null) {
-        final userData = response.data;
+    final likeCountResponse =
+    await userRemoteDataSource.getMyReactionCount('LIKE');
 
-        return ProfileEntity(
-          id: userData['id']?.toString() ?? '',
-          username: userData['username'] ?? '',
-          fullName: userData['fullName'] ?? '',
-          email: userData['email'] ?? '',
-          phoneNumber: userData['phoneNumber'] ?? '',
-          gender: userData['gender'] ?? '',
-          birthDate: userData['dateOfBirth'] != null
-              ? DateTime.tryParse(userData['dateOfBirth'])
-              : null,
-          address: userData['address'] ?? '',
-          avatarUrl: userData['avatarUrl'] ?? '',
-          isVerified: userData['isVerified'] ?? false,
-          isFollowing: isFollowing,
-          school: userData['school'] ?? '',
-          countFollower: countFollower,
-          countFollowing: countFollowing,
-          countDocument: userData['countDocument'] ?? 0,
-          countLike: userData['countLike'] ?? 0,
-        );
-      }
+    final reviewCountResponse =
+    await userRemoteDataSource.getUserReviewCount(userId);
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        response.data != null) {
+      final userData = response.data;
 
-      throw Exception(
-        'Failed to get profile. Status: ${response.statusCode}',
+      return ProfileEntity(
+        id: userData['id']?.toString() ?? '',
+        username: userData['username'] ?? '',
+        fullName: userData['fullName'] ?? '',
+        email: userData['email'] ?? '',
+        phoneNumber: userData['phoneNumber'] ?? '',
+        gender: userData['gender'] ?? '',
+        birthDate: userData['dateOfBirth'] != null
+            ? DateTime.tryParse(userData['dateOfBirth'])
+            : null,
+        address: userData['address'] ?? '',
+        avatarUrl: userData['avatarUrl'] ?? '',
+        isVerified: userData['isVerified'] ?? false,
+        isFollowing: isFollowing,
+        school: userData['school'] ?? '',
+        countFollower: countFollower,
+        countFollowing: countFollowing,
+        countDocument: documentCountResponse.data ?? 0,
+        countLike: likeCountResponse.data ?? 0,
+          countReview: reviewCountResponse.data ??0,
       );
-    } catch (e) {
-      throw Exception('Error getting profile: $e');
     }
+
+    throw Exception(
+      'Failed to get profile. Status: ${response.statusCode}',
+    );
   }
 
   @override
   Future<ProfileEntity> updateProfile(ProfileEntity profile) async {
-    try {
-      final request = UpdateUserRequest(
-        id: profile.id,
-        username: profile.username,
-        fullName: profile.fullName,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-        gender: profile.gender,
-        dateOfBirth: profile.birthDate,
-        address: profile.address,
-        avatarUrl: profile.avatarUrl,
-        school: profile.school,
+    final request = UpdateUserRequest(
+      id: profile.id,
+      username: profile.username,
+      fullName: profile.fullName,
+      email: profile.email,
+      phoneNumber: profile.phoneNumber,
+      gender: profile.gender,
+      dateOfBirth: profile.birthDate,
+      address: profile.address,
+      avatarUrl: profile.avatarUrl,
+      school: profile.school,
+    );
+
+    final response = await userRemoteDataSource.updateUser(request);
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300 &&
+        response.data != null) {
+      final userData = response.data;
+
+      return profile.copyWith(
+        username: userData['username'],
+        fullName: userData['fullName'],
+        email: userData['email'],
+        phoneNumber: userData['phoneNumber'],
+        gender: userData['gender'],
+        birthDate: userData['dateOfBirth'] != null
+            ? DateTime.tryParse(userData['dateOfBirth'])
+            : profile.birthDate,
+        address: userData['address'],
+        avatarUrl: userData['avatarUrl'],
+        school: userData['school'],
       );
-
-      final response = await userRemoteDataSource.updateUser(request);
-
-      if (response.statusCode >= 200 &&
-          response.statusCode < 300 &&
-          response.data != null) {
-        final userData = response.data;
-
-        return profile.copyWith(
-          username: userData['username'],
-          fullName: userData['fullName'],
-          email: userData['email'],
-          phoneNumber: userData['phoneNumber'],
-          gender: userData['gender'],
-          birthDate: userData['dateOfBirth'] != null
-              ? DateTime.tryParse(userData['dateOfBirth'])
-              : profile.birthDate,
-          address: userData['address'],
-          avatarUrl: userData['avatarUrl'],
-          school: userData['school'],
-        );
-      }
-
-      throw Exception('Failed to update profile');
-    } catch (e) {
-      throw Exception('Error updating profile: $e');
     }
+
+    throw Exception('Failed to update profile');
   }
 
   @override
@@ -181,17 +186,16 @@ class ProfileRepositoryImpl extends ProfileRepository {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // DOCUMENTS (ACADEMIC ENRICHED – SAME AS LIBRARY)
+  // DOCUMENTS BY USER (WITH STATS)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<List<DocumentProfile>> getDocumentsByUser(String id) async {
     try {
       var documents = await documentDataSource.getMyDocuments();
 
-      // Enrich thumbnails
       documents = await _enrichWithAssets(documents);
+      documents = await _enrichWithStats(documents);
 
-      // Extract academic IDs
       final universityIds = documents
           .where((d) => d.universityId != null && d.universityId!.isNotEmpty)
           .map((d) => d.universityId!)
@@ -204,7 +208,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
           .toSet()
           .toList();
 
-      // Fetch academic info in parallel
       final results = await Future.wait([
         _fetchUniversitiesByIds(universityIds),
         _fetchSubjectsByIds(subjectIds),
@@ -233,7 +236,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
           pages: doc.pages,
           createdAt: doc.year,
           likesCount: doc.likes,
-          commentsCount: doc.comments.length,
+          commentsCount: doc.commentsCount ?? 0,
           thumbnailUrl:
           doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
           isLiked: doc.currentUserReaction == 'LIKE',
@@ -249,6 +252,40 @@ class ProfileRepositoryImpl extends ProfileRepository {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // HELPERS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Future<List<DocumentModel>> _enrichWithStats(
+      List<DocumentModel> docs,
+      ) async {
+    final futures = docs.map((doc) async {
+      if (doc.id == null) return doc;
+
+      try {
+        final results = await Future.wait([
+          docsRemoteDataSource.getDocumentStats(doc.id!),
+          docsRemoteDataSource.getMyDocumentReaction(doc.id!),
+          docsRemoteDataSource.getReviewCount(doc.id!),
+        ]);
+
+        final stats = results[0] as Map<String, dynamic>;
+        final reaction = results[1] as String?;
+        final commentCount = results[2] as int;
+
+        final likes = (stats['likeCount'] as num?)?.toInt() ?? 0;
+        final dislikes = (stats['dislikeCount'] as num?)?.toInt() ?? 0;
+
+        return doc.copyWith(
+          likes: likes,
+          dislikes: dislikes,
+          commentsCount: commentCount,
+          currentUserReaction: reaction,
+        );
+      } catch (_) {
+        return doc;
+      }
+    });
+
+    return Future.wait(futures);
+  }
+
   Future<List<DocumentModel>> _enrichWithAssets(
       List<DocumentModel> docs,
       ) async {
@@ -311,7 +348,6 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   @override
   Future<void> verifyEmail() {
-    // TODO: implement verifyEmail
     throw UnimplementedError();
   }
 }
