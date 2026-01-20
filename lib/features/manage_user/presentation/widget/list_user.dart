@@ -41,60 +41,83 @@ class MonoUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<ManageUserBloc>();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-          width: 1,
+    return InkWell(
+      onTap: () => _showUserDetailDialog(context, user),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Theme.of(context).dividerColor,
+            width: 1,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          ClipOval(
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: Image.asset(
-                "assets/icons/Test_AVT_user.jpg",
-                fit: BoxFit.cover,
+        child: Row(
+          children: [
+            ClipOval(
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Image.asset(
+                  "assets/icons/Test_AVT_user.jpg",
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          // 📄 Name + username
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.fullName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+            const SizedBox(width: 12),
+            // 📄 Name + username
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.fullName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.username,
-                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(height: 4),
+                  Text(
+                    user.username,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.delete_outline_sharp, color: Colors.red),
+              onSelected: (value) {
+                if (value == 'delete') {
+                  bloc.add(DeleteUser(user.id));
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.red, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Xác nhận xóa?',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.visibility_outlined),
-            onPressed: () => _showUserDetailDialog(context, user),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline_sharp, color: Colors.red),
-            onPressed: () {
-              bloc.add(DeleteUser(user.id));
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

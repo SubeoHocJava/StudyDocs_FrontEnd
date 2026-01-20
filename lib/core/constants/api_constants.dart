@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String _base = "http://172.16.17.156:8080/api/v1";
+  static const String _base = "http://172.16.16.81:8080/api/v1";
   static const String baseUrl = '$_base/';
   
   // Timeout
@@ -35,6 +35,10 @@ class UserEndpoints {
   // Document interactions via User service
   static const String documentSave = '$base/document/save';
   static const String documentSaved = '$base/document/saved';
+
+  //admin
+  static const String updateUserByAdmin = '$base/update/admin';
+
 }
 
 class DocumentEndpoints {

@@ -36,31 +36,59 @@ class ManageUserScreen extends StatelessWidget {
             ),
             centerTitle: true,
           ),
-          body: BlocBuilder<ManageUserBloc, ManageUserState>(
-            builder: (context, state) {
-              if (state is ManageUserLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is ManageUserLoaded) {
-                return Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      SearchAndAddUser(),
-                      const SizedBox(height: 12),
-                      Expanded(child: ListUser(listUser: state.listUser)),
-                    ],
+          body: BlocListener<ManageUserBloc, ManageUserState>(
+            listener: (context, state) {
+              if (state is ManageUserLoaded && state.successMessage != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.successMessage!),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              } else if (state is ManageUserError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
                   ),
                 );
               }
-
-              if (state is ManageUserError) {
-                return Center(child: Text('Lỗi: ${state.message}'));
-              }
-
-              return const Center(child: Text('Chưa có dữ liệu người dùng'));
             },
+            child: BlocBuilder<ManageUserBloc, ManageUserState>(
+              builder: (context, state) {
+                if (state is ManageUserLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is ManageUserLoaded) {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<ManageUserBloc>().add(
+                        const LoadListUser(fromPage: 1, toPage: 3, numUser: 10),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          SearchAndAddUser(),
+                          const SizedBox(height: 12),
+                          Expanded(child: ListUser(listUser: state.listUser)),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                if (state is ManageUserError) {
+                  return Center(child: Text('Lỗi: ${state.message}'));
+                }
+
+                return const Center(child: Text('Chưa có dữ liệu người dùng'));
+              },
+            ),
           ),
         ),
       ),

@@ -23,21 +23,25 @@ class ManageUserLoading extends ManageUserState {}
 /// =======================
 class ManageUserLoaded extends ManageUserState {
   final List<UserModel> listUser;
+  final String? successMessage;
 
   const ManageUserLoaded({
     required this.listUser,
+    this.successMessage,
   });
 
   ManageUserLoaded copyWith({
     List<UserModel>? listUser,
+    String? successMessage,
   }) {
     return ManageUserLoaded(
       listUser: listUser ?? this.listUser,
+      successMessage: successMessage,
     );
   }
 
   @override
-  List<Object?> get props => [listUser];
+  List<Object?> get props => [listUser, successMessage];
 }
 
 /// =======================

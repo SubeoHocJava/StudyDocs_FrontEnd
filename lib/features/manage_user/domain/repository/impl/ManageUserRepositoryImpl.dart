@@ -66,9 +66,15 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
   // =============================
   @override
   Future<bool> editUser(UserModel user) async {
+    if (user.id.isEmpty) {
+      return false;
+    }
+
     try {
       final updateRequest = UpdateUserRequest(
         id: user.id,
+        username: user.username,
+        email: user.email,
         fullName: user.fullName,
         phoneNumber: user.phoneNumber,
         gender: user.gender,
@@ -77,7 +83,7 @@ class ManageUserRepositoryImpl extends ManageUserRepository {
         school: user.school,
       );
 
-      final response = await userDataSource.updateUser(updateRequest);
+      final response = await userDataSource.updateUserByAdmin(updateRequest);
       
       if (response.statusCode == 200) {
         return true;

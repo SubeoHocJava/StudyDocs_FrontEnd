@@ -98,7 +98,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         toPage: 3,
         numUser: 10,
       );
-      emit(ManageUserLoaded(listUser: users));
+      emit(ManageUserLoaded(listUser: users, successMessage: 'Thêm người dùng thành công!'));
     } catch (e) {
       emit(ManageUserError('Thêm user thất bại: $e'));
     }
@@ -122,7 +122,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         toPage: 3,
         numUser: 10,
       );
-      emit(ManageUserLoaded(listUser: users));
+      emit(ManageUserLoaded(listUser: users, successMessage: 'Cập nhật người dùng thành công!'));
     } catch (e) {
       emit(ManageUserError('Cập nhật user thất bại: $e'));
     }
@@ -145,7 +145,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         numUser: 10,
       );
       print('Bloc users length = ${users.length}');
-      emit(ManageUserLoaded(listUser: users));
+      emit(ManageUserLoaded(listUser: users, successMessage: 'Xóa người dùng thành công!'));
     } catch (e) {
       emit(ManageUserError('Xóa user thất bại: $e'));
     }
