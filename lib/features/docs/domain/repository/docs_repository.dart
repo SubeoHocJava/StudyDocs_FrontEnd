@@ -11,4 +11,6 @@ abstract class DocsRepository {
   Future<void> reactToReview({required String reviewId, required bool isLike});
   Future<void> downloadDocument(String id);
   Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10});
+  Future<void> deleteDocument(String id);
+  Future<void> updateDocument(String id, String title, String description, String year);
 }

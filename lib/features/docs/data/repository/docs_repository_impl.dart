@@ -239,4 +239,16 @@ class DocsRepositoryImpl implements DocsRepository {
       return comments;
     }
   }
+
+  @override
+  Future<void> deleteDocument(String id) => dataSource.deleteDocument(id);
+
+  @override
+  Future<void> updateDocument(String id, String title, String description, String year) {
+    return dataSource.updateDocument(id, {
+      'title': title,
+      'description': description,
+      'schoolYear': year,
+    });
+  }
 }
