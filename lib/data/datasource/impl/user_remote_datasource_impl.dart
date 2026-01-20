@@ -38,7 +38,11 @@ class UserDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId}) {
-    return dioClient.patch(UserEndpoints.update, data: request.toJson());
+    return dioClient.patch(
+      UserEndpoints.update,
+      data: request.toJson(),
+      queryParameters: request.id != null ? {'id': request.id} : null,
+    );
   }
 
   @override
@@ -178,6 +182,12 @@ class UserDataSourceImpl implements UserRemoteDataSource {
     return dioClient.get(UserEndpoints.documentSaved);
   }
 
+  @override
+  Future<ApiResponse> updateUserByAdmin(UpdateUserRequest request, {String? traceId}) {
+    return dioClient.patch(
+      UserEndpoints.updateUserByAdmin,
+      data: request.toJson(),
+      queryParameters: request.id != null ? {'id': request.id} : null,
 
   @override
   Future<ApiResponse> getMyDocumentCount({String? traceId}) {

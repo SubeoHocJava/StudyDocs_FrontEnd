@@ -8,6 +8,8 @@ import 'package:studydocs/core/error/error_mapper.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'docs_event.dart';
 import 'docs_state.dart';
+import '../domain/usecase/delete_document_usecase.dart';
+import '../domain/usecase/update_document_usecase.dart'; // Add import
 
 class DocsBloc extends Bloc<DocsEvent, DocsState> {
   final GetDocumentUseCase getDocumentUseCase;
@@ -15,6 +17,8 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
   final ToggleLikeUseCase toggleLikeUseCase;
   final PostCommentUseCase postCommentUseCase;
   final ReactReviewUseCase reactReviewUseCase;
+  final DeleteDocumentUseCase deleteDocumentUseCase; // Add dependency
+  final UpdateDocumentUseCase updateDocumentUseCase; // Add dependency
 
   final String documentId;
 
@@ -25,13 +29,18 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
     required this.toggleLikeUseCase,
     required this.postCommentUseCase,
     required this.reactReviewUseCase,
+    required this.deleteDocumentUseCase, // Add param
+    required this.updateDocumentUseCase, // Add param
   }) : super(DocsInitial()) {
     on<LoadDocDetails>(_onLoadDocDetails);
     on<ToggleSave>(_onToggleSave);
     on<ToggleDocumentLike>(_onToggleDocumentLike);
     on<PostComment>(_onPostComment);
     on<ReactToReview>(_onReactToReview);
+    on<DeleteDocument>(_onDeleteDocument); // Add handler
+    on<UpdateDocument>(_onUpdateDocument); // Add handler
   }
+
 
   Future<void> _onLoadDocDetails(
       LoadDocDetails event,
@@ -170,11 +179,44 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
 
   }
 
+  Future<void> _onDeleteDocument(
+      DeleteDocument event,
+      Emitter<DocsState> emit,
+      ) async {
+    try {
+      await deleteDocumentUseCase(documentId);
+      emit(DocsDeleted());
+    } catch (e) {
+      emit(DocsError("Xóa tài liệu thất bại: $e"));
+      // Restore state if needed, or stick to error
+      // If we want the user to retry, we might need to restore 'DocsLoaded'.
+      // But typically DocsError stops interaction until reload.
+      // Better to check if previous state was DocsLoaded and re-emit it after a delay or just show snackbar loop.
+      // Simpler: Just emit error.
+    }
+  }
+
+  Future<void> _onUpdateDocument(
+      UpdateDocument event,
+      Emitter<DocsState> emit,
+      ) async {
+    try {
+      await updateDocumentUseCase(
+        documentId,
+        event.title,
+        event.description,
+        event.year,
+      );
+      emit(DocsUpdated());
+      add(const LoadDocDetails()); // Reload to show new data
+    } catch (e) {
+      emit(DocsError("Cập nhật thất bại: $e"));
+    }
+  }
   String _getErrorMessage(Object error) {
     if (error is ApiException) {
       return ErrorMapper.map(int.tryParse(error.code ?? ''));
     }
     return ErrorMapper.map(500);
   }
-
 }

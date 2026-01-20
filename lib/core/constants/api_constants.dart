@@ -41,6 +41,10 @@ class UserEndpoints {
   // Document interactions via User service
   static const String documentSave = '$base/document/save';
   static const String documentSaved = '$base/document/saved';
+
+  //admin
+  static const String updateUserByAdmin = '$base/update/admin';
+
 }
 
 /// =================================================
@@ -80,6 +84,14 @@ class DocumentEndpoints {
 /// =================================================
 class ReviewEndpoints {
   static const String base = 'reviews';
+  
+  static const String documentStats = '$base/document'; // Append /$id/stats
+  static const String documentReact = '$base/document'; // Append /$id/react
+
+  // Admin stats
+  static const String adminStats = '$base/admin/stats';
+  static const String adminTotalLikes = '$adminStats/reactions/total-likes';
+  static const String adminTotalReviews = '$adminStats/reviews/total';
 
   // Document related
   static const String documentStats = '$base/document'; // /{id}/stats

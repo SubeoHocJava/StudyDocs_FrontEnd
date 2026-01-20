@@ -17,6 +17,7 @@ class DocumentEntity {
   final String? fileId; // Added fileId
   final String? currentUserReaction; // Added for Review Service integration
   final List<String> previewUrls;
+  final DateTime? createdAt; // Added for grouping by date
 
   final String? subjectId; // Added subjectId
   final String? universityId; // Added universityId
@@ -44,6 +45,7 @@ class DocumentEntity {
     this.subjectId,
     this.universityId,
     this.commentsCount,
+    this.createdAt,
   });
 
   static const _sentinel = Object();
@@ -94,6 +96,7 @@ class DocumentEntity {
       subjectId: subjectId ?? this.subjectId,
       universityId: universityId ?? this.universityId,
       commentsCount: commentsCount ?? this.commentsCount,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

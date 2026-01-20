@@ -214,20 +214,30 @@ class _NotificationTemplateEditScreenState
                     Expanded(
                       child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                         builder: (context, state) {
-                          // Ensure selected category is valid if possible, or reset
-                          if (_selectedCategory == null && state.categories.isNotEmpty) {
-                             // _selectedCategory = state.categories.first; 
-                             // Don't auto-set in build, let user select
-                          }
+                          // Validate that selected category exists in the list
+                          final validCategory = _selectedCategory != null && 
+                              state.categories.contains(_selectedCategory)
+                              ? _selectedCategory
+                              : null;
 
                           return DropdownButtonFormField<CategoryEntity>(
-                            initialValue: _selectedCategory, 
+                            value: validCategory,
+                            isExpanded: true,
                             decoration: const InputDecoration(
                               labelText: 'Loại',
                               border: OutlineInputBorder(),
                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
-                            items: state.categories.map((t) => DropdownMenuItem(value: t, child: Text(t.name))).toList(),
+                            items: state.categories.isEmpty 
+                                ? null 
+                                : state.categories.map((t) => DropdownMenuItem(
+                                    value: t, 
+                                    child: Text(
+                                      t.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )).toList(),
                             onChanged: (val) => setState(() => _selectedCategory = val),
                           );
                         }
@@ -237,14 +247,30 @@ class _NotificationTemplateEditScreenState
                     Expanded(
                       child: BlocBuilder<NotificationTemplateBloc, NotificationTemplateState>(
                         builder: (context, state) {
+                          // Validate that selected channel exists in the list
+                          final validChannel = _selectedChannel != null && 
+                              state.channels.contains(_selectedChannel)
+                              ? _selectedChannel
+                              : null;
+
                            return DropdownButtonFormField<ChannelEntity>(
-                            initialValue: _selectedChannel,
+                            value: validChannel,
+                            isExpanded: true,
                             decoration: const InputDecoration(
                               labelText: 'Kênh',
                               border: OutlineInputBorder(),
                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
-                            items: state.channels.map((c) => DropdownMenuItem(value: c, child: Text(c.name))).toList(),
+                            items: state.channels.isEmpty 
+                                ? null 
+                                : state.channels.map((c) => DropdownMenuItem(
+                                    value: c, 
+                                    child: Text(
+                                      c.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )).toList(),
                             onChanged: (val) => setState(() => _selectedChannel = val),
                           );
                         }

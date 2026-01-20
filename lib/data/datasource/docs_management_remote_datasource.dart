@@ -28,7 +28,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
       // Assuming response.data is List or Page
       // Adjust based on ApiResponse structure
       // Backend returns ApiResponse<List<DocumentResponse>> or Page
-      final data = response.data; 
+      final data = response.data;
       if (data is List) {
         return data.map((json) => DocumentModel.fromJson(json)).toList();
       } else if (data is Map && data.containsKey('content')) {
@@ -45,8 +45,8 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   @override
   Future<List<DocumentEntity>> getAllDocuments() async {
     try {
-      final response = await dioClient.get(DocumentEndpoints.public); // Use public API
-      final data = response.data; 
+      final response = await dioClient.get(DocumentEndpoints.public); // Use public API for Admin
+      final data = response.data;
       // Assuming structure is similar to Page/List
       if (data is Map && data.containsKey('content')) {
          final content = data['content'] as List;
@@ -82,7 +82,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
       '${DocumentEndpoints.user}/$id',
       data: {
         'title': updatedDoc.title,
-        'description': updatedDoc.description, 
+        'description': updatedDoc.description,
         'schoolYear': updatedDoc.year,
       },
     );
@@ -94,7 +94,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
       '${DocumentEndpoints.internal}/$id',
       data: {
         'title': updatedDoc.title,
-        'description': updatedDoc.description, 
+        'description': updatedDoc.description,
         'schoolYear': updatedDoc.year,
       },
     );
@@ -113,7 +113,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
     if (subjectId == null && metadata.course.length == 36) {
        subjectId = metadata.course;
     }
-    
+
     // Explicitly nullify if empty string to avoid backend errors if any
     if (universityId != null && universityId.isEmpty) universityId = null;
     if (subjectId != null && subjectId.isEmpty) subjectId = null;
@@ -122,8 +122,8 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
       'title': metadata.title,
       'description': metadata.description,
       'schoolYear': metadata.year,
-      'universityId': universityId, 
-      'subjectId': subjectId,    
+      'universityId': universityId,
+      'subjectId': subjectId,
     };
 
     MultipartFile multipartFile;

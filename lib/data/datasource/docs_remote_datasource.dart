@@ -18,6 +18,8 @@ abstract class DocsRemoteDataSource {
   Future<List<DocumentEntity>> searchDocuments(String query);
   Future<void> downloadDocument(String id);
   Future<int> getReviewCount(String docId);
+  Future<void> deleteDocument(String id);
+  Future<void> updateDocument(String id, Map<String, dynamic> data);
 }
 
 class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
@@ -214,6 +216,22 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     // Basic implementation or placeholder
     await dioClient.get(
       '${DocumentEndpoints.base}/$id/download',
+    );
+  }
+
+  @override
+  Future<void> deleteDocument(String id) async {
+    // Calls DELETE /api/v1/documents/user/{id}
+    await dioClient.delete(
+      '${DocumentEndpoints.user}/$id',
+    );
+  }
+
+  @override
+  Future<void> updateDocument(String id, Map<String, dynamic> data) async {
+    await dioClient.put(
+      '${DocumentEndpoints.user}/$id',
+      data: data,
     );
   }
 }

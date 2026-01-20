@@ -32,7 +32,6 @@ class ApiInterceptor extends QueuedInterceptor {
       DocumentEndpoints.public,
       AcademicEndpoints.public,
       '/assets',
-      '/internal',
     ];
 
     // Check path or full URI path

@@ -9,7 +9,9 @@ abstract interface class UserRemoteDataSource {
   Future<ApiResponse> registerUser(RegisterRequest request, {String? traceId});
 
   Future<ApiResponse> updateUser(UpdateUserRequest request, {String? traceId});
-
+  
+  Future<ApiResponse> updateUserByAdmin(UpdateUserRequest request, {String? traceId});
+  
   Future<ApiResponse> getUserById(String id, {String? traceId});
 
   Future<ApiResponse> isUserPrivate(String id, {String? traceId});

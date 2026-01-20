@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
+import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
 import 'app_icon_button.dart';
 
 class UploadBox extends StatelessWidget {
   final VoidCallback? onTap;
   const UploadBox({super.key, this.onTap});
 
-  Future<void> _pickFile(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      type: FileType.any,
+  void _navigateToUpload(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UploadFileScreen()),
     );
-
-    if (result != null) {
-      // Logic upload file sẽ được thực hiện ở đây (gọi API, etc.)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Đã chọn ${result.files.length} tệp: ${result.files.map((f) => f.name).join(', ')}'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      if (onTap != null) onTap!();
-    }
+    if (onTap != null) onTap!();
   }
 
   @override
@@ -38,7 +28,7 @@ class UploadBox extends StatelessWidget {
       dashPattern: const [8, 6],
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => _pickFile(context),
+        onTap: () => _navigateToUpload(context),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),

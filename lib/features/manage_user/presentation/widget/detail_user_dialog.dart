@@ -110,6 +110,7 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
                   _buildTextField(
                     controller: userNameController,
                     hint: "Nhập tên tài khoản",
+                    enabled: false,
                     validator: _requiredValidator,
                   ),
 
@@ -124,6 +125,7 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
                   _buildTextField(
                     controller: emailController,
                     hint: "Nhập email",
+                    enabled: false,
                     keyboardType: TextInputType.emailAddress,
                     validator: _emailValidator,
                   ),
@@ -247,22 +249,38 @@ class _DetailUserDialogState extends State<DetailUserDialog> {
     required TextEditingController controller,
     required String hint,
     TextInputType? keyboardType,
+    bool enabled = true,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      enabled: enabled,
       validator: validator,
-      decoration: _inputDecoration(hint),
+      style: TextStyle(
+        color: enabled ? null : Colors.grey[700],
+      ),
+      decoration: _inputDecoration(
+        hint,
+        filled: !enabled,
+        fillColor: enabled ? null : Colors.grey[200],
+      ),
     );
   }
 
-  InputDecoration _inputDecoration(String hint, {Widget? suffixIcon}) {
+  InputDecoration _inputDecoration(String hint,
+      {Widget? suffixIcon, bool filled = false, Color? fillColor}) {
     return InputDecoration(
       hintText: hint,
       suffixIcon: suffixIcon,
+      filled: filled,
+      fillColor: fillColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[400]!),
       ),
     );
   }

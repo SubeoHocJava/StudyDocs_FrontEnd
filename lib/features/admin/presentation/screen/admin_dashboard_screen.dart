@@ -60,7 +60,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           ),
                           label: 'Quản lý\ntài liệu',
                           height: 220,
-                          onTap: () => context.push(AppRoutes.docsManagement),
+                          onTap: () => context.push('${AppRoutes.docsManagement}?isAdmin=true'),
                         ),
                         const SizedBox(height: 20),
                         _AdminCard(
