@@ -21,7 +21,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<TokenData> login({required LoginRequest request}) async {
     try {
       final response = await dioClient.post(
-        ApiConstants.authLoginLocal,
+        AuthEndpoints.loginLocal,
         data: request.toJson(),
       );
 
@@ -47,7 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> register({required RegisterRequest request}) async {
     try {
       final response = await dioClient.post(
-        ApiConstants.authRegister,
+        AuthEndpoints.register,
         data: request.toJson(),
       );
 
@@ -69,7 +69,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       final response = await dioClient.post(
-        ApiConstants.authLoginGoogle,
+        AuthEndpoints.loginGoogle,
         data: {'tokenId': idToken},
       );
 

@@ -24,16 +24,15 @@ class ApiInterceptor extends QueuedInterceptor {
   ) async {
     // Danh sách các path không cần gửi kèm token (Public Endpoints)
     const publicPaths = [
-      ApiConstants.authLoginLocal,
-      ApiConstants.authLoginGoogle,
-      ApiConstants.authRegister,
-      ApiConstants.authForgotPasswordRequest, //  Public
-      ApiConstants.authForgotPasswordConfirm, //  Public
-      ApiConstants.publicDocumentById, // Cho phép API public document đi xuyên
-      ApiConstants.academicUniversityById, // Public university info
-      ApiConstants.academicSubjectById,    // Public subject info
+      AuthEndpoints.loginLocal,
+      AuthEndpoints.loginGoogle,
+      AuthEndpoints.register,
+      AuthEndpoints.forgotPasswordRequest,
+      AuthEndpoints.forgotPasswordConfirm,
+      DocumentEndpoints.public,
+      AcademicEndpoints.public,
       '/assets',
-      '/internal', //  Cho phép tất cả các API internal đi xuyên
+      '/internal',
     ];
 
     // Check path or full URI path
@@ -55,7 +54,7 @@ class ApiInterceptor extends QueuedInterceptor {
           try {
             // Gọi API Refresh Token
             final response = await _refreshDio.post(
-              ApiConstants.authRefresh,
+              AuthEndpoints.refresh,
               data: {'refreshToken': refreshToken}, // Body params
             );
 

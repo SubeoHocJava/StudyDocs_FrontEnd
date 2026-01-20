@@ -27,7 +27,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   Future<List<DocumentModel>> getPopularDocuments() async {
     // REAL API CALL - trả về documents với universityId và subjectId
     final response = await dioClient.get(
-      ApiConstants.popularDocumentsReal,
+      DocumentEndpoints.publicMostLiked,
       queryParameters: {'limit': 10},
     );
 
@@ -57,7 +57,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   Future<List<DocumentModel>> getRecentDocuments() async {
     //  REAL API CALL - tài liệu mới nhất
     final response = await dioClient.get(
-      ApiConstants.recentDocumentsReal,
+      DocumentEndpoints.publicNewest,
       queryParameters: {'limit': 10},
     );
 
@@ -79,7 +79,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   @override
   Future<List<DocumentModel>> searchDocuments(String query) async {
     final response = await dioClient.get(
-      ApiConstants.searchDocuments,
+      DocumentEndpoints.search,
       queryParameters: {'q': query, 'limit': 20},
     );
 
@@ -104,7 +104,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     // 1. Fetch Basic Info from Document Service
     final docRes = await dioClient.get(
-      '${ApiConstants.publicDocument}/$documentId',
+      '${DocumentEndpoints.public}/$documentId',
     );
     
     // Check if doc exists
@@ -122,7 +122,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
     try {
       final statsRes = await dioClient.get(
-        '${ApiConstants.reviewDocumentStats}/$documentId/stats',
+        '${ReviewEndpoints.documentStats}/$documentId/stats',
       );
       if (statsRes.statusCode == 200 && statsRes.data['data'] != null) {
         final data = statsRes.data['data'];
@@ -136,7 +136,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     // 3. Keep existing logic for comments...
     try {
       final reviewsRes = await dioClient.get(
-        '${ApiConstants.reviewBase}/document/$documentId',
+        '${ReviewEndpoints.base}/document/$documentId',
         queryParameters: {'page': 0, 'size': 50},
       );
 
@@ -181,7 +181,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     // For now, if no endpoint, we can leave it empty or log.
     // BUT user asked to remove mock delay.
     try {
-       await dioClient.post('${ApiConstants.documentServiceUrl}/documents/$documentId/save');
+       await dioClient.post('${DocumentEndpoints.base}/$documentId/save');
     } catch (e) {
        print('Toggle save failed (maybe endpoint missing): $e');
     }
@@ -193,7 +193,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     // Often this returns a URL or stream. The Repository usually handles opening it.
     // But if the DataSource needs to call an endpoint to "record" the download:
     try {
-       await dioClient.get('${ApiConstants.documentServiceUrl}/documents/$documentId/download');
+       await dioClient.get('${DocumentEndpoints.base}/$documentId/download');
     } catch (e) {
        print('Download record failed: $e');
     }
@@ -206,7 +206,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     try {
       await dioClient.post(
-        '${ApiConstants.reviewDocumentReact}/$documentId/react',
+        '${ReviewEndpoints.documentReact}/$documentId/react',
         queryParameters: {'type': isLike ? 'like' : 'dislike'},
       );
     } catch (e) {
@@ -221,7 +221,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     try {
       await dioClient.post(
-        ApiConstants.reviewBase,
+        ReviewEndpoints.base,
         data: {'documentId': documentId, 'comment': text},
       );
     } catch (e) {
@@ -237,7 +237,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }) async {
     try {
       await dioClient.post(
-        '${ApiConstants.reviewBase}/$reviewId/react',
+        '${ReviewEndpoints.base}/$reviewId/react',
         queryParameters: {'type': isLike ? 'like' : 'dislike'},
       );
     } catch (e) {
@@ -254,7 +254,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     String? traceId,
   }) async {
     final response = await dioClient.get(
-      ApiConstants.myDocuments,
+      DocumentEndpoints.myDocuments,
       queryParameters: {'page': page, 'size': size},
     );
 
@@ -278,7 +278,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     String? traceId,
   }) async {
     final response = await dioClient.get(
-      ApiConstants.myNewestDocuments,
+      DocumentEndpoints.myNewest,
       queryParameters: {'limit': limit},
     );
 
@@ -300,7 +300,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     String? traceId,
   }) async {
     final response = await dioClient.get(
-      ApiConstants.myDocumentHistory,
+      DocumentEndpoints.myHistory,
       queryParameters: {'page': page, 'size': size},
     );
     if (response.statusCode == 200 && response.data != null) {
@@ -332,14 +332,14 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     String? traceId,
   }) async {
       // TODO: Implement Delete
-      await dioClient.delete('${ApiConstants.userDeleteDocument}/$documentId');
+      await dioClient.delete('${DocumentEndpoints.user}/$documentId');
       return [];
   }
 
   @override
   Future<DocumentModel> getPublicDocumentById(String id) async {
     final response = await dioClient.get(
-      '${ApiConstants.publicDocumentById}/$id',
+      '${DocumentEndpoints.publicById}/$id',
     );
 
     if (response.statusCode == 200 && response.data != null) {

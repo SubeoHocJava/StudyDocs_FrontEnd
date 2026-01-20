@@ -29,7 +29,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> getPublicDocuments({int page = 0, int size = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}',
+      DocumentEndpoints.public,
       queryParameters: {'page': page, 'size': size},
     );
     // Handle Page<DocumentResponse>
@@ -44,7 +44,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> getNewestDocuments({int limit = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}${ApiConstants.recentDocuments}',
+      DocumentEndpoints.publicNewest,
       queryParameters: {'limit': limit},
     );
     final data = response.data;
@@ -61,7 +61,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> getMostLikedDocuments({int limit = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}${ApiConstants.popularDocuments}',
+      DocumentEndpoints.publicMostLiked,
       queryParameters: {'limit': limit},
     );
     final data = response.data;
@@ -76,7 +76,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<DocumentEntity> getDocumentById(String id) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}/$id',
+      '${DocumentEndpoints.public}/$id',
     );
     final doc = DocumentModel.fromJson(response.data);
     
@@ -94,7 +94,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   Future<void> reactToDocument(String id, String type) async {
     // Review Service handles Document Reactions
     await dioClient.post(
-      '${ApiConstants.reviewServiceUrl}/reviews/document/$id/react',
+      '${ReviewEndpoints.base}/document/$id/react',
       queryParameters: {'type': type},
     );
   }
@@ -104,14 +104,14 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
     // Assuming backend endpoint for save exists or using local storage logic?
     // For now assuming a backend endpoint exists:
     await dioClient.post(
-      '${ApiConstants.documentServiceUrl}/documents/$id/save',
+      '${DocumentEndpoints.base}/$id/save',
     );
   }
 
   @override
   Future<void> postComment(String docId, String content) async {
     await dioClient.post(
-      '${ApiConstants.reviewServiceUrl}/reviews',
+      ReviewEndpoints.base,
       data: {
         'documentId': docId,
         'comment': content,
@@ -122,7 +122,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<void> reactToReview({required String reviewId, required bool isLike}) async {
     await dioClient.post(
-      '${ApiConstants.reviewServiceUrl}/reviews/$reviewId/react',
+      '${ReviewEndpoints.base}/$reviewId/react',
       queryParameters: {'type': isLike ? 'LIKE' : 'DISLIKE'}, // Backend expects type string? Controller says params 'type', endpoints '/react'
     );
   }
@@ -130,7 +130,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<Map<String, dynamic>> getDocumentStats(String docId) async {
     final response = await dioClient.get(
-      '${ApiConstants.reviewServiceUrl}/reviews/document/$docId/stats',
+      '${ReviewEndpoints.base}/document/$docId/stats',
     );
      // Response: ApiResponse<DocumentStats> -> data: { documentId, likeCount, dislikeCount }
     return response.data;
@@ -139,7 +139,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<String?> getMyDocumentReaction(String docId) async {
     final response = await dioClient.get(
-      '${ApiConstants.reviewServiceUrl}/reviews/document/$docId/reaction',
+      '${ReviewEndpoints.base}/document/$docId/reaction',
     );
     // Response: ApiResponse<ReactionType (String)> -> data: "LIKE" or null
     return response.data as String?;
@@ -148,7 +148,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<CommentEntity>> getReviewsByDocumentId(String docId, {int page = 0, int size = 10}) async {
     final response = await dioClient.get(
-      '${ApiConstants.reviewServiceUrl}/reviews/document/$docId',
+      '${ReviewEndpoints.base}/document/$docId',
       queryParameters: {'page': page, 'size': size},
     );
     // Response: Page<ReviewResponse>
@@ -169,7 +169,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   Future<int> getReviewCount(String docId) async {
      try {
        final response = await dioClient.get(
-        '${ApiConstants.reviewServiceUrl}/reviews/document/$docId',
+        '${ReviewEndpoints.base}/document/$docId',
         queryParameters: {'page': 0, 'size': 1}, // Fetch minimal data
       );
       final data = response.data;
@@ -197,7 +197,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   @override
   Future<List<DocumentEntity>> searchDocuments(String query) async {
     final response = await dioClient.get(
-      '${ApiConstants.documentServiceUrl}${ApiConstants.searchDocuments}',
+      DocumentEndpoints.search,
       queryParameters: {'q': query},
     );
     final data = response.data;
@@ -214,7 +214,7 @@ class DocsRemoteDataSourceImpl implements DocsRemoteDataSource {
   Future<void> downloadDocument(String id) async {
     // Basic implementation or placeholder
     await dioClient.get(
-      '${ApiConstants.documentServiceUrl}/documents/$id/download',
+      '${DocumentEndpoints.base}/$id/download',
     );
   }
 }
