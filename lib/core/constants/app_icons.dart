@@ -1,6 +1,7 @@
 class AppAssets {
   static const _base = 'assets/icons';
   static const logo       = '$_base/logo.png';
+  static const logoDark   = '$_base/logo_dark.png';
   // Notification
   static const markAsRead = '$_base/mark_as_read.png';
   static const moreHoriz = '$_base/more_horiz.png';
