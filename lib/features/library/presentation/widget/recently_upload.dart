@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/core/widgets/document/model/row_document_ui.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
 import '../../domain/model/document_library.dart';
 
