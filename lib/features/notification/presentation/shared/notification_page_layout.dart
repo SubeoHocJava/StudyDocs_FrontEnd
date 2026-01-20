@@ -32,7 +32,7 @@ class NotificationPageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (context, state) {
           // Body content based on state
@@ -85,10 +85,10 @@ class NotificationPageLayout extends StatelessWidget {
           Expanded(
             child: Text(
               headerTitle ?? "Thông báo",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1F1F1F),
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
             ),
           ),
@@ -101,17 +101,17 @@ class NotificationPageLayout extends StatelessWidget {
           // Modal Button
           if (onModal != null)
             Material(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: () => onModal!(context),
                 borderRadius: BorderRadius.circular(12),
-                child: const SizedBox(
+                child: SizedBox(
                   width: 40,
                   height: 40,
                   child: Icon(
                     Icons.more_vert,
-                    color: Colors.black54,
+                    color: Theme.of(context).iconTheme.color,
                   ),
                 ),
               ),

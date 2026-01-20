@@ -34,11 +34,15 @@ class _NotificationTrashItemState extends State<NotificationTrashItem>
     with NotificationPressStateMixin {
 
   Color _backgroundColor(BuildContext context) {
+    final unreadColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.notificationUnreadDark
+        : AppColors.notificationUnreadLight;
+
     if (isPressed) {
-      return AppColors.notificationUnread.withValues(alpha: 0.6);
+      return unreadColor.withValues(alpha: 0.6);
     }
     if (widget.isChecked) {
-      return AppColors.notificationUnread.withValues(alpha: 0.15);
+      return unreadColor.withValues(alpha: 0.15);
     }
     return Theme.of(context).cardColor;
   }

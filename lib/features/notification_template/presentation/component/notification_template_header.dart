@@ -43,22 +43,22 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                     onChanged: widget.onSearchChanged,
                     decoration: InputDecoration(
                       hintText: "Tìm kiếm mẫu thông báo",
-                      hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.normal),
-                      prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                      hintStyle: TextStyle(color: Theme.of(context).hintColor, fontWeight: FontWeight.normal),
+                      prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardTheme.color,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: Colors.blue, width: 2),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
                       ),
                     ),
                   ),
@@ -69,12 +69,12 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                 height: 48,
                 width: 48,
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade900,
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   onPressed: widget.onAddPressed,
-                  icon: const Icon(Icons.add, color: Colors.white),
+                  icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
                 ),
               ),
             ],
@@ -160,16 +160,16 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
         child: Container(
            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
            decoration: BoxDecoration(
-             color: isSelected ? Colors.blue.shade100 : Colors.grey.shade100,
+             color: isSelected ? Theme.of(context).primaryColorLight : Theme.of(context).cardTheme.color,
              borderRadius: BorderRadius.circular(20),
-             border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300),
+             border: Border.all(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).dividerColor),
            ),
            child: Row(
              children: [
                Text(
                  label, 
                  style: TextStyle(
-                   color: isSelected ? Colors.blue.shade900 : Colors.black87,
+                   color: isSelected ? Theme.of(context).primaryColorDark : Theme.of(context).textTheme.bodyLarge?.color,
                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal
                  )
                ),
@@ -177,11 +177,11 @@ class _NotificationTemplateHeaderState extends State<NotificationTemplateHeader>
                  const SizedBox(width: 4),
                  GestureDetector(
                    onTap: onClear,
-                   child: Icon(Icons.close, size: 16, color: Colors.blue.shade900),
+                   child: Icon(Icons.close, size: 16, color: Theme.of(context).primaryColorDark),
                  )
                ] else ...[
                  const SizedBox(width: 4),
-                 const Icon(Icons.arrow_drop_down, size: 18, color: Colors.black54),
+                 Icon(Icons.arrow_drop_down, size: 18, color: Theme.of(context).iconTheme.color),
                ]
              ],
            ),

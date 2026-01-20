@@ -29,7 +29,7 @@ class NotificationScreen extends StatelessWidget {
             headerTitle: "Thông báo",
             emptyMessage: "Chưa có dữ liệu",
             extraAction: Material(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
@@ -42,12 +42,12 @@ class NotificationScreen extends StatelessWidget {
                     },
                   );
                 },
-                child: const SizedBox(
+                child: SizedBox(
                   width: 40,
                   height: 40,
                   child: Icon(
                     Icons.delete_outline,
-                    color: Colors.black54,
+                    color: Theme.of(context).iconTheme.color,
                   ),
                 ),
               ),

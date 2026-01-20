@@ -151,14 +151,14 @@ class _NotificationTemplateEditScreenState
     _descriptionController ??= TextEditingController(text: widget.template?.description ?? '');
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.template == null ? 'Tạo mẫu thông báo' : 'Chỉnh sửa mẫu thông báo', style: const TextStyle(color: Colors.black)),
+        title: Text(widget.template == null ? 'Tạo mẫu thông báo' : 'Chỉnh sửa mẫu thông báo', style: TextStyle(color: Theme.of(context).appBarTheme.foregroundColor)),
         centerTitle: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 1,
         leading: BackButton(
-          color: Colors.black,
+          color: Theme.of(context).appBarTheme.foregroundColor,
           onPressed: () {
              // Hộp thoại xác nhận có thể được thêm vào đây
              context.pop();
@@ -170,8 +170,8 @@ class _NotificationTemplateEditScreenState
             child: ElevatedButton(
               onPressed: _onSave,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -280,7 +280,7 @@ class _NotificationTemplateEditScreenState
                 const SizedBox(height: 8),
                 Text(
                   'Sử dụng dấu ngoặc nhọn để chèn từ khóa động, ví dụ: {Tên người nhận}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
                 ),
               ],
             ),
@@ -311,7 +311,7 @@ class _NotificationTemplateEditScreenState
                 const SizedBox(height: 8),
                 Text(
                   'Nội dung hỗ trợ nhiều dòng. Từ khóa sẽ được thay thế tự động khi gửi thông báo.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).hintColor),
                 ),
               ],
             ),
@@ -320,8 +320,8 @@ class _NotificationTemplateEditScreenState
             // Xem trước
             Container(
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                border: Border.all(color: Colors.blue.shade100),
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+                border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(16),
@@ -333,7 +333,7 @@ class _NotificationTemplateEditScreenState
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Colors.blue.shade700,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -349,18 +349,18 @@ class _NotificationTemplateEditScreenState
                       children: [
                         Text(
                           _subjectController.text,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                           const SizedBox(height: 8),
                           HtmlWidget(
                              _bodyController.text,
-                             textStyle: const TextStyle(
+                             textStyle: TextStyle(
                                fontSize: 14,
-                               color: Colors.black54,
+                               color: Theme.of(context).textTheme.bodyMedium?.color,
                                height: 1.5,
                              ),
                           ),

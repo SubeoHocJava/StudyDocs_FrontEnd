@@ -26,7 +26,7 @@ class NotificationModalLayout extends StatelessWidget {
               vertical: responsive.isMobile ? 12 : 16,
             ),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 0, 15, 76),
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
