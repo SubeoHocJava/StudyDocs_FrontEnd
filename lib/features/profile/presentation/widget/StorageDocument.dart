@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/ListDocument.dart';
@@ -40,6 +41,9 @@ class StorageDocument extends StatelessWidget {
           },
           onComment: (doc) {
             context.read<ProfileBloc>().add(OpenCommentRequested(doc.id));
+          },
+          onTap: (doc) {
+            context.push('/document/${doc.id}');
           },
         ),
       ],
