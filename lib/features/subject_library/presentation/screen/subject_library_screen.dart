@@ -97,11 +97,6 @@ class SubjectLibraryScreen extends StatelessWidget {
                             SubjectLibraryLikeDocument(doc.id),
                           );
                         },
-                        onComment: (doc) {
-                          context.read<SubjectLibraryBloc>().add(
-                            SubjectLibraryOpenComment(doc.id),
-                          );
-                        },
                         onTap: (doc) {
                           context.push('/document/${doc.id}');
                         },
