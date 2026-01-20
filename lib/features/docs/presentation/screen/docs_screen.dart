@@ -10,6 +10,7 @@ import '../widgets/like_dislike_row.dart';
 import '../widgets/pdf_single_page_preview.dart'; // Preview trang đầu
 import '../widgets/uploader_info.dart';
 import 'docs_detail_screen.dart';
+import '../../../../core/widgets/header.dart';
 import '../../../../core/constants/app_icons.dart';
 
 class DocsScreen extends StatelessWidget {
@@ -34,6 +35,7 @@ class DocsScreen extends StatelessWidget {
     final bool isWide = size.width > 600;
 
     return Scaffold(
+      appBar: const Header(isDefault: false, headerTitle: 'Chi tiết tài liệu'),
       body: SafeArea(
         child: BlocBuilder<DocsBloc, DocsState>(
           builder: (context, state) {
