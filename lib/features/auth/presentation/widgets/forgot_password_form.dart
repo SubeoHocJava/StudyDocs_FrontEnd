@@ -75,7 +75,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
     try {
       final response = await _dio.post(
-        ApiConstants.authForgotPasswordRequest,
+        AuthEndpoints.forgotPasswordRequest,
         data: {'email': _emailController.text.trim()},
       );
 
@@ -151,7 +151,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
     try {
       final response = await _dio.post(
-        ApiConstants.authForgotPasswordConfirm,
+        AuthEndpoints.forgotPasswordConfirm,
         data: {
           'email': _emailController.text.trim(),
           'otp': _otpController.text.trim(),

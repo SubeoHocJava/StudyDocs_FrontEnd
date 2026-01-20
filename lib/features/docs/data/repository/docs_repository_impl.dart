@@ -61,7 +61,7 @@ class DocsRepositoryImpl implements DocsRepository {
       // Create Dio instance for Academic Service calls
       // Note: We use a new Dio instance here to avoid modifying the existing dataSource structure.
       final dio = Dio(BaseOptions(
-        baseUrl: ApiConstants.academicBaseUrl,
+        baseUrl: ApiConstants.baseUrl, // Academic service now shares base or relative paths
         connectTimeout: const Duration(seconds: 10),
       ));
 
@@ -75,7 +75,7 @@ class DocsRepositoryImpl implements DocsRepository {
       if (doc.universityId != null && (doc.school == 'Unknown School' || doc.school.isEmpty)) {
         try {
           // Endpoint: /academics/universities/id/{id}
-          final response = await dio.get('${ApiConstants.academicUniversityById}/${doc.universityId}');
+          final response = await dio.get('${AcademicEndpoints.publicUniversityById}/${doc.universityId}');
           if (response.statusCode == 200 && response.data['data'] != null) {
              schoolName = response.data['data']['name'];
           }
@@ -88,7 +88,7 @@ class DocsRepositoryImpl implements DocsRepository {
       if (doc.subjectId != null && (doc.course == 'Unknown Course' || doc.course.isEmpty)) {
         try {
            // Endpoint: /academics/subjects/id/{id}
-           final response = await dio.get('${ApiConstants.academicSubjectById}/${doc.subjectId}');
+           final response = await dio.get('${AcademicEndpoints.publicSubjectById}/${doc.subjectId}');
            if (response.statusCode == 200 && response.data['data'] != null) {
              courseName = response.data['data']['name'];
            }
@@ -110,7 +110,7 @@ class DocsRepositoryImpl implements DocsRepository {
            }
 
            final response = await userDio.get(
-             ApiConstants.usersGetById,
+             UserEndpoints.getById,
              queryParameters: {'id': doc.uploaderId},
            );
 
@@ -206,7 +206,7 @@ class DocsRepositoryImpl implements DocsRepository {
         if (userId == null) continue;
         try {
           final response = await userDio.get(
-            ApiConstants.usersGetById,
+            UserEndpoints.getById,
             queryParameters: {'id': userId},
           );
           if (response.statusCode == 200 && response.data != null) {

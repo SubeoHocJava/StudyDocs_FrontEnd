@@ -25,7 +25,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   @override
   Future<List<SchoolEntity>> searchSchools(String query) async {
     final response = await dioClient.get(
-      ApiConstants.academicUniversitiesFilter,
+      AcademicEndpoints.universitiesFilter,
       queryParameters: query.trim().isNotEmpty ? {'query': query} : null,
     );
 
@@ -61,7 +61,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   Future<List<SubjectEntity>> getSubjectsBySchool(String schoolId) async {
     // Direct call using University ID
     final resp = await dioClient.get(
-      ApiConstants.academicSubjectsFilter,
+      AcademicEndpoints.subjectsFilter,
       queryParameters: {'universityId': schoolId, 'isActive': true},
     );
     
@@ -88,7 +88,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
 
   @override
   Future<List<SubjectEntity>> getAllSubjects() async {
-    final resp = await dioClient.get(ApiConstants.academicSubjects);
+    final resp = await dioClient.get(AcademicEndpoints.subjects);
 
     if (resp.statusCode == 200) {
       final body = resp.data;
@@ -113,7 +113,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
 
   @override
   Future<List<String>> getSchools() async {
-    final resp = await dioClient.get(ApiConstants.academicUniversitiesFilter);
+    final resp = await dioClient.get(AcademicEndpoints.universitiesFilter);
     
     if (resp.statusCode == 200) {
       final body = resp.data;
@@ -134,7 +134,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   //  NEW: Get University by ID
   @override
   Future<SchoolEntity> getUniversityById(String id) async {
-    final path = '${ApiConstants.academicUniversityById}/$id';
+    final path = '${AcademicEndpoints.publicUniversityById}/$id';
     if (kDebugMode) {
       print('AcademicRemoteDataSourceImpl.getUniversityById: $path');
     }
@@ -160,7 +160,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
   // NEW: Get Subject by ID
   @override
   Future<SubjectEntity> getSubjectById(String id) async {
-    final path = '${ApiConstants.academicSubjectById}/$id';
+    final path = '${AcademicEndpoints.publicSubjectById}/$id';
     if (kDebugMode) {
       print('AcademicRemoteDataSourceImpl.getSubjectById: $path');
     }
@@ -187,7 +187,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
     if (subjectId != null) queryParams['subjectId'] = subjectId;
 
     final response = await dioClient.get(
-      ApiConstants.academicDocumentsFilter,
+      AcademicEndpoints.documentsFilter,
       queryParameters: queryParams,
     );
 

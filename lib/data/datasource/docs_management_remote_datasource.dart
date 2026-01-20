@@ -26,9 +26,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   @override
   Future<List<DocumentEntity>> getMyDocuments() async {
     try {
-      final response = await dioClient.get(
-        '${ApiConstants.documentServiceUrl}/documents/user/me',
-      );
+      final response = await dioClient.get(DocumentEndpoints.myDocuments);
       // Assuming response.data is List or Page
       // Adjust based on ApiResponse structure
       // Backend returns ApiResponse<List<DocumentResponse>> or Page
@@ -49,9 +47,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   @override
   Future<List<DocumentEntity>> getAllDocuments() async {
     try {
-      final response = await dioClient.get(
-        '${ApiConstants.documentServiceUrl}${ApiConstants.publicDocument}', // Use public API
-      );
+      final response = await dioClient.get(DocumentEndpoints.public); // Use public API
       final data = response.data; 
       // Assuming structure is similar to Page/List
       if (data is Map && data.containsKey('content')) {
@@ -71,9 +67,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
     if (id.isEmpty) {
       throw Exception("Document ID cannot be empty");
     }
-    await dioClient.delete(
-      '${ApiConstants.documentServiceUrl}/documents/user/$id',
-    );
+    await dioClient.delete('${DocumentEndpoints.user}/$id');
   }
 
   @override
@@ -81,15 +75,13 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
     if (id.isEmpty) {
       throw Exception("Document ID cannot be empty");
     }
-    await dioClient.delete(
-      '${ApiConstants.documentServiceUrl}/internal/documents/$id',
-    );
+    await dioClient.delete('${DocumentEndpoints.internal}/$id');
   }
 
   @override
   Future<void> updateDocument(String id, DocumentEntity updatedDoc) async {
     await dioClient.put(
-      '${ApiConstants.documentServiceUrl}/documents/user/$id',
+      '${DocumentEndpoints.user}/$id',
       data: {
         'title': updatedDoc.title,
         'description': updatedDoc.description, 
@@ -101,7 +93,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
   @override
   Future<void> updateAdminDocument(String id, DocumentEntity updatedDoc) async {
     await dioClient.put(
-      '${ApiConstants.documentServiceUrl}/internal/documents/$id',
+      '${DocumentEndpoints.internal}/$id',
       data: {
         'title': updatedDoc.title,
         'description': updatedDoc.description, 
@@ -149,7 +141,7 @@ class DocsManagementRemoteDataSourceImpl implements DocsManagementRemoteDataSour
     });
 
     await dioClient.post(
-      '${ApiConstants.documentServiceUrl}/documents/user',
+      DocumentEndpoints.user,
       data: formData,
     );
   }

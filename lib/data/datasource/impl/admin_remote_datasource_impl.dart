@@ -10,7 +10,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
 
   @override
   Future<int> getTotalDocuments() async {
-    final response = await dioClient.get(ApiConstants.adminStatsTotalDocuments);
+    final response = await dioClient.get(DocumentEndpoints.adminStatsDocuments);
 
     if (response.isSuccess && response.data != null) {
       if (response.data is int) {
