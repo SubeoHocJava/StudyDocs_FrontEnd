@@ -134,7 +134,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   );
                                 },
                               ),
-                              UpLoadDocument(state: state),
+                              UpLoadDocument(
+                                state: state,
+                                onTap: (doc) {
+                                  context.push('/document/${doc.id}');
+                                },
+                              ),
                               StorageDocument(state: state),
                             ],
                           ),
