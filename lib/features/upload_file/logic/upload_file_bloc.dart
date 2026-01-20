@@ -19,8 +19,8 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
       emit(UploadFileLoading());
       try {
         // Tạm thời mock lại dữ liệu
-        String subject = "subject";
-        String school = "school";
+        String subject = "";
+        String school = "";
         List<PlatformFile> files = [];
 
         final loaded = UploadFileLoaded(files, subject, school);
@@ -28,7 +28,7 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
         emit(loaded);
       } catch (e) {
-        emit(UploadFileError(e.toString(), [], "subject", "school"));
+        emit(UploadFileError(e.toString(), [], "", ""));
       }
     });
 
@@ -72,11 +72,11 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         // Subject + school + IDs lấy từ current state hoặc gán mặc định
         final subject = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).subject
-            : lastLoadedState?.subject ?? "subject";
+            : lastLoadedState?.subject ?? "";
 
         final school = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).school
-            : lastLoadedState?.school ?? "school";
+            : lastLoadedState?.school ?? "";
 
         // CRITICAL: Preserve schoolId and subjectId!
         final schoolId = (state is UploadFileLoaded)
@@ -105,10 +105,10 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
             : lastLoadedState?.file ?? [];
         final currentSubject = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).subject
-            : lastLoadedState?.subject ?? "subject";
+            : lastLoadedState?.subject ?? "";
         final currentSchool = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).school
-            : lastLoadedState?.school ?? "school";
+            : lastLoadedState?.school ?? "";
 
         emit(UploadFileError(e.toString(), currentFiles, currentSubject, currentSchool));
       }

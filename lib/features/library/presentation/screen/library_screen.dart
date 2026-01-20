@@ -7,10 +7,6 @@ import 'package:studydocs/features/library/domain/usecase/get_saved_documents_us
 
 import 'package:studydocs/features/library/logic/LibraryEvent.dart';
 
-import 'package:studydocs/features/upload_file/domain/data/impl/upload_file_repository_implement.dart';
-import 'package:studydocs/features/upload_file/domain/usecase/upload_file_usecase.dart';
-import 'package:studydocs/features/upload_file/logic/upload_file_bloc.dart';
-import 'package:studydocs/features/upload_file/logic/upload_file_event.dart';
 import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
 import 'package:studydocs/features/library/domain/repository/impl/lib_repo_impl.dart';
 import 'package:studydocs/features/subject_library/domain/repository/impl/subject_repository_impl.dart';
@@ -86,21 +82,7 @@ class LibraryScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder:
-                                  (_) => BlocProvider(
-                                    create:
-                                        (_) => UploadFileBloc(
-                                          uploadFileUseCase: UploadFileUseCase(
-                                            repository:
-                                                UpLoadFileRepositoryImpl(),
-                                          ),
-                                        )..add(
-                                          UploadFileLoadDocumentByKeyWord(
-                                            "keyword",
-                                          ),
-                                        ),
-                                    child: UploadFileScreen(),
-                                  ),
+                              builder: (context) => const UploadFileScreen(),
                             ),
                           );
                         },

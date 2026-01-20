@@ -23,11 +23,13 @@ class DocumentModel extends DocumentEntity {
     String? universityId, // Explicitly declare argument
     int? commentsCount, // Add commentsCount
     String? uploaderId, // Add uploaderId
+    DateTime? createdAt,
   }) : super(
     subjectId: subjectId,
     universityId: universityId,
     commentsCount: commentsCount,
     uploaderId: uploaderId,
+    createdAt: createdAt,
   );
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) {
@@ -71,7 +73,14 @@ class DocumentModel extends DocumentEntity {
       currentUserReaction: json['currentUserReaction'],
       previewUrls: parsePreviews(json),
       description: json['description'] ?? '',
+      createdAt: _parseDate(json),
     );
+  }
+
+  static DateTime? _parseDate(Map<String, dynamic> json) {
+    final dateStr = json['createdAt'] ?? json['createdDate'] ?? json['uploadDate'] ?? json['updatedAt'];
+    if (dateStr == null) return null;
+    return DateTime.tryParse(dateStr.toString());
   }
 
   static String formatBytes(int bytes, int decimals) {
@@ -136,6 +145,7 @@ class DocumentModel extends DocumentEntity {
       subjectId: subjectId ?? this.subjectId,
       universityId: universityId ?? this.universityId,
       uploaderId: uploaderId ?? this.uploaderId,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 

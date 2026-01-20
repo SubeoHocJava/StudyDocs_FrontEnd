@@ -7,6 +7,7 @@ import 'package:studydocs/features/docs_management/logic/docs_management_state.d
 import 'package:studydocs/features/docs_management/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:studydocs/features/docs_management/presentation/screen/docs_management_detail_screen.dart';
 import 'package:studydocs/features/docs_management/presentation/screen/docs_edit_screen.dart';
+import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 
 class DocsManagementScreen extends StatefulWidget {
   final bool isAdminMode;
@@ -18,11 +19,16 @@ class DocsManagementScreen extends StatefulWidget {
 }
 
 class _DocsManagementScreenState extends State<DocsManagementScreen> {
+  bool _showOnlyMine = false;
+
   @override
   void initState() {
     super.initState();
-    // Load data initially
-    if (widget.isAdminMode) {
+    // Use auth role to decide initial load if mode not explicitly forced
+    final authState = context.read<AuthStatusCubit>().state;
+    final bool effectivelyAdmin = widget.isAdminMode || (authState is AuthAuthenticated && authState.isAdmin);
+    
+    if (effectivelyAdmin) {
       context.read<DocsManagementBloc>().add(const dm_event.LoadAllDocs());
     } else {
       context.read<DocsManagementBloc>().add(const dm_event.LoadMyDocs());
@@ -77,7 +83,10 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                               builder:
                                   (context) => FilterBottomSheet(
                                     onApply: (school, subject, year) {
-                                      if (widget.isAdminMode) {
+                                      final authState = context.read<AuthStatusCubit>().state;
+                                      final bool effectivelyAdmin = widget.isAdminMode || (authState is AuthAuthenticated && authState.isAdmin);
+
+                                      if (effectivelyAdmin) {
                                          context.read<DocsManagementBloc>().add(
                                           dm_event.LoadAllDocs(
                                             filterSchool: school,
@@ -121,12 +130,15 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       final bloc = context.read<DocsManagementBloc>();
+                      final authState = context.read<AuthStatusCubit>().state;
+                      final bool effectivelyAdmin = widget.isAdminMode || (authState is AuthAuthenticated && authState.isAdmin);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => BlocProvider.value(
                             value: bloc,
-                            child: DocsEditScreen(isAdmin: widget.isAdminMode),
+                            child: DocsEditScreen(isAdmin: effectivelyAdmin),
                           ),
                         ),
                       );
@@ -137,49 +149,86 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
             ),
           ),
 
-          Expanded(
-            child: BlocBuilder<DocsManagementBloc, DocsManagementState>(
-              builder: (context, state) {
-                if (state is DocsManagementLoading ||
-                    state is DocsManagementInitial) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is DocsManagementError) {
-                  return Center(child: Text("Lỗi: ${state.message}"));
-                }
-                if (state is DocsManagementLoaded) {
-                  final docs = state.docs;
-                  if (docs.isEmpty) {
-                    return const Center(child: Text("Chưa có tài liệu nào"));
-                  }
+          // SLIDING TOGGLE FILTER (Only in Admin Mode)
+          BlocBuilder<AuthStatusCubit, AuthStatus>(
+            builder: (context, authState) {
+              final bool isActuallyAdmin = widget.isAdminMode || (authState is AuthAuthenticated && authState.isAdmin);
+              if (isActuallyAdmin) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: _buildSlidingToggle(),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
 
-                  // Mock sections "Hôm nay", "Trước đó" roughly
-                  return ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          "Hôm nay",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      ...docs.map((doc) => _buildDocItem(context, doc)),
-                      const SizedBox(height: 16),
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          "Trước đó",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      // Just mock repeating the list for visual effect of "Earlier"
-                      _buildDocItem(context, docs.first, isMockEarlier: true),
-                    ],
-                  );
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final bloc = context.read<DocsManagementBloc>();
+                final authState = context.read<AuthStatusCubit>().state;
+                final bool isActuallyAdmin = widget.isAdminMode || (authState is AuthAuthenticated && authState.isAdmin);
+
+                if (isActuallyAdmin) {
+                  if (_showOnlyMine) {
+                    bloc.add(const dm_event.LoadMyDocs());
+                  } else {
+                    bloc.add(const dm_event.LoadAllDocs());
+                  }
+                } else {
+                  bloc.add(const dm_event.LoadMyDocs());
                 }
-                return const SizedBox();
+                // Small delay to ensure smooth feel if fast
+                await Future.delayed(const Duration(milliseconds: 500));
               },
+              child: BlocBuilder<DocsManagementBloc, DocsManagementState>(
+                builder: (context, state) {
+                  if (state is DocsManagementLoading ||
+                      state is DocsManagementInitial) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is DocsManagementError) {
+                    return Center(child: Text("Lỗi: ${state.message}"));
+                  }
+                  if (state is DocsManagementLoaded) {
+                    final docs = state.docs;
+
+                    if (docs.isEmpty) {
+                      return ListView(
+                        children: [
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                          const Center(child: Text("Chưa có tài liệu nào")),
+                        ],
+                      );
+                    }
+              
+                    final grouped = _groupDocumentsByDate(docs);
+              
+                    return ListView(
+                      padding: const EdgeInsets.all(16),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        if (grouped['today']!.isNotEmpty) ...[
+                          _buildSectionHeader("Hôm nay"),
+                          ...grouped['today']!.map((doc) => _buildDocItem(context, doc)),
+                          const SizedBox(height: 16),
+                        ],
+                        if (grouped['yesterday']!.isNotEmpty) ...[
+                          _buildSectionHeader("Hôm qua"),
+                          ...grouped['yesterday']!.map((doc) => _buildDocItem(context, doc)),
+                          const SizedBox(height: 16),
+                        ],
+                        if (grouped['earlier']!.isNotEmpty) ...[
+                          _buildSectionHeader("Trước đó"),
+                          ...grouped['earlier']!.map((doc) => _buildDocItem(context, doc)),
+                        ],
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
           ),
         ],
@@ -187,11 +236,129 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
     );
   }
 
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      ),
+    );
+  }
+
+  Widget _buildSlidingToggle() {
+    return Container(
+      height: 40,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          AnimatedAlign(
+            alignment: _showOnlyMine ? Alignment.centerRight : Alignment.centerLeft,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.45,
+              margin: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_showOnlyMine) {
+                      setState(() => _showOnlyMine = false);
+                      context.read<DocsManagementBloc>().add(const dm_event.LoadAllDocs());
+                    }
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Center(
+                    child: Text(
+                      "Tất cả",
+                      style: TextStyle(
+                        fontWeight: !_showOnlyMine ? FontWeight.bold : FontWeight.normal,
+                        color: !_showOnlyMine ? const Color(0xFF0D0845) : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (!_showOnlyMine) {
+                      setState(() => _showOnlyMine = true);
+                      context.read<DocsManagementBloc>().add(const dm_event.LoadMyDocs());
+                    }
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Center(
+                    child: Text(
+                      "Admin tải",
+                      style: TextStyle(
+                        fontWeight: _showOnlyMine ? FontWeight.bold : FontWeight.normal,
+                        color: _showOnlyMine ? const Color(0xFF0D0845) : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Map<String, List<DocumentEntity>> _groupDocumentsByDate(List<DocumentEntity> docs) {
+    final Map<String, List<DocumentEntity>> grouped = {
+      'today': [],
+      'yesterday': [],
+      'earlier': [],
+    };
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    for (var doc in docs) {
+      final date = (doc.createdAt ?? today).toLocal(); 
+      final docDate = DateTime(date.year, date.month, date.day);
+
+      if (docDate == today) {
+        grouped['today']!.add(doc);
+      } else if (docDate == yesterday) {
+        grouped['yesterday']!.add(doc);
+      } else {
+        grouped['earlier']!.add(doc);
+      }
+    }
+    return grouped;
+  }
+
   Widget _buildDocItem(
     BuildContext context,
-    DocumentEntity doc, {
-    bool isMockEarlier = false,
-  }) {
+    DocumentEntity doc,
+  ) {
+    final authState = context.watch<AuthStatusCubit>().state;
+    final currentUserId = authState is AuthAuthenticated ? authState.userId : null;
+    final isMine = currentUserId != null && doc.uploaderId == currentUserId;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -237,15 +404,39 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center, // Aligns items vertically in the center
-                    spacing: 8, // Gap between items
-                    children: [
-                      _buildInfoTag(Icons.school, doc.school),
-                      if (doc.course.isNotEmpty) _buildInfoTag(Icons.book, doc.course),
-                      if (doc.year.isNotEmpty) _buildInfoTag(Icons.calendar_today, doc.year),
-                    ],
-                  ),
+                      Row(
+                        children: [
+                          if (isMine) ...[
+                            Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                    color: Colors.blue.shade100,
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: const Text("Admin tải",
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold))),
+                            const SizedBox(width: 8),
+                          ] else if (!_showOnlyMine) ...[
+                             _buildInfoTag(Icons.person, doc.uploader),
+                             const SizedBox(width: 8),
+                          ],
+                          Expanded(
+                            child: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              children: [
+                                _buildInfoTag(Icons.school, doc.school),
+                                if (doc.course.isNotEmpty) 
+                                   _buildInfoTag(Icons.book, doc.course),
+                                if (doc.year.isNotEmpty)
+                                  _buildInfoTag(Icons.calendar_today, doc.year),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                 ],
               ),
             ),

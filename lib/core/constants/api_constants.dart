@@ -71,6 +71,11 @@ class ReviewEndpoints {
   
   static const String documentStats = '$base/document'; // Append /$id/stats
   static const String documentReact = '$base/document'; // Append /$id/react
+
+  // Admin stats
+  static const String adminStats = '$base/admin/stats';
+  static const String adminTotalLikes = '$adminStats/reactions/total-likes';
+  static const String adminTotalReviews = '$adminStats/reviews/total';
 }
 
 class AcademicEndpoints {

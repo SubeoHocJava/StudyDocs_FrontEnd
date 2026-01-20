@@ -29,11 +29,20 @@ class UploadFileScreen extends StatelessWidget {
         ..add(UploadFileLoadDocumentByKeyWord("keyword"))
         ..add(PickDocument()),
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Đăng tải tài liệu'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
         body: BlocConsumer<UploadFileBloc, UploadFileState>(
           listener: (context, state) {
             if (state is UploadFileSuccess) {//thông báo success
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Upload thành công!")),
+                SnackBar(content: Text("Upload thành công!"),backgroundColor: Colors.green,),
               );
               Navigator.pop(context);
             }
@@ -63,7 +72,7 @@ class UploadFileScreen extends StatelessWidget {
                       ),
                       SizedBox(height: responsive.heightPercent(2)),
                       FileUploadLabel(files: state.file),
-                      SizedBox(),
+                      SizedBox(height: responsive.heightPercent(2)),
                       SchoolLabel(
                         school: state.school,
                         schoolId: state.schoolId,

@@ -420,6 +420,7 @@ GoRouter createAppRouter() {
         redirect: _checkAdminRedirect,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
+          final isAdmin = state.uri.queryParameters['isAdmin'] == 'true';
           final repository = DocsManagementRepositoryImpl(
             dataSource: DocsManagementRemoteDataSourceImpl(dioClient: context.read<DioClient>()),
           );
@@ -434,7 +435,7 @@ GoRouter createAppRouter() {
                   updateAdminDocUseCase: UpdateAdminDocUseCase(repository),
                   uploadDocUseCase: UploadDocUseCase(repository),
                 ),
-            child: const DocsManagementScreen(),
+            child: DocsManagementScreen(isAdminMode: isAdmin),
           );
         },
       ),
