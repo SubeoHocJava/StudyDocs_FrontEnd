@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/data/datasource/impl/notification_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/notification_template_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'app.dart';
 import 'core/network/dio_client.dart';
 import 'features/notification/domain/repository/impl/notification_repository.dart';
@@ -38,7 +39,11 @@ void main() async {
 
   // Docs Management
   final docsMgmtDataSource = DocsManagementRemoteDataSourceImpl(dioClient: dioClient);
-  final docsMgmtRepository = DocsManagementRepositoryImpl(dataSource: docsMgmtDataSource);
+  final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
+  final docsMgmtRepository = DocsManagementRepositoryImpl(
+    dataSource: docsMgmtDataSource,
+    academicDataSource: academicDataSource,
+  );
 
   // Docs Viewing (Public)
   final docsDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);

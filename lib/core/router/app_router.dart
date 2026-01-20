@@ -421,8 +421,10 @@ GoRouter createAppRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final isAdmin = state.uri.queryParameters['isAdmin'] == 'true';
+          final dioClient = context.read<DioClient>();
           final repository = DocsManagementRepositoryImpl(
-            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: context.read<DioClient>()),
+            dataSource: DocsManagementRemoteDataSourceImpl(dioClient: dioClient),
+            academicDataSource: AcademicRemoteDataSourceImpl(dioClient: dioClient),
           );
           return BlocProvider(
             create:

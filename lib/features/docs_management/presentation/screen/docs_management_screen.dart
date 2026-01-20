@@ -493,9 +493,13 @@ class _DocsManagementScreenState extends State<DocsManagementScreen> {
       children: [
         Icon(icon, size: 12, color: Colors.grey),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
+        Flexible(
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
