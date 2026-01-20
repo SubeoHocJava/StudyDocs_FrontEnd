@@ -41,7 +41,7 @@ class FollowScreen extends StatelessWidget {
                   context.read<FollowBloc>().add(FollowUser(userId));
                 },
                 onUserTap: (userId) {
-                  // Navigate to user profile if needed
+                  context.push('${AppRoutes.profile}/$userId');
                 },
               );
             } else if (state is FollowError) {

@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String _base = "http://172.16.17.156:8080/api/v1";
+  static const String _base = "http://172.16.16.81:8080/api/v1";
   static const String baseUrl = '$_base/';
 
   // Timeout
@@ -92,6 +92,10 @@ class ReviewEndpoints {
   static const String adminStats = '$base/admin/stats';
   static const String adminTotalLikes = '$adminStats/reactions/total-likes';
   static const String adminTotalReviews = '$adminStats/reviews/total';
+
+  // Document related
+  static const String documentStats = '$base/document'; // /{id}/stats
+  static const String documentReact = '$base/document'; // /{id}/react
 
   // ✅ ADD — USER REACTION COUNT
   // GET /api/v1/reviews/user/me/reactions/count?type=LIKE
