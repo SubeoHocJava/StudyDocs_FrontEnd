@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String _base = "http://172.16.17.156:8080/api/v1";
+  static const String _base = "http://172.16.16.81:8080/api/v1";
   static const String baseUrl = '$_base/';
 
   // Timeout
@@ -65,7 +65,7 @@ class DocumentEndpoints {
   static const String myNewest = '$user/me/newest';
   static const String myHistory = '$user/me/history';
 
-  // ✅ ADD — USER DOCUMENT COUNT
+
   // GET /api/v1/documents/user/me/count
   static const String myDocumentCount = '$user/me/count';
 
@@ -85,15 +85,8 @@ class ReviewEndpoints {
   static const String documentStats = '$base/document'; // /{id}/stats
   static const String documentReact = '$base/document'; // /{id}/react
 
-  // ✅ ADD — USER REACTION COUNT
-  // GET /api/v1/reviews/user/me/reactions/count?type=LIKE
-  static const String myReactionCount =
-      '$base/user/me/reactions/count';
-
-  // ✅ ADD — USER REVIEW COUNT
-  // GET /api/v1/reviews/user/{userId}/count
-  static const String userReviewCount =
-      '$base/user/{{userId}}/count';
+  static const String myReactionCount = '$base/user/me/reactions/count';
+  static const String userReviewCount = '$base/user/{{userId}}/count';
 }
 
 /// =================================================
