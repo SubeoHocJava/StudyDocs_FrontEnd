@@ -10,6 +10,7 @@ import 'package:studydocs/features/home/logic/home_bloc.dart';
 import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/home/presentation/widget/home_banner.dart';
+import 'package:studydocs/core/widgets/global_error_listener.dart';
 
 // Adapter to use DocumentEntity with the reused ListDocument widget
 class HomeDocumentAdapter extends DocumentUiList {
@@ -52,6 +53,7 @@ class HomeDocumentAdapter extends DocumentUiList {
 
   @override
   bool get isSaved => entity.isSaved;
+
 }
 
 class HomePage extends StatefulWidget {
@@ -157,16 +159,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // HomePage is displayed inside the MainScreen shell which already contains Header.
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            context.read<HomeBloc>().add(const RefreshDocumentsEvent());
-            await Future.delayed(const Duration(milliseconds: 500));
-          },
-          child: _buildBody(state),
-        );
+    return GlobalErrorListener<HomeBloc, HomeState>(
+      errorExtractor: (state) {
+        if (state is HomeLoaded) {
+          return state.actionError;
+        }
+        return null;
       },
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<HomeBloc>().add(const RefreshDocumentsEvent());
+              await Future.delayed(const Duration(milliseconds: 500));
+            },
+            child: _buildBody(state),
+          );
+        },
+      ),
     );
   }
 
