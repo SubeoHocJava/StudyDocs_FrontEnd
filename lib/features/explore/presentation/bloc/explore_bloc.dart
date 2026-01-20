@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/explore/domain/entity/school_entity.dart';
 import 'package:studydocs/features/explore/domain/usecase/search_schools_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 
 /// -----------------------------
 /// EVENT
@@ -101,7 +103,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
       emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: e.toString(),
+          errorMessage: _getErrorMessage(e),
         ),
       );
     }
@@ -132,11 +134,16 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
       emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: e.toString(),
+          errorMessage: _getErrorMessage(e),
         ),
       );
     }
   }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
+  }
 }
-
-

@@ -6,6 +6,8 @@ import '../domain/usecase/delete_admin_doc_usecase.dart';
 import '../domain/usecase/update_doc_usecase.dart';
 import '../domain/usecase/update_admin_doc_usecase.dart';
 import '../domain/usecase/upload_doc_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'docs_management_event.dart';
 import 'docs_management_state.dart';
 
@@ -58,7 +60,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
 
       emit(DocsManagementLoaded(filtered));
     } catch (e) {
-      emit(DocsManagementError(e.toString()));
+      emit(DocsManagementError(_getErrorMessage(e)));
     }
   }
 
@@ -88,7 +90,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
 
       emit(DocsManagementLoaded(filtered));
     } catch (e) {
-      emit(DocsManagementError(e.toString()));
+      emit(DocsManagementError(_getErrorMessage(e)));
     }
   }
 
@@ -108,7 +110,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
       } catch (e) {
         // Revert
         emit(DocsManagementLoaded(currentDocs));
-        emit(DocsManagementError("Failed to delete: $e"));
+        emit(DocsManagementError(_getErrorMessage(e)));
       }
     }
   }
@@ -132,7 +134,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
       } catch (e) {
         // Revert
         emit(DocsManagementLoaded(currentDocs));
-        emit(DocsManagementError("Failed to delete (Admin): $e"));
+        emit(DocsManagementError(_getErrorMessage(e)));
       }
     }
   }
@@ -151,7 +153,7 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
          add(const LoadMyDocs()); // Reload user docs
       }
     } catch (e) {
-      emit(DocsManagementError("Failed to update: $e"));
+      emit(DocsManagementError(_getErrorMessage(e)));
     }
   }
 
@@ -161,7 +163,14 @@ class DocsManagementBloc extends Bloc<DocsManagementEvent, DocsManagementState> 
       await uploadDocUseCase(event.file, event.metadata);
       add(const LoadMyDocs()); // Reload list
     } catch (e) {
-      emit(DocsManagementError("Failed to upload: $e"));
+      emit(DocsManagementError(_getErrorMessage(e)));
     }
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 }

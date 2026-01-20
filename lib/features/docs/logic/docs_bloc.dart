@@ -4,6 +4,8 @@ import '../domain/usecase/toggle_save_usecase.dart';
 import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/post_comment_usecase.dart';
 import '../domain/usecase/react_review_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'docs_event.dart';
 import 'docs_state.dart';
 
@@ -40,7 +42,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       final doc = await getDocumentUseCase(documentId: documentId);
       emit(DocsLoaded(doc));
     } catch (e) {
-      emit(DocsError(e.toString()));
+      emit(DocsError(_getErrorMessage(e)));
     }
   }
 
@@ -127,7 +129,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
       } catch (e) {
         // Revert
         emit(current.copyWith(docDetails: doc));
-        emit(DocsError("Không thể đánh giá: $e"));
+        emit(DocsError(_getErrorMessage(e)));
       }
     }
   }
@@ -143,7 +145,7 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
         // Reload lại doc để lấy comment mới (hoặc add manual vào list)
         add(const LoadDocDetails()); 
       } catch (e) {
-        emit(DocsError("Lỗi đăng bình luận: $e"));
+        emit(DocsError(_getErrorMessage(e)));
         // Emit lại state cũ để không bị kẹt ở loading/error
         emit(current); 
       }
@@ -166,6 +168,13 @@ class DocsBloc extends Bloc<DocsEvent, DocsState> {
        print("Lỗi react review: $e");
      }
 
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 
 }

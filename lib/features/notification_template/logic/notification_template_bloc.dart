@@ -10,6 +10,8 @@ import 'package:studydocs/features/notification_template/domain/usecase/search_n
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_template_categories_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/get_notification_templates_usecase.dart';
 import 'package:studydocs/features/notification_template/domain/usecase/update_notification_template_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 
 import 'notification_template_event.dart';
 import 'notification_template_state.dart';
@@ -68,7 +70,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     } catch (e) {
       emit(state.copyWith(
         status: NotificationTemplateStatus.failure,
-        errorMessage: e.toString(),
+        errorMessage: _getErrorMessage(e),
       ));
     }
   }
@@ -93,7 +95,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     } catch (e) {
       emit(state.copyWith(
          status: NotificationTemplateStatus.failure,
-         errorMessage: e.toString()
+         errorMessage: _getErrorMessage(e)
       ));
     }
   }
@@ -134,7 +136,7 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     } catch (e) {
       emit(state.copyWith(
         status: NotificationTemplateStatus.failure,
-        errorMessage: e.toString(),
+        errorMessage: _getErrorMessage(e),
       ));
     }
   }
@@ -151,8 +153,15 @@ class NotificationTemplateBloc extends Bloc<NotificationTemplateEvent, Notificat
     } catch (e) {
       emit(state.copyWith(
         status: NotificationTemplateStatus.failure,
-        errorMessage: e.toString(),
+        errorMessage: _getErrorMessage(e),
       ));
     }
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 }
