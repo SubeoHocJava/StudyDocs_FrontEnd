@@ -177,4 +177,39 @@ class UserDataSourceImpl implements UserRemoteDataSource {
   Future<ApiResponse> getSavedDocuments({String? traceId}) {
     return dioClient.get(UserEndpoints.documentSaved);
   }
+
+
+  @override
+  Future<ApiResponse> getMyDocumentCount({String? traceId}) {
+    return dioClient.get(
+      DocumentEndpoints.myDocumentCount,
+    );
+  }
+
+  /// ===============================
+  /// REVIEW / REACTION
+  /// ===============================
+  @override
+  Future<ApiResponse> getMyReactionCount(
+      String type, {
+        String? traceId,
+      }) {
+    return dioClient.get(
+      ReviewEndpoints.myReactionCount,
+      queryParameters: {'type': type},
+    );
+  }
+
+  @override
+  Future<ApiResponse> getUserReviewCount(
+      String userId, {
+        String? traceId,
+      }) {
+    return dioClient.get(
+      ReviewEndpoints.userReviewCount.replaceAll(
+        '{{userId}}',
+        userId,
+      ),
+    );
+  }
 }
