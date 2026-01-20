@@ -22,9 +22,11 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) { 
     return BlocProvider(
-      create: (_) => NotificationBloc(context.read<NotificationRepository>())..add(const LoadNotificationEvent(isDeleted: false)),
+      create: (_) => NotificationBloc(context.read<NotificationRepository>())
+        ..add(const LoadNotificationEvent(isDeleted: false)),
       child: GlobalErrorListener<NotificationBloc, NotificationState>(
-        errorExtractor: (state) => state is NotificationErrorState ? state.message : null,
+        errorExtractor: (state) =>
+            state is NotificationErrorState ? state.message : null,
         child: Builder(
           builder: (context) {
             return NotificationPageLayout(
@@ -32,6 +34,11 @@ class NotificationScreen extends StatelessWidget {
               isDeleted: false,
               headerTitle: "Thông báo",
               emptyMessage: "Chưa có dữ liệu",
+              onRefresh: () async {
+                context.read<NotificationBloc>().add(
+                      const LoadNotificationEvent(isDeleted: false),
+                    );
+              },
               extraAction: Material(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -61,7 +68,8 @@ class NotificationScreen extends StatelessWidget {
                   context: ctx,
                   barrierColor: Colors.black.withValues(alpha: 0.6),
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
                   ),
                   isScrollControlled: true,
                   builder: (_) => BlocProvider.value(
@@ -75,8 +83,8 @@ class NotificationScreen extends StatelessWidget {
                 return RefreshIndicator(
                   onRefresh: () async {
                     context.read<NotificationBloc>().add(
-                      const LoadNotificationEvent(isDeleted: false),
-                    );
+                          const LoadNotificationEvent(isDeleted: false),
+                        );
                   },
                   child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -89,8 +97,8 @@ class NotificationScreen extends StatelessWidget {
                         type: NotificationSectionType.normal,
                         onSoftDelete: (id) {
                           context.read<NotificationBloc>().add(
-                            DeleteNotificationEvent([id], DeleteType.soft),
-                          );
+                                DeleteNotificationEvent([id], DeleteType.soft),
+                              );
                         },
                       );
                     },
@@ -98,9 +106,10 @@ class NotificationScreen extends StatelessWidget {
                 );
               },
             );
-          }
+          },
         ),
       ),
     );
+
   }
 }
