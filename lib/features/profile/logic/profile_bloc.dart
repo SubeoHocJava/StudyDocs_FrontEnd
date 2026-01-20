@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/model/profile_entity.dart';
 import '../domain/repository/profile_repository.dart';
 import '../domain/usecase/get_profile_usecase.dart';
+import '../domain/usecase/load_schools_usecase.dart';
 import '../domain/usecase/update_avatar_usecase.dart';
 import '../domain/usecase/update_profile_usecase.dart';
 import '../domain/usecase/verify_email_usecase.dart';
@@ -18,6 +19,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc(this.repository) : super(ProfileInitial()) {
     final getProfileUseCase = GetProfileUseCase(repository);
+    final getSchoolsUseCase = GetSchoolsUseCase(repository);
     final updateProfileUseCase = UpdateProfileUseCase(repository);
     final updateAvatarUseCase = UpdateAvatarUseCase(repository);
     final verifyEmailUseCase = VerifyEmailUseCase(repository);
@@ -30,11 +32,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       try {
         final profile = await getProfileUseCase(event.userId);
         final documents = await repository.getDocumentsByUser(profile.id);
+        final schools = await getSchoolsUseCase();
 
         emit(
           HelperMap.mapProfileToLoaded(
             profile: profile,
             documents: documents,
+            schools: schools,
           ),
         );
       } catch (e) {
@@ -47,11 +51,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       try {
         final profile = await getProfileUseCase(event.userId);
         final documents = await repository.getDocumentsByUser(profile.id);
+        final schools = await getSchoolsUseCase();
 
         emit(
           HelperMap.mapProfileToLoaded(
             profile: profile,
             documents: documents,
+            schools: schools,
           ),
         );
       } catch (e) {
@@ -64,7 +70,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (state is! ProfileLoaded) return;
       final current = state as ProfileLoaded;
 
-      // bật loading
       emit(current.copyWith(isUpdating: true));
 
       try {
@@ -87,7 +92,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           ),
         );
 
-        // ✅ QUAY LẠI PROFILELOADED (KHÔNG EMIT STATE KHÁC)
         emit(
           current.copyWith(
             userName: updatedProfile.username,
@@ -187,7 +191,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     // ================= DOCUMENT: DOWNLOAD =================
     on<DownloadDocumentRequested>((event, emit) async {
       // chỉ gọi API, không update state
-      // await repository.downloadDocument(event.documentId);
     });
   }
 }

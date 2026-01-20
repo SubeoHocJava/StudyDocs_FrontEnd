@@ -5,10 +5,10 @@ import '../domain/model/profile_entity.dart';
 
 class HelperMap {
   /// ProfileEntity -> ProfileLoaded (state)
-
   static ProfileLoaded mapProfileToLoaded({
     required ProfileEntity profile,
     required List<DocumentProfile> documents,
+    required List<String> schools,
   }) {
     return ProfileLoaded(
       id: profile.id,
@@ -28,7 +28,9 @@ class HelperMap {
       numMeFollow: profile.countFollowing,
       numMyUpload: profile.countDocument,
       numMyLikes: profile.countLike,
+
       documents: documents,
+      schools: schools,
     );
   }
 
