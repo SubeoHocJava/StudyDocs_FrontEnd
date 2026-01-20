@@ -33,7 +33,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final profile = await getProfileUseCase(event.userId);
         final documents = await repository.getDocumentsByUser(profile.id);
         final schools = await getSchoolsUseCase();
-
+        print("profile: "+profile.countReview.toString());
         emit(
           HelperMap.mapProfileToLoaded(
             profile: profile,
