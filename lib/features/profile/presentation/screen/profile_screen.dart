@@ -6,7 +6,8 @@ import 'package:studydocs/services/token_storage_service.dart';
 import 'package:studydocs/core/widgets/header.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:studydocs/core/router/app_router.dart';
-import 'package:studydocs/core/widgets/global_error_listener.dart'; // Import this
+import 'package:studydocs/core/widgets/global_error_listener.dart';
+import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart'; // Import this
 
 import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
@@ -112,27 +113,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               BasicInfor(state: state),
                               Statistical(state: state),
-                              UploadFileButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BlocProvider(
-                                        create: (_) => UploadFileBloc(
-                                          uploadFileUseCase: UploadFileUseCase(
-                                            repository:
-                                            UpLoadFileRepositoryImpl(),
-                                          ),
-                                        )..add(
-                                          const UploadFileLoadDocumentByKeyWord(
-                                            "keyword",
+                              Builder(
+                                builder: (context) {
+                                  final authState = context.read<AuthStatusCubit>().state;
+                                  final isOwnProfile = authState is AuthAuthenticated && authState.userId == state.id;
+                                  
+                                  if (!isOwnProfile) return const SizedBox.shrink();
+
+                                  return UploadFileButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => BlocProvider(
+                                            create: (_) => UploadFileBloc(
+                                              uploadFileUseCase: UploadFileUseCase(
+                                                repository:
+                                                UpLoadFileRepositoryImpl(),
+                                              ),
+                                            )..add(
+                                              const UploadFileLoadDocumentByKeyWord(
+                                                "keyword",
+                                              ),
+                                            ),
+                                            child: const UploadFileScreen(),
                                           ),
                                         ),
-                                        child: const UploadFileScreen(),
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   );
-                                },
+                                }
                               ),
                               UpLoadDocument(
                                 state: state,
