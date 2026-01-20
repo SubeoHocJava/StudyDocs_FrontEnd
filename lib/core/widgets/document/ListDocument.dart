@@ -151,12 +151,12 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
           minHeight: responsive.isMobile ? 120 : 136,
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFD0D0D0), width: 1.2),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Theme.of(context).shadowColor,
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -263,7 +263,7 @@ class DocumentImage extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.navy, width: 1.2),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
@@ -306,14 +306,14 @@ class _ActionIcon extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? Colors.amber : const Color(0xFFD0D0D0),
+            color: selected ? Theme.of(context).colorScheme.tertiary : Theme.of(context).dividerColor,
             width: 1.2,
           ),
         ),
         child: Icon(
           icon,
           size: 22,
-          color: selected ? Colors.amber.shade800 : Colors.grey.shade700,
+          color: selected ? Theme.of(context).colorScheme.tertiary : Theme.of(context).iconTheme.color?.withOpacity(0.7),
         ),
       ),
     );
@@ -351,9 +351,17 @@ class SubjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      subject ?? 'Chưa phân loại',
-      style: TextStyle(fontSize: responsive.fontSize(11)),
+    return Row(
+      children: [
+        Icon(Icons.folder_open_outlined, size: 14, color: Theme.of(context).hintColor),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            subject ?? 'Chưa phân loại',
+            style: TextStyle(fontSize: responsive.fontSize(11), color: Theme.of(context).hintColor),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -366,9 +374,17 @@ class SchoolWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      school ?? 'Chưa có trường',
-      style: TextStyle(fontSize: responsive.fontSize(11)),
+    return Row(
+      children: [
+        Icon(Icons.account_balance_outlined, size: 14, color: Theme.of(context).hintColor),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            school ?? 'Chưa có trường',
+            style: TextStyle(fontSize: responsive.fontSize(11), color: Theme.of(context).hintColor),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -390,9 +406,22 @@ class PageDateWidget extends StatelessWidget {
     final formatted =
     date != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(date!)) : 'N/A';
 
-    return Text(
-      "$pages trang • $formatted",
-      style: TextStyle(fontSize: responsive.fontSize(11)),
+    return Row(
+      children: [
+        Icon(Icons.description_outlined, size: 14, color: Theme.of(context).hintColor),
+        const SizedBox(width: 4),
+        Text(
+          "$pages trang",
+          style: TextStyle(fontSize: responsive.fontSize(11), color: Theme.of(context).hintColor),
+        ),
+        const SizedBox(width: 12),
+        Icon(Icons.calendar_today_outlined, size: 14, color: Theme.of(context).hintColor),
+        const SizedBox(width: 4),
+        Text(
+          formatted,
+          style: TextStyle(fontSize: responsive.fontSize(11), color: Theme.of(context).hintColor),
+        ),
+      ],
     );
   }
 }
@@ -429,13 +458,13 @@ class LikeCommentWidget extends StatelessWidget {
                Icon(
                 isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
                 size: 16,
-                color: isLiked ? Colors.blue : Colors.grey[700], 
+                color: isLiked ? Theme.of(context).colorScheme.primary : Theme.of(context).iconTheme.color?.withOpacity(0.7), 
               ),
               const SizedBox(width: 4),
               Text(
                 "${likes ?? 0}",
                 style: TextStyle(
-                   color: isLiked ? Colors.blue : Colors.black,
+                   color: isLiked ? Theme.of(context).colorScheme.primary : Theme.of(context).textTheme.bodyMedium?.color,
                    fontWeight: isLiked ? FontWeight.bold : FontWeight.normal,
                 ),
               ),

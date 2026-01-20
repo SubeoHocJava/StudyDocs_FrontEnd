@@ -48,7 +48,7 @@ class _SettingBoardState extends State<SettingBoard> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).cardTheme.color,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       contentPadding: const EdgeInsets.all(10),
@@ -59,19 +59,19 @@ class _SettingBoardState extends State<SettingBoard> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             "Cài đặt",
             style: TextStyle(
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.close_rounded,
               size: 32,
-              color: Colors.black87,
+              color: Theme.of(context).iconTheme.color,
             ),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -90,16 +90,16 @@ class _SettingBoardState extends State<SettingBoard> {
             child: ElevatedButton(
               onPressed: _openUpdateDialog,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Cập nhật thông tin",
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -116,16 +116,16 @@ class _SettingBoardState extends State<SettingBoard> {
                 // TODO: xử lý liên kết Google
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "Liên kết tài khoản Google",
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -69,8 +69,21 @@ class MonoDocumentInRow extends StatelessWidget {
             ),
             padding: EdgeInsets.all(responsive.isMobile ? 4 : 8),
             decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.navy),
+              border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).dividerColor
+                    : AppColors.navy,
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).shadowColor,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
@@ -106,7 +119,7 @@ class MonoDocumentInRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: responsive.fontSize(14),
                 fontWeight: FontWeight.bold,
-                color: AppColors.profileName,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,

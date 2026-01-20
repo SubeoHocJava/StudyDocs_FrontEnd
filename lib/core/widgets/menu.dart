@@ -52,7 +52,7 @@ class MenuDrawer extends StatelessWidget {
               ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile("")),
       child: Material(
         elevation: 16,
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(16),
           bottomRight: Radius.circular(16),
@@ -179,10 +179,10 @@ class MenuDrawer extends StatelessWidget {
                       state.fullName.isNotEmpty
                           ? state.fullName
                           : state.userName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.profileName,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -190,9 +190,9 @@ class MenuDrawer extends StatelessWidget {
                       (state.school != null && state.school!.isNotEmpty)
                           ? state.school!
                           : "Chưa có trường học",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.secondaryBlue,
+                        color: Theme.of(context).hintColor,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -219,18 +219,18 @@ class MenuDrawer extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        hoverColor: AppColors.primaryLight.withOpacity(0.5),
+        hoverColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primaryLight : Colors.transparent,
+            color: isActive ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
               Icon(
                 icon,
-                color: isActive ? AppColors.primary : AppColors.docSmallText,
+                color: isActive ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).iconTheme.color?.withOpacity(0.7),
                 size: 24,
               ),
               const SizedBox(width: 16),
@@ -239,7 +239,7 @@ class MenuDrawer extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: isActive ? AppColors.primary : AppColors.profileName,
+                  color: isActive ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
             ],

@@ -162,8 +162,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody(HomeState state) {
     if (state is HomeLoading || state is HomeInitial) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      return Center(
+        child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
       );
     }
 
@@ -181,7 +181,7 @@ class _HomePageState extends State<HomePage> {
 
       return SingleChildScrollView(
         child: Container(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -311,10 +311,10 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: AppColors.profileName,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
         ),
       ),
     );

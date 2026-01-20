@@ -15,14 +15,16 @@ class StatisticScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
-        title: const Text(
+        leading: BackButton(color: Theme.of(context).appBarTheme.foregroundColor),
+        title: Text(
           "Thống kê",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Theme.of(context).appBarTheme.foregroundColor,
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -30,8 +32,8 @@ class StatisticScreen extends StatelessWidget {
         child: BlocBuilder<StatisticBloc, StatisticState>(
           builder: (context, state) {
             if (state is StatisticLoading || state is StatisticInitial) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              return Center(
+                child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
               );
             }
 
@@ -47,7 +49,7 @@ class StatisticScreen extends StatelessWidget {
                   );
                   await Future.delayed(const Duration(milliseconds: 500));
                 },
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
@@ -91,12 +93,12 @@ class StatisticScreen extends StatelessWidget {
               color: AppColors.docSmallText,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Đã xảy ra lỗi',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.profileName,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 8),
@@ -116,8 +118,8 @@ class StatisticScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 12,

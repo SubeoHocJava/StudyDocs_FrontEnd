@@ -9,6 +9,9 @@ import '../../core/network/dio_client.dart';
 import '../../data/datasource/impl/auth_remote_datasource_impl.dart';
 import '../../data/datasource/impl/auth_remote_datasource_hybrid.dart';
 import '../theme/app_theme.dart';
+import '../theme/logic/theme_bloc.dart';
+import '../theme/logic/theme_state.dart';
+import '../theme/logic/theme_event.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_icons.dart';
 import 'app_icon_button.dart';
@@ -55,7 +58,8 @@ class Header extends StatefulWidget implements PreferredSizeWidget {
   State<Header> createState() => _HeaderState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(90);
+  @override
+  Size get preferredSize => const Size.fromHeight(70);
 }
 
 class _HeaderState extends State<Header> {
@@ -152,7 +156,7 @@ class _HeaderState extends State<Header> {
                 ),
               ),
             ],
-          ),
+            ),
     );
 
     overlayState.insert(_overlayEntry!);
@@ -170,15 +174,15 @@ class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.headerBackground,
+      color: Theme.of(context).appBarTheme.backgroundColor,
       child: SafeArea(
         bottom: false,
         child: SizedBox(
           height: widget.preferredSize.height,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
             children: [
-              const SizedBox(height: 20),
+              // Removed sizedbox 20
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 9.0),
@@ -189,7 +193,7 @@ class _HeaderState extends State<Header> {
                       Row(
                         children: [
                           _buildLeading(context),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 0),
                           if (widget.isDefault) _buildLogo(),
                         ],
                       ),
@@ -214,7 +218,7 @@ class _HeaderState extends State<Header> {
     if (widget.isDefault) {
       return AppIconButton(
         iconData: Icons.menu,
-        color: AppColors.headerForeground,
+        color: Theme.of(context).appBarTheme.foregroundColor,
         onPressed: _toggleMenu,
         size: 24,
       );
@@ -222,7 +226,7 @@ class _HeaderState extends State<Header> {
 
     return AppIconButton(
       iconData: Icons.arrow_back_ios_new,
-      color: AppColors.headerForeground,
+      color: Theme.of(context).appBarTheme.foregroundColor,
       onPressed: widget.onBack ?? () => Navigator.pop(context),
       size: 24,
     );
@@ -239,7 +243,25 @@ class _HeaderState extends State<Header> {
           context.go(AppRoutes.home);
         }
       },
-      child: Image.asset(AppAssets.logo, width: 56, height: 56),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, themeState) {
+          final themeMode = themeState.themeMode;
+          final isDark = themeMode == ThemeMode.dark ||
+                      (themeMode == ThemeMode.system &&
+                          MediaQuery.of(context).platformBrightness ==
+                              Brightness.dark);
+          
+          return SizedBox(
+            width: 70, 
+            height: 60,
+            child: Image.asset(
+              isDark ? AppAssets.logoDark : AppAssets.logo,
+              fit: BoxFit.contain,
+              alignment: Alignment.centerLeft,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -247,10 +269,10 @@ class _HeaderState extends State<Header> {
   Widget _buildTitle() {
     return Text(
       widget.headerTitle ?? '',
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: AppColors.headerForeground,
+        color: Theme.of(context).appBarTheme.foregroundColor,
         fontFamily: 'Montserrat',
       ),
     );
@@ -258,15 +280,13 @@ class _HeaderState extends State<Header> {
 
   /// RIGHT ACTIONS
   Widget _buildActions(BuildContext context) {
-    final theme = context.read<ThemeController>();
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.onModal != null) ...[
           AppIconButton(
             iconData: Icons.more_vert,
-            color: AppColors.headerForeground,
+            color: Theme.of(context).appBarTheme.foregroundColor,
             onPressed: () => widget.onModal?.call(context),
             size: 24,
           ),
@@ -276,7 +296,7 @@ class _HeaderState extends State<Header> {
         if (widget.onProfileTap != null) ...[
           AppIconButton(
             iconData: Icons.account_circle_outlined,
-            color: AppColors.headerForeground,
+            color: Theme.of(context).appBarTheme.foregroundColor,
             onPressed: widget.onProfileTap!,
             size: 28,
           ),
@@ -288,7 +308,7 @@ class _HeaderState extends State<Header> {
                 // ĐÃ ĐĂNG NHẬP → Hiển thị profile icon
                 return AppIconButton(
                   iconData: Icons.account_circle_outlined,
-                  color: AppColors.headerForeground,
+                  color: Theme.of(context).appBarTheme.foregroundColor,
                   onPressed: () {
                     // Navigate to profile screen
                     context.push(AppRoutes.profile);
@@ -297,38 +317,54 @@ class _HeaderState extends State<Header> {
                 );
               } else {
                 // CHƯA ĐĂNG NHẬP → Hiển thị nút đăng nhập
-                return ElevatedButton(
-                  onPressed:
-                      widget.onLoginTap ?? () => _showLoginModal(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.headerForeground,
-                    foregroundColor: AppColors.headerBackground,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      fontFamily: 'Montserrat',
-                    ),
-                  ),
-                  child: const Text('Đăng nhập'),
+                return BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, themeState) {
+                    final isDark = themeState.themeMode == ThemeMode.dark ||
+                                (themeState.themeMode == ThemeMode.system &&
+                                    MediaQuery.of(context).platformBrightness ==
+                                        Brightness.dark);
+                                        
+                    return ElevatedButton(
+                      onPressed:
+                          widget.onLoginTap ?? () => _showLoginModal(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark ? AppColors.white : AppColors.primary,
+                        foregroundColor: isDark ? AppColors.primary : AppColors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        textStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          fontFamily: 'Montserrat',
+                        ),
+                      ),
+                      child: const Text('Đăng nhập'),
+                    );
+                  },
                 );
               }
             },
           ),
         ],
         const SizedBox(width: 8),
-        AppIconButton(
-          iconData: Icons.wb_sunny_outlined,
-          color: AppColors.headerForeground,
-          onPressed: () => theme.toggle(),
-          size: 24,
+        BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, themeState) {
+            final isLight = themeState.themeMode == ThemeMode.light;
+            return AppIconButton(
+              iconData: isLight ? Icons.wb_sunny_outlined : Icons.nightlight_round,
+              color: Theme.of(context).appBarTheme.foregroundColor,
+              onPressed: () {
+                 context.read<ThemeBloc>().add(const ToggleTheme());
+              },
+              size: 24,
+            );
+          },
         ),
       ],
     );

@@ -22,15 +22,15 @@ class ManageUserScreen extends StatelessWidget {
                 createManageUserBloc(context.read<ManageUserRepository>())
                   ..add(LoadListUser(fromPage: 1, toPage: 3, numUser: 10)),
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
             elevation: 0,
-            leading: const BackButton(color: Colors.black),
-            title: const Text(
+            leading: BackButton(color: Theme.of(context).appBarTheme.foregroundColor),
+            title: Text(
               "Quản lý người dùng",
               style: TextStyle(
-                color: Colors.black,
+                color: Theme.of(context).appBarTheme.foregroundColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

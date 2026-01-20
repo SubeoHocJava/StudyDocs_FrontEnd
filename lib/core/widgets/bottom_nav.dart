@@ -11,8 +11,8 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor, width: 1)),
       ),
       child: SafeArea(
         child: Padding(
@@ -20,10 +20,10 @@ class BottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, Icons.home, 'Trang chủ'),
-              _buildNavItem(1, Icons.library_books, 'Thư viện'),
-              _buildNavItem(2, Icons.lightbulb_outline, 'Khám phá'),
-              _buildNavItem(3, Icons.notifications_outlined, 'Thông báo'),
+              _buildNavItem(context, 0, Icons.home, 'Trang chủ'),
+              _buildNavItem(context, 1, Icons.library_books, 'Thư viện'),
+              _buildNavItem(context, 2, Icons.lightbulb_outline, 'Khám phá'),
+              _buildNavItem(context, 3, Icons.notifications_outlined, 'Thông báo'),
             ],
           ),
         ),
@@ -31,9 +31,11 @@ class BottomNav extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
+  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
     final isSelected = currentIndex == index;
-    final color = isSelected ? AppColors.profileName : AppColors.docSmallText;
+    final color = isSelected
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).unselectedWidgetColor;
 
     return GestureDetector(
       onTap: () => onTap(index),

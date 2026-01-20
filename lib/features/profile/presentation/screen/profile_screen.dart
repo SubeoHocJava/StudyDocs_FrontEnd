@@ -10,11 +10,16 @@ import 'package:studydocs/features/profile/logic/profile_state.dart';
 import 'package:studydocs/features/profile/presentation/widget/BasicInfor.dart';
 import 'package:studydocs/features/profile/presentation/widget/Statistical.dart';
 import 'package:studydocs/features/profile/presentation/widget/StorageDocument.dart';
-import 'package:studydocs/features/profile/presentation/widget/UploadDocument.dart';
-import 'package:studydocs/core/widgets/upload_box.dart';
+import 'package:studydocs/core/router/app_router.dart';
+import 'package:studydocs/features/library/presentation/widget/library_widgets.dart';
+import 'package:studydocs/features/upload_file/domain/data/impl/upload_file_repository_implement.dart';
+import 'package:studydocs/features/upload_file/domain/usecase/upload_file_usecase.dart';
+import 'package:studydocs/features/upload_file/logic/upload_file_bloc.dart';
+import 'package:studydocs/features/upload_file/logic/upload_file_event.dart';
+import 'package:studydocs/features/upload_file/presentation/screen/upload_file_screen.dart';
 import 'package:studydocs/core/widgets/bottom_nav.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/core/router/app_router.dart';
+import 'package:studydocs/features/profile/presentation/widget/UploadDocument.dart';
 class ProfileScreen extends StatefulWidget {
   final String? userId;
 
@@ -79,9 +84,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           BasicInfor(state: state),
                           Statistical(state: state),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: UploadBox(),
+                          UploadFileButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider(
+                                    create: (context) => UploadFileBloc(
+                                      uploadFileUseCase: UploadFileUseCase(
+                                        repository: UpLoadFileRepositoryImpl(),
+                                      ),
+                                    )..add(const UploadFileLoadDocumentByKeyWord("keyword")),
+                                    child: const UploadFileScreen(),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           UpLoadDocument(state: state),
                           StorageDocument(state: state),

@@ -60,7 +60,7 @@ class SubjectLabel extends StatelessWidget {
                     "Chỉnh sửa",
                     style: TextStyle(
                       fontSize: responsive.fontSize(14),
-                      color: canSelect ? Colors.blueAccent : Colors.grey,
+                      color: canSelect ? Theme.of(context).colorScheme.primary : Theme.of(context).disabledColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -84,10 +84,10 @@ class SubjectLabel extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: canSelect ? Colors.grey.shade300 : Colors.grey.shade200,
+                    color: canSelect ? Theme.of(context).dividerColor : Theme.of(context).dividerColor.withOpacity(0.5),
                   ),
                   borderRadius: BorderRadius.circular(8),
-                  color: canSelect ? Colors.white : Colors.grey.shade100,
+                  color: canSelect ? Theme.of(context).cardTheme.color : Theme.of(context).colorScheme.surfaceContainerHighest,
                 ),
                 child: Row(
                   children: [
@@ -96,10 +96,10 @@ class SubjectLabel extends StatelessWidget {
                         subject.isEmpty ? "Chọn môn học" : subject,
                         style: TextStyle(
                           color: subject.isEmpty
-                              ? Colors.grey
+                              ? Theme.of(context).hintColor
                               : canSelect
-                                  ? Colors.blue
-                                  : Colors.grey,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).disabledColor,
                           fontSize: responsive.fontSize(16),
                           fontWeight: FontWeight.bold,
                         ),
@@ -107,7 +107,7 @@ class SubjectLabel extends StatelessWidget {
                     ),
                     Icon(
                       Icons.arrow_drop_down,
-                      color: canSelect ? Colors.grey : Colors.grey.shade400,
+                      color: canSelect ? Theme.of(context).iconTheme.color : Theme.of(context).disabledColor,
                     ),
                   ],
                 ),
