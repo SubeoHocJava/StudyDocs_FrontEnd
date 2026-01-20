@@ -9,6 +9,7 @@ import 'package:studydocs/features/profile/logic/profile_event.dart';
 import 'package:studydocs/features/profile/logic/profile_state.dart';
 import 'package:studydocs/features/profile/presentation/widget/Statistical.dart';
 import 'package:studydocs/core/router/app_router.dart';
+import 'package:studydocs/core/constants/app_icons.dart';
 
 class MenuDrawer extends StatelessWidget {
   final VoidCallback onClose;
@@ -45,10 +46,20 @@ class MenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.read<AuthStatusCubit>().state;
+    String userId = '';
+    if (authState is AuthAuthenticated) {
+      userId = authState.userId;
+    }
+
     return BlocProvider(
-      create:
-          (_) =>
-              ProfileBloc(ProfileRepositoryImpl())..add(const LoadProfile("")),
+      create: (_) {
+        final bloc = ProfileBloc(ProfileRepositoryImpl());
+        if (userId.isNotEmpty) {
+          bloc.add(LoadProfile(userId));
+        }
+        return bloc;
+      },
       child: Material(
         elevation: 16,
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -174,11 +185,10 @@ class MenuDrawer extends StatelessWidget {
               CircleAvatar(
                 radius: 28,
                 backgroundImage:
-                    state.avatarUrl != null
+                    (state.avatarUrl != null && state.avatarUrl!.isNotEmpty)
                         ? NetworkImage(state.avatarUrl!)
-                        : null,
-                child:
-                    state.avatarUrl == null ? const Icon(Icons.person) : null,
+                        : const AssetImage(AppAssets.avt) as ImageProvider,
+                child: null,
               ),
               const SizedBox(width: 12),
               Expanded(
