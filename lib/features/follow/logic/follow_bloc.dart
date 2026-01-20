@@ -3,6 +3,8 @@ import 'package:studydocs/features/follow/domain/repository/follow_repository.da
 import 'follow_event.dart';
 import 'follow_state.dart';
 
+import 'package:studydocs/services/token_storage_service.dart';
+
 class FollowBloc extends Bloc<FollowEvent, FollowState> {
   final FollowRepository repository;
 
@@ -19,9 +21,14 @@ class FollowBloc extends Bloc<FollowEvent, FollowState> {
   ) async {
     emit(FollowLoading());
     try {
-      // Mock user ID 'me'
-      final followers = await repository.getFollowers('me');
-      final following = await repository.getFollowing('me');
+      final userId = await TokenStorageService().getUserId();
+      if (userId == null) {
+        emit(const FollowError("Không tìm thấy thông tin người dùng"));
+        return;
+      }
+      
+      final followers = await repository.getFollowers(userId);
+      final following = await repository.getFollowing(userId);
       emit(FollowLoaded(followers: followers, following: following));
     } catch (e) {
       emit(FollowError(e.toString()));
