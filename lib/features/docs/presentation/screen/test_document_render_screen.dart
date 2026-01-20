@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:url_launcher/url_launcher.dart'; // Ensure url_launcher is available or use generic launch logic
 import 'package:studydocs/features/docs/data/model/document_model.dart';
 import '../../domain/entity/document_entity.dart';
 

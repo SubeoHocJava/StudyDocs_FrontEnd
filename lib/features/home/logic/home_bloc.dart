@@ -4,7 +4,6 @@ import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart'; //  Import Asset Impl
-import 'package:studydocs/data/datasource/docs_remote_datasource.dart'; // Import DocsRemoteDataSourceImpl
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/home/domain/entity/document_entity.dart';
 import 'package:studydocs/features/home/domain/repository/impl/home_repository_impl.dart';
@@ -12,12 +11,8 @@ import 'package:studydocs/features/home/domain/usecase/get_documents_usecase.dar
 import 'package:studydocs/features/home/logic/home_event.dart';
 import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/docs/domain/usecase/toggle_like_usecase.dart';
-import 'package:studydocs/features/docs/domain/repository/docs_repository.dart'; // Needed for type but impl handles it
 import 'package:studydocs/features/docs/data/repository/docs_repository_impl.dart'; // Needed for DI
-import 'package:studydocs/features/docs/domain/usecase/get_document_usecase.dart'; // Standard imports
 import 'package:studydocs/features/docs/domain/usecase/toggle_save_usecase.dart';
-import 'package:studydocs/features/docs/domain/usecase/post_comment_usecase.dart';
-import 'package:studydocs/features/docs/domain/usecase/react_review_usecase.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetDocumentsUseCase getDocumentsUseCase;

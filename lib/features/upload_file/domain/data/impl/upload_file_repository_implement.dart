@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:studydocs/data/datasource/upload_datasource.dart';
 
-import '../../../../../data/datasource/document_remote_datasource.dart';
-import '../../../../../data/datasource/impl/document_remote_datasource_impl.dart';
 import '../../../../../core/network/dio_client.dart';
 import '../upload_file_repository.dart';
 import '../../../../../data/model/request/upload_document_request.dart';

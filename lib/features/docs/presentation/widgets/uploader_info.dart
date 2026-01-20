@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/router/app_router.dart';
-import '../../../profile/presentation/screen/profile_screen.dart';
 import '../../domain/entity/document_entity.dart';
 
 class UploaderInfo extends StatelessWidget {

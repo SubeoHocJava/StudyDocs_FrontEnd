@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_event.dart';

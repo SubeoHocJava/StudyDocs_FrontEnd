@@ -1,8 +1,6 @@
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
-import 'package:studydocs/data/model/api_response.dart';
-import 'package:studydocs/data/model/request/upload_document_request.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import '../../../features/docs/data/model/document_model.dart';
 import '../document_remote_datasource.dart';
@@ -49,7 +47,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
     throw ServerException(
       'Failed to fetch popular documents',
-      response.statusCode ?? 0,
+      response.statusCode,
     );
   }
 
@@ -72,7 +70,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
 
     throw ServerException(
       'Failed to fetch recent documents',
-      response.statusCode ?? 0,
+      response.statusCode,
     );
   }
 
@@ -109,7 +107,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     
     // Check if doc exists
     if (docRes.statusCode != 200 || docRes.data == null) {
-      throw ServerException('Document not found', docRes.statusCode ?? 404);
+      throw ServerException('Document not found', docRes.statusCode);
     }
     
     DocumentModel doc = DocumentModel.fromJson(docRes.data);
@@ -347,7 +345,7 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
       return DocumentModel.fromJson(data);
     }
     
-    throw ServerException('Failed to fetch document detail: $id', response.statusCode ?? 0);
+    throw ServerException('Failed to fetch document detail: $id', response.statusCode);
   }
 
   @override

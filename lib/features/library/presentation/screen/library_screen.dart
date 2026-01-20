@@ -23,7 +23,6 @@ import 'package:studydocs/features/library/domain/usecase/search_document_usecas
 import 'package:studydocs/features/library/logic/LibraryState.dart';
 import 'package:studydocs/features/library/logic/library_bloc.dart';
 import 'package:studydocs/features/library/presentation/widget/library_widgets.dart';
-import 'package:studydocs/features/subject_library/domain/entity/subject_entity.dart';
 import 'package:studydocs/features/library/presentation/widget/recently_upload.dart';
 import 'package:studydocs/features/library/presentation/widget/stored_document.dart';
 import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
@@ -130,17 +129,17 @@ class LibraryScreen extends StatelessWidget {
                               .toList(),
                           onDownload: (doc) {
                             context.read<LibraryBloc>().add(
-                              DownloadDocumentRequested(doc.id!),
+                              DownloadDocumentRequested(doc.id),
                             );
                           },
                           onSave: (doc) {
                             context.read<LibraryBloc>().add(
-                              SaveDocumentRequested(doc.id!),
+                              SaveDocumentRequested(doc.id),
                             );
                           },
                           onLike: (doc) {
                             context.read<LibraryBloc>().add(
-                              LikeDocumentRequested(doc.id!),
+                              LikeDocumentRequested(doc.id),
                             );
                           },
                         ),

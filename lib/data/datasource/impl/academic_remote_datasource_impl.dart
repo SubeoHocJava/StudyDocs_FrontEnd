@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import 'package:studydocs/core/constants/api_constants.dart';
@@ -52,7 +51,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
       return allSchools;
     }
     
-    throw ServerException('Failed to fetch schools', response.statusCode ?? 0);
+    throw ServerException('Failed to fetch schools', response.statusCode);
   }
 
   // --- SUBJECT LOGIC (Real API) ---
@@ -83,7 +82,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
           .toList();
     }
 
-    throw ServerException('Failed to fetch subjects', resp.statusCode ?? 0);
+    throw ServerException('Failed to fetch subjects', resp.statusCode);
   }
 
   @override
@@ -108,7 +107,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
           .toList();
     }
 
-    throw ServerException('Failed to fetch all subjects', resp.statusCode ?? 0);
+    throw ServerException('Failed to fetch all subjects', resp.statusCode);
   }
 
   @override
@@ -128,7 +127,7 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
           .toList();
     }
     
-    throw ServerException('Failed to fetch schools', resp.statusCode ?? 0);
+    throw ServerException('Failed to fetch schools', resp.statusCode);
   }
 
   //  NEW: Get University by ID

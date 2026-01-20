@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/network/dio_client.dart';
 import '../../features/docs/data/model/document_model.dart';

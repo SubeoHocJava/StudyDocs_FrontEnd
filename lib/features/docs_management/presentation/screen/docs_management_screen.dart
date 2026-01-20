@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/features/docs/domain/entity/document_entity.dart';
 import 'package:studydocs/features/docs_management/logic/docs_management_bloc.dart';
 import 'package:studydocs/features/docs_management/logic/docs_management_event.dart' as dm_event;

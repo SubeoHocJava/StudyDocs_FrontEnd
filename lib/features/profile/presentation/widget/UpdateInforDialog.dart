@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../logic/profile_event.dart';
 import '../../logic/profile_state.dart';
 

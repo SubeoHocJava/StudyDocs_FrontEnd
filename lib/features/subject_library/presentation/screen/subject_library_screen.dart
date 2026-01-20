@@ -9,9 +9,7 @@ import 'package:studydocs/features/library/domain/model/document_library.dart';
 import 'package:studydocs/features/library/presentation/widget/SubjectCategories.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
-import 'package:studydocs/features/subject_library/presentation/widget/most_liked_docs.dart';
 import 'package:studydocs/features/subject_library/presentation/widget/title.dart';
-import 'package:studydocs/features/subject_library/presentation/widget/uploaded_document.dart';
 
 import '../../../library/presentation/widget/stored_document.dart';
 

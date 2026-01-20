@@ -1,10 +1,5 @@
-import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/data/model/api_response.dart';
 
-import '../../core/constants/api_constants.dart';
 import '../model/auth/request/register_request.dart';
 import '../model/auth/request/update_user_request.dart';
 

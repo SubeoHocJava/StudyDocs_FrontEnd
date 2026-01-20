@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 
 import '../../logic/profile_state.dart';

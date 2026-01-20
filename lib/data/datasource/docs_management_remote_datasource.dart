@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 import '../../core/constants/api_constants.dart';
 import '../../core/network/dio_client.dart';
 import 'package:studydocs/features/docs/data/model/document_model.dart';

@@ -44,7 +44,12 @@ void main() async {
   final docsDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
   final docsRepository = DocsRepositoryImpl(dataSource: docsDataSource);
 
-  FcmService().initialize(notificationRepository);
+  // Initialize FCM in background to avoid blocking startup
+  FcmService().initialize(notificationRepository).then((_) {
+    debugPrint("FCM Initialized");
+  }).catchError((e) {
+    debugPrint("FCM Initialization Error: $e");
+  });
   
   // Theme Setup
   final prefs = await SharedPreferences.getInstance();

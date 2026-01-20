@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../docs/domain/entity/document_entity.dart';
 import '../../logic/docs_management_bloc.dart';
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../../logic/docs_management_event.dart';
 import '../../../docs/presentation/widgets/document_preview_widget.dart';
@@ -301,7 +300,7 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
           title: "Chọn trường học",
           onSearch: (query) => _academicDataSource.searchSchools(query),
           onSelect: (item) {
-             final school = item as SchoolEntity;
+             final school = item;
              setState(() {
                _selectedUniversityId = school.id;
                _schoolController.text = school.name;
@@ -331,7 +330,7 @@ class _DocsEditScreenState extends State<DocsEditScreen> {
              return subjects.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
           },
           onSelect: (item) {
-             final subject = item as SubjectEntity;
+             final subject = item;
              setState(() {
                _selectedSubjectId = subject.id;
                _subjectController.text = subject.name;

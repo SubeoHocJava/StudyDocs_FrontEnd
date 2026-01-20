@@ -72,8 +72,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
           isVerified: userData['isVerified'] ?? false,
           isFollowing: theIsFollowing,//kéo sourse trả về true
           school: userData['school']??'',
-          countFollower: countFollower ?? 0,
-          countFollowing: countFollowing ?? 0,
+          countFollower: countFollower,
+          countFollowing: countFollowing,
           countDocument: userData['countDocument'] ?? 0,
           countLike: userData['countLike'] ?? 0,
         );

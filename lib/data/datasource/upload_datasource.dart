@@ -40,15 +40,14 @@ class UploadRemoteDataSourceImpl implements UploadRemoteDataSource {
       );
 
       // Relaxed success check: Any 2xx status is success
-      if (response.statusCode != null &&
-          response.statusCode! >= 200 &&
-          response.statusCode! < 300) {
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300) {
         return true;
       }
 
       throw ServerException(
         'Failed to upload document',
-        response.statusCode ?? 0,
+        response.statusCode,
       );
     } catch (e) {
       throw ServerException('Failed to upload document: $e', 0);

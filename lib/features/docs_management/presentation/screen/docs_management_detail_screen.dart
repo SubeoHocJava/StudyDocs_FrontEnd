@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../docs/domain/entity/document_entity.dart';
 import '../../logic/docs_management_bloc.dart';
 import 'docs_edit_screen.dart';
 import '../../../docs/presentation/widgets/comments_section.dart';
 import '../../../docs/presentation/widgets/comment_input.dart';
 import '../../../docs/presentation/widgets/document_preview_widget.dart';
-import '../../../docs/presentation/widgets/document_preview_widget.dart';
 import '../../../docs/presentation/widgets/like_dislike_row.dart'; // Import reuse
 import 'package:url_launcher/url_launcher.dart';
 // Imports for DocsBloc
-import '../../../../core/network/dio_client.dart';
-import '../../../../data/datasource/docs_remote_datasource.dart';
-import '../../../docs/data/repository/docs_repository_impl.dart';
 import '../../../docs/domain/usecase/get_document_usecase.dart';
 import '../../../docs/domain/usecase/toggle_like_usecase.dart';
 import '../../../docs/domain/usecase/toggle_save_usecase.dart';

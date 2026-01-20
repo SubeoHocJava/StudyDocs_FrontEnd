@@ -1,7 +1,6 @@
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 
 import '../../../../core/widgets/document/model/row_document_ui.dart';
-import '../../../../features/docs/data/model/document_model.dart';
 
 class DocumentLibraryUI extends DocumentUiList implements RowDocumentItem {
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/logic/notification_bloc.dart';
 import 'package:studydocs/features/notification/logic/notification_enum.dart';

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:studydocs/data/model/user.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_bloc.dart';
 import 'package:studydocs/features/manage_user/logic/manage_user_event.dart';
-import '../../../../core/constants/app_colors.dart';
 
 class DetailUserDialog extends StatefulWidget {
   final ManageUserBloc bloc;

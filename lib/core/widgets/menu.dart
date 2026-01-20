@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/upload_box.dart';
 import 'package:studydocs/features/profile/domain/repository/impl/ProfileRepositoryImpl.dart';
 import 'package:studydocs/features/profile/logic/profile_bloc.dart';
