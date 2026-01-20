@@ -140,6 +140,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
     } catch (e) {
       throw Exception('Error updating profile: $e');
     }
+
+    throw Exception(
+      'Failed to get profile. Status: ${response.statusCode}',
+    );
   }
 
   @override

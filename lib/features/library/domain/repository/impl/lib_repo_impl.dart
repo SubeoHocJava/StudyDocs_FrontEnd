@@ -2,6 +2,7 @@ import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
 import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/docs_remote_datasource.dart';
 
 import '../../../../../core/network/dio_client.dart';
 import '../../../../../data/datasource/impl/academic_remote_datasource_impl.dart';
@@ -11,6 +12,7 @@ import '../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
 
 import '../../model/document_library.dart';
 import '../library_repository.dart';
+import '../../../../docs/data/model/document_model.dart';
 
 class LibraryRepositoryImpl implements LibraryRepository {
   late final DocumentRemoteDataSource documentRemoteDataSource;
