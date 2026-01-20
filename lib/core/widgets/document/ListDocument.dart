@@ -11,6 +11,8 @@ import 'package:studydocs/features/docs/domain/usecase/toggle_save_usecase.dart'
 import 'package:studydocs/features/docs/domain/usecase/toggle_like_usecase.dart';
 import 'package:studydocs/features/docs/domain/usecase/post_comment_usecase.dart';
 import 'package:studydocs/features/docs/domain/usecase/react_review_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/delete_document_usecase.dart';
+import 'package:studydocs/features/docs/domain/usecase/update_document_usecase.dart';
 import '../../../features/docs/presentation/screen/docs_detail_screen.dart';
 import 'model/list_document_ui.dart';
 
@@ -120,6 +122,8 @@ class _MonoDocumentInListState extends State<MonoDocumentInList> {
             toggleLikeUseCase: ToggleLikeUseCase(docsRepository),
             postCommentUseCase: PostCommentUseCase(docsRepository),
             reactReviewUseCase: ReactReviewUseCase(docsRepository),
+            deleteDocumentUseCase: DeleteDocumentUseCase(repository: docsRepository),
+            updateDocumentUseCase: UpdateDocumentUseCase(repository: docsRepository),
           )..add(const LoadDocDetails()),
           child: const DocsDetailScreen(),
         ),

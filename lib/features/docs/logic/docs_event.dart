@@ -42,3 +42,25 @@ class ReactToReview extends DocsEvent {
   @override
   List<Object?> get props => [reviewId, isLike];
 }
+
+class DeleteDocument extends DocsEvent {
+  const DeleteDocument();
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateDocument extends DocsEvent {
+  final String title;
+  final String description;
+  final String year;
+
+  const UpdateDocument({
+    required this.title,
+    required this.description,
+    required this.year,
+  });
+
+  @override
+  List<Object?> get props => [title, description, year];
+}
+

@@ -14,6 +14,8 @@ import '../../../docs/domain/usecase/toggle_like_usecase.dart';
 import '../../../docs/domain/usecase/toggle_save_usecase.dart';
 import '../../../docs/domain/usecase/post_comment_usecase.dart';
 import '../../../docs/domain/usecase/react_review_usecase.dart';
+import '../../../docs/domain/usecase/delete_document_usecase.dart';
+import '../../../docs/domain/usecase/update_document_usecase.dart';
 import '../../../docs/logic/docs_bloc.dart';
 import '../../../docs/logic/docs_event.dart';
 import '../../../docs/logic/docs_state.dart' as docs_state; // Alias to avoid conflict if any
@@ -49,6 +51,8 @@ class _DocsManagementDetailScreenState extends State<DocsManagementDetailScreen>
         toggleLikeUseCase: ToggleLikeUseCase(repository),
         postCommentUseCase: PostCommentUseCase(repository),
         reactReviewUseCase: ReactReviewUseCase(repository),
+        deleteDocumentUseCase: DeleteDocumentUseCase(repository: repository),
+        updateDocumentUseCase: UpdateDocumentUseCase(repository: repository),
       )..add(const LoadDocDetails()),
       child: BlocConsumer<DocsBloc, docs_state.DocsState>(
         listener: (context, state) {
