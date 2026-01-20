@@ -27,6 +27,24 @@ class ErrorMapper {
     '53': 'Không tìm thấy quyền (Permission) yêu cầu.',
     '54': 'Quyền truy cập này đã tồn tại trong hệ thống.',
 
+    //User Service
+    '101': 'Yêu cầu không hợp lệ. Dữ liệu đầu vào sai định dạng hoặc thiếu thông tin.',
+    '102': 'Không được xác thực. Token không hợp lệ hoặc chưa được cung cấp.',
+    '103': 'Bị từ chối truy cập. Người dùng không có quyền thực hiện hành động này.',
+    '104': 'Không tìm thấy tài nguyên. Endpoint hoặc dữ liệu yêu cầu không tồn tại.',
+    '110': 'Không tìm thấy người dùng. ID người dùng không tồn tại trong hệ thống.',
+    '111': 'Người dùng đã tồn tại. Email hoặc tên người dùng đã được đăng ký.',
+    '112': 'Dữ liệu người dùng không hợp lệ. Các trường nhập không đáp ứng quy tắc xác thực.',
+    '120': 'Token đã hết hạn. Vui lòng đăng nhập lại để lấy token mới.',
+    '121': 'Token không hợp lệ. Token bị thay đổi hoặc sai định dạng.',
+    '130': 'Hoạt động không được phép. Hành động vi phạm quy tắc nghiệp vụ.',
+    '131': 'Khoảng giá trị không hợp lệ. Các tham số phạm vi không hợp lý.',
+    '140': 'Lưu dữ liệu thất bại. Đã xảy ra lỗi khi ghi vào cơ sở dữ liệu.',
+    '141': 'Cập nhật dữ liệu thất bại. Đã xảy ra lỗi khi cập nhật thông tin.',
+    '142': 'Xóa dữ liệu thất bại. Đã xảy ra lỗi khi xóa dữ liệu.',
+    '150': 'Không có hành động nào được thực thi cho yêu cầu này.',
+    '160': 'Yêu cầu HTTP thất bại. Máy chủ trả về trạng thái không mong đợi.',
+
     //Academic Service
     '201': 'Không tìm thấy trường đại học.',
     '202': 'Không tìm thấy khoa.',
@@ -121,13 +139,17 @@ class ErrorMapper {
   };
 
   /// Chuyển đổi errorCode (int) thành message tiếng Việt
-  /// Nếu không tìm thấy mã lỗi, trả về defaultMessage hoặc thông báo lỗi mặc định
+  /// Nếu không tìm thấy mã lỗi, trả về thông báo lỗi hệ thống (500)
   static String map(int? errorCode, {String? defaultMessage}) {
-    if (errorCode == null) return defaultMessage ?? 'Đã có lỗi xảy ra, vui lòng thử lại.';
+    if (errorCode == null) return _errorMap['500']!;
     
     final codeStr = errorCode.toString();
     
-    return _errorMap[codeStr] ?? defaultMessage ?? 'Lỗi không xác định (Mã: $codeStr)';
+    if (_errorMap.containsKey(codeStr)) {
+        return _errorMap[codeStr]!;
+    }
+    
+    return _errorMap['500']!;
   }
 
   /// Helper để xử lý lỗi nhanh từ ApiResponse
