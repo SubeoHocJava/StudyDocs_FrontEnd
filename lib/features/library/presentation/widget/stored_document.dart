@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
 import 'package:studydocs/core/widgets/document/model/list_document_ui.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
 import '../../../../core/widgets/document/ListDocument.dart';
-import '../../logic/LibraryEvent.dart';
-import '../../logic/library_bloc.dart';
 
 class StoredDocument extends StatelessWidget {
   final List<DocumentLibraryUI> documents;
   final int? crossAxisCount;
+  
+  // Optional callbacks - widgets can provide their own implementations
+  final void Function(DocumentUiList)? onDownload;
+  final void Function(DocumentUiList)? onSave;
+  final void Function(DocumentUiList)? onLike;
+  final void Function(DocumentUiList)? onComment;
+  final void Function(DocumentUiList)? onTap;
 
-  const StoredDocument(this.documents, {this.crossAxisCount, super.key});
+  const StoredDocument(
+    this.documents, {
+    this.crossAxisCount,
+    this.onDownload,
+    this.onSave,
+    this.onLike,
+    this.onComment,
+    this.onTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,24 +52,14 @@ class StoredDocument extends StatelessWidget {
           ),
         ),
         SizedBox(height: responsive.heightPercent(1)),
-        // ListDocument responsive
+        // ListDocument responsive - use provided callbacks
         ListDocument(
           documents.cast<DocumentUiList>(),
-          onDownload: (doc) {
-            context.read<LibraryBloc>().add(DownloadDocumentRequested(doc.id));
-          },
-          onSave: (doc) {
-            context.read<LibraryBloc>().add(SaveDocumentRequested(doc.id));
-          },
-          onLike: (doc) {
-            context.read<LibraryBloc>().add(LikeDocumentRequested(doc.id));
-          },
-          onComment: (doc) {
-            context.read<LibraryBloc>().add(OpenCommentRequested(doc.id));
-          },
-          onTap: (doc) {
-             context.push('/document/${doc.id}');
-          },
+          onDownload: onDownload,
+          onSave: onSave,
+          onLike: onLike,
+          onComment: onComment,
+          onTap: onTap,
         ),
       ],
     );
