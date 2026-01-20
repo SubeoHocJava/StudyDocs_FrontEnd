@@ -3,6 +3,8 @@ import '../domain/entity/subject_entity.dart';
 import '../domain/usecase/DocsUseCase.dart';
 import '../domain/usecase/get_subjects_by_school_usecase.dart';
 import '../domain/ui_model/doc_subject_lib_ui.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'subject_library_event.dart';
 import 'subject_library_state.dart';
 
@@ -46,7 +48,7 @@ class SubjectLibraryBloc
           subjects: const [],
         ));
        } catch (e) {
-         emit(SubjectLibraryError(e.toString()));
+         emit(SubjectLibraryError(_getErrorMessage(e)));
        }
     });
     
@@ -70,21 +72,21 @@ class SubjectLibraryBloc
           subjects: const [],
         ));
        } catch (e) {
-         emit(SubjectLibraryError(e.toString()));
+         emit(SubjectLibraryError(_getErrorMessage(e)));
        }
     });
 
     on<SubjectLibraryLikeDocument>((event, emit) async {
-      try { await likeDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(e.toString())); }
+      try { await likeDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(_getErrorMessage(e))); }
     });
     on<SubjectLibraryOpenComments>((event, emit) async {
-      try { await getCommentsUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(e.toString())); }
+      try { await getCommentsUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(_getErrorMessage(e))); }
     });
     on<SubjectLibraryDownloadDocument>((event, emit) async {
-      try { await downloadDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(e.toString())); }
+      try { await downloadDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(_getErrorMessage(e))); }
     });
     on<SubjectLibraryBookmarkDocument>((event, emit) async {
-      try { await bookmarkDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(e.toString())); }
+      try { await bookmarkDocumentUseCase(event.documentId); } catch (e) { emit(SubjectLibraryError(_getErrorMessage(e))); }
     });
 
 
@@ -118,7 +120,7 @@ class SubjectLibraryBloc
           ),
         );
       } catch (e) {
-        emit(SubjectLibraryError(e.toString()));
+        emit(SubjectLibraryError(_getErrorMessage(e)));
       }
     });
 
@@ -145,9 +147,16 @@ class SubjectLibraryBloc
           ),
         );
       } catch (e) {
-        emit(SubjectLibraryError(e.toString()));
+        emit(SubjectLibraryError(_getErrorMessage(e)));
       }
     });
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 
 }

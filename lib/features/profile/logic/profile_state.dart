@@ -16,6 +16,7 @@ class ProfileLoading extends ProfileState {}
 
 /// ================= LOADED =================
 class ProfileLoaded extends ProfileState {
+  /// ===== USER INFO =====
   final String id;
   final String userName;
   final String fullName;
@@ -27,18 +28,24 @@ class ProfileLoaded extends ProfileState {
   final String address;
   final String? avatarUrl;
 
+  /// ===== VERIFY / FOLLOW =====
   final bool isVerified;
   final bool isFollowing;
 
+  /// ===== STATISTICS =====
   final int? numFollowMe;
   final int? numMeFollow;
   final int numMyUpload;
   final int numMyLikes;
   final int numMyComment;
 
+  /// ===== DOCUMENTS =====
   final List<DocumentProfile> documents;
 
-  /// UI flags
+  /// ===== SCHOOLS (for profile form) =====
+  final List<String> schools;
+
+  /// ===== UI FLAGS =====
   final bool isUpdating;
 
   const ProfileLoaded({
@@ -60,6 +67,7 @@ class ProfileLoaded extends ProfileState {
     this.numMyLikes = 0,
     this.numMyComment = 0,
     required this.documents,
+    required this.schools,
     this.isUpdating = false,
   });
 
@@ -77,6 +85,7 @@ class ProfileLoaded extends ProfileState {
     bool? isFollowing,
     bool? isUpdating,
     List<DocumentProfile>? documents,
+    List<String>? schools,
     int? numFollowMe,
     int? numMeFollow,
     int? numMyUpload,
@@ -98,6 +107,7 @@ class ProfileLoaded extends ProfileState {
       isFollowing: isFollowing ?? this.isFollowing,
       isUpdating: isUpdating ?? this.isUpdating,
       documents: documents ?? this.documents,
+      schools: schools ?? this.schools,
       numFollowMe: numFollowMe ?? this.numFollowMe,
       numMeFollow: numMeFollow ?? this.numMeFollow,
       numMyUpload: numMyUpload ?? this.numMyUpload,
@@ -121,7 +131,13 @@ class ProfileLoaded extends ProfileState {
     isVerified,
     isFollowing,
     documents,
+    schools,
     isUpdating,
+    numFollowMe,
+    numMeFollow,
+    numMyUpload,
+    numMyLikes,
+    numMyComment,
   ];
 }
 

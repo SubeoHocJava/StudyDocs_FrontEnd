@@ -7,6 +7,8 @@ import '../domain/usecase/toggle_like_usecase.dart';
 import '../domain/usecase/toggle_save_usecase.dart';
 import '../domain/usecase/post_comment_usecase.dart';
 import '../domain/usecase/react_review_usecase.dart';
+import '../domain/usecase/delete_document_usecase.dart'; 
+import '../domain/usecase/update_document_usecase.dart'; 
 import '../presentation/screen/docs_screen.dart';
 import 'docs_bloc.dart';
 import 'docs_event.dart';
@@ -32,6 +34,8 @@ class DocsPage extends StatelessWidget {
         toggleLikeUseCase: ToggleLikeUseCase(repository),
         postCommentUseCase: PostCommentUseCase(repository),
         reactReviewUseCase: ReactReviewUseCase(repository),
+        deleteDocumentUseCase: DeleteDocumentUseCase(repository: repository),
+        updateDocumentUseCase: UpdateDocumentUseCase(repository: repository), // Add injection
       )..add(LoadDocDetails()),
       child: const DocsScreen(),
     );

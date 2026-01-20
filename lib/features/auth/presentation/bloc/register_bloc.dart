@@ -102,7 +102,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: e.message);
         emit(RegisterFailure(mappedMessage, errorCode: errorCode));
       } else {
-        emit(RegisterFailure(e.toString()));
+        emit(RegisterFailure(ErrorMapper.map(500)));
       }
     }
   }

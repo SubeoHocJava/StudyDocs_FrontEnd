@@ -13,6 +13,8 @@ import 'package:studydocs/features/home/logic/home_state.dart';
 import 'package:studydocs/features/docs/domain/usecase/toggle_like_usecase.dart';
 import 'package:studydocs/features/docs/data/repository/docs_repository_impl.dart'; // Needed for DI
 import 'package:studydocs/features/docs/domain/usecase/toggle_save_usecase.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetDocumentsUseCase getDocumentsUseCase;
@@ -20,7 +22,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetRecentDocumentsUseCase getRecentDocumentsUseCase;
   final SearchDocumentsUseCase searchDocumentsUseCase;
   final ToggleLikeUseCase toggleLikeUseCase;
-  final ToggleSaveUseCase toggleSaveUseCase; // Add this
+  final ToggleSaveUseCase toggleSaveUseCase;
 
   HomeBloc({
     required this.getDocumentsUseCase,
@@ -28,7 +30,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required this.getRecentDocumentsUseCase,
     required this.searchDocumentsUseCase,
     required this.toggleLikeUseCase,
-    required this.toggleSaveUseCase, // Add this
+    required this.toggleSaveUseCase,
   }) : super(const HomeInitial()) {
     on<LoadDocumentsEvent>(_onLoadDocuments);
     on<UpdateSearchQueryEvent>(_onUpdateSearchQuery);
@@ -36,7 +38,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<RefreshDocumentsEvent>(_onRefreshDocuments);
     on<SearchDocumentsEvent>(_onSearchDocuments);
     on<ToggleHomeLikeEvent>(_onToggleLike);
-    on<ToggleHomeSaveEvent>(_onToggleSave); // Add this
+    on<ToggleHomeSaveEvent>(_onToggleSave);
   }
 
   Future<void> _onLoadDocuments(
@@ -50,41 +52,52 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     List<DocumentEntity> popularDocuments = [];
     List<DocumentEntity> recentDocuments = [];
 
+    // Use a flag to track if at least one section loaded successfully
+    bool hasData = false;
+    String? combinedError;
+
     try {
       documents = await getDocumentsUseCase();
+      hasData = true;
     } catch (e) {
       if (kDebugMode) {
         print('Failed to load documents: $e');
       }
-      // Keep empty list - UI sẽ hiển thị empty state
+      combinedError = _getErrorMessage(e);
     }
 
     try {
       popularDocuments = await getPopularDocumentsUseCase();
+      hasData = true;
     } catch (e) {
-      if (kDebugMode) {
+       if (kDebugMode) {
         print('Failed to load popular documents: $e');
       }
-      // Keep empty list
+      combinedError = _getErrorMessage(e);
     }
 
     try {
       recentDocuments = await getRecentDocumentsUseCase();
+      hasData = true;
     } catch (e) {
-      if (kDebugMode) {
+       if (kDebugMode) {
         print('Failed to load recent documents: $e');
       }
-      // Keep empty list
+      combinedError = _getErrorMessage(e);
     }
 
-    // Emit state với data có sẵn (có thể 1 số section empty)
-    emit(
-      HomeLoaded(
-        documents: documents,
-        popularDocuments: popularDocuments,
-        recentDocuments: recentDocuments,
-      ),
-    );
+    // If at least one section has data, we show what we have.
+    if (hasData) {
+      emit(
+        HomeLoaded(
+          documents: documents,
+          popularDocuments: popularDocuments,
+          recentDocuments: recentDocuments,
+        ),
+      );
+    } else {
+      emit(HomeError(combinedError ?? ErrorMapper.map(500)));
+    }
   }
 
   void _onUpdateSearchQuery(
@@ -114,18 +127,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
       
+      // Store original lists for revert
+      final originalDocuments = currentState.documents;
+      final originalPopular = currentState.popularDocuments;
+      final originalRecent = currentState.recentDocuments;
+
       bool? newIsSavedState;
 
-      // Helper to update a list AND capture the new state
       List<DocumentEntity> updateList(List<DocumentEntity> list) {
         return list.map((e) {
           if (e.id == doc.id) {
-             final nextIsSaved = !e.isSaved; // Toggle
-             
-             if (newIsSavedState == null) {
-                newIsSavedState = nextIsSaved;
-             }
-
+             final nextIsSaved = !e.isSaved;
+             if (newIsSavedState == null) newIsSavedState = nextIsSaved;
              return e.copyWith(isSaved: nextIsSaved);
           }
           return e;
@@ -140,13 +153,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         documents: newDocuments,
         popularDocuments: newPopular,
         recentDocuments: newRecent,
+        actionError: null,
       ));
       
       try {
         await toggleSaveUseCase(documentId: doc.id);
       } catch (e) {
          if (kDebugMode) print("Toggle save failed: $e");
-         // Ideally revert here
+         
+         emit(currentState.copyWith(
+           documents: originalDocuments,
+           popularDocuments: originalPopular,
+           recentDocuments: originalRecent,
+           actionError: _getErrorMessage(e),
+         ));
       }
     }
   }
@@ -172,30 +192,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     final doc = event.document;
-    final isLike = !doc.isLiked;
-        
-    // Optimistic Update
+    
     if (state is HomeLoaded) {
       final currentState = state as HomeLoaded;
-      
-      // Find the latest version of the document in the current state to ensure valid toggle
-      // We check all lists (documents, popular, recent)
-      // Note: A doc might appear in multiple lists. We need to find consistent state or just use the first found?
-      // Or simply, we iterate and update, and while iterating we determine the NEW state based on the CURRENT state of that item.
-      
-      bool? newIsLikedState; // To store the determined new state to use for API call
 
-      // Helper to update a list AND capture the new state
+      // Store original for revert
+      final originalDocuments = currentState.documents;
+      final originalPopular = currentState.popularDocuments;
+      final originalRecent = currentState.recentDocuments;
+      
+      bool? newIsLikedState;
+
       List<DocumentEntity> updateList(List<DocumentEntity> list) {
         return list.map((e) {
           if (e.id == doc.id) {
              final currentIsLiked = e.isLiked;
              final nextIsLiked = !currentIsLiked;
-             
-             // Capture this for the API call (only once is enough)
-             if (newIsLikedState == null) {
-                newIsLikedState = nextIsLiked;
-             }
+             if (newIsLikedState == null) newIsLikedState = nextIsLiked;
 
              final newLikes = nextIsLiked 
                  ? (e.likesCount ?? 0) + 1 
@@ -213,22 +226,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final newDocuments = updateList(currentState.documents);
       final newPopular = updateList(currentState.popularDocuments);
       final newRecent = updateList(currentState.recentDocuments);
-      
-      // If we found the doc and updated it, newIsLikedState will be set.
-      // If not (rare race condition or list changed), fallback to event.doc (but risky) or abort.
-      final finalIsLiked = newIsLikedState ?? !doc.isLiked;
 
       emit(currentState.copyWith(
         documents: newDocuments,
         popularDocuments: newPopular,
         recentDocuments: newRecent,
+        actionError: null,
       ));
       
       try {
         await toggleLikeUseCase(documentId: doc.id, reactionType: 'LIKE');
       } catch (e) {
          if (kDebugMode) print("Toggle like failed: $e");
-         // Ideally revert here
+         
+         // Revert state and set error
+         emit(currentState.copyWith(
+            documents: originalDocuments,
+            popularDocuments: originalPopular,
+            recentDocuments: originalRecent,
+            actionError: _getErrorMessage(e),
+         ));
       }
     } else {
        // Backup if state is not Loaded (unlikely for click)
@@ -239,6 +256,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     }
   }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
+  }
 }
 
 HomeBloc createHomeBloc() {
@@ -247,14 +271,14 @@ HomeBloc createHomeBloc() {
   final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
   final assetDataSource = AssetRemoteDataSourceImpl(
     dioClient: dioClient,
-  ); // ✅ Create Asset DataSource
+  ); 
   final docsRemoteDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
 
   final repository = HomeRepositoryImpl(
     remoteDataSource: remoteDataSource,
     academicDataSource: academicDataSource,
-    assetDataSource: assetDataSource, // ✅ Inject Asset DataSource
-    docsRemoteDataSource: docsRemoteDataSource, // ✅ Inject Docs DataSource
+    assetDataSource: assetDataSource, 
+    docsRemoteDataSource: docsRemoteDataSource, 
   );
 
   final docsRepository = DocsRepositoryImpl(

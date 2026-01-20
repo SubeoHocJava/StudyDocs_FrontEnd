@@ -99,6 +99,9 @@ class DocumentModel extends DocumentEntity {
     return '${d.toStringAsFixed(decimals)} ${suffixes[i]}';
   }
 
+  static const _sentinel = Object();
+
+  @override
   DocumentModel copyWith({
     String? id,
     String? title,
@@ -114,7 +117,7 @@ class DocumentModel extends DocumentEntity {
     String? fileSize,
     String? downloadUrl,
     String? fileId,
-    String? currentUserReaction,
+    Object? currentUserReaction = _sentinel,
     List<String>? previewUrls,
     String? description,
     String? subjectId,
@@ -133,13 +136,14 @@ class DocumentModel extends DocumentEntity {
       dislikes: dislikes ?? this.dislikes,
       comments: comments ?? this.comments,
       commentsCount: commentsCount ?? (comments?.length ?? 0),
-      // Preserve or update
       isSaved: isSaved ?? this.isSaved,
       pages: pages ?? this.pages,
       fileSize: fileSize ?? this.fileSize,
       downloadUrl: downloadUrl ?? this.downloadUrl,
       fileId: fileId ?? this.fileId,
-      currentUserReaction: currentUserReaction ?? this.currentUserReaction,
+      currentUserReaction: currentUserReaction == _sentinel
+          ? this.currentUserReaction
+          : currentUserReaction as String?,
       previewUrls: previewUrls ?? this.previewUrls,
       description: description ?? this.description,
       subjectId: subjectId ?? this.subjectId,

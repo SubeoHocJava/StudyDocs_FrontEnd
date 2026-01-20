@@ -48,3 +48,9 @@ class DocsError extends DocsState {
   @override
   List<Object?> get props => [message];
 }
+
+class DocsDeleted extends DocsState {}
+
+class DocsUpdated extends DocsState {}
+
+

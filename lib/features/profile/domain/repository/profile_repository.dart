@@ -24,5 +24,6 @@ abstract class ProfileRepository {
 
   Future<List<DocumentProfile>> getDocumentsByUser(String id);
 
+  Future<List<String>> getSchools();
 
 }

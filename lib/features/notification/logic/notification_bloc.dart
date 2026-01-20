@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/features/notification/domain/entity/notification_entity.dart';
 import 'package:studydocs/features/notification/domain/repository/notification_repository.dart';
 import 'package:studydocs/features/notification/domain/usecase/get_notifications_usecase.dart';
@@ -80,7 +82,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           );
         }
       } catch (e) {
-        emit(NotificationErrorState(e.toString()));
+        emit(NotificationErrorState(_getErrorMessage(e)));
       }
     });
 
@@ -91,7 +93,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           final unreadCount = await getUnreadCountUseCase();
           emit(currentState.copyWith(unreadCount: unreadCount));
         } catch (e) {
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
         }
       }
     });
@@ -131,7 +133,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
             ),
           );
         } catch (e) {
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
         }
       }
     });
@@ -155,7 +157,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
             ),
           );
         } catch (e) {
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
         }
       }
     });
@@ -216,7 +218,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
             );
           }
         } catch (e) {
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
         }
       }
     });
@@ -248,7 +250,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
             ),
           );
         } catch (e) {
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
         }
       }
     });
@@ -294,11 +296,18 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           add(GetUnreadCountEvent());
         } catch (e) {
           // Ở đây ta báo lỗi và reload lại toàn bộ để đồng bộ lại dữ liệu chuẩn.
-          emit(NotificationErrorState(e.toString()));
+          emit(NotificationErrorState(_getErrorMessage(e)));
           add(const LoadNotificationEvent(isDeleted: true)); 
           add(const LoadNotificationEvent(isDeleted: false));
         }
       }
     });
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 }

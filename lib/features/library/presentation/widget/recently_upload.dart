@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/utils/responsive_helper.dart';
+import 'package:studydocs/core/widgets/document/model/row_document_ui.dart';
 import '../../../../core/widgets/document/RowDocument.dart';
 import '../../domain/model/document_library.dart';
 
 class RecentlyUpload extends StatelessWidget {
   final List<DocumentLibraryUI> documents;
+  final void Function(RowDocumentItem)? onTap;
 
-  const RecentlyUpload(this.documents, {super.key});
+  const RecentlyUpload(
+    this.documents, {
+    this.onTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +39,7 @@ class RecentlyUpload extends StatelessWidget {
           child: RowDocument(
             documents,
             cardWidth: responsive.isMobile ? 100 : 150, // responsive width card
+            onTap: onTap,
           ),
         ),
       ],

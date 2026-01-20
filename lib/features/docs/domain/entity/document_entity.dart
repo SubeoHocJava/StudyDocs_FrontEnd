@@ -48,9 +48,11 @@ class DocumentEntity {
     this.createdAt,
   });
 
+  static const _sentinel = Object();
+
   DocumentEntity copyWith({
     String? title,
-    String? description, // Made optional
+    String? description,
     String? course,
     String? school,
     String? year,
@@ -64,14 +66,14 @@ class DocumentEntity {
     String? fileSize,
     String? downloadUrl,
     String? fileId,
-    String? currentUserReaction,
+    Object? currentUserReaction = _sentinel,
     List<String>? previewUrls,
     String? subjectId,
     String? universityId,
     int? commentsCount,
   }) {
     return DocumentEntity(
-      id: this.id, // ID should not change typically in copyWith, or use id ?? this.id if we add it to arguments. But currently it's not in arguments, so preserve this.id
+      id: this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       course: course ?? this.course,
@@ -87,7 +89,9 @@ class DocumentEntity {
       fileSize: fileSize ?? this.fileSize,
       downloadUrl: downloadUrl ?? this.downloadUrl,
       fileId: fileId ?? this.fileId,
-      currentUserReaction: currentUserReaction ?? this.currentUserReaction,
+      currentUserReaction: currentUserReaction == _sentinel
+          ? this.currentUserReaction
+          : currentUserReaction as String?,
       previewUrls: previewUrls ?? this.previewUrls,
       subjectId: subjectId ?? this.subjectId,
       universityId: universityId ?? this.universityId,

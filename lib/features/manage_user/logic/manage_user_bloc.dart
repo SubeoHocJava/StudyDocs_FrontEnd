@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 
 import '../domain/repository/manage_user_repository.dart';
 import '../domain/usecase/add_user_usecase.dart';
@@ -60,7 +62,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
 
       emit(ManageUserLoaded(listUser: users));
     } catch (e) {
-      emit(ManageUserError('Không thể tải danh sách user: $e'));
+      emit(ManageUserError(_getErrorMessage(e)));
     }
   }
 
@@ -78,7 +80,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
 
       emit(ManageUserLoaded(listUser: users));
     } catch (e) {
-      emit(ManageUserError('Không thể tìm user: $e'));
+      emit(ManageUserError(_getErrorMessage(e)));
     }
   }
 
@@ -88,7 +90,8 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       final success = await _addUserUseCase(event.userId);
 
       if (!success) {
-        emit(const ManageUserError('Thêm user thất bại'));
+        // Assume non-success without exception is a generic error
+        emit(ManageUserError(ErrorMapper.map(500)));
         return;
       }
 
@@ -100,7 +103,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       );
       emit(ManageUserLoaded(listUser: users, successMessage: 'Thêm người dùng thành công!'));
     } catch (e) {
-      emit(ManageUserError('Thêm user thất bại: $e'));
+      emit(ManageUserError(_getErrorMessage(e)));
     }
   }
 
@@ -113,7 +116,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       final success = await _updateUserUseCase(event.user);
 
       if (!success) {
-        emit(const ManageUserError('Cập nhật user thất bại'));
+        emit(ManageUserError(ErrorMapper.map(500)));
         return;
       }
 
@@ -124,7 +127,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       );
       emit(ManageUserLoaded(listUser: users, successMessage: 'Cập nhật người dùng thành công!'));
     } catch (e) {
-      emit(ManageUserError('Cập nhật user thất bại: $e'));
+      emit(ManageUserError(_getErrorMessage(e)));
     }
   }
 
@@ -136,7 +139,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
     try {
       final success = await _deleteUserUseCase(event.userId);
       if (!success) {
-        emit(const ManageUserError('Xóa user thất bại'));
+        emit(ManageUserError(ErrorMapper.map(500)));
         return;
       }
       final users = await _getListUserUseCase(
@@ -147,10 +150,18 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       print('Bloc users length = ${users.length}');
       emit(ManageUserLoaded(listUser: users, successMessage: 'Xóa người dùng thành công!'));
     } catch (e) {
-      emit(ManageUserError('Xóa user thất bại: $e'));
+      emit(ManageUserError(_getErrorMessage(e)));
     }
   }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
+  }
 }
+
 ManageUserBloc createManageUserBloc(
     ManageUserRepository repository,
     ) {
