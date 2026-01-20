@@ -22,6 +22,7 @@ class HomeLoaded extends HomeState {
   final List<DocumentEntity> recentDocuments;
   final String searchQuery;
   final bool isListening;
+  final String? actionError;
 
   const HomeLoaded({
     required this.documents,
@@ -29,6 +30,7 @@ class HomeLoaded extends HomeState {
     required this.recentDocuments,
     this.searchQuery = '',
     this.isListening = false,
+    this.actionError,
   });
 
   List<DocumentEntity> get filteredDocuments {
@@ -47,6 +49,7 @@ class HomeLoaded extends HomeState {
         recentDocuments,
         searchQuery,
         isListening,
+        actionError,
       ];
 
   HomeLoaded copyWith({
@@ -55,6 +58,7 @@ class HomeLoaded extends HomeState {
     List<DocumentEntity>? recentDocuments,
     String? searchQuery,
     bool? isListening,
+    String? actionError,
   }) {
     return HomeLoaded(
       documents: documents ?? this.documents,
@@ -62,6 +66,7 @@ class HomeLoaded extends HomeState {
       recentDocuments: recentDocuments ?? this.recentDocuments,
       searchQuery: searchQuery ?? this.searchQuery,
       isListening: isListening ?? this.isListening,
+      actionError: actionError,
     );
   }
 }

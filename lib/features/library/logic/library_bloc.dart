@@ -8,6 +8,8 @@ import '../domain/usecase/like_document_usecase.dart';
 import '../domain/usecase/get_saved_documents_usecase.dart';
 import '../../subject_library/domain/usecase/get_all_subjects_usecase.dart';
 import '../../subject_library/domain/entity/subject_entity.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
+import 'package:studydocs/core/exceptions/api_exception.dart';
 
 import 'LibraryEvent.dart';
 import 'LibraryState.dart';
@@ -75,7 +77,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         savedDocuments: savedDocs,
       ));
     } catch (e) {
-      emit(LibraryError(e.toString()));
+      emit(LibraryError(_getErrorMessage(e)));
     }
   }
 
@@ -108,7 +110,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         savedDocuments: savedDocs,
       ));
     } catch (e) {
-      emit(LibraryError(e.toString()));
+      emit(LibraryError(_getErrorMessage(e)));
     }
   }
 
@@ -119,7 +121,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     try {
       await downloadDocumentUseCase(event.documentId);
     } catch (e) {
-      emit(LibraryError(e.toString()));
+      emit(LibraryError(_getErrorMessage(e)));
     }
   }
 
@@ -131,7 +133,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       await saveDocumentUseCase(event.documentId);
 
     } catch (e) {
-      emit(LibraryError(e.toString()));
+      emit(LibraryError(_getErrorMessage(e)));
     }
   }
 
@@ -142,7 +144,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     try {
       await likeDocumentUseCase(event.documentId);
     } catch (e) {
-      emit(LibraryError(e.toString()));
+      emit(LibraryError(_getErrorMessage(e)));
     }
   }
 
@@ -173,7 +175,14 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
       }
     } catch (e) {
       print('Error loading saved documents: $e');
-      // Don't emit error state, just log it
+      // Don't emit error state, just log it because it's non-critical for the main view
     }
+  }
+
+  String _getErrorMessage(Object error) {
+    if (error is ApiException) {
+      return ErrorMapper.map(int.tryParse(error.code ?? ''));
+    }
+    return ErrorMapper.map(500);
   }
 }
