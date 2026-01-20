@@ -1,6 +1,5 @@
 class ApiConstants {
-  // Base configuration
-  static const String _base = 'http://172.16.16.81:8080/api/v1';
+
   static const String baseUrl = '$_base/';
   
   // Timeout
