@@ -188,6 +188,8 @@ class UserDataSourceImpl implements UserRemoteDataSource {
       UserEndpoints.updateUserByAdmin,
       data: request.toJson(),
       queryParameters: request.id != null ? {'id': request.id} : null,
+    );
+  }
 
   @override
   Future<ApiResponse> getMyDocumentCount({String? traceId}) {
