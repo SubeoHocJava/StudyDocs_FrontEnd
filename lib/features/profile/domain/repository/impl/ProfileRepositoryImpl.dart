@@ -2,6 +2,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
@@ -16,6 +17,7 @@ import 'package:studydocs/features/docs/data/model/document_model.dart';
 
 import '../../../../../core/network/dio_client.dart';
 
+import '../../../../../data/datasource/academic_remote_datasource.dart';
 import '../../../../../data/datasource/document_remote_datasource.dart';
 import '../../../../../services/token_storage_service.dart';
 
@@ -24,6 +26,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
   late final DocumentRemoteDataSource documentDataSource;
   late final FollowRemoteDataSource followDataSource;
   late final AssetRemoteDataSource assetRemoteDataSource; // Add this
+  late final AcademicRemoteDataSource academicRemoteDataSource;
 
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
@@ -36,6 +39,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     );
     followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
     documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
+    academicRemoteDataSource=AcademicRemoteDataSourceImpl(dioClient: dioClient);
   }
 
 
@@ -256,5 +260,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
     });
 
     return Future.wait(futures);
+  }
+
+  @override
+  Future<List<String>> getSchools() {
+    return academicRemoteDataSource.getSchools();
   }
 }
