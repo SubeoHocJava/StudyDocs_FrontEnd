@@ -53,8 +53,7 @@ class LibraryScreen extends StatelessWidget {
               ),
             ),
           )
-            ..add(LoadDocumentByKeyWord("keyword"))
-            ..add(const LoadSavedDocuments()),
+            ..add(LoadDocumentByKeyWord("")),
       child: Scaffold(
         body: BlocBuilder<LibraryBloc, LibraryState>(
           builder: (context, state) {
@@ -67,8 +66,7 @@ class LibraryScreen extends StatelessWidget {
             if (state is LibraryLoaded) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<LibraryBloc>().add(LoadDocumentByKeyWord("keyword"));
-                  context.read<LibraryBloc>().add(const LoadSavedDocuments());
+                  context.read<LibraryBloc>().add(LoadDocumentByKeyWord(""));
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -152,7 +150,7 @@ class LibraryScreen extends StatelessWidget {
               );
             }
 
-            if (state is LibraryError) {
+            if (state is LibraryError) { 
               return Center(child: Text(state.message));
             }
 

@@ -57,10 +57,16 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
         // Fallback or keep empty
       }
       
-      // Preserve savedDocuments
+      // Fetch savedDocuments
       List<DocumentLibraryUI> savedDocs = [];
-      if (state is LibraryLoaded) {
-        savedDocs = (state as LibraryLoaded).savedDocuments;
+      try {
+        savedDocs = await getSavedDocumentsUseCase();
+      } catch (e) {
+        print('Error loading saved docs: $e');
+        // Fallback to existing if available
+        if (state is LibraryLoaded) {
+          savedDocs = (state as LibraryLoaded).savedDocuments;
+        }
       }
       
       emit(LibraryLoaded(
