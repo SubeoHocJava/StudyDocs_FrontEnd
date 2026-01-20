@@ -16,7 +16,8 @@ class SubjectLibraryInitial extends SubjectLibraryState {}
 class SubjectLibraryLoading extends SubjectLibraryState {}
 
 class SubjectLibraryLoaded extends SubjectLibraryState {
-  final String? schoolId; // New
+  final String? schoolId;
+  final String? subjectId; // Added for refresh support
   final String schoolName;
   final String subjectName;
   final int num_friends;
@@ -28,6 +29,7 @@ class SubjectLibraryLoaded extends SubjectLibraryState {
 
   const SubjectLibraryLoaded({
     this.schoolId,
+    this.subjectId, // Added
     required this.schoolName,
     required this.subjectName,
     this.num_friends = 0,
@@ -41,6 +43,7 @@ class SubjectLibraryLoaded extends SubjectLibraryState {
   @override
   List<Object?> get props => [
         schoolId,
+        subjectId, // Added
         schoolName,
         subjectName,
         uploaded_docs,

@@ -39,6 +39,7 @@ class SubjectLibraryBloc
        try {
         final docs = await searchDocumentsUseCase(event.keyword);
         emit(SubjectLibraryLoaded(
+          subjectId: null, // Not loading by subject
           subjectName: event.keyword,
           uploaded_docs: const [],
           the_most_liked_docs: const [],
@@ -63,6 +64,7 @@ class SubjectLibraryBloc
        try {
         final docs = await searchDocumentsUseCase(event.keyword);
         emit(SubjectLibraryLoaded(
+          subjectId: null, // Not loading by subject
           subjectName: event.keyword,
           uploaded_docs: const [],
           the_most_liked_docs: const [],
@@ -110,6 +112,7 @@ class SubjectLibraryBloc
         emit(
           SubjectLibraryLoaded(
             schoolId: event.schoolId,
+            subjectId: null, // Loading by school, not specific subject
             schoolName: event.schoolName,
             subjectName: '',
             uploaded_docs: const [],
@@ -137,6 +140,7 @@ class SubjectLibraryBloc
         emit(
           SubjectLibraryLoaded(
             schoolId: event.schoolId,
+            subjectId: event.subjectId, // Added
             schoolName: event.schoolName,
             subjectName: event.subjectName,
             uploaded_docs: const [],
