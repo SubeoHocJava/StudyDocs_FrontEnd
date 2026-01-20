@@ -1,66 +1,73 @@
-
 import 'package:file_picker/file_picker.dart';
-import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
+
+import 'package:studydocs/data/datasource/academic_remote_datasource.dart';
 import 'package:studydocs/data/datasource/asset_remote_datasource.dart';
+import 'package:studydocs/data/datasource/document_remote_datasource.dart';
+import 'package:studydocs/data/datasource/follow_remote_datasource.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+
 import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/asset_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/follow_remote_datasource_impl.dart';
 import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/user_remote_datasource.dart';
-import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 
+import 'package:studydocs/data/model/auth/request/update_user_request.dart';
 import 'package:studydocs/features/profile/domain/model/profile_entity.dart';
-import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/profile/domain/model/document_profile.dart';
+import 'package:studydocs/features/profile/domain/repository/profile_repository.dart';
 import 'package:studydocs/features/docs/data/model/document_model.dart';
 
 import '../../../../../core/network/dio_client.dart';
-
-import '../../../../../data/datasource/academic_remote_datasource.dart';
-import '../../../../../data/datasource/document_remote_datasource.dart';
 import '../../../../../services/token_storage_service.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   late final UserRemoteDataSource userRemoteDataSource;
   late final DocumentRemoteDataSource documentDataSource;
   late final FollowRemoteDataSource followDataSource;
-  late final AssetRemoteDataSource assetRemoteDataSource; // Add this
+  late final AssetRemoteDataSource assetRemoteDataSource;
   late final AcademicRemoteDataSource academicRemoteDataSource;
 
   ProfileRepositoryImpl() {
     final dioClient = DioClient();
-    // Initialize assetRemoteDataSource first to pass it if needed, or just allow sharing dioClient
-    assetRemoteDataSource = AssetRemoteDataSourceImpl(dioClient: dioClient);
-    
+
+    assetRemoteDataSource =
+        AssetRemoteDataSourceImpl(dioClient: dioClient);
+
+    academicRemoteDataSource =
+        AcademicRemoteDataSourceImpl(dioClient: dioClient);
+
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
       assetRemoteDataSource: assetRemoteDataSource,
     );
-    followDataSource= FollowRemoteDataSourceImpl(dioClient: dioClient);
-    documentDataSource=DocumentRemoteDataSourceImpl(dioClient: dioClient);
-    academicRemoteDataSource=AcademicRemoteDataSourceImpl(dioClient: dioClient);
+
+    followDataSource =
+        FollowRemoteDataSourceImpl(dioClient: dioClient);
+
+    documentDataSource =
+        DocumentRemoteDataSourceImpl(dioClient: dioClient);
   }
 
-
-
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // PROFILE
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<ProfileEntity> getProfile(String userId) async {
     try {
+      final myUserId = await TokenStorageService().getUserId();
 
-      // print('User ID from storage: $storedUserId');
-      final idUser = await TokenStorageService().getUserId();
-      final response =
-      await userRemoteDataSource.getUserById(userId);
+      final response = await userRemoteDataSource.getUserById(userId);
       final countFollower = await followDataSource.countFollowers(userId);
       final countFollowing = await followDataSource.countFollowing(userId);
-      final theIsFollowing = await followDataSource.isFollowing(idUser!, userId);
+      final isFollowing =
+      await followDataSource.isFollowing(myUserId!, userId);
 
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           response.data != null) {
-
         final userData = response.data;
+
         return ProfileEntity(
           id: userData['id']?.toString() ?? '',
           username: userData['username'] ?? '',
@@ -74,23 +81,22 @@ class ProfileRepositoryImpl extends ProfileRepository {
           address: userData['address'] ?? '',
           avatarUrl: userData['avatarUrl'] ?? '',
           isVerified: userData['isVerified'] ?? false,
-          isFollowing: theIsFollowing,//kéo sourse trả về true
-          school: userData['school']??'',
+          isFollowing: isFollowing,
+          school: userData['school'] ?? '',
           countFollower: countFollower,
           countFollowing: countFollowing,
           countDocument: userData['countDocument'] ?? 0,
           countLike: userData['countLike'] ?? 0,
         );
-      } else {
-        throw Exception(
-          'Failed to get profile. Status: ${response.statusCode}',
-        );
       }
+
+      throw Exception(
+        'Failed to get profile. Status: ${response.statusCode}',
+      );
     } catch (e) {
       throw Exception('Error getting profile: $e');
     }
   }
-
 
   @override
   Future<ProfileEntity> updateProfile(ProfileEntity profile) async {
@@ -109,33 +115,28 @@ class ProfileRepositoryImpl extends ProfileRepository {
       );
 
       final response = await userRemoteDataSource.updateUser(request);
-      
-      // Check if statusCode is in success range (200-299)
-      if (response.statusCode >= 200 && response.statusCode < 300 && response.data != null) {
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          response.data != null) {
         final userData = response.data;
-        return ProfileEntity(
-          id: userData['id']?.toString() ?? profile.id,
-          username: userData['username'] ?? profile.username,
-          fullName: userData['fullName'] ?? profile.fullName,
-          email: userData['email'] ?? profile.email,
-          phoneNumber: userData['phoneNumber'] ?? profile.phoneNumber,
-          gender: userData['gender'] ?? profile.gender,
+
+        return profile.copyWith(
+          username: userData['username'],
+          fullName: userData['fullName'],
+          email: userData['email'],
+          phoneNumber: userData['phoneNumber'],
+          gender: userData['gender'],
           birthDate: userData['dateOfBirth'] != null
-              ? DateTime.tryParse(userData['dateOfBirth']) 
+              ? DateTime.tryParse(userData['dateOfBirth'])
               : profile.birthDate,
-          address: userData['address'] ?? profile.address,
-          avatarUrl: userData['avatarUrl'] ?? profile.avatarUrl,
-          isVerified: userData['isVerified'] ?? false,
-          isFollowing: userData['isFollowing'] ?? false,
-          school: userData['school'] ?? "Chưa nhập thông tin trường",
-          countFollower: profile.countFollower,
-          countFollowing: profile.countFollowing,
-          countDocument: profile.countDocument,
-          countLike: profile.countLike,
+          address: userData['address'],
+          avatarUrl: userData['avatarUrl'],
+          school: userData['school'],
         );
-      } else {
-        throw Exception('Failed to update profile. Status: ${response.statusCode}, Error: ${response.errorCode}');
       }
+
+      throw Exception('Failed to update profile');
     } catch (e) {
       throw Exception('Error updating profile: $e');
     }
@@ -143,118 +144,123 @@ class ProfileRepositoryImpl extends ProfileRepository {
 
   @override
   Future<PlatformFile> updateAvatar(PlatformFile imagePath) async {
-    final tokenStorage = TokenStorageService();
-    final storedUserId = await tokenStorage.getUserId();
+    final userId = await TokenStorageService().getUserId();
+    if (userId == null) throw Exception('User not logged in');
 
-    if (storedUserId == null) {
-      throw Exception('User not logged in');
-    }
-
-   await userRemoteDataSource.uploadImage(
-      storedUserId,
-      imagePath,
-    );
-
+    await userRemoteDataSource.uploadImage(userId, imagePath);
     return imagePath;
   }
 
-
-  @override
-  Future<void> verifyEmail() async {
-    try {
-      // TODO: Implement email verification endpoint
-      throw UnimplementedError('Email verification not yet implemented');
-    } catch (e) {
-      throw Exception('Error verifying email: $e');
-    }
-  }
-
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // FOLLOW
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<int> followUser(String followingId) async {
-    final tokenStorage = TokenStorageService();
-    final storedUserId = await tokenStorage.getUserId();
+    final myUserId = await TokenStorageService().getUserId();
+    if (myUserId == null) throw Exception('User not logged in');
 
-    if (storedUserId == null) {
-      throw Exception('User not logged in');
-    }
-    await followDataSource.follow(followerId: storedUserId, followingId: followingId);
-    return await followDataSource.countFollowers(followingId);
+    await followDataSource.follow(
+      followerId: myUserId,
+      followingId: followingId,
+    );
+
+    return followDataSource.countFollowers(followingId);
   }
 
   @override
   Future<int> unfollowUser(String followingId) async {
-    final tokenStorage = TokenStorageService();
-    final storedUserId = await tokenStorage.getUserId();
-    if (storedUserId == null) {
-      throw Exception('User not logged in');
-    }
-    await followDataSource.deleteFollow(followerId: storedUserId, followingId: followingId);
+    final myUserId = await TokenStorageService().getUserId();
+    if (myUserId == null) throw Exception('User not logged in');
 
-    return await followDataSource.countFollowers(followingId);
+    await followDataSource.deleteFollow(
+      followerId: myUserId,
+      followingId: followingId,
+    );
+
+    return followDataSource.countFollowers(followingId);
   }
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // DOCUMENTS (ACADEMIC ENRICHED – SAME AS LIBRARY)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<List<DocumentProfile>> getDocumentsByUser(String id) async {
     try {
-      var docs = await documentDataSource.getMyDocuments();
+      var documents = await documentDataSource.getMyDocuments();
 
-      // Enrich with assets (thumbnails) same as Home/Library
-      docs = await _enrichWithAssets(docs);
+      // Enrich thumbnails
+      documents = await _enrichWithAssets(documents);
 
-      final List<DocumentProfile> res = docs.map((doc) {
+      // Extract academic IDs
+      final universityIds = documents
+          .where((d) => d.universityId != null && d.universityId!.isNotEmpty)
+          .map((d) => d.universityId!)
+          .toSet()
+          .toList();
+
+      final subjectIds = documents
+          .where((d) => d.subjectId != null && d.subjectId!.isNotEmpty)
+          .map((d) => d.subjectId!)
+          .toSet()
+          .toList();
+
+      // Fetch academic info in parallel
+      final results = await Future.wait([
+        _fetchUniversitiesByIds(universityIds),
+        _fetchSubjectsByIds(subjectIds),
+      ]);
+
+      final universityMap = results[0];
+      final subjectMap = results[1];
+
+      return documents.map((doc) {
+        final institution =
+        doc.universityId != null
+            ? universityMap[doc.universityId!] ?? doc.school
+            : doc.school;
+
+        final category =
+        doc.subjectId != null
+            ? subjectMap[doc.subjectId!] ?? doc.course
+            : doc.course;
+
         return DocumentProfile(
           id: doc.id ?? '',
           fileId: doc.fileId,
           title: doc.title,
-          category: doc.course, // Mapped 'course' to 'category'
-          institution: doc.school, // Mapped 'school' to 'institution'
+          category: category,
+          institution: institution,
           pages: doc.pages,
-          createdAt: doc.year, // Mapped 'year' to 'createdAt'
+          createdAt: doc.year,
           likesCount: doc.likes,
-          commentsCount: doc.comments.length, // use length of comments list
-          thumbnailUrl: doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
-          isLiked: doc.currentUserReaction == 'like',
+          commentsCount: doc.comments.length,
+          thumbnailUrl:
+          doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
+          isLiked: doc.currentUserReaction == 'LIKE',
           isSaved: doc.isSaved,
         );
       }).toList();
-
-      print("Log này của file: ProfileRepositoryImpl: đã load được document: "+res.length.toString());
-      return res;
     } catch (e) {
-      // In case of error, you might want to return an empty list or rethrow
-      // For now, I'll log and return empty list or mock data if acceptable
-      print('Log này của file: ProfileRepositoryImpl: Error fetching user documents: $e');
+      print('ProfileRepositoryImpl: Failed to load documents - $e');
       return [];
     }
   }
 
-  /// Enrich document list with thumbnails from Asset Service if missing
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // HELPERS
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Future<List<DocumentModel>> _enrichWithAssets(
-    List<DocumentModel> docs,
-  ) async {
-    // Run in parallel for performance
+      List<DocumentModel> docs,
+      ) async {
     final futures = docs.map((doc) async {
-      // Logic: Always fetch from Asset Service to ensure valid URLs, even if previewUrls exists
-      if (doc.fileId != null &&
-          doc.fileId!.isNotEmpty) {
-        print('ProfileRepositoryImpl Debug: Requesting asset for fileId: ${doc.fileId} (Forced)');
+      if (doc.fileId != null && doc.fileId!.isNotEmpty) {
         try {
-          final asset = await assetRemoteDataSource.getAssetById(doc.fileId!);
-          final previewUrls = asset.previewUrls;
-          print('ProfileRepositoryImpl Debug: Asset fetched for ${doc.title}. URLs: $previewUrls');
-          
-          if (previewUrls.isNotEmpty) {
-            // Found a preview URL, update the document model
-            return doc.copyWith(previewUrls: previewUrls);
-          } else {
-             print('ProfileRepositoryImpl Debug: Asset fetched but previewUrls is empty for ${doc.title}');
+          final asset =
+          await assetRemoteDataSource.getAssetById(doc.fileId!);
+          if (asset.previewUrls.isNotEmpty) {
+            return doc.copyWith(previewUrls: asset.previewUrls);
           }
-        } catch (e) {
-          print('ProfileRepositoryImpl Debug: Failed to fetch asset for ${doc.title}, error: $e');
-          // Keep original doc on error
-        }
-      } else {
-         print('ProfileRepositoryImpl Debug: No fileId for ${doc.title}. Keeping original URLs: ${doc.previewUrls}');
+        } catch (_) {}
       }
       return doc;
     });
@@ -262,8 +268,50 @@ class ProfileRepositoryImpl extends ProfileRepository {
     return Future.wait(futures);
   }
 
+  Future<Map<String, String>> _fetchUniversitiesByIds(
+      List<String> ids,
+      ) async {
+    if (ids.isEmpty) return {};
+
+    final futures = ids.map((id) async {
+      try {
+        final uni =
+        await academicRemoteDataSource.getUniversityById(id);
+        return MapEntry(id, uni.name);
+      } catch (_) {
+        return MapEntry(id, 'Unknown University');
+      }
+    });
+
+    return Map.fromEntries(await Future.wait(futures));
+  }
+
+  Future<Map<String, String>> _fetchSubjectsByIds(
+      List<String> ids,
+      ) async {
+    if (ids.isEmpty) return {};
+
+    final futures = ids.map((id) async {
+      try {
+        final subject =
+        await academicRemoteDataSource.getSubjectById(id);
+        return MapEntry(id, subject.name);
+      } catch (_) {
+        return MapEntry(id, 'Unknown Subject');
+      }
+    });
+
+    return Map.fromEntries(await Future.wait(futures));
+  }
+
   @override
   Future<List<String>> getSchools() {
     return academicRemoteDataSource.getSchools();
+  }
+
+  @override
+  Future<void> verifyEmail() {
+    // TODO: implement verifyEmail
+    throw UnimplementedError();
   }
 }
