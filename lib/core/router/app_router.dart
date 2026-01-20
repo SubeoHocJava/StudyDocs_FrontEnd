@@ -8,6 +8,7 @@ import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.d
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import 'package:studydocs/features/admin/presentation/screen/admin_dashboard_screen.dart';
 import 'package:studydocs/features/auth/presentation/bloc/auth_status_cubit.dart';
+import 'package:studydocs/features/qr_scan/presentation/qr_scan_screen.dart';
 import 'package:studydocs/features/docs/logic/docs_page.dart';
 import 'package:studydocs/features/docs_management/data/repository/docs_management_repository_impl.dart';
 import 'package:studydocs/features/docs_management/domain/usecase/delete_admin_doc_usecase.dart';
@@ -70,6 +71,9 @@ class AppRoutes {
   // statistic & subject library
   static const String statistic = '/statistic';
   static const String documentDetail = '/document/:id';
+
+  //scan
+  static const String qrScan = '/qr-scan';
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -463,6 +467,11 @@ GoRouter createAppRouter() {
           final docId = state.pathParameters['id'] ?? '';
           return DocsPage(documentId: docId);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.qrScan,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const QRScanScreen(),
       ),
     ],
   );

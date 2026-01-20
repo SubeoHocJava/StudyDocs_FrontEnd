@@ -47,7 +47,6 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
                 );
               })
               .where((s) => s.name.isNotEmpty)
-              .where((s) => s.name.toLowerCase().contains(query.trim().toLowerCase())) // Client-side fallback filter
               .toList();
 
       return allSchools;
@@ -89,10 +88,6 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
 
   @override
   Future<List<SubjectEntity>> getAllSubjects() async {
-    print('>>> DATASOURCE: getAllSubjects called with URL: ${ApiConstants.academicSubjects}');
-    if (kDebugMode) {
-      print('AcademicRemoteDataSourceImpl.getAllSubjects: Fetching all subjects');
-    }
     final resp = await dioClient.get(ApiConstants.academicSubjects);
 
     if (resp.statusCode == 200) {
@@ -214,4 +209,3 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
     throw ServerException('Failed to fetch document IDs', response.statusCode);
   }
 }
-

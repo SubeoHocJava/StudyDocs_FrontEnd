@@ -116,6 +116,17 @@ class MenuDrawer extends StatelessWidget {
                           onTap: () => _navigateTo(context, 3),
                         ),
 
+                        // QR Scan
+                        _buildMenuItem(
+                          context,
+                          icon: Icons.qr_code_scanner,
+                          title: 'Quét QR',
+                          onTap: () {
+                             onClose();
+                             context.push(AppRoutes.qrScan);
+                          },
+                        ),
+
                         // Admin context
                         BlocBuilder<AuthStatusCubit, AuthStatus>(
                           builder: (context, authState) {
