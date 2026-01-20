@@ -10,6 +10,7 @@ class NotificationPageLayout extends StatelessWidget {
   final String emptyMessage;
   final Widget Function(List<NotificationEntity>) childBuilder;
   final String userId;
+  final Future<void> Function()? onRefresh;
 
   const NotificationPageLayout({
     super.key,
@@ -21,6 +22,7 @@ class NotificationPageLayout extends StatelessWidget {
     this.headerTitle,
     this.onModal,
     this.extraAction,
+    this.onRefresh,
   });
 
   // Header props
@@ -42,9 +44,24 @@ class NotificationPageLayout extends StatelessWidget {
           } else if (state is NotificationLoadedState) {
             final list =
                 isDeleted ? state.deletedNotifications : state.activeNotifications;
-            bodyContent = list.isEmpty
-                ? Center(child: Text(emptyMessage))
-                : childBuilder(list);
+            if (list.isEmpty) {
+              bodyContent = onRefresh != null
+                  ? RefreshIndicator(
+                      onRefresh: onRefresh!,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Center(child: Text(emptyMessage)),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Center(child: Text(emptyMessage));
+            } else {
+              bodyContent = childBuilder(list);
+            }
           } else if (state is NotificationErrorState) {
             final responsive = ResponsiveHelper(context);
             bodyContent = Center(
