@@ -41,4 +41,34 @@ class StatisticRemoteDataSourceImpl implements StatisticRemoteDataSource {
       throw Exception('Failed to fetch system stats for $period: $e');
     }
   }
+
+  @override
+  Future<int> getTotalLikes() async {
+    try {
+      final response = await dioClient.get(ReviewEndpoints.adminTotalLikes);
+      if (response.isSuccess && response.data != null) {
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      throw Exception('Failed to fetch total likes: $e');
+    }
+  }
+
+  @override
+  Future<int> getTotalReviews() async {
+    try {
+      final response = await dioClient.get(ReviewEndpoints.adminTotalReviews);
+      if (response.isSuccess && response.data != null) {
+        final data = response.data;
+        if (data is int) return data;
+        if (data is String) return int.tryParse(data) ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      throw Exception('Failed to fetch total reviews: $e');
+    }
+  }
 }

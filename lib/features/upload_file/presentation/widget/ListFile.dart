@@ -15,25 +15,18 @@ class FileUploadLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (files.isEmpty) return const SizedBox.shrink();
     final responsive = context.responsive;
 
-    return Center(
-      child:
-            SizedBox(
-                height:files.length* 60, // responsive height per item
-                width: responsive.widthPercent(responsive.isMobile ? 80 : 40),
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: files.length,
-                  itemBuilder: (context, index) {
-                    final file = files[index];
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: responsive.heightPercent(0.5)),
-                      child: MonoFile(file: file,index:index),
-                    );
-                  },
-                ),
-              )
+    return Column(
+      children: files.asMap().entries.map((entry) {
+        final index = entry.key;
+        final file = entry.value;
+        return Padding(
+          padding: EdgeInsets.only(bottom: responsive.heightPercent(1.5)),
+          child: MonoFile(file: file, index: index),
+        );
+      }).toList(),
     );
   }
 }

@@ -15,6 +15,8 @@ class StatisticRepositoryImpl implements StatisticRepository {
         remoteDataSource.getSystemStats('day'),
         remoteDataSource.getSystemStats('month'),
         remoteDataSource.getSystemStats('year'),
+        remoteDataSource.getTotalLikes(),
+        remoteDataSource.getTotalReviews(),
       ]);
 
       return StatisticEntity(
@@ -22,8 +24,8 @@ class StatisticRepositoryImpl implements StatisticRepository {
         dayCount: results[1],
         monthCount: results[2],
         yearCount: results[3],
-        totalLikes: 0, // Mock as per request
-        totalComments: 0, // Mock as per request
+        totalLikes: results[4] as int,
+        totalComments: results[5] as int,
       );
     } catch (e) {
       throw Exception('Failed to load statistics: $e');

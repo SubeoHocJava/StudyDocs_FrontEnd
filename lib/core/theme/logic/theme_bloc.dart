@@ -23,8 +23,8 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     ThemeModeChanged event,
     Emitter<ThemeState> emit,
   ) async {
-    await themeRepository.saveThemeMode(event.mode);
     emit(state.copyWith(themeMode: event.mode));
+    await themeRepository.saveThemeMode(event.mode);
   }
 
   Future<void> _onToggleTheme(

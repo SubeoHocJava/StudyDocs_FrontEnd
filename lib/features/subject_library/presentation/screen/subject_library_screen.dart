@@ -12,6 +12,7 @@ import 'package:studydocs/features/subject_library/logic/subject_library_state.d
 import 'package:studydocs/features/subject_library/presentation/widget/title.dart';
 
 import '../../../library/presentation/widget/stored_document.dart';
+import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 
 class SubjectLibraryScreen extends StatelessWidget {
   final String schoolName;
@@ -33,44 +34,76 @@ class SubjectLibraryScreen extends StatelessWidget {
           
           if (state is SubjectLibraryLoaded) {
             final responsive = context.responsive;
-            return SingleChildScrollView(
-              padding: responsive.screenPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tiêu đề với tên trường và search bar lớn
-                  TitleSubjectLibrary(
-                    state,
-                    fontSize: responsive.fontSize(22),
-                    schoolName: schoolName,
+            return RefreshIndicator(
+              onRefresh: () async {
+                // Reload documents for this school
+                context.read<SubjectLibraryBloc>().add(
+                  SubjectLibraryLoadBySchool(
+                    state.schoolId ?? '',
+                    state.schoolName,
                   ),
-                  SizedBox(height: responsive.heightPercent(2)),
-
-                  // Section "Môn học"
-                  if (state.subjects.isNotEmpty) ...[
-                    SubjectCategories(
-                      state.subjects,
-                      onSubjectTap: (index) {
-                        final subject = state.subjects[index];
-                        final schoolId = state.schoolId ?? '';
-                        final schoolName = state.schoolName;
-                        
-                        final encodedSchoolName = Uri.encodeComponent(schoolName);
-                        final encodedSubjectName = Uri.encodeComponent(subject.name);
-                        
-                        context.push(
-                          '/school/$schoolId/subject/${subject.id}?schoolName=$encodedSchoolName&subjectName=$encodedSubjectName'
-                        );
-                      },
+                );
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: responsive.screenPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tiêu đề với tên trường và search bar lớn
+                    TitleSubjectLibrary(
+                      state,
+                      fontSize: responsive.fontSize(22),
+                      schoolName: schoolName,
                     ),
-                    SizedBox(height: responsive.heightPercent(3)),
-                  ],
+                    SizedBox(height: responsive.heightPercent(2)),
 
-                  // Danh sách tài liệu của trường
-                  if (state.documents.isNotEmpty) ...[
-                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
+                    // Section "Môn học"
+                    if (state.subjects.isNotEmpty) ...[
+                      SubjectCategories(
+                        state.subjects,
+                        onSubjectTap: (index) {
+                          final subject = state.subjects[index];
+                          final schoolId = state.schoolId ?? '';
+                          final schoolName = state.schoolName;
+                          
+                          final encodedSchoolName = Uri.encodeComponent(schoolName);
+                          final encodedSubjectName = Uri.encodeComponent(subject.name);
+                          
+                          context.push(
+                            '/school/$schoolId/subject/${subject.id}?schoolName=$encodedSchoolName&subjectName=$encodedSubjectName'
+                          );
+                        },
+                      ),
+                      SizedBox(height: responsive.heightPercent(3)),
+                    ],
+
+                    // Danh sách tài liệu của trường
+                    if (state.documents.isNotEmpty) ...[
+                      StoredDocument(
+                        state.documents.cast<DocumentLibraryUI>(),
+                        onDownload: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryDownloadDocument(doc.id),
+                          );
+                        },
+                        onSave: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryBookmarkDocument(doc.id),
+                          );
+                        },
+                        onLike: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryLikeDocument(doc.id),
+                          );
+                        },
+                        onTap: (doc) {
+                          context.push('/document/${doc.id}');
+                        },
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             );
           }

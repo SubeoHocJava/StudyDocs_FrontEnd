@@ -46,19 +46,23 @@ class BasicInfor extends StatelessWidget {
             responsive,
             state.avatarUrl ?? '',
             onTap: () async {
-              final result = await FilePicker.platform.pickFiles(
-                type: FileType.image,
-                allowMultiple: false,
-              );
+              // Check if it's own profile before allowing update
+              final authState = context.read<AuthStatusCubit>().state;
+              if (authState is AuthAuthenticated && authState.userId == state.id) {
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.image,
+                  allowMultiple: false,
+                );
 
-              if (result == null) return;
+                if (result == null) return;
 
-              final file = result.files.single;
-              if (file.path == null) return;
+                final file = result.files.single;
+                if (file.path == null) return;
 
-              context.read<ProfileBloc>().add(
-                UpdateAvatar(file), // ✅ truyền file
-              );
+                context.read<ProfileBloc>().add(
+                  UpdateAvatar(file),
+                );
+              }
             },
           ),
 

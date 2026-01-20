@@ -203,7 +203,8 @@ class _DocsDetailScreenState extends State<DocsDetailScreen> {
           DocInfoRow(text: doc.school, iconPath: AppAssets.school),
           const SizedBox(height: 6),
           Text(
-            "${doc.pages} trang • ${doc.fileSize}",
+
+            "${doc.pages} trang ",  //• ${doc.fileSize}
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
           

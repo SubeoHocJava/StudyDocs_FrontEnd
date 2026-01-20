@@ -156,7 +156,33 @@ class LibraryScreen extends StatelessWidget {
                           ),
                         ],
                         
-                        StoredDocument(state.documents, crossAxisCount: 0),
+                        StoredDocument(
+                          state.documents,
+                          crossAxisCount: 0,
+                          onDownload: (doc) {
+                            context.read<LibraryBloc>().add(
+                              DownloadDocumentRequested(doc.id),
+                            );
+                          },
+                          onSave: (doc) {
+                            context.read<LibraryBloc>().add(
+                              SaveDocumentRequested(doc.id),
+                            );
+                          },
+                          onLike: (doc) {
+                            context.read<LibraryBloc>().add(
+                              LikeDocumentRequested(doc.id),
+                            );
+                          },
+                          onComment: (doc) {
+                            context.read<LibraryBloc>().add(
+                              OpenCommentRequested(doc.id),
+                            );
+                          },
+                          onTap: (doc) {
+                            context.push('/document/${doc.id}');
+                          },
+                        ),
                       ],
                     ),
                   ),

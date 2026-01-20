@@ -8,6 +8,7 @@ import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/features/library/domain/model/document_library.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_bloc.dart';
 import 'package:studydocs/features/subject_library/logic/subject_library_state.dart';
+import 'package:studydocs/features/subject_library/logic/subject_library_event.dart';
 import '../../../library/presentation/widget/stored_document.dart';
 
 class SubjectDocumentsScreen extends StatelessWidget {
@@ -31,55 +32,89 @@ class SubjectDocumentsScreen extends StatelessWidget {
           
           if (state is SubjectLibraryLoaded) {
             final responsive = context.responsive;
-            return SingleChildScrollView(
-              padding: responsive.screenPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tiêu đề: Tên trường > Tên môn
-                  Padding(
-                    padding: EdgeInsets.only(bottom: responsive.heightPercent(2)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          schoolName,
-                          style: TextStyle(
-                            fontSize: responsive.fontSize(18),
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        SizedBox(height: responsive.heightPercent(1)),
-                        Text(
-                          subjectName,
-                          style: TextStyle(
-                            fontSize: responsive.fontSize(24),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
+            return RefreshIndicator(
+              onRefresh: () async {
+                // Reload documents for this subject
+                context.read<SubjectLibraryBloc>().add(
+                  SubjectLibraryLoadBySubject(
+                    schoolId: state.schoolId ?? '',
+                    subjectId: state.subjectId ?? '',
+                    subjectName: subjectName,
+                    schoolName: schoolName,
                   ),
-                  
-                  // Danh sách tài liệu
-                  if (state.documents.isNotEmpty)
-                    StoredDocument(state.documents.cast<DocumentLibraryUI>()),
-                  
-                  if (state.documents.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(responsive.heightPercent(5)),
-                        child: Text(
-                          'Chưa có tài liệu cho môn học này',
-                          style: TextStyle(
-                            fontSize: responsive.fontSize(16),
-                            color: Colors.grey[600],
+                );
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: responsive.screenPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tiêu đề: Tên trường > Tên môn
+                    Padding(
+                      padding: EdgeInsets.only(bottom: responsive.heightPercent(2)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            schoolName,
+                            style: TextStyle(
+                              fontSize: responsive.fontSize(18),
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          SizedBox(height: responsive.heightPercent(1)),
+                          Text(
+                            subjectName,
+                            style: TextStyle(
+                              fontSize: responsive.fontSize(24),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Danh sách tài liệu
+                    if (state.documents.isNotEmpty)
+                      StoredDocument(
+                        state.documents.cast<DocumentLibraryUI>(),
+                        onDownload: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryDownloadDocument(doc.id),
+                          );
+                        },
+                        onSave: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryBookmarkDocument(doc.id),
+                          );
+                        },
+                        onLike: (doc) {
+                          context.read<SubjectLibraryBloc>().add(
+                            SubjectLibraryLikeDocument(doc.id),
+                          );
+                        },
+                        onTap: (doc) {
+                          context.push('/document/${doc.id}');
+                        },
+                      ),
+                    
+                    if (state.documents.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(responsive.heightPercent(5)),
+                          child: Text(
+                            'Chưa có tài liệu cho môn học này',
+                            style: TextStyle(
+                              fontSize: responsive.fontSize(16),
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             );
           }

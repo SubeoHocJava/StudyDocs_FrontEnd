@@ -28,6 +28,7 @@ class HelperMap {
       numMeFollow: profile.countFollowing,
       numMyUpload: profile.countDocument,
       numMyLikes: profile.countLike,
+      numMyComment: profile.countReview,
 
       documents: documents,
       schools: schools,
@@ -52,7 +53,7 @@ class HelperMap {
       countFollower: 0,
       countFollowing: 0,
       countDocument: 0,
-      countLike: 0,
+      countLike: 0, countReview: 0,
     );
   }
 }

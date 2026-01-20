@@ -1,8 +1,6 @@
 import "package:file_picker/file_picker.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:studydocs/features/upload_file/logic/upload_file_event.dart";
-import "package:studydocs/core/error/error_mapper.dart";
-import "package:studydocs/core/exceptions/api_exception.dart";
 import "../domain/usecase/upload_file_usecase.dart";
 import "upload_file_state.dart";
 
@@ -21,8 +19,8 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
       emit(UploadFileLoading());
       try {
         // Tạm thời mock lại dữ liệu
-        String subject = "subject";
-        String school = "school";
+        String subject = "";
+        String school = "";
         List<PlatformFile> files = [];
 
         final loaded = UploadFileLoaded(files, subject, school);
@@ -30,7 +28,7 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
 
         emit(loaded);
       } catch (e) {
-        emit(UploadFileError(_getErrorMessage(e), [], "subject", "school"));
+        emit(UploadFileError(e.toString(), [], "", ""));
       }
     });
 
@@ -74,11 +72,11 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         // Subject + school + IDs lấy từ current state hoặc gán mặc định
         final subject = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).subject
-            : lastLoadedState?.subject ?? "subject";
+            : lastLoadedState?.subject ?? "";
 
         final school = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).school
-            : lastLoadedState?.school ?? "school";
+            : lastLoadedState?.school ?? "";
 
         // CRITICAL: Preserve schoolId and subjectId!
         final schoolId = (state is UploadFileLoaded)
@@ -107,12 +105,12 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
             : lastLoadedState?.file ?? [];
         final currentSubject = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).subject
-            : lastLoadedState?.subject ?? "subject";
+            : lastLoadedState?.subject ?? "";
         final currentSchool = (state is UploadFileLoaded)
             ? (state as UploadFileLoaded).school
-            : lastLoadedState?.school ?? "school";
+            : lastLoadedState?.school ?? "";
 
-        emit(UploadFileError(_getErrorMessage(e), currentFiles, currentSubject, currentSchool));
+        emit(UploadFileError(e.toString(), currentFiles, currentSubject, currentSchool));
       }
     });
 
@@ -206,44 +204,27 @@ class UploadFileBloc extends Bloc<UploadFileEvent, UploadFileState> {
         final current = state as UploadFileLoaded;
 
         emit(UploadFileLoading());
-        
-        try {
-          final success = await uploadFileUseCase(
-            filePath: current.file.first.path ?? "",
-            schoolId: current.schoolId ?? "", // Send ID instead of name
-            subjectId: current.subjectId ?? "", // Send ID instead of name
-            fileName: event.fileName,
-            year: event.year,
-            description: event.description,
-          );
 
-          if (success) {
-            emit(UploadFileSuccess());
-          } else {
-             // success false but no exception detected? treat as error
-            emit(UploadFileError(
-              ErrorMapper.map(309), // Upload failed
-              current.file,
-              current.subject,
-              current.school,
-            ));
-          }
-        } catch (e) {
-             emit(UploadFileError(
-              _getErrorMessage(e),
-              current.file,
-              current.subject,
-              current.school,
-            ));
+        final success = await uploadFileUseCase(
+          filePath: current.file.first.path ?? "",
+          schoolId: current.schoolId ?? "", // Send ID instead of name
+          subjectId: current.subjectId ?? "", // Send ID instead of name
+          fileName: event.fileName,
+          year: event.year,
+          description: event.description,
+        );
+
+        if (success) {
+          emit(UploadFileSuccess());
+        } else {
+          emit(UploadFileError(
+            "Upload failed",
+            current.file,
+            current.subject,
+            current.school,
+          ));
         }
       }
     });
-  }
-
-  String _getErrorMessage(Object error) {
-    if (error is ApiException) {
-      return ErrorMapper.map(int.tryParse(error.code ?? ''));
-    }
-    return ErrorMapper.map(500);
   }
 }
