@@ -7,8 +7,14 @@ import '../../logic/profile_state.dart';
 
 class UpLoadDocument extends StatelessWidget {
   final ProfileLoaded state;
+  final void Function(RowDocumentItem)? onTap;
 
-  const UpLoadDocument({super.key, required this.state});
+  const UpLoadDocument({
+    super.key,
+    required this.state,
+    this.onTap,
+  });
+
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
@@ -45,6 +51,7 @@ class UpLoadDocument extends StatelessWidget {
           RowDocument(
             documents.cast<RowDocumentItem>(),
             cardWidth: cardWidth,
+            onTap: onTap,
           ),
         ],
       ),

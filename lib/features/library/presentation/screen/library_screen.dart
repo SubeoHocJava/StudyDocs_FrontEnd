@@ -111,7 +111,12 @@ class LibraryScreen extends StatelessWidget {
                         ),
     
                         SubjectCategories(state.categories),
-                        RecentlyUpload(state.documents),
+                        RecentlyUpload(
+                          state.documents,
+                          onTap: (doc) {
+                            context.push('/document/${doc.id}');
+                          },
+                        ),
                         
                         // Saved Documents Section
                         if (state.savedDocuments.isNotEmpty) ...[
@@ -143,6 +148,9 @@ class LibraryScreen extends StatelessWidget {
                               context.read<LibraryBloc>().add(
                                 LikeDocumentRequested(doc.id),
                               );
+                            },
+                            onTap: (doc) {
+                              context.push('/document/${doc.id}');
                             },
                           ),
                         ],
