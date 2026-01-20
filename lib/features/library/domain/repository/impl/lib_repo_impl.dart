@@ -10,7 +10,6 @@ import '../../../../../data/datasource/impl/asset_remote_datasource_impl.dart';
 import '../../../../../data/datasource/impl/document_remote_datasource_impl.dart';
 import '../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
 
-
 import '../../model/document_library.dart';
 import '../library_repository.dart';
 import '../../../../docs/data/model/document_model.dart';
@@ -20,7 +19,6 @@ class LibraryRepositoryImpl implements LibraryRepository {
   late final UserRemoteDataSource userRemoteDataSource;
   late final AssetRemoteDataSource assetRemoteDataSource;
   late final AcademicRemoteDataSource academicRemoteDataSource;
-  late final DocsRemoteDataSource docsRemoteDataSource;
 
   LibraryRepositoryImpl() {
     final dioClient = DioClient();
@@ -30,9 +28,6 @@ class LibraryRepositoryImpl implements LibraryRepository {
 
     academicRemoteDataSource =
         AcademicRemoteDataSourceImpl(dioClient: dioClient);
-
-    docsRemoteDataSource =
-        DocsRemoteDataSourceImpl(dioClient: dioClient);
 
     userRemoteDataSource = UserDataSourceImpl(
       dioClient: dioClient,
@@ -44,14 +39,14 @@ class LibraryRepositoryImpl implements LibraryRepository {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // LOAD DOCUMENTS
+  // LOAD DOCUMENTS (Academic Enriched)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   @override
   Future<List<DocumentLibraryUI>> loadDocuments(String keyword) async {
+    // 1. Fetch documents
     var documents = await documentRemoteDataSource.getDocuments();
 
-    documents = await _enrichWithStats(documents);
-
+    // 2. Extract unique university & subject IDs
     final universityIds = documents
         .where((doc) => doc.universityId != null && doc.universityId!.isNotEmpty)
         .map((doc) => doc.universityId!)
@@ -64,6 +59,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
         .toSet()
         .toList();
 
+    // 3. Fetch academic info in parallel
     final results = await Future.wait([
       _fetchUniversitiesByIds(universityIds),
       _fetchSubjectsByIds(subjectIds),
@@ -72,6 +68,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
     final universityMap = results[0];
     final subjectMap = results[1];
 
+    // 4. Map to UI model
     return documents.map((doc) {
       final institutionName =
       doc.universityId != null
@@ -92,7 +89,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
         pages: doc.pages,
         createdAt: doc.year,
         likesCount: doc.likes,
-        commentsCount: doc.commentsCount ?? 0,
+        commentsCount: doc.comments.length,
         thumbnailUrl:
         doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
         isLiked: doc.currentUserReaction == 'LIKE',
@@ -109,8 +106,6 @@ class LibraryRepositoryImpl implements LibraryRepository {
     var documents =
     await documentRemoteDataSource.searchDocuments(keyword);
 
-    documents = await _enrichWithStats(documents);
-
     final universityIds = documents
         .where((doc) => doc.universityId != null && doc.universityId!.isNotEmpty)
         .map((doc) => doc.universityId!)
@@ -151,7 +146,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
         pages: doc.pages,
         createdAt: doc.year,
         likesCount: doc.likes,
-        commentsCount: doc.commentsCount ?? 0,
+        commentsCount: doc.comments.length,
         thumbnailUrl:
         doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
         isLiked: doc.currentUserReaction == 'LIKE',
@@ -201,10 +196,8 @@ class LibraryRepositoryImpl implements LibraryRepository {
       return [];
     }
 
-    var documents =
+    final documents =
     await documentRemoteDataSource.getDocumentsByIds(documentIds);
-
-    documents = await _enrichWithStats(documents);
 
     final universityIds = documents
         .where((doc) => doc.universityId != null && doc.universityId!.isNotEmpty)
@@ -246,7 +239,7 @@ class LibraryRepositoryImpl implements LibraryRepository {
         pages: doc.pages,
         createdAt: doc.year,
         likesCount: doc.likes,
-        commentsCount: doc.commentsCount ?? 0,
+        commentsCount: doc.comments.length,
         thumbnailUrl:
         doc.previewUrls.isNotEmpty ? doc.previewUrls.first : null,
         isLiked: doc.currentUserReaction == 'LIKE',
@@ -258,40 +251,6 @@ class LibraryRepositoryImpl implements LibraryRepository {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // HELPER METHODS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Future<List<DocumentModel>> _enrichWithStats(
-      List<DocumentModel> docs,
-      ) async {
-    final futures = docs.map((doc) async {
-      if (doc.id == null) return doc;
-
-      try {
-        final results = await Future.wait([
-          docsRemoteDataSource.getDocumentStats(doc.id!),
-          docsRemoteDataSource.getMyDocumentReaction(doc.id!),
-          docsRemoteDataSource.getReviewCount(doc.id!),
-        ]);
-
-        final stats = results[0] as Map<String, dynamic>;
-        final reaction = results[1] as String?;
-        final commentCount = results[2] as int;
-
-        final likes = (stats['likeCount'] as num?)?.toInt() ?? 0;
-        final dislikes = (stats['dislikeCount'] as num?)?.toInt() ?? 0;
-
-        return doc.copyWith(
-          likes: likes,
-          dislikes: dislikes,
-          commentsCount: commentCount,
-          currentUserReaction: reaction,
-        );
-      } catch (_) {
-        return doc;
-      }
-    });
-
-    return Future.wait(futures);
-  }
-
   Future<Map<String, String>> _fetchUniversitiesByIds(
       List<String> ids,
       ) async {
