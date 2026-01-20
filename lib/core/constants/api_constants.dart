@@ -93,10 +93,6 @@ class ReviewEndpoints {
   static const String adminTotalLikes = '$adminStats/reactions/total-likes';
   static const String adminTotalReviews = '$adminStats/reviews/total';
 
-  // Document related
-  static const String documentStats = '$base/document'; // /{id}/stats
-  static const String documentReact = '$base/document'; // /{id}/react
-
   // ✅ ADD — USER REACTION COUNT
   // GET /api/v1/reviews/user/me/reactions/count?type=LIKE
   static const String myReactionCount =
