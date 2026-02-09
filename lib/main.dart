@@ -1,86 +1,15 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/data/datasource/impl/notification_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/impl/notification_template_remote_datasource_impl.dart';
-import 'package:studydocs/data/datasource/impl/academic_remote_datasource_impl.dart';
 import 'app.dart';
-import 'core/network/dio_client.dart';
-import 'features/notification/domain/repository/impl/notification_repository.dart';
-import 'features/notification/domain/repository/notification_repository.dart';
-import 'features/notification/service/fcm_service.dart';
-import 'features/notification_template/data/repository/notification_template_repository_impl.dart';
-import 'features/notification_template/domain/repository/notification_template_repository.dart';
-import 'firebase_options.dart';
 
-import 'data/datasource/docs_management_remote_datasource.dart';
-import 'features/docs_management/data/repository/docs_management_repository_impl.dart';
-import 'features/docs_management/domain/repository/docs_management_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'core/theme/data/repository/theme_repository_impl.dart';
-import 'core/theme/domain/repository/theme_repository.dart';
-import 'data/datasource/docs_remote_datasource.dart';
-import 'features/docs/data/repository/docs_repository_impl.dart';
-import 'features/docs/domain/repository/docs_repository.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-  final dioClient = DioClient();
-  final notificationDataSource = NotificationDataSourceImpl(dioClient: dioClient);
-  final notificationRepository = NotificationRepositoryImpl(notificationDataSource);
-
-  final notificationTemplateDataSource = NotificationTemplateDataSourceImpl(dioClient: dioClient);
-  final notificationTemplateRepository = NotificationTemplateRepositoryImpl(dataSource: notificationTemplateDataSource);
-
-  // Docs Management
-  final docsMgmtDataSource = DocsManagementRemoteDataSourceImpl(dioClient: dioClient);
-  final academicDataSource = AcademicRemoteDataSourceImpl(dioClient: dioClient);
-  final docsMgmtRepository = DocsManagementRepositoryImpl(
-    dataSource: docsMgmtDataSource,
-    academicDataSource: academicDataSource,
-  );
-
-  // Docs Viewing (Public)
-  final docsDataSource = DocsRemoteDataSourceImpl(dioClient: dioClient);
-  final docsRepository = DocsRepositoryImpl(dataSource: docsDataSource);
-
-  // Initialize FCM in background to avoid blocking startup
-  FcmService().initialize(notificationRepository).then((_) {
-    debugPrint("FCM Initialized");
-  }).catchError((e) {
-    debugPrint("FCM Initialization Error: $e");
-  });
-  
-  // Theme Setup
-  final prefs = await SharedPreferences.getInstance();
-  final themeRepository = ThemeRepositoryImpl(sharedPreferences: prefs);
 
   runApp(
     MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<DioClient>.value(
-          value: dioClient,
-        ),
-        RepositoryProvider<NotificationRepository>.value(
-          value: notificationRepository,
-        ),
-        RepositoryProvider<NotificationTemplateRepository>.value(
-          value: notificationTemplateRepository,
-        ),
-        RepositoryProvider<DocsManagementRepository>.value(
-          value: docsMgmtRepository,
-        ),
-        RepositoryProvider<DocsRepository>.value(
-          value: docsRepository,
-        ),
-        RepositoryProvider<ThemeRepository>.value(
-          value: themeRepository,
-        ),
+
       ],
       child: const MyApp(),
     ),
