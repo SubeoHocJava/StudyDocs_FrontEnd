@@ -28,7 +28,7 @@ class DocumentOverviewBloc
       final current = state as DocumentOverviewLoaded;
       emit(
         DocumentOverviewLoaded(
-          documentOverview: current.documentOverview.copyWith(true),
+          documentOverview: current.documentOverview.copyWith(isSaved: true),
         ),
       );
       try {
@@ -36,7 +36,7 @@ class DocumentOverviewBloc
       } catch (e) {
         emit(
           DocumentOverviewLoaded(
-            documentOverview: current.documentOverview.copyWith(false),
+            documentOverview: current.documentOverview.copyWith(isSaved: false),
           ),
         );
       }
@@ -46,7 +46,7 @@ class DocumentOverviewBloc
       final current = state as DocumentOverviewLoaded;
       emit(
         DocumentOverviewLoaded(
-          documentOverview: current.documentOverview.copyWith(false),
+          documentOverview: current.documentOverview.copyWith(isSaved: false),
         ),
       );
       try {
@@ -54,7 +54,7 @@ class DocumentOverviewBloc
       } catch (e) {
         emit(
           DocumentOverviewLoaded(
-            documentOverview: current.documentOverview.copyWith(true),
+            documentOverview: current.documentOverview.copyWith(isSaved: true),
           ),
         );
       }
@@ -69,6 +69,12 @@ class DocumentOverviewBloc
           downloadUrl: downloadUrl,
         ),
       );
+    });
+    on<SchoolClicked>((event, emit) {
+      // TODO: Handle school clicked
+    });
+    on<CourseClicked>((event, emit) {
+      // TODO: Handle course clicked
     });
   }
 }

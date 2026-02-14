@@ -1,14 +1,15 @@
+import 'package:equatable/equatable.dart';
 import 'package:studydocs/core/feat/document/overview/domain/entity/course_info.dart';
 import 'package:studydocs/core/feat/document/overview/domain/entity/school_info.dart';
 
-class DocumentOverview {
+class DocumentOverview extends Equatable {
   final String id;
   final String title;
   final SchoolInfo schoolInfo;
   final CourseInfo courseInfo;
-  bool isSaved;
+  final bool isSaved;
 
-  DocumentOverview({
+  const DocumentOverview({
     required this.id,
     required this.title,
     required this.schoolInfo,
@@ -16,8 +17,22 @@ class DocumentOverview {
     required this.isSaved,
   });
 
-  DocumentOverview copyWith(bool isSaved) {
-    this.isSaved = isSaved;
-    return this;
+  DocumentOverview copyWith({
+    String? id,
+    String? title,
+    SchoolInfo? schoolInfo,
+    CourseInfo? courseInfo,
+    bool? isSaved,
+  }) {
+    return DocumentOverview(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      schoolInfo: schoolInfo ?? this.schoolInfo,
+      courseInfo: courseInfo ?? this.courseInfo,
+      isSaved: isSaved ?? this.isSaved,
+    );
   }
+
+  @override
+  List<Object?> get props => [id, title, schoolInfo, courseInfo, isSaved];
 }

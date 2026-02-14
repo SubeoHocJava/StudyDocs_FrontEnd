@@ -31,3 +31,15 @@ class DocumentDownloadRequested extends DocumentOverviewEvent {
 
   const DocumentDownloadRequested({required this.id});
 }
+
+class SchoolClicked extends DocumentOverviewEvent {
+  final String schoolId;
+
+  const SchoolClicked({required this.schoolId});
+}
+
+class CourseClicked  extends DocumentOverviewEvent {
+  final String courseId;
+
+  const CourseClicked({required this.courseId});
+}
