@@ -18,4 +18,24 @@ class DocumentInfo {
     required this.likes,
     required this.dislikes,
   });
+
+  DocumentInfo copyWith({
+    String? id,
+    int? startYear,
+    int? endYear,
+    int? pageNumber,
+    int? likes,
+    int? dislikes,
+    Author? author,
+  }) {
+    return DocumentInfo(
+      id: id ?? this.id,
+      startYear: startYear ?? this.startYear,
+      endYear: endYear ?? this.endYear,
+      pageNumber: pageNumber ?? this.pageNumber,
+      likes: likes ?? this.likes,
+      dislikes: dislikes ?? this.dislikes,
+      author: author ?? this.author,
+    );
+  }
 }

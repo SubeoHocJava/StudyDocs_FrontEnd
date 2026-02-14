@@ -4,10 +4,10 @@ abstract interface class DislikeDocumentUseCase {
   Future<void> call(String documentId);
 }
 
-class LikeDocumentUseCaseImpl implements DislikeDocumentUseCase {
+class DislikeDocumentUseCaseImpl implements DislikeDocumentUseCase {
   final ReviewRepository _reviewRepository;
 
-  LikeDocumentUseCaseImpl(this._reviewRepository);
+  DislikeDocumentUseCaseImpl(this._reviewRepository);
 
   @override
   Future<void> call(String documentId) async {
