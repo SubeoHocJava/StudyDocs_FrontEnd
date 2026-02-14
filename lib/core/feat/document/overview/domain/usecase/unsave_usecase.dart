@@ -4,10 +4,10 @@ abstract interface class UnSaveUseCase {
   Future<void> call(String id);
 }
 
-class UnSSaveUseCaseImpl implements UnSaveUseCase {
+class UnSaveUseCaseImpl implements UnSaveUseCase {
   final DocumentRepository _documentRepository;
 
-  UnSSaveUseCaseImpl(this._documentRepository);
+  UnSaveUseCaseImpl(this._documentRepository);
 
   @override
   Future<void> call(String id) async {

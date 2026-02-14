@@ -1,0 +1,74 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/feat/document/overview/domain/repository/document_repository.dart';
+import 'package:studydocs/core/feat/document/overview/domain/usecase/download_usecase.dart';
+import 'package:studydocs/core/feat/document/overview/domain/usecase/save_usecase.dart';
+import 'package:studydocs/core/feat/document/overview/domain/usecase/unsave_usecase.dart';
+
+import 'document_overview_event.dart';
+import 'document_overview_state.dart';
+
+class DocumentOverviewBloc
+    extends Bloc<DocumentOverviewEvent, DocumentOverviewState> {
+  final DocumentRepository _documentRepository;
+
+  DocumentOverviewBloc({required DocumentRepository documentRepository})
+    : _documentRepository = documentRepository,
+      super(DocumentOverviewInitial()) {
+    final SaveUseCase saveUseCase = SaveUseCaseImpl(_documentRepository);
+    final UnSaveUseCase unSaveUseCase = UnSaveUseCaseImpl(_documentRepository);
+    final DownloadUseCase downloadUseCase = DownloadUseCaseImpl(
+      _documentRepository,
+    );
+
+    on<DocumentOverviewDataReceived>((event, emit) {
+      emit(DocumentOverviewLoaded(documentOverview: event.documentOverview));
+    });
+
+    on<DocumentSave>((event, emit) async {
+      final current = state as DocumentOverviewLoaded;
+      emit(
+        DocumentOverviewLoaded(
+          documentOverview: current.documentOverview.copyWith(true),
+        ),
+      );
+      try {
+        await saveUseCase.call(event.id);
+      } catch (e) {
+        emit(
+          DocumentOverviewLoaded(
+            documentOverview: current.documentOverview.copyWith(false),
+          ),
+        );
+      }
+    });
+
+    on<DocumentUnSave>((event, emit) async {
+      final current = state as DocumentOverviewLoaded;
+      emit(
+        DocumentOverviewLoaded(
+          documentOverview: current.documentOverview.copyWith(false),
+        ),
+      );
+      try {
+        await unSaveUseCase.call(event.id);
+      } catch (e) {
+        emit(
+          DocumentOverviewLoaded(
+            documentOverview: current.documentOverview.copyWith(true),
+          ),
+        );
+      }
+    });
+
+    on<DocumentDownloadRequested>((event, emit) async {
+      final current = state as DocumentOverviewLoaded;
+      final downloadUrl = await downloadUseCase.call(event.id);
+      emit(
+        DocumentOverviewLoaded(
+          documentOverview: current.documentOverview,
+          downloadUrl: downloadUrl,
+        ),
+      );
+    });
+  }
+}
