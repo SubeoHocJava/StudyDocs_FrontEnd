@@ -21,46 +21,89 @@ class DocumentInformationBloc
       emit(DocumentInformationLoaded(event.documentInfo));
     });
 
-    on<DocumentInformationLikeRequested>((event, emit) async {
+    on<DocumentLikeRequested>((event, emit) async {
       final current = state as DocumentInformationLoaded;
+      final doc = current.documentInfo;
+
+      int newLikeCount = doc.likeCount;
+      int newDislikeCount = doc.dislikeCount;
+      bool newIsLiked = doc.isLiked;
+      bool newIsDisliked = doc.isDisliked;
+
+      if (doc.isLiked) {
+        // Bỏ like
+        newLikeCount--;
+        newIsLiked = false;
+      } else {
+        // Like
+        newLikeCount++;
+        newIsLiked = true;
+
+        // Nếu đang dislike thì bỏ dislike
+        if (doc.isDisliked) {
+          newDislikeCount--;
+          newIsDisliked = false;
+        }
+      }
+
       emit(
         DocumentInformationLoaded(
-          current.documentInfo.copyWith(likes: current.documentInfo.likes + 1),
+          doc.copyWith(
+            likeCount: newLikeCount,
+            dislikeCount: newDislikeCount,
+            isLiked: newIsLiked,
+            isDisliked: newIsDisliked,
+          ),
         ),
       );
+
       try {
         await likeDocumentUseCase.call(event.documentId);
       } catch (e) {
-        emit(
-          DocumentInformationLoaded(
-            current.documentInfo.copyWith(
-              likes: current.documentInfo.likes - 1,
-            ),
-          ),
-        );
+        emit(current); // rollback
       }
     });
 
-    on<DocumentInformationDislikeRequested>((event, emit) async {
+    on<DocumentDislikeRequested>((event, emit) async {
       final current = state as DocumentInformationLoaded;
+      final doc = current.documentInfo;
+
+      int newLikeCount = doc.likeCount;
+      int newDislikeCount = doc.dislikeCount;
+      bool newIsLiked = doc.isLiked;
+      bool newIsDisliked = doc.isDisliked;
+
+      if (doc.isDisliked) {
+        // Bỏ dislike
+        newDislikeCount--;
+        newIsDisliked = false;
+      } else {
+        // Dislike
+        newDislikeCount++;
+        newIsDisliked = true;
+
+        // Nếu đang like thì bỏ like
+        if (doc.isLiked) {
+          newLikeCount--;
+          newIsLiked = false;
+        }
+      }
 
       emit(
         DocumentInformationLoaded(
-          current.documentInfo.copyWith(
-            dislikes: current.documentInfo.dislikes - 1,
+          doc.copyWith(
+            likeCount: newLikeCount,
+            dislikeCount: newDislikeCount,
+            isLiked: newIsLiked,
+            isDisliked: newIsDisliked,
           ),
         ),
       );
+
       try {
         await dislikeDocumentUseCase.call(event.documentId);
       } catch (e) {
-        emit(
-          DocumentInformationLoaded(
-            current.documentInfo.copyWith(
-              likes: current.documentInfo.likes + 1,
-            ),
-          ),
-        );
+        emit(current); // rollback
       }
     });
   }

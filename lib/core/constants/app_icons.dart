@@ -11,7 +11,7 @@ class AppAssets {
 
   static const folder   = '$_base/folder.png';
   static const school   = '$_base/school.png';
-
+  static const numPages = '$_base/num_pages.png';
   static const saved     = '$_base/saved.png';
   static const unsaved   = '$_base/unsaved.png';
 

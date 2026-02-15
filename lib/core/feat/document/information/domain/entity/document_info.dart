@@ -5,8 +5,10 @@ class DocumentInfo {
   final int startYear;
   final int endYear;
   final int pageNumber;
-  final int likes;
-  final int dislikes;
+  final int likeCount;
+  final int dislikeCount;
+  final bool isLiked;
+  final bool isDisliked;
   final Author author;
 
   DocumentInfo({
@@ -15,8 +17,10 @@ class DocumentInfo {
     required this.endYear,
     required this.pageNumber,
     required this.author,
-    required this.likes,
-    required this.dislikes,
+    required this.likeCount,
+    required this.dislikeCount,
+    required this.isLiked,
+    required this.isDisliked,
   });
 
   DocumentInfo copyWith({
@@ -24,18 +28,22 @@ class DocumentInfo {
     int? startYear,
     int? endYear,
     int? pageNumber,
-    int? likes,
-    int? dislikes,
+    int? likeCount,
+    int? dislikeCount,
     Author? author,
+    bool? isLiked,
+    bool? isDisliked,
   }) {
     return DocumentInfo(
       id: id ?? this.id,
       startYear: startYear ?? this.startYear,
       endYear: endYear ?? this.endYear,
       pageNumber: pageNumber ?? this.pageNumber,
-      likes: likes ?? this.likes,
-      dislikes: dislikes ?? this.dislikes,
+      likeCount: likeCount ?? this.likeCount,
+      dislikeCount: dislikeCount ?? this.dislikeCount,
       author: author ?? this.author,
+      isLiked: isLiked ?? this.isLiked,
+      isDisliked: isDisliked ?? this.isDisliked,
     );
   }
 }

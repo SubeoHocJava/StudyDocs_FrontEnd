@@ -5,8 +5,8 @@ class Author {
   final String id;
   final String avatarUrl;
   final String fullName;
-  final School schoolInfo;
+  final School school;
 
-  Author({required this.id, required this.avatarUrl, required this.fullName, required this.schoolInfo});
+  Author({required this.id, required this.avatarUrl, required this.fullName, required this.school});
 
 }

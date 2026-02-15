@@ -17,20 +17,28 @@ class DocumentInformationDataReceived extends DocumentInformationEvent {
   List<Object> get props => [documentInfo];
 }
 
-class DocumentInformationLikeRequested extends DocumentInformationEvent {
+class DocumentLikeRequested extends DocumentInformationEvent {
   final String documentId;
 
-  const DocumentInformationLikeRequested(this.documentId);
+  const DocumentLikeRequested(this.documentId);
 
   @override
   List<Object> get props => [documentId];
 }
 
-class DocumentInformationDislikeRequested extends DocumentInformationEvent {
+class DocumentDislikeRequested extends DocumentInformationEvent {
   final String documentId;
 
-  const DocumentInformationDislikeRequested(this.documentId);
+  const DocumentDislikeRequested(this.documentId);
 
   @override
   List<Object> get props => [documentId];
+}
+
+class SchoolClick extends DocumentInformationEvent {
+  final String schoolId;
+
+  const SchoolClick(this.schoolId);
+  @override
+  List<Object> get props => [schoolId];
 }
