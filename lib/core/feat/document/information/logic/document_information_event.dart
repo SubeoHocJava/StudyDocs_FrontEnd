@@ -35,10 +35,10 @@ class DocumentDislikeRequested extends DocumentInformationEvent {
   List<Object> get props => [documentId];
 }
 
-class SchoolClick extends DocumentInformationEvent {
-  final String schoolId;
+class AuthorClick extends DocumentInformationEvent {
+  final String authorId;
 
-  const SchoolClick(this.schoolId);
+  const AuthorClick(this.authorId);
   @override
-  List<Object> get props => [schoolId];
+  List<Object> get props => [authorId];
 }

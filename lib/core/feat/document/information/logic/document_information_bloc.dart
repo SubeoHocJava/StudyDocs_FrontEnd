@@ -106,5 +106,9 @@ class DocumentInformationBloc
         emit(current); // rollback
       }
     });
+
+    on<AuthorClick>((event, emit) {
+      // TODO: Handle navigation to author profile
+    });
   }
 }

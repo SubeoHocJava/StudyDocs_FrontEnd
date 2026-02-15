@@ -1,6 +1,5 @@
-class School{
-  final String id;
+class School {
   final String name;
 
-  School({required this.id, required this.name});
+  School({required this.name});
 }
