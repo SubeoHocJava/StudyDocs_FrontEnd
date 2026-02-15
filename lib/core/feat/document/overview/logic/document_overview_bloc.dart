@@ -3,6 +3,7 @@ import 'package:studydocs/core/feat/document/overview/domain/repository/document
 import 'package:studydocs/core/feat/document/overview/domain/usecase/download_usecase.dart';
 import 'package:studydocs/core/feat/document/overview/domain/usecase/save_usecase.dart';
 import 'package:studydocs/core/feat/document/overview/domain/usecase/unsave_usecase.dart';
+import 'package:studydocs/core/feat/library/domain/repository/library_repository.dart';
 
 import 'document_overview_event.dart';
 import 'document_overview_state.dart';
@@ -10,12 +11,16 @@ import 'document_overview_state.dart';
 class DocumentOverviewBloc
     extends Bloc<DocumentOverviewEvent, DocumentOverviewState> {
   final DocumentRepository _documentRepository;
+  final LibraryRepository _libraryRepository;
 
-  DocumentOverviewBloc({required DocumentRepository documentRepository})
-    : _documentRepository = documentRepository,
-      super(DocumentOverviewInitial()) {
-    final SaveUseCase saveUseCase = SaveUseCaseImpl(_documentRepository);
-    final UnSaveUseCase unSaveUseCase = UnSaveUseCaseImpl(_documentRepository);
+  DocumentOverviewBloc({
+    required DocumentRepository documentRepository,
+    required LibraryRepository libraryRepository,
+  }) : _documentRepository = documentRepository,
+       _libraryRepository = libraryRepository,
+       super(DocumentOverviewInitial()) {
+    final SaveUseCase saveUseCase = SaveUseCaseImpl(_libraryRepository);
+    final UnSaveUseCase unSaveUseCase = UnSaveUseCaseImpl(_libraryRepository);
     final DownloadUseCase downloadUseCase = DownloadUseCaseImpl(
       _documentRepository,
     );

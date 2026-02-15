@@ -1,16 +1,16 @@
-import 'package:studydocs/core/feat/document/overview/domain/repository/document_repository.dart';
+import 'package:studydocs/core/feat/library/domain/repository/library_repository.dart';
 
 abstract interface class SaveUseCase {
   Future<void> call(String id);
 }
 
 class SaveUseCaseImpl implements SaveUseCase {
-  final DocumentRepository _documentRepository;
+  final LibraryRepository _libraryRepository;
 
-  SaveUseCaseImpl(this._documentRepository);
+  SaveUseCaseImpl(this._libraryRepository);
 
   @override
   Future<void> call(String id) async {
-    return await _documentRepository.save(id);
+    return await _libraryRepository.save(id);
   }
 }
