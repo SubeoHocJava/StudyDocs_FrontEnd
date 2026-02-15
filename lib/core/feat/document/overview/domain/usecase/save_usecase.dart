@@ -1,4 +1,4 @@
-import 'package:studydocs/core/feat/library/domain/repository/library_repository.dart';
+import 'package:studydocs/core/feat/document/overview/domain/repository/library_repository.dart';
 
 abstract interface class SaveUseCase {
   Future<void> call(String id);

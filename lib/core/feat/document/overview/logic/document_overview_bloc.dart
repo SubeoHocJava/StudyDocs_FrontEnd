@@ -3,7 +3,7 @@ import 'package:studydocs/core/feat/document/overview/domain/repository/document
 import 'package:studydocs/core/feat/document/overview/domain/usecase/download_usecase.dart';
 import 'package:studydocs/core/feat/document/overview/domain/usecase/save_usecase.dart';
 import 'package:studydocs/core/feat/document/overview/domain/usecase/unsave_usecase.dart';
-import 'package:studydocs/core/feat/library/domain/repository/library_repository.dart';
+import 'package:studydocs/core/feat/document/overview/domain/repository/library_repository.dart';
 
 import 'document_overview_event.dart';
 import 'document_overview_state.dart';
