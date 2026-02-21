@@ -1,10 +1,18 @@
-// setting_event.dart
-abstract class SettingEvent {}
+import 'package:equatable/equatable.dart';
 
-class SettingOpenUpdateInfo extends SettingEvent {}
+abstract class SettingEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
-class SettingShowQR extends SettingEvent {}
+/// Mở dialog cập nhật thông tin
+class OpenUpdateInfoEvent extends SettingEvent {}
 
-class SettingLinkGoogle extends SettingEvent {}
+/// Nhấn nút liên kết Google
+class LinkGoogleAccountEvent extends SettingEvent {}
 
-class SettingLogout extends SettingEvent {}
+/// Nhấn nút chia sẻ QR
+class ShowQrEvent extends SettingEvent {}
+
+/// Nhấn logout
+class LogoutEvent extends SettingEvent {}

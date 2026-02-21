@@ -4,11 +4,14 @@ import 'setting_state.dart';
 
 class SettingBloc extends Bloc<SettingEvent, SettingState> {
   SettingBloc() : super(SettingInitial()) {
+
     on<OpenUpdateInfoEvent>((event, emit) {
       emit(SettingActionSuccess("open_update_dialog"));
     });
 
-    on<LinkGoogleAccountEvent>((event, emit) {
+    on<LinkGoogleAccountEvent>((event, emit) async {
+      emit(SettingLoading());
+      await Future.delayed(const Duration(milliseconds: 300));
       emit(SettingActionSuccess("link_google"));
     });
 
