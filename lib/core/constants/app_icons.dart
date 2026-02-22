@@ -9,6 +9,11 @@ class AppAssets {
   static const download = '$_base/download.png';
   static const bin = '$_base/bin.png';
 
+  static const notiLike = '$_base/noti_like.png';
+  static const notiComment = '$_base/noti_comment.png';
+  static const notiDownload = '$_base/noti_download.png';
+  static const notiSaved = '$_base/noti_saved.png';
+
   static const folder   = '$_base/folder.png';
   static const school   = '$_base/school.png';
 
