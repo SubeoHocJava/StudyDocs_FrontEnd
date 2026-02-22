@@ -63,6 +63,7 @@ dependencies:
   url_launcher: ^6.3.2
   mobile_scanner: ^5.2.3  # Dùng để quét QR
   qr_flutter: ^4.1.0      # Dùng để tạo mã QR
+  flutter_slidable: ^4.0.3
 
 dev_dependencies:
   flutter_test:
