@@ -14,3 +14,4 @@ class CommentUseCaseImpl implements CommentUseCase {
     return _reviewRepository.comment(documentId, content);
   }
 }
+

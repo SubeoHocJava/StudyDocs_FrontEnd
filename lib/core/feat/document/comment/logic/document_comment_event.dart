@@ -32,3 +32,55 @@ class AuthorClick extends DocumentCommentEvent {
 
   const AuthorClick(this.authorId);
 }
+
+class CommentReplied extends DocumentCommentEvent {
+  final String documentId;
+  final String commentId;
+  final String content;
+
+  const CommentReplied(this.documentId, this.commentId, this.content);
+
+  @override
+  List<Object?> get props => [documentId, commentId, content];
+}
+
+class CommentLiked extends DocumentCommentEvent {
+  final String documentId;
+  final String commentId;
+
+  const CommentLiked(this.documentId, this.commentId);
+
+  @override
+  List<Object?> get props => [documentId, commentId];
+}
+
+class CommentUnliked extends DocumentCommentEvent {
+  final String documentId;
+  final String commentId;
+
+  const CommentUnliked(this.documentId, this.commentId);
+
+  @override
+  List<Object?> get props => [documentId, commentId];
+}
+
+class CommentEdited extends DocumentCommentEvent {
+  final String documentId;
+  final String commentId;
+  final String content;
+
+  const CommentEdited(this.documentId, this.commentId, this.content);
+
+  @override
+  List<Object?> get props => [documentId, commentId, content];
+}
+
+class CommentDeleted extends DocumentCommentEvent {
+  final String documentId;
+  final String commentId;
+
+  const CommentDeleted(this.documentId, this.commentId);
+
+  @override
+  List<Object?> get props => [documentId, commentId];
+}

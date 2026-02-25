@@ -9,13 +9,13 @@ class DateTimeUtils {
     if (difference.inDays > 365) {
       return DateFormat('dd/MM/yyyy').format(dateTime);
     } else if (difference.inDays > 30) {
-      return '${(difference.inDays / 30).floor()} tháng trước';
+      return '${(difference.inDays / 30).floor()} tháng';
     } else if (difference.inDays > 0) {
-      return '${difference.inDays} ngày trước';
+      return '${difference.inDays} ngày';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} giờ trước';
+      return '${difference.inHours} giờ';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} phút trước';
+      return '${difference.inMinutes} phút';
     } else {
       return 'Vừa xong';
     }
