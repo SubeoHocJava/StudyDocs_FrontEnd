@@ -29,25 +29,58 @@ class Follow extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Followers
-                    _buildFollowButton(
-                      context: context,
-                      label: "${state.followData.numFollowMe} Người theo dõi",
-                      color: AppColors.secondaryTeal,
-                      index: 0,
-
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryTeal,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          bottomLeft: Radius.circular(16),
+                        ),
+                        border: Border.all(color: AppColors.secondaryTeal.withOpacity(0.5)),
+                      ),
+                      child: Text(
+                        "${state.followData.numMeFollow} người theo dõi",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 12),
+
+                    // 🔹 Đường line dọc
+                    SizedBox(
+                      height: 40, // chỉnh tùy theo UI
+                      child: VerticalDivider(
+                        width: 20,        // khoảng cách hai bên
+                        thickness: 1.2,   // độ dày line
+                        color: Colors.grey,
+                      ),
+                    ),
 
                     // Following
-                    _buildFollowButton(
-                      context: context,
-                      label: "${state.followData.numMeFollow} Đang theo dõi",
-                      color: AppColors.secondaryBlue,
-                      index: 1,
-
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryBlue,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                        border: Border.all(color: AppColors.secondaryBlue.withOpacity(0.5)),
+                      ),
+                      child: Text(
+                        "${state.followData.numMeFollow} Đang theo dõi",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
           );
@@ -62,33 +95,5 @@ class Follow extends StatelessWidget {
     );
   }
 
-  Widget _buildFollowButton({
-    required BuildContext context,
-    required String label,
-    required Color color,
-    required int index,
-  }) {
-    return GestureDetector(
-      onTap: () {
 
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.5)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
 }
