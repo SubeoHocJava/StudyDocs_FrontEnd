@@ -23,21 +23,37 @@ pubspec.lock
 # is commented out by default.
 #.vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
+.packages
+.pub/
+build/
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
-.pub/
-/build/
 
-# Symbolication related
-app.*.symbols
+# Generated files
+**/generated_plugin_registrant.dart
 
-# Obfuscation related
-app.*.map.json
+# ==============================
+# Android
+# ==============================
+
+**/android/.gradle
+**/android/local.properties
+local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/**/GeneratedPluginRegistrant.kt
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# Gradle
+.gradle/
+build/
+
+# ==============================
+# iOS
+# ==============================
 
 
 # Android Studio will place build artifacts here
