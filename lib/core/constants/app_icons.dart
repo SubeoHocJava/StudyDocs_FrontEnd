@@ -8,6 +8,7 @@ class AppAssets {
   static const outlineLike = '$_base/like.png';
   static const download = '$_base/download.png';
   static const bin = '$_base/bin.png';
+  static const chevronDown = '$_base/chevron_down.png';
   static const fullLike = '$_base/full_like.png';
 
   static const folder   = '$_base/folder.png';
