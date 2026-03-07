@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../../../constants/app_colors.dart';
+import '../../../../../constants/app_colors.dart';
 import '../../update_infor_form/presentation/UpdateInforDialog.dart';
 import '../logic/setting_bloc.dart';
 import '../logic/setting_event.dart';
