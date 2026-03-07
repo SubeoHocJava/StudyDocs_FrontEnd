@@ -62,3 +62,5 @@ shelf/
 
 .DS_Store
 Thumbs.db
+/android
+*.log
