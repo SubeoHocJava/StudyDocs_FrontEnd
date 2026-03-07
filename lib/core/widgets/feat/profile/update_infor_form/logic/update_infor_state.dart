@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/core/widgets/feat/update_infor_form/domain/model/UserProfile.dart';
+
+import '../domain/model/UserProfile.dart';
 
 abstract class UpdateInforState extends Equatable {
   @override

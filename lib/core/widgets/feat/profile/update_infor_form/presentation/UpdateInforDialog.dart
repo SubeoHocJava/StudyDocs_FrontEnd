@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../constants/app_colors.dart';
+
+import '../../../../../constants/app_colors.dart';
 import '../domain/model/update_infor_view_model.dart';
 import '../logic/update_infor_bloc.dart';
 import '../logic/update_infor_event.dart';
