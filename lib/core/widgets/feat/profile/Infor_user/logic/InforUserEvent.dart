@@ -9,10 +9,18 @@ abstract class InforUserEvent extends Equatable {
 /// Load thông tin user
 class LoadUserInfor extends InforUserEvent {
   final String userId;
+
   LoadUserInfor(this.userId);
 
   @override
   List<Object?> get props => [userId];
+}
+
+class OpenSettingDialog extends InforUserEvent {
+  OpenSettingDialog();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Cập nhật avatar

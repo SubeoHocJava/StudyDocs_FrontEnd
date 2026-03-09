@@ -31,15 +31,20 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
     on<UpdateUserAvatar>(_onUpdateAvatar);
     on<FollowUserEvent>(_onFollowUser);
     on<UnfollowUserEvent>(_onUnfollowUser);
+    on<OpenSettingDialog>(_onOpensetting);
   }
-
+  void _onOpensetting(
+      OpenSettingDialog event,
+      Emitter<InforUserState> emit,
+      ) {
+    emit(OpenSettingDialogState());
+  }
   /// ================= LOAD USER =================
   Future<void> _onLoadUserInfor(
       LoadUserInfor event, Emitter<InforUserState> emit) async {
     emit(InforUserLoading());
     try {
       final data = await _getUserInforUseCase(event.userId);
-
       emit(InforUserLoaded(
         id: data.id,
         fullName: data.fullName,

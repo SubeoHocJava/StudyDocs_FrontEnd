@@ -14,11 +14,7 @@ class Statistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => StatisticBloc(
-        getStatisticUseCase: GetStatisticUseCase(MockStatisticRepositoryImpl()),
-      )..add(LoadStatisticData()),
-      child: BlocBuilder<StatisticBloc, StatisticState>(
+    return  BlocBuilder<StatisticBloc, StatisticState>(
         builder: (context, state) {
           if (state is StatisticLoading || state is StatisticInitial) {
             return _buildCardContainer(
@@ -77,7 +73,6 @@ class Statistics extends StatelessWidget {
           }
           return const SizedBox.shrink();
         },
-      ),
     );
   }
 
