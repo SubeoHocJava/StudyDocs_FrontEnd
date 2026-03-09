@@ -6,12 +6,5 @@ import 'app.dart';
 
 void main() async {
 
-  runApp(
-    MultiRepositoryProvider(
-      providers: [
-
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
