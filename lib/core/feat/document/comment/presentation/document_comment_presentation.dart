@@ -67,28 +67,31 @@ class _DocumentCommentPresentationState
   void _handleReply(Comment comment) {
     setState(() {
       _replyingTo = comment;
-      _controller.text = '@${comment.author.fullName} ';
+      // No need to set _controller text anymore since we will have a separate text field inline
     });
-    // Di chuyển con trỏ chuột xuống cuối chữ
-    _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
-    _focusNode.requestFocus();
+  }
+
+  void _cancelReply() {
+    setState(() {
+      _replyingTo = null;
+    });
+  }
+
+  void _submitReply(String commentId, String content) {
+    context.read<DocumentCommentBloc>().add(
+          CommentReplied(widget.documentId, commentId, content),
+        );
+    setState(() {
+      _replyingTo = null;
+    });
   }
 
   void _sendMessage() {
     final content = _controller.text.trim();
     if (content.isNotEmpty) {
-      if (_replyingTo != null) {
-        context.read<DocumentCommentBloc>().add(
-              CommentReplied(widget.documentId, _replyingTo!.id, content),
-            );
-        setState(() {
-          _replyingTo = null;
-        });
-      } else {
-        context.read<DocumentCommentBloc>().add(
-              CommentRequested(content, widget.documentId),
-            );
-      }
+      context.read<DocumentCommentBloc>().add(
+            CommentRequested(content, widget.documentId),
+          );
       _controller.clear();
       _focusNode.unfocus();
     }
@@ -141,6 +144,9 @@ class _DocumentCommentPresentationState
                     return CommentBlock(
                       node: comments[index],
                       onReply: _handleReply,
+                      replyingToCommentId: _replyingTo?.id,
+                      onSubmitReply: _submitReply,
+                      onCancelReply: _cancelReply,
                     );
                   },
                 );
@@ -150,69 +156,69 @@ class _DocumentCommentPresentationState
           ),
         ),
         // Input Area
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            color: AppColors.white,
-            border: Border(top: BorderSide(color: AppColors.border)),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroundLight,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    style: const TextStyle(fontFamily: 'Montserrat'),
-                    decoration: InputDecoration(
-                      hintText: _replyingTo != null
-                          ? 'Đang trả lời ${_replyingTo!.author.fullName}...'
-                          : 'Bạn nghĩ gì về tài liệu này...',
-                      border: InputBorder.none,
-                      hintStyle: const TextStyle(fontFamily: 'Montserrat', color: AppColors.gray),
+        // Hide input area if currently replying to a comment inline
+        if (_replyingTo == null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: AppColors.white,
+              border: Border(top: BorderSide(color: AppColors.border)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundLight,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      style: const TextStyle(fontFamily: 'Montserrat'),
+                      decoration: InputDecoration(
+                        hintText: 'Bạn nghĩ gì về tài liệu này...',
+                        border: InputBorder.none,
+                        hintStyle: const TextStyle(fontFamily: 'Montserrat', color: AppColors.gray),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              GestureDetector(
-                onTap: _sendMessage,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.secondaryBlue,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        FontAwesomeIcons.paperPlane,
-                        color: AppColors.white,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Gửi',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: _sendMessage,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryBlue,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.paperPlane,
                           color: AppColors.white,
-                          fontWeight: FontWeight.bold,
+                          size: 16,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Text(
+                          'Gửi',
+                          style: TextStyle(
+                            fontFamily: 'Montserrat',
+                            color: AppColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

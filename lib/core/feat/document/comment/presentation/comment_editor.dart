@@ -3,12 +3,14 @@ import 'package:studydocs/core/constants/app_colors.dart';
 
 class CommentEditor extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final VoidCallback onCancel;
   final VoidCallback onSave;
 
   const CommentEditor({
     super.key,
     required this.controller,
+    this.focusNode,
     required this.onCancel,
     required this.onSave,
   });
@@ -20,6 +22,7 @@ class CommentEditor extends StatelessWidget {
       children: [
         TextField(
           controller: controller,
+          focusNode: focusNode,
           maxLines: null,
           style: const TextStyle(
             fontFamily: 'Montserrat',
