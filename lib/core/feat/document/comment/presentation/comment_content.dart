@@ -89,8 +89,8 @@ class _CommentContentState extends State<CommentContent> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -4,10 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/feat/document/comment/domain/entity/comment.dart';
+import 'package:studydocs/core/feat/document/comment/domain/entity/author.dart';
+import 'package:studydocs/core/feat/document/comment/domain/entity/content.dart';
 import 'package:studydocs/core/feat/document/comment/logic/document_comment_bloc.dart';
 import 'package:studydocs/core/feat/document/comment/logic/document_comment_event.dart';
 import 'package:studydocs/core/feat/document/comment/logic/document_comment_state.dart';
-import 'package:studydocs/core/feat/document/comment/domain/utils/comment_tree_builder.dart';
 import 'package:studydocs/core/feat/document/comment/presentation/comment_block.dart';
 
 class DocumentCommentPresentation extends StatefulWidget {
@@ -25,6 +26,43 @@ class _DocumentCommentPresentationState
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   Comment? _replyingTo;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Mock dữ liệu ban đầu
+      final mockData = [
+        Comment(
+          id: 'root_A',
+          documentId: widget.documentId,
+          contents: [TextBlock('Tài liệu này rất hữu ích, cảm ơn tác giả.')],
+          author: const Author(
+            id: 'author_A',
+            fullName: 'Người Dùng A',
+            avatarUrl: 'https://i.pravatar.cc/150?img=5',
+          ),
+          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+          likeCount: 5,
+          replyCount: 2, // Có 2 reply
+        ),
+        Comment(
+          id: 'root_B',
+          documentId: widget.documentId,
+          contents: [TextBlock('Xin hỏi ở phần 2 tác giả dùng công thức nào vậy?')],
+          author: const Author(
+            id: 'author_B',
+            fullName: 'Người Dùng B',
+            avatarUrl: 'https://i.pravatar.cc/150?img=8',
+          ),
+          createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+          replyCount: 1, // Có 1 reply, mà bên trong đó lại có 1 reply nữa
+        ),
+      ];
+
+      context.read<DocumentCommentBloc>().add(ReceivedData(mockData));
+    });
+  }
 
   void _handleReply(Comment comment) {
     setState(() {
@@ -93,16 +131,15 @@ class _DocumentCommentPresentationState
                   return Center(child: Text("Chưa có bình luận nào.", style: const TextStyle(fontFamily: 'Montserrat')));
                 }
                 
-                // Lọc và build cây comment 1 lần
-                final commentTree = CommentTreeBuilder.build(state.comments);
+                final comments = state.comments;
 
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: commentTree.length,
+                  itemCount: comments.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     return CommentBlock(
-                      node: commentTree[index],
+                      node: comments[index],
                       onReply: _handleReply,
                     );
                   },

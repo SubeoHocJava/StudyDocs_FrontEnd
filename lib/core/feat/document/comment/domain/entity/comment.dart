@@ -12,6 +12,8 @@ class Comment extends Equatable{
   final bool isLiked;
   final bool isMine;
   final String? replyToCommentId;
+  final int replyCount;
+  final List<Comment> children;
 
   const Comment({
     required this.id,
@@ -23,6 +25,8 @@ class Comment extends Equatable{
     this.isLiked = false,
     this.isMine = false,
     this.replyToCommentId,
+    this.replyCount = 0,
+    this.children = const [],
   });
 
   Comment copyWith({
@@ -35,6 +39,8 @@ class Comment extends Equatable{
     bool? isLiked,
     bool? isMine,
     String? replyToCommentId,
+    int? replyCount,
+    List<Comment>? children,
   }) {
     return Comment(
       id: id ?? this.id,
@@ -46,6 +52,8 @@ class Comment extends Equatable{
       isLiked: isLiked ?? this.isLiked,
       isMine: isMine ?? this.isMine,
       replyToCommentId: replyToCommentId ?? this.replyToCommentId,
+      replyCount: replyCount ?? this.replyCount,
+      children: children ?? this.children,
     );
   }
 
@@ -60,6 +68,8 @@ class Comment extends Equatable{
     isLiked,
     isMine,
     replyToCommentId,
+    replyCount,
+    children,
   ];
 }
 
