@@ -13,6 +13,9 @@ class AppAssets {
   static const notiComment = '$_base/noti_comment.png';
   static const notiDownload = '$_base/noti_download.png';
   static const notiSaved = '$_base/noti_saved.png';
+  static const notiMarkAsRead = '$_base/noti_markasread.png';
+  static const notiTrash = '$_base/noti_trash.png';
+  static const notiRestore = '$_base/noti_restore.png';
 
   static const folder   = '$_base/folder.png';
   static const school   = '$_base/school.png';

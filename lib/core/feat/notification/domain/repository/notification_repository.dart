@@ -7,4 +7,8 @@ abstract interface class NotificationRepository {
   Future<void> moveToTrash(String id);
   Future<void> restoreFromTrash(String id);
   Future<void> deletePermanently(String id);
+  Future<void> moveToTarget(String id, String targetId);
+  Future<void> markAllAsRead();
+  Future<void> deleteAllPermanently();
+  Future<void> restoreAllFromTrash();
 }

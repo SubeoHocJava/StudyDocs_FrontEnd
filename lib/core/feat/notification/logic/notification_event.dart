@@ -16,6 +16,10 @@ class MarkNotificationAsReadEvent extends NotificationEvent {
   List<Object> get props => [id];
 }
 
+class MarkAllAsReadEvent extends NotificationEvent {}
+
+class MoveAllToTrashEvent extends NotificationEvent {}
+
 class MoveNotificationToTrashEvent extends NotificationEvent {
   final String id;
   const MoveNotificationToTrashEvent(this.id);
@@ -36,3 +40,17 @@ class DeleteNotificationPermanentlyEvent extends NotificationEvent {
   @override
   List<Object> get props => [id];
 }
+
+// UI State Events
+class ToggleTrashModeEvent extends NotificationEvent {}
+
+class ToggleTrashSelectionEvent extends NotificationEvent {
+  final String id;
+  const ToggleTrashSelectionEvent(this.id);
+  @override
+  List<Object> get props => [id];
+}
+
+class RestoreAllSelectedEvent extends NotificationEvent {}
+
+class DeleteAllSelectedEvent extends NotificationEvent {}

@@ -13,7 +13,8 @@ class NotificationModel extends Equatable {
   final String avatarUrl; // User who triggered the noti
   final String title;
   final String content;
-  final DateTime timestamp;
+  final DateTime receivedAt;
+  final DateTime? deletedAt;
   final NotificationType type;
   final bool isRead;
   final bool isDeleted;
@@ -23,10 +24,11 @@ class NotificationModel extends Equatable {
     required this.avatarUrl,
     required this.title,
     required this.content,
-    required this.timestamp,
+    required this.receivedAt,
     required this.type,
     this.isRead = false,
     this.isDeleted = false,
+    this.deletedAt,
   });
 
   NotificationModel copyWith({
@@ -34,23 +36,25 @@ class NotificationModel extends Equatable {
     String? avatarUrl,
     String? title,
     String? content,
-    DateTime? timestamp,
+    DateTime? receivedAt,
     NotificationType? type,
     bool? isRead,
     bool? isDeleted,
+    DateTime? deletedAt,
   }) {
     return NotificationModel(
       id: id ?? this.id,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       title: title ?? this.title,
       content: content ?? this.content,
-      timestamp: timestamp ?? this.timestamp,
+      receivedAt: receivedAt ?? this.receivedAt,
       type: type ?? this.type,
       isRead: isRead ?? this.isRead,
       isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
   @override
-  List<Object?> get props => [id, avatarUrl, title, content, timestamp, type, isRead, isDeleted];
+  List<Object?> get props => [id, avatarUrl, title, content, receivedAt, type, isRead, isDeleted, deletedAt];
 }

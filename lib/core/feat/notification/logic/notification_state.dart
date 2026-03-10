@@ -15,14 +15,32 @@ class NotificationLoading extends NotificationState {}
 class NotificationLoaded extends NotificationState {
   final List<NotificationModel> activeNotifications;
   final List<NotificationModel> trashNotifications;
+  final bool isTrashMode;
+  final List<String> selectedTrashIds;
 
   const NotificationLoaded({
     required this.activeNotifications,
     required this.trashNotifications,
+    this.isTrashMode = false,
+    this.selectedTrashIds = const [],
   });
 
+  NotificationLoaded copyWith({
+    List<NotificationModel>? activeNotifications,
+    List<NotificationModel>? trashNotifications,
+    bool? isTrashMode,
+    List<String>? selectedTrashIds,
+  }) {
+    return NotificationLoaded(
+      activeNotifications: activeNotifications ?? this.activeNotifications,
+      trashNotifications: trashNotifications ?? this.trashNotifications,
+      isTrashMode: isTrashMode ?? this.isTrashMode,
+      selectedTrashIds: selectedTrashIds ?? this.selectedTrashIds,
+    );
+  }
+
   @override
-  List<Object> get props => [activeNotifications, trashNotifications];
+  List<Object> get props => [activeNotifications, trashNotifications, isTrashMode, selectedTrashIds];
 }
 
 class NotificationError extends NotificationState {

@@ -42,9 +42,11 @@ class TrashNotificationList extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 final note = trashList[index];
                 final isSelected = selectedTrashIds.contains(note.id);
+                final isSelectionMode = selectedTrashIds.isNotEmpty;
                 return TrashNotificationItemWidget(
                   notification: note, 
                   isSelected: isSelected,
+                  isSelectionMode: isSelectionMode,
                   onSelectChanged: (val) => onToggleSelection(note.id),
                   onRestore: () => onRestore(note.id),
                   onDelete: () => onDelete(note.id),

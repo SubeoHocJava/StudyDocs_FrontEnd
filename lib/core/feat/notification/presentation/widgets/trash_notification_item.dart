@@ -9,6 +9,7 @@ import '../utils/notification_ui_mapper.dart';
 class TrashNotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
   final bool isSelected;
+  final bool isSelectionMode;
   final ValueChanged<bool?> onSelectChanged;
   final VoidCallback onRestore;
   final VoidCallback onDelete;
@@ -17,6 +18,7 @@ class TrashNotificationItemWidget extends StatelessWidget {
     Key? key,
     required this.notification,
     required this.isSelected,
+    required this.isSelectionMode,
     required this.onSelectChanged,
     required this.onRestore,
     required this.onDelete,
@@ -34,97 +36,112 @@ class TrashNotificationItemWidget extends StatelessWidget {
         children: [
           CustomSlidableAction(
             onPressed: (_) => onRestore(),
-            backgroundColor: AppColors.success,
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.white,
+            foregroundColor: AppColors.primary,
             child: Column(
                mainAxisAlignment: MainAxisAlignment.center,
                children: [
-                 Icon(Icons.restore),
+                 Image.asset(AppAssets.notiRestore ?? AppAssets.markAsRead, width: 24, height: 24, color: AppColors.primary),
                  const SizedBox(height: 4),
-                 Text('Khôi phục', style: TextStyle(fontSize: 12)),
+                 Text('Khôi phục', style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
                ]
             ),
           ),
+          Container(
+            width: 1,
+            height: 48,
+            color: AppColors.border,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+          ),
           CustomSlidableAction(
             onPressed: (_) => onDelete(),
-            backgroundColor: AppColors.danger,
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.white,
+            foregroundColor: AppColors.danger,
             child: Column(
                mainAxisAlignment: MainAxisAlignment.center,
                children: [
-                  Icon(Icons.delete),
+                  Image.asset(AppAssets.notiTrash ?? AppAssets.bin, width: 24, height: 24, color: AppColors.danger),
                   const SizedBox(height: 4),
-                  Text('Xóa', style: TextStyle(fontSize: 12)),
+                  Text('Xóa', style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal)),
                ]
             ),
           ),
         ],
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.surfaceLight.withOpacity(0.5) : AppColors.white,
-          border: Border(bottom: BorderSide(color: AppColors.border.withOpacity(0.5))),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              config['iconAsset'], 
-              width: 36, 
-              height: 36, 
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                       style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textPrimaryLight,
-                        fontFamily: 'Roboto', 
-                        height: 1.4,
-                      ),
-                      children: [
-                         TextSpan(
-                          text: notification.title,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                   const SizedBox(height: 4),
-                   Row(
-                     children: [
-                       Text(
-                        TimeUtils.formatTimeAgo(notification.timestamp), 
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
-                       ),
-                       const SizedBox(width: 8),
-                       Container(
-                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                         decoration: BoxDecoration(
-                           color: Color(0xFFFFE0DB), 
-                           borderRadius: BorderRadius.circular(4),
-                         ),
-                         child: Text(
-                           'Đã xóa vào ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-                           style: TextStyle(fontSize: 10, color: AppColors.danger),
-                         ),
-                       )
-                     ],
-                   )
-                ],
+      child: InkWell(
+        onLongPress: () {
+          if (!isSelectionMode) onSelectChanged(true);
+        },
+        onTap: () {
+          if (isSelectionMode) onSelectChanged(!isSelected);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primaryLight : AppColors.white,
+            border: Border(bottom: BorderSide(color: AppColors.border.withValues(alpha: 0.5))),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                config['iconAsset'], 
+                width: 36, 
+                height: 36, 
               ),
-            ),
-            Checkbox(
-              value: isSelected,
-              onChanged: onSelectChanged,
-              activeColor: AppColors.primary,
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                         style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimaryLight,
+                          fontFamily: 'Montserrat', 
+                          height: 1.4,
+                        ),
+                        children: [
+                           TextSpan(
+                            text: notification.title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                     const SizedBox(height: 4),
+                     Row(
+                       children: [
+                         Text(
+                          TimeUtils.formatTimeAgo(notification.receivedAt), 
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                         ),
+                         const SizedBox(width: 8),
+                         Container(
+                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                           decoration: BoxDecoration(
+                             color: Color(0xFFFFE0DB), 
+                             borderRadius: BorderRadius.circular(4),
+                           ),
+                           child: Text(
+                             'Đã xóa vào ${notification.deletedAt?.day ?? DateTime.now().day}/${notification.deletedAt?.month ?? DateTime.now().month}/${notification.deletedAt?.year ?? DateTime.now().year}',
+                             style: TextStyle(fontSize: 10, color: AppColors.danger),
+                           ),
+                         )
+                       ],
+                     )
+                  ],
+                ),
+              ),
+              if (isSelectionMode)
+                Checkbox(
+                  value: isSelected,
+                  onChanged: onSelectChanged,
+                  activeColor: AppColors.primary,
+                ),
+            ],
+          ),
         ),
       ),
     );
