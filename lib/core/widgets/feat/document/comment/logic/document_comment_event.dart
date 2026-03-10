@@ -19,6 +19,15 @@ class CommentRequested extends DocumentCommentEvent {
   List<Object?> get props => [content, documentId];
 }
 
+class LoadCommentsRequested extends DocumentCommentEvent {
+  final String documentId;
+
+  const LoadCommentsRequested(this.documentId);
+
+  @override
+  List<Object?> get props => [documentId];
+}
+
 class LoadCommentRepliesRequested extends DocumentCommentEvent {
   final String documentId;
   final String commentId;

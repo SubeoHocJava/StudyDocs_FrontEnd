@@ -55,7 +55,6 @@ class _CommentBlockState extends State<CommentBlock> {
 
   @override
   Widget build(BuildContext context) {
-    // Kích thước của ảnh avatar
     final double avatarSize = widget.depth == 0 ? 40.0 : 32.0;
     final double avatarRadius = avatarSize / 2;
 
@@ -95,86 +94,94 @@ class _CommentBlockState extends State<CommentBlock> {
                ),
             ),
 
-          // HIển thị các replies lồng bên dưới nếu có
           if (widget.node.children.isNotEmpty && !_isCollapsed)
-            ...widget.node.children.map((childNode) => CommentBlock(
-                  key: ValueKey(childNode.id),
-                  node: childNode,
-                  parentComment: widget.node,
-                  depth: widget.depth + 1,
-                  onReply: widget.onReply,
-                  replyingToCommentId: widget.replyingToCommentId,
-                  onSubmitReply: widget.onSubmitReply,
-                  onCancelReply: widget.onCancelReply,
-                )),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.node.children.asMap().entries.map((entry) {
+                final isLast = entry.key == widget.node.children.length - 1;
+                final childNode = entry.value;
                 
-          // Nút hành động cho phản hồi
-          if (widget.node.replyCount > 0)
-            if (_isCollapsed || widget.node.children.isEmpty)
-              Padding(
-                padding: EdgeInsets.only(top: 8, left: (avatarSize - 24) / 2),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          left: BorderSide(color: AppColors.gray, width: 1.5),
-                          bottom: BorderSide(color: AppColors.gray, width: 1.5),
-                        ),
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8)),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isCollapsed = false;
-                        });
-                        if (widget.node.children.isEmpty) {
-                          context.read<DocumentCommentBloc>().add(
-                            LoadCommentRepliesRequested(widget.node.documentId, widget.node.id),
-                          );
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: Text(
-                          'Hiển thị ${widget.node.replyCount} phản hồi',
-                          style: const TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.gray,
+                return IntrinsicHeight(
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: avatarSize / 2,
+                        top: 0,
+                        child: Container(
+                          width: 20.0,
+                          height: 28.0,
+                          decoration: BoxDecoration(
+                            border: const Border(
+                              left: BorderSide(color: AppColors.gray, width: 1.5),
+                              bottom: BorderSide(color: AppColors.gray, width: 1.5),
+                            ),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: isLast ? const Radius.circular(12.0) : Radius.zero,
+                            ),
                           ),
                         ),
                       ),
+                      if (!isLast)
+                        Positioned(
+                           left: avatarSize / 2,
+                           top: 28.0,
+                           bottom: 0,
+                           child: Container(
+                             width: 1.5,
+                             color: AppColors.gray,
+                           ),
+                        ),
+                      CommentBlock(
+                        key: ValueKey(childNode.id),
+                        node: childNode,
+                        parentComment: widget.node,
+                        depth: widget.depth + 1,
+                        onReply: widget.onReply,
+                        replyingToCommentId: widget.replyingToCommentId,
+                        onSubmitReply: widget.onSubmitReply,
+                        onCancelReply: widget.onCancelReply,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+                
+          if (widget.node.replyCount > 0)
+            if (_isCollapsed || widget.node.children.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: 8, left: (avatarSize / 2) + 12),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isCollapsed = false;
+                    });
+                    if (widget.node.children.isEmpty) {
+                      context.read<DocumentCommentBloc>().add(
+                        LoadCommentRepliesRequested(widget.node.documentId, widget.node.id),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: Text(
+                      'Hiển thị ${widget.node.replyCount} phản hồi',
+                      style: const TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray,
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               )
             else
               Padding(
-                padding: EdgeInsets.only(top: 8, left: (avatarSize - 24) / 2),
+                padding: EdgeInsets.only(top: 8, left: (avatarSize / 2) + 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          left: BorderSide(color: AppColors.gray, width: 1.5),
-                          bottom: BorderSide(color: AppColors.gray, width: 1.5),
-                        ),
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8)),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
                     if (widget.node.replyCount > widget.node.children.length)
                       GestureDetector(
                         onTap: () {

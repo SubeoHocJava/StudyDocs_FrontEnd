@@ -31,35 +31,7 @@ class _DocumentCommentPresentationState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Mock dữ liệu ban đầu
-      final mockData = [
-        Comment(
-          id: 'root_A',
-          documentId: widget.documentId,
-          contents: [TextBlock('Tài liệu này rất hữu ích, cảm ơn tác giả.')],
-          author: const Author(
-            id: 'author_A',
-            fullName: 'Người Dùng A',
-            avatarUrl: 'https://i.pravatar.cc/150?img=5',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-          likeCount: 5,
-          replyCount: 2, // Có 2 reply
-        ),
-        Comment(
-          id: 'root_B',
-          documentId: widget.documentId,
-          contents: [TextBlock('Xin hỏi ở phần 2 tác giả dùng công thức nào vậy?')],
-          author: const Author(
-            id: 'author_B',
-            fullName: 'Người Dùng B',
-            avatarUrl: 'https://i.pravatar.cc/150?img=8',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-        ),
-      ];
-
-      context.read<DocumentCommentBloc>().add(ReceivedData(mockData));
+      context.read<DocumentCommentBloc>().add(LoadCommentsRequested(widget.documentId));
     });
   }
 

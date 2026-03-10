@@ -7,6 +7,7 @@ import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/like
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/edit_comment_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/delete_comment_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/unlike_comment_usecase.dart';
+import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/get_comments_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/get_comment_replies_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_event.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_state.dart';
@@ -19,6 +20,7 @@ class DocumentCommentBloc
   final UnlikeCommentUseCase _unlikeCommentUseCase;
   final EditCommentUseCase _editCommentUseCase;
   final DeleteCommentUseCase _deleteCommentUseCase;
+  final GetCommentsUseCase _getCommentsUseCase;
   final GetCommentRepliesUseCase _getCommentRepliesUseCase;
   final String _documentId;
 
@@ -29,6 +31,7 @@ class DocumentCommentBloc
     required UnlikeCommentUseCase unlikeCommentUseCase,
     required EditCommentUseCase editCommentUseCase,
     required DeleteCommentUseCase deleteCommentUseCase,
+    required GetCommentsUseCase getCommentsUseCase,
     required   getCommentRepliesUseCase,
     required String documentId,
   }) : _commentUseCase = commentUseCase,
@@ -37,9 +40,17 @@ class DocumentCommentBloc
        _unlikeCommentUseCase = unlikeCommentUseCase,
        _editCommentUseCase = editCommentUseCase,
        _deleteCommentUseCase = deleteCommentUseCase,
+       _getCommentsUseCase = getCommentsUseCase,
        _getCommentRepliesUseCase = getCommentRepliesUseCase,
        _documentId = documentId,
        super(DocumentCommentInitial()) {
+    on<LoadCommentsRequested>((event, emit) async {
+      try {
+        final comments = await _getCommentsUseCase(event.documentId);
+        emit(DocumentCommentLoaded(comments));
+      } catch (_) {}
+    });
+
     on<CommentRequested>((event, emit) async {
       try {
         await _commentUseCase(_documentId, event.content);

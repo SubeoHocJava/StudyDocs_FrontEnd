@@ -6,6 +6,7 @@ abstract interface class ReviewRepository {
   //Chỉ xử lý cho text cho hiện tại
   Future<void> comment(String documentId, String content);
   Future<void> replyComment(String documentId, String commentId, String content);
+  Future<List<Comment>> getComments(String documentId);
   Future<List<Comment>> getReplies(String documentId, String commentId);
   Future<void> likeComment(String documentId, String commentId);
   Future<void> unlikeComment(String documentId, String commentId);
@@ -19,6 +20,39 @@ class ReviewRepositoryImpl implements ReviewRepository {
 
   @override
   Future<void> replyComment(String documentId, String commentId, String content) async {}
+
+  @override
+  Future<List<Comment>> getComments(String documentId) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return [
+      Comment(
+        id: 'root_A',
+        documentId: documentId,
+        contents: [TextBlock('Tài liệu này rất hữu ích, cảm ơn tác giả.')],
+        author: const Author(
+          id: 'author_A',
+          fullName: 'Người Dùng A',
+          avatarUrl: 'https://i.pravatar.cc/150?img=5',
+        ),
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+        likeCount: 5,
+        replyCount: 2, 
+      ),
+      Comment(
+        id: 'root_B',
+        documentId: documentId,
+        contents: [TextBlock('Xin hỏi ở phần 2 tác giả dùng công thức nào vậy?')],
+        author: const Author(
+          id: 'author_B',
+          fullName: 'Người Dùng B',
+          avatarUrl: 'https://i.pravatar.cc/150?img=8',
+        ),
+        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+        replyCount: 1,
+      ),
+    ];
+  }
 
   @override
   Future<List<Comment>> getReplies(String documentId, String commentId) async {
@@ -95,6 +129,37 @@ class ReviewRepositoryImpl implements ReviewRepository {
           ),
           createdAt: DateTime.now().subtract(const Duration(seconds: 30)),
           replyToCommentId: 'reply_mock_1_B',
+          replyCount: 1,
+          children: [
+            Comment(
+              id: 'reply_nested_mock_2_B2',
+              documentId: documentId,
+              contents: [TextBlock('Mình cũng thích phần 2.')],
+              author: const Author(
+                id: 'author_C',
+                fullName: 'Người Dùng C',
+                avatarUrl: 'https://i.pravatar.cc/150?img=2',
+              ),
+              createdAt: DateTime.now().subtract(const Duration(seconds: 15)),
+              replyToCommentId: 'reply_nested_mock_1_B1',
+              replyCount: 1,
+              children: [
+                Comment(
+                  id: 'reply_nested_mock_3_B3',
+                  documentId: documentId,
+                  contents: [TextBlock('Phần đó viết rất dễ hiểu.')],
+                  author: const Author(
+                    id: 'author_D',
+                    fullName: 'Người Dùng D',
+                    avatarUrl: 'https://i.pravatar.cc/150?img=3',
+                  ),
+                  createdAt: DateTime.now().subtract(const Duration(seconds: 5)),
+                  replyToCommentId: 'reply_nested_mock_2_B2',
+                  children: const [],
+                )
+              ],
+            )
+          ],
         ),
       ];
     }
