@@ -19,7 +19,7 @@ class NotificationPresentation extends StatelessWidget {
         if (state is NotificationLoaded) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Thông báo'),
+              title: const Text('Thông báo (Chỉ Header)'),
               leading: state.isTrashMode ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.read<NotificationBloc>().add(ToggleTrashModeEvent())) : null,
             ),
             body: const Center(child: Text('Notification Feature: Header Loaded')),
@@ -33,3 +33,4 @@ class NotificationPresentation extends StatelessWidget {
     );
   }
 }
+
