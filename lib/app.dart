@@ -12,12 +12,6 @@ import 'package:studydocs/core/feat/notification/domain/usecase/mark_as_read_use
 import 'package:studydocs/core/feat/notification/domain/usecase/move_to_trash_usecase.dart';
 import 'package:studydocs/core/feat/notification/domain/usecase/restore_from_trash_usecase.dart';
 import 'package:studydocs/core/feat/notification/presentation/notification_presentation.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/active_notification_list.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/notification_item.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/notification_options_bottom_sheet.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/global_notification_options_bottom_sheet.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/trash_notification_list.dart';
-import 'package:studydocs/core/feat/notification/presentation/widgets/trash_notification_item.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

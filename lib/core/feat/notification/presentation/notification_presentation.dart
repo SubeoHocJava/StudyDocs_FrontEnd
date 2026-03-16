@@ -20,6 +20,13 @@ class NotificationPresentation extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
+      builder: (ctx) => const SizedBox.shrink() {
+          context.read<NotificationBloc>().add(MarkNotificationAsReadEvent(note.id));
+        },
+        onDelete: () {
+          context.read<NotificationBloc>().add(MoveNotificationToTrashEvent(note.id));
+        },
+      ),
     );
   }
 
@@ -28,6 +35,16 @@ class NotificationPresentation extends StatelessWidget {
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      builder: (ctx) => Globalconst SizedBox.shrink() {
+          context.read<NotificationBloc>().add(MarkAllAsReadEvent());
+        },
+        onDeleteAll: () {
+          context.read<NotificationBloc>().add(MoveAllToTrashEvent());
+        },
+        onViewTrash: () {
+          context.read<NotificationBloc>().add(ToggleTrashModeEvent());
+        },
       ),
     );
   }
@@ -56,6 +73,7 @@ class NotificationPresentation extends StatelessWidget {
                   : null,
             ),
             body: state.isTrashMode
+                ? const Center(child: Text('Trash Feature (See trash branch)')),
               onGlobalMoreTap: () => _showGlobalOptions(context),
             ),
           );
@@ -69,3 +87,4 @@ class NotificationPresentation extends StatelessWidget {
     );
   }
 }
+
