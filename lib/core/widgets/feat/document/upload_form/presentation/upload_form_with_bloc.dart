@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/core/widgets/feat/document/upload_form/domain/repository/upload_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/upload_form/domain/usecase/get_school_list_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/upload_form/domain/usecase/get_subject_list_usecase.dart';
@@ -13,10 +15,14 @@ import 'package:studydocs/core/widgets/feat/document/upload_form/presentation/up
 /// UploadFormWithBloc(repository: someUploadRepository)
 class UploadFormWithBloc extends StatelessWidget {
   final UploadRepository repository;
+  final String? initialFileName;
+  final String? initialFilePath;
 
   const UploadFormWithBloc({
     super.key,
     required this.repository,
+    this.initialFileName,
+    this.initialFilePath,
   });
 
   @override
@@ -28,7 +34,13 @@ class UploadFormWithBloc extends StatelessWidget {
       create: (_) => DocumentUploadBloc(
         getSchoolListUseCase: getSchoolListUseCase,
         getSubjectListUseCase: getSubjectListUseCase,
-      )..add(const UploadInitialized()),
+      )..add(
+          UploadInitialized(
+            initialFileName: initialFileName,
+            initialFile:
+                initialFilePath != null ? File(initialFilePath!) : null,
+          ),
+        ),
       child: const _UploadFormWithBlocBody(),
     );
   }
@@ -57,12 +69,18 @@ class _UploadFormWithBlocBody extends StatelessWidget {
           }
           final bloc = context.read<DocumentUploadBloc>();
           return UploadForm(
-            fileName: state.fileName ?? 'Huong_dan_cai_dat_Linux.pdf',
+            fileName: state.fileName,
             selectedSchool: state.selectedSchool,
             selectedSubject: state.selectedSubject,
-            onPickFile: () {
-              // Demo: gán cứng tên file; sau này sẽ dùng file_picker.
-              bloc.add(const UploadFilePicked('Huong_dan_cai_dat_Linux.pdf'));
+            onPickFile: () async {
+              final result = await FilePicker.platform.pickFiles();
+              final file =
+                  (result != null && result.files.isNotEmpty) ? result.files.first : null;
+              final path = file?.path;
+              if (file == null || path == null) {
+                return;
+              }
+              bloc.add(UploadFilePicked(file.name, File(path)));
             },
             onChangeSchool: () {
               // Demo: xoay vòng qua danh sách trường khi bấm "Chỉnh sửa".

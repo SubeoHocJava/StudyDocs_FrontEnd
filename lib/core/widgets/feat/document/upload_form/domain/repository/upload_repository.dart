@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:studydocs/core/widgets/feat/document/upload_form/domain/entity/school.dart';
 import 'package:studydocs/core/widgets/feat/document/upload_form/domain/entity/subject.dart';
 
@@ -8,6 +10,8 @@ class UploadRequest {
   final String title;
   final String year;
   final String description;
+  final File file;
+  // final bool choxetduyet;
 
   const UploadRequest({
     required this.fileName,
@@ -16,6 +20,7 @@ class UploadRequest {
     required this.title,
     required this.year,
     required this.description,
+    required  this.file
   });
 }
 

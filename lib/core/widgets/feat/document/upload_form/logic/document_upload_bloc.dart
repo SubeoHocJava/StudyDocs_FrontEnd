@@ -28,7 +28,14 @@ class DocumentUploadBloc
     UploadInitialized event,
     Emitter<DocumentUploadState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        fileName: event.initialFileName,
+        file: event.initialFile,
+      ),
+    );
     try {
       final schools = await _getSchoolListUseCase();
       final School? firstSchool = schools.isNotEmpty ? schools.first : null;
@@ -113,6 +120,7 @@ class DocumentUploadBloc
     emit(
       state.copyWith(
         fileName: event.fileName,
+        file: event.file,
         errorMessage: null,
       ),
     );

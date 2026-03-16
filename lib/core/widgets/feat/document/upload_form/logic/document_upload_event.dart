@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'dart:io';
 
 abstract class DocumentUploadEvent extends Equatable {
   const DocumentUploadEvent();
@@ -8,7 +9,13 @@ abstract class DocumentUploadEvent extends Equatable {
 }
 
 class UploadInitialized extends DocumentUploadEvent {
-  const UploadInitialized();
+  final String? initialFileName;
+  final File? initialFile;
+
+  const UploadInitialized({this.initialFileName, this.initialFile});
+
+  @override
+  List<Object?> get props => [initialFileName, initialFile];
 }
 
 class UploadSchoolChanged extends DocumentUploadEvent {
@@ -31,11 +38,12 @@ class UploadSubjectChanged extends DocumentUploadEvent {
 
 class UploadFilePicked extends DocumentUploadEvent {
   final String fileName;
+  final File file;
 
-  const UploadFilePicked(this.fileName);
+  const UploadFilePicked(this.fileName, this.file);
 
   @override
-  List<Object?> get props => [fileName];
+  List<Object?> get props => [fileName, file];
 }
 
 class UploadErrorCleared extends DocumentUploadEvent {
