@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../constants/app_colors.dart';
 import '../../domain/entity/notification_model.dart';
 import 'trash_notification_item.dart';
 
@@ -13,7 +12,7 @@ class TrashNotificationList extends StatelessWidget {
   final VoidCallback onDeleteAllSelected;
 
   const TrashNotificationList({
-    Key? key,
+    super.key,
     required this.trashList,
     required this.selectedTrashIds,
     required this.onToggleSelection,
@@ -21,74 +20,57 @@ class TrashNotificationList extends StatelessWidget {
     required this.onDelete,
     required this.onRestoreAllSelected,
     required this.onDeleteAllSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (trashList.isEmpty) {
+      return const Center(child: Text('Thùng rác trống'));
+    }
+
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Thùng rác", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimaryLight)),
-          ),
-        ),
-        Expanded(
-          child: trashList.isEmpty 
-          ? const Center(child: Text("Thùng rác trống"))
-          : ListView.builder(
-              itemCount: trashList.length,
-              itemBuilder: (ctx, index) {
-                final note = trashList[index];
-                final isSelected = selectedTrashIds.contains(note.id);
-                final isSelectionMode = selectedTrashIds.isNotEmpty;
-                return TrashNotificationItemWidget(
-                  notification: note, 
-                  isSelected: isSelected,
-                  isSelectionMode: isSelectionMode,
-                  onSelectChanged: (val) => onToggleSelection(note.id),
-                  onRestore: () => onRestore(note.id),
-                  onDelete: () => onDelete(note.id),
-                );
-              },
-            ),
-        ),
         if (selectedTrashIds.isNotEmpty)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, -2))],
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Colors.blue[50],
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton.icon(
-                  onPressed: onRestoreAllSelected,
-                  icon: const Icon(Icons.restore, color: AppColors.primary, size: 18),
-                  label: const Text("Khôi phục tất cả", style: TextStyle(color: AppColors.primary)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.surfaceLight,
-                    side: const BorderSide(color: AppColors.border),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    elevation: 0,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton.icon(
-                  onPressed: onDeleteAllSelected,
-                  icon: const Icon(Icons.close, color: AppColors.danger, size: 18),
-                  label: const Text("Xóa tất cả", style: TextStyle(color: AppColors.danger)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFE0DB),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
+                Text('Đã chọn ${selectedTrashIds.length} mục'),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: onRestoreAllSelected,
+                      icon: const Icon(Icons.restore),
+                      label: const Text('Khôi phục'),
+                    ),
+                    TextButton.icon(
+                      onPressed: onDeleteAllSelected,
+                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      label: const Text('Xóa', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
                 ),
               ],
             ),
-          )
+          ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: trashList.length,
+            itemBuilder: (ctx, idx) {
+              final note = trashList[idx];
+              return TrashNotificationItemWidget(
+                notification: note,
+                isSelected: selectedTrashIds.contains(note.id),
+                onToggleSelection: (_) => onToggleSelection(note.id),
+                onRestore: () => onRestore(note.id),
+                onDelete: () => onDelete(note.id),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
