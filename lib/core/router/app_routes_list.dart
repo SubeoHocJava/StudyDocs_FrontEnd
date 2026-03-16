@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:studydocs/sceens/user/document/presentation/document_screen.dart';
 
 import 'app_route_model.dart';
 
 final List<AppRoute> appRoutes = [
-  AppRoute(path: '/home', screen: const Text("Hello")),
+  AppRoute(path: '/home', screen: const DocumentScreen()),
   // AppRoute(path: '/lib', screen: LibPage()), Đây là demo
 ];
 // Ví dụ cho 2 trang home và lib demo

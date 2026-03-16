@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart'
     as comment_review_repository;
 import 'package:studydocs/core/widgets/feat/document/comment/presentation/document_comment_presentation.dart';
+import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_bloc.dart';
+
 import 'package:studydocs/core/widgets/feat/document/information/domain/repository/review_repository.dart'
     as information_review_repository;
-import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/information/presentation/document_information_presentation.dart';
+
 import 'package:studydocs/core/widgets/feat/document/overview/domain/repository/document_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/domain/repository/library_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_bloc.dart';
@@ -18,37 +22,50 @@ class DocumentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final documentRepository = DocumentRepositoryImpl();
+    final libraryRepository = LibraryRepositoryImpl();
+
+    final informationReviewRepository =
+        information_review_repository.ReviewRepositoryImpl();
+
+    final commentReviewRepository =
+        comment_review_repository.ReviewRepositoryImpl();
+
+    const documentId = "";
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
+        BlocProvider<DocumentOverviewBloc>(
           create:
-              (context) => DocumentOverviewBloc(
-                documentRepository: DocumentRepositoryImpl(),
-                libraryRepository: LibraryRepositoryImpl(),
+              (_) => DocumentOverviewBloc(
+                documentRepository: documentRepository,
+                libraryRepository: libraryRepository,
               ),
         ),
-        BlocProvider(
-          create:
-              (context) => DocumentInformationBloc(
-                information_review_repository.ReviewRepositoryImpl(),
-              ),
+
+        BlocProvider<DocumentInformationBloc>(
+          create: (_) => DocumentInformationBloc(informationReviewRepository),
         ),
-        BlocProvider(
+
+        BlocProvider<DocumentCommentBloc>(
           create:
-              (context) => DocumentCommentBloc(
-                reviewRepository:
-                    comment_review_repository.ReviewRepositoryImpl(),
-                documentId: "",
+              (_) => DocumentCommentBloc(
+                reviewRepository: commentReviewRepository,
+                documentId: documentId,
               ),
         ),
       ],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          DocumentOverviewPresentation(),
-          DocumentInformationPresentation(),
-          DocumentCommentPresentation(documentId: ""),
-        ],
+      child: Scaffold(
+        body: Column(
+          children: [
+            DocumentOverviewPresentation(),
+            DocumentInformationPresentation(),
+
+            Expanded(
+              child: DocumentCommentPresentation(documentId: documentId),
+            ),
+          ],
+        ),
       ),
     );
   }
