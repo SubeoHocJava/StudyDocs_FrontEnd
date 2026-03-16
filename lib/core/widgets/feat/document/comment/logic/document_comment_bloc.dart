@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/content.dart';
+import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/comment_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/reply_comment_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/like_comment_usecase.dart';
@@ -14,59 +15,62 @@ import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comm
 
 class DocumentCommentBloc
     extends Bloc<DocumentCommentEvent, DocumentCommentState> {
-  final CommentUseCase _commentUseCase;
-  final ReplyCommentUseCase _replyCommentUseCase;
-  final LikeCommentUseCase _likeCommentUseCase;
-  final UnlikeCommentUseCase _unlikeCommentUseCase;
-  final EditCommentUseCase _editCommentUseCase;
-  final DeleteCommentUseCase _deleteCommentUseCase;
-  final GetCommentsUseCase _getCommentsUseCase;
-  final GetCommentRepliesUseCase _getCommentRepliesUseCase;
   final String _documentId;
 
   DocumentCommentBloc({
-    required CommentUseCase commentUseCase,
-    required ReplyCommentUseCase replyCommentUseCase,
-    required LikeCommentUseCase likeCommentUseCase,
-    required UnlikeCommentUseCase unlikeCommentUseCase,
-    required EditCommentUseCase editCommentUseCase,
-    required DeleteCommentUseCase deleteCommentUseCase,
-    required GetCommentsUseCase getCommentsUseCase,
-    required   getCommentRepliesUseCase,
+    required ReviewRepository reviewRepository,
     required String documentId,
-  }) : _commentUseCase = commentUseCase,
-       _replyCommentUseCase = replyCommentUseCase,
-       _likeCommentUseCase = likeCommentUseCase,
-       _unlikeCommentUseCase = unlikeCommentUseCase,
-       _editCommentUseCase = editCommentUseCase,
-       _deleteCommentUseCase = deleteCommentUseCase,
-       _getCommentsUseCase = getCommentsUseCase,
-       _getCommentRepliesUseCase = getCommentRepliesUseCase,
-       _documentId = documentId,
+  }) : _documentId = documentId,
        super(DocumentCommentInitial()) {
+    final CommentUseCase commentUseCase = CommentUseCaseImpl(reviewRepository);
+    final ReplyCommentUseCase replyCommentUseCase = ReplyCommentUseCaseImpl(
+      reviewRepository,
+    );
+    final LikeCommentUseCase likeCommentUseCase = LikeCommentUseCaseImpl(
+      reviewRepository,
+    );
+    final UnlikeCommentUseCase unlikeCommentUseCase = UnlikeCommentUseCaseImpl(
+      reviewRepository,
+    );
+    final EditCommentUseCase editCommentUseCase = EditCommentUseCaseImpl(
+      reviewRepository,
+    );
+    final DeleteCommentUseCase deleteCommentUseCase = DeleteCommentUseCaseImpl(
+      reviewRepository,
+    );
+    final GetCommentsUseCase getCommentsUseCase = GetCommentsUseCaseImpl(
+      reviewRepository,
+    );
+    final GetCommentRepliesUseCase getCommentRepliesUseCase =
+        GetCommentRepliesUseCaseImpl(reviewRepository);
+
     on<LoadCommentsRequested>((event, emit) async {
       try {
-        final comments = await _getCommentsUseCase(event.documentId);
+        final comments = await getCommentsUseCase(event.documentId);
         emit(DocumentCommentLoaded(comments));
       } catch (_) {}
     });
 
     on<CommentRequested>((event, emit) async {
       try {
-        await _commentUseCase(_documentId, event.content);
+        await commentUseCase(_documentId, event.content);
       } catch (_) {}
     });
 
     on<LoadCommentRepliesRequested>((event, emit) async {
       try {
-        final replies = await _getCommentRepliesUseCase(event.documentId, event.commentId);
+        final replies = await getCommentRepliesUseCase(
+          event.documentId,
+          event.commentId,
+        );
         if (state is DocumentCommentLoaded) {
           final currentState = state as DocumentCommentLoaded;
-          final updatedComments = currentState.comments.map((c) {
-            return _updateCommentInTree(c, event.commentId, (target) {
-              return target.copyWith(children: replies);
-            });
-          }).toList();
+          final updatedComments =
+              currentState.comments.map((c) {
+                return _updateCommentInTree(c, event.commentId, (target) {
+                  return target.copyWith(children: replies);
+                });
+              }).toList();
           emit(DocumentCommentLoaded(updatedComments));
         }
       } catch (_) {}
@@ -74,7 +78,11 @@ class DocumentCommentBloc
 
     on<CommentReplied>((event, emit) async {
       try {
-        await _replyCommentUseCase(event.documentId, event.commentId, event.content);
+        await replyCommentUseCase(
+          event.documentId,
+          event.commentId,
+          event.content,
+        );
       } catch (_) {}
     });
 
@@ -82,20 +90,21 @@ class DocumentCommentBloc
       if (state is DocumentCommentLoaded) {
         final currentState = state as DocumentCommentLoaded;
         final currentComments = currentState.comments;
-        
-        final newComments = currentComments.map((comment) {
-          return _updateCommentInTree(comment, event.commentId, (target) {
-            return target.copyWith(
-              isLiked: true,
-              likeCount: target.likeCount + 1,
-            );
-          });
-        }).toList();
-        
+
+        final newComments =
+            currentComments.map((comment) {
+              return _updateCommentInTree(comment, event.commentId, (target) {
+                return target.copyWith(
+                  isLiked: true,
+                  likeCount: target.likeCount + 1,
+                );
+              });
+            }).toList();
+
         emit(DocumentCommentLoaded(newComments));
 
         try {
-          await _likeCommentUseCase(event.documentId, event.commentId);
+          await likeCommentUseCase(event.documentId, event.commentId);
         } catch (_) {
           emit(DocumentCommentLoaded(currentComments));
         }
@@ -106,21 +115,22 @@ class DocumentCommentBloc
       if (state is DocumentCommentLoaded) {
         final currentState = state as DocumentCommentLoaded;
         final currentComments = currentState.comments;
-        
+
         // Optimistic UI Update
-        final newComments = currentComments.map((comment) {
-          return _updateCommentInTree(comment, event.commentId, (target) {
-            return target.copyWith(
-              isLiked: false,
-              likeCount: target.likeCount > 0 ? target.likeCount - 1 : 0,
-            );
-          });
-        }).toList();
-        
+        final newComments =
+            currentComments.map((comment) {
+              return _updateCommentInTree(comment, event.commentId, (target) {
+                return target.copyWith(
+                  isLiked: false,
+                  likeCount: target.likeCount > 0 ? target.likeCount - 1 : 0,
+                );
+              });
+            }).toList();
+
         emit(DocumentCommentLoaded(newComments));
 
         try {
-          await _unlikeCommentUseCase(event.documentId, event.commentId);
+          await unlikeCommentUseCase(event.documentId, event.commentId);
         } catch (_) {
           // Rollback on failure
           emit(DocumentCommentLoaded(currentComments));
@@ -130,16 +140,19 @@ class DocumentCommentBloc
 
     on<CommentEdited>((event, emit) async {
       try {
-        await _editCommentUseCase(event.documentId, event.commentId, event.content);
+        await editCommentUseCase(
+          event.documentId,
+          event.commentId,
+          event.content,
+        );
       } catch (_) {}
     });
 
     on<CommentDeleted>((event, emit) async {
       try {
-        await _deleteCommentUseCase(event.documentId, event.commentId);
+        await deleteCommentUseCase(event.documentId, event.commentId);
       } catch (_) {}
     });
-
 
     on<ReceivedData>((event, emit) {
       emit(DocumentCommentLoaded(event.comments));
@@ -150,13 +163,20 @@ class DocumentCommentBloc
     });
   }
 
-  Comment _updateCommentInTree(Comment current, String targetId, Comment Function(Comment) updateFn) {
+  Comment _updateCommentInTree(
+    Comment current,
+    String targetId,
+    Comment Function(Comment) updateFn,
+  ) {
     if (current.id == targetId) {
       return updateFn(current);
     }
     if (current.children.isNotEmpty) {
       return current.copyWith(
-        children: current.children.map((child) => _updateCommentInTree(child, targetId, updateFn)).toList(),
+        children:
+            current.children
+                .map((child) => _updateCommentInTree(child, targetId, updateFn))
+                .toList(),
       );
     }
     return current;

@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import 'app_route_model.dart';
 
 final List<AppRoute> appRoutes = [
-  // AppRoute(path: '/home', screen: MainTabHomePage()),
+  AppRoute(path: '/home', screen: const Text("Hello")),
   // AppRoute(path: '/lib', screen: LibPage()), Đây là demo
 ];
 // Ví dụ cho 2 trang home và lib demo
