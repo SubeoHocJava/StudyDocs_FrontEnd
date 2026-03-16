@@ -5,7 +5,7 @@ import 'package:studydocs/sceens/user/document/presentation/document_screen.dart
 import 'app_route_model.dart';
 
 final List<AppRoute> appRoutes = [
-  AppRoute(path: '/home', screen: const DocumentScreen(documentId: "")),
+  AppRoute(path: '/home', screen: const DocumentScreen(documentId: "123")),
   // AppRoute(path: '/lib', screen: LibPage()), Đây là demo
 ];
 // Ví dụ cho 2 trang home và lib demo

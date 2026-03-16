@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart'
     as comment_review_repository;
@@ -12,9 +13,6 @@ import 'package:studydocs/core/widgets/feat/document/information/domain/reposito
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_event.dart';
 import 'package:studydocs/core/widgets/feat/document/information/presentation/document_information_presentation.dart';
-import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/document_overview.dart';
-import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/school_info.dart';
-
 import 'package:studydocs/core/widgets/feat/document/overview/domain/repository/document_repository.dart'
     as document_overview_repository;
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_event.dart';
@@ -27,10 +25,23 @@ import 'package:studydocs/sceens/user/document/logic/document_bloc.dart';
 import 'package:studydocs/sceens/user/document/logic/document_event.dart';
 import 'package:studydocs/sceens/user/document/logic/document_state.dart';
 
-class DocumentScreen extends StatelessWidget {
+class DocumentScreen extends StatefulWidget {
   final String documentId;
 
   const DocumentScreen({super.key, required this.documentId});
+
+  @override
+  State<DocumentScreen> createState() => _DocumentScreenState();
+}
+
+class _DocumentScreenState extends State<DocumentScreen> {
+  bool _isExpanded = false;
+
+  void _toggleExpand() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +60,11 @@ class DocumentScreen extends StatelessWidget {
       create:
           (_) =>
               DocumentBloc(documentRepository: documentRepository)
-                ..add(GetDocumentRequested(documentId: documentId)),
+                ..add(GetDocumentRequested(documentId: widget.documentId)),
       child: BlocBuilder<DocumentBloc, DocumentState>(
         builder: (context, state) {
-          final documentId = this.documentId;
           if (state is DocumentLoaded) {
+            final documentId = state.document.id;
             final document = state.document;
             return MultiBlocProvider(
               providers: [
@@ -83,25 +94,73 @@ class DocumentScreen extends StatelessWidget {
                       (_) => DocumentCommentBloc(
                         reviewRepository: commentReviewRepository,
                         documentId: documentId,
-                      )..add(LoadCommentsRequested(this.documentId)),
+                      )..add(LoadCommentsRequested(documentId)),
                 ),
               ],
               child: Scaffold(
-                body: Column(
-                  children: [
-                    DocumentOverviewPresentation(),
-                    DocumentInformationPresentation(),
-                    Expanded(
-                      child: DocumentCommentPresentation(
-                        documentId: documentId,
+                backgroundColor: AppColors.white,
+                body: SafeArea(
+                  child: Column(
+                    children: [
+                      DocumentOverviewPresentation(
+                        isExpanded: _isExpanded,
+                        onToggle: _toggleExpand,
                       ),
-                    ),
-                  ],
+                      const Divider(color: AppColors.divider, thickness: 1, height: 1),
+                      Expanded(
+                        child: _isExpanded
+                            ? Column(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: DocumentInformationPresentation(),
+                                  ),
+                                  const Divider(color: AppColors.divider, thickness: 1, height: 1),
+                                  Expanded(
+                                    child: DocumentCommentPresentation(
+                                      documentId: documentId,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Container(
+                                    height: 500,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: AppColors.border),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "Document Preview Component\n(To be implemented)",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: AppColors.gray),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           } else {
-            return const Text("load");
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
         },
       ),

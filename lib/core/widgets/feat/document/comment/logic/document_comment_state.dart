@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
 
@@ -10,6 +9,8 @@ abstract class DocumentCommentState extends Equatable {
 }
 
 class DocumentCommentInitial extends DocumentCommentState {}
+
+class DocumentCommentLoading extends DocumentCommentState {}
 
 class DocumentCommentLoaded extends DocumentCommentState {
   final List<Comment> comments;

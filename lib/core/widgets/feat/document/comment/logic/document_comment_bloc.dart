@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
-import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/content.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/comment_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/usecase/reply_comment_usecase.dart';
@@ -45,15 +44,20 @@ class DocumentCommentBloc
         GetCommentRepliesUseCaseImpl(reviewRepository);
 
     on<LoadCommentsRequested>((event, emit) async {
+      emit(DocumentCommentLoading()); // Thêm trạng thái loading
       try {
         final comments = await getCommentsUseCase(event.documentId);
         emit(DocumentCommentLoaded(comments));
-      } catch (_) {}
+      } catch (e) {
+        // Có thể emit thêm trạng thái Error nếu cần
+        emit(const DocumentCommentLoaded([])); 
+      }
     });
 
     on<CommentRequested>((event, emit) async {
       try {
         await commentUseCase(_documentId, event.content);
+        add(LoadCommentsRequested(_documentId)); // Reload sau khi comment
       } catch (_) {}
     });
 
@@ -83,6 +87,7 @@ class DocumentCommentBloc
           event.commentId,
           event.content,
         );
+        add(LoadCommentsRequested(_documentId));
       } catch (_) {}
     });
 
@@ -116,7 +121,6 @@ class DocumentCommentBloc
         final currentState = state as DocumentCommentLoaded;
         final currentComments = currentState.comments;
 
-        // Optimistic UI Update
         final newComments =
             currentComments.map((comment) {
               return _updateCommentInTree(comment, event.commentId, (target) {
@@ -132,7 +136,6 @@ class DocumentCommentBloc
         try {
           await unlikeCommentUseCase(event.documentId, event.commentId);
         } catch (_) {
-          // Rollback on failure
           emit(DocumentCommentLoaded(currentComments));
         }
       }
@@ -145,12 +148,14 @@ class DocumentCommentBloc
           event.commentId,
           event.content,
         );
+        add(LoadCommentsRequested(_documentId));
       } catch (_) {}
     });
 
     on<CommentDeleted>((event, emit) async {
       try {
         await deleteCommentUseCase(event.documentId, event.commentId);
+        add(LoadCommentsRequested(_documentId));
       } catch (_) {}
     });
 
