@@ -20,13 +20,7 @@ class NotificationPresentation extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
-      builder: (ctx) => const SizedBox.shrink() {
-          context.read<NotificationBloc>().add(MarkNotificationAsReadEvent(note.id));
-        },
-        onDelete: () {
-          context.read<NotificationBloc>().add(MoveNotificationToTrashEvent(note.id));
-        },
-      ),
+      builder: (ctx) => const SizedBox.shrink(),
     );
   }
 
@@ -36,16 +30,7 @@ class NotificationPresentation extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
-      builder: (ctx) => Globalconst SizedBox.shrink() {
-          context.read<NotificationBloc>().add(MarkAllAsReadEvent());
-        },
-        onDeleteAll: () {
-          context.read<NotificationBloc>().add(MoveAllToTrashEvent());
-        },
-        onViewTrash: () {
-          context.read<NotificationBloc>().add(ToggleTrashModeEvent());
-        },
-      ),
+      builder: (ctx) => const SizedBox.shrink(),
     );
   }
 
