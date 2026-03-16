@@ -27,18 +27,9 @@ class _DocumentCommentPresentationState
   final FocusNode _focusNode = FocusNode();
   Comment? _replyingTo;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DocumentCommentBloc>().add(LoadCommentsRequested(widget.documentId));
-    });
-  }
-
   void _handleReply(Comment comment) {
     setState(() {
       _replyingTo = comment;
-      // No need to set _controller text anymore since we will have a separate text field inline
     });
   }
 

@@ -1,5 +1,8 @@
+import 'package:studydocs/core/widgets/feat/document/information/domain/entity/document_info.dart';
+import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/document_overview.dart';
+
 import 'author.dart';
-import 'course_info.dart';
+import 'course.dart';
 import 'school.dart';
 
 class Document {
@@ -7,7 +10,7 @@ class Document {
   final String title;
 
   final School school;
-  final CourseInfo course;
+  final Course course;
 
   final int startYear;
   final int endYear;
@@ -38,35 +41,27 @@ class Document {
     required this.author,
   });
 
-  Document copyWith({
-    String? id,
-    String? title,
-    School? school,
-    CourseInfo? course,
-    int? startYear,
-    int? endYear,
-    int? pageNumber,
-    int? likeCount,
-    int? dislikeCount,
-    bool? isLiked,
-    bool? isDisliked,
-    bool? isSaved,
-    Author? author,
-  }) {
-    return Document(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      school: school ?? this.school,
-      course: course ?? this.course,
-      startYear: startYear ?? this.startYear,
-      endYear: endYear ?? this.endYear,
-      pageNumber: pageNumber ?? this.pageNumber,
-      likeCount: likeCount ?? this.likeCount,
-      dislikeCount: dislikeCount ?? this.dislikeCount,
-      isLiked: isLiked ?? this.isLiked,
-      isDisliked: isDisliked ?? this.isDisliked,
-      isSaved: isSaved ?? this.isSaved,
-      author: author ?? this.author,
+  DocumentOverview mapToOverview() {
+    return DocumentOverview(
+      id: id,
+      title: title,
+      schoolInfo: school.mapToOverview(),
+      courseInfo: course.mapToOverview(),
+      isSaved: isSaved,
+    );
+  }
+
+  DocumentInfo mapToInformation() {
+    return DocumentInfo(
+      id: id,
+      startYear: startYear,
+      endYear: endYear,
+      pageNumber: pageNumber,
+      author: author.mapToInformation(),
+      likeCount: likeCount,
+      dislikeCount: dislikeCount,
+      isLiked: isLiked,
+      isDisliked: isDisliked,
     );
   }
 }

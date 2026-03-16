@@ -11,7 +11,7 @@ abstract class DocumentInformationEvent extends Equatable {
 class DocumentInformationDataReceived extends DocumentInformationEvent {
   final DocumentInfo documentInfo;
 
-  const DocumentInformationDataReceived(this.documentInfo);
+  const DocumentInformationDataReceived({required this.documentInfo});
 
   @override
   List<Object> get props => [documentInfo];
@@ -39,6 +39,7 @@ class AuthorClick extends DocumentInformationEvent {
   final String authorId;
 
   const AuthorClick(this.authorId);
+
   @override
   List<Object> get props => [authorId];
 }

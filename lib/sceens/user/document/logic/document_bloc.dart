@@ -5,8 +5,8 @@ import 'package:studydocs/sceens/user/document/domain/usecase/get_documnet_useca
 import 'document_event.dart';
 import 'document_state.dart';
 
-class DocumentOverviewBloc extends Bloc<DocumentEvent, DocumentState> {
-  DocumentOverviewBloc({required DocumentRepository documentRepository})
+class DocumentBloc extends Bloc<DocumentEvent, DocumentState> {
+  DocumentBloc({required DocumentRepository documentRepository})
     : super(DocumentInitial()) {
     final GetDocumentUseCase getDocumentUseCase = GetDocumentUseCaseImpl(
       documentRepository,
