@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart';
 import '../../../../core/widgets/feat/profile/Infor_user/presentation/InforUser.dart';
@@ -40,6 +41,7 @@ class ProfileScreen extends StatelessWidget {
 
       ],
       child: Scaffold(
+        backgroundColor: AppColors.white,
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
 

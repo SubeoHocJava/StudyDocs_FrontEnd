@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../../../../../router/app_router.dart';
 import '../../../../../router/app_routes_list.dart';
@@ -76,7 +77,8 @@ class InforUser extends StatelessWidget {
                 : "Chưa có trường học",
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
             ),
             textAlign: TextAlign.center,
           ),
