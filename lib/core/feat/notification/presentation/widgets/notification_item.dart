@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import '../domain/entity/notification_model.dart';
-import '../utils/notification_ui_mapper.dart';
+import 'package:studydocs/core/feat/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/core/feat/notification/presentation/utils/notification_ui_mapper.dart';
 
 class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -56,7 +56,7 @@ class NotificationItemWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  shape: BoxType.circle,
+                  shape: BoxShape.circle,
                 ),
                 child: Image.asset(
                   uiConfig['iconAsset'],
@@ -86,7 +86,7 @@ class NotificationItemWidget extends StatelessWidget {
           ),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.top(4),
+          padding: const EdgeInsets.only(top: 4),
           child: Text(
             _formatTime(notification.receivedAt),
             style: TextStyle(color: Colors.grey[500], fontSize: 12),
