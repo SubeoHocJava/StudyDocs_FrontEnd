@@ -18,22 +18,6 @@ class InforUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-      // BlocListener<InforUserBloc, InforUserState>(
-      // listener: (context, state) {
-      //   /// ====== MỞ SETTING DIALOG ======
-      //   if (state is OpenSettingDialogState) {
-      //     showDialog(
-      //       context: rootNavigatorKey.currentContext!,
-      //       builder:
-      //           (_) => BlocProvider(
-      //             create: (_) => SettingBloc(),
-      //             child: const SettingDialog(),
-      //           ),
-      //     );
-      //   }
-      // },
-
-      // child:
     BlocBuilder<InforUserBloc, InforUserState>(
         builder: (context, state) {
           if (state is InforUserLoading || state is InforUserInitial) {
@@ -55,7 +39,7 @@ class InforUser extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, InforUserLoaded state) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

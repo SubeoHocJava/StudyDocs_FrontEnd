@@ -1,12 +1,7 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../data/repositories/mock_statistic_repository_impl.dart';
-import '../domain/usecases/get_statistic_usecase.dart';
 import '../logic/statistic_bloc.dart';
-import '../logic/statistic_event.dart';
 import '../logic/statistic_state.dart';
 
 class Statistics extends StatelessWidget {
@@ -14,26 +9,28 @@ class Statistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocBuilder<StatisticBloc, StatisticState>(
-        builder: (context, state) {
-          if (state is StatisticLoading || state is StatisticInitial) {
-            return _buildCardContainer(
-              context,
-              child: const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
-                ),
+    return BlocBuilder<StatisticBloc, StatisticState>(
+      builder: (context, state) {
+        if (state is StatisticLoading || state is StatisticInitial) {
+          return _buildCardContainer(
+            context,
+            child: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
               ),
-            );
-          } else if (state is StatisticError) {
-            return _buildCardContainer(
-              context,
-              child: Center(child: Text("Lỗi: ${state.message}")),
-            );
-          } else if (state is StatisticLoaded) {
-            final data = state.statisticData;
-            return _buildCardContainer(
+            ),
+          );
+        } else if (state is StatisticError) {
+          return _buildCardContainer(
+            context,
+            child: Center(child: Text("Lỗi: ${state.message}")),
+          );
+        } else if (state is StatisticLoaded) {
+          final data = state.statisticData;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildCardContainer(
               context,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,28 +48,41 @@ class Statistics extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildStatColumn(context, data.totalDocuments.toString(), "Đăng tải"),
+                        _buildStatColumn(
+                          context,
+                          data.totalDocuments.toString(),
+                          "Đăng tải",
+                        ),
                         VerticalDivider(
                           color: Colors.grey[300],
                           thickness: 1,
                           width: 1,
                         ),
-                        _buildStatColumn(context, data.totalLikes.toString(), "Lượt thích"),
+                        _buildStatColumn(
+                          context,
+                          data.totalLikes.toString(),
+                          "Lượt thích",
+                        ),
                         VerticalDivider(
                           color: Colors.grey[300],
                           thickness: 1,
                           width: 1,
                         ),
-                        _buildStatColumn(context, data.totalComments.toString(), "Bình luận"),
+                        _buildStatColumn(
+                          context,
+                          data.totalComments.toString(),
+                          "Bình luận",
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -81,10 +91,7 @@ class Statistics extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(
-          color: Colors.grey[300]!,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.grey[300]!, width: 1),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
