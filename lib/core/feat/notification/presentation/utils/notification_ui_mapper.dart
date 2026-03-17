@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import '../domain/entity/notification_model.dart';
+import 'package:studydocs/core/feat/notification/domain/entity/notification_model.dart';
 
 class NotificationUIMapper {
   static Map<String, dynamic> getConfig(NotificationType type) {
