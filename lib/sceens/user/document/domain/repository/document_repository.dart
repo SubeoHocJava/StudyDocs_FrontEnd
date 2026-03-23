@@ -20,7 +20,7 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
       school: const School(
         id: "school_1",
-        name: "Ho Chi Minh University of Technology",
+        name: "Ho Chi Minh University of TechnologyTechnologyTechnologyTechnologyTechnology",
       ),
 
       course: const Course(

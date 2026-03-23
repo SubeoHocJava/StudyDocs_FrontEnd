@@ -27,7 +27,6 @@ class DocumentOverviewPresentation extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title & Toggle Arrow
                 GestureDetector(
                   onTap: onToggle,
                   behavior: HitTestBehavior.opaque,
@@ -37,6 +36,8 @@ class DocumentOverviewPresentation extends StatelessWidget {
                       Expanded(
                         child: Text(
                           state.documentOverview.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -63,28 +64,36 @@ class DocumentOverviewPresentation extends StatelessWidget {
 
                 // Course
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      AppAssets.folder,
-                      width: 20,
-                      height: 20,
-                      color: AppColors.black,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Image.asset(
+                        AppAssets.folder,
+                        width: 20,
+                        height: 20,
+                        color: AppColors.black,
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () {
-                        context.read<DocumentOverviewBloc>().add(
-                          SchoolClicked(
-                            schoolId: state.documentOverview.courseInfo.id,
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          context.read<DocumentOverviewBloc>().add(
+                            SchoolClicked(
+                              schoolId: state.documentOverview.courseInfo.id,
+                            ),
+                          );
+                        },
+                        child: Text(
+                          state.documentOverview.courseInfo.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.secondaryBlue,
+                            fontFamily: 'Montserrat',
+                            fontSize: 16,
                           ),
-                        );
-                      },
-                      child: Text(
-                        state.documentOverview.courseInfo.name,
-                        style: const TextStyle(
-                          color: AppColors.secondaryBlue,
-                          fontFamily: 'Montserrat',
-                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -93,28 +102,36 @@ class DocumentOverviewPresentation extends StatelessWidget {
                 const SizedBox(height: 8),
                 // School
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      AppAssets.school,
-                      width: 20,
-                      height: 20,
-                      color: AppColors.black,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Image.asset(
+                        AppAssets.school,
+                        width: 20,
+                        height: 20,
+                        color: AppColors.black,
+                      ),
                     ),
                     const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () {
-                        context.read<DocumentOverviewBloc>().add(
-                          SchoolClicked(
-                            schoolId: state.documentOverview.schoolInfo.id,
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          context.read<DocumentOverviewBloc>().add(
+                            SchoolClicked(
+                              schoolId: state.documentOverview.schoolInfo.id,
+                            ),
+                          );
+                        },
+                        child: Text(
+                          state.documentOverview.schoolInfo.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.secondaryBlue,
+                            fontFamily: 'Montserrat',
+                            fontSize: 16,
                           ),
-                        );
-                      },
-                      child: Text(
-                        state.documentOverview.schoolInfo.name,
-                        style: const TextStyle(
-                          color: AppColors.secondaryBlue,
-                          fontFamily: 'Montserrat',
-                          fontSize: 16,
                         ),
                       ),
                     ),

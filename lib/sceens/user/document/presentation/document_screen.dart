@@ -108,49 +108,49 @@ class _DocumentScreenState extends State<DocumentScreen> {
                       ),
                       const Divider(color: AppColors.divider, thickness: 1, height: 1),
                       Expanded(
-                        child: _isExpanded
-                            ? Column(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(16.0),
-                                    child: DocumentInformationPresentation(),
-                                  ),
-                                  const Divider(color: AppColors.divider, thickness: 1, height: 1),
-                                  Expanded(
-                                    child: DocumentCommentPresentation(
-                                      documentId: documentId,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : SingleChildScrollView(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Container(
-                                    height: 500,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: AppColors.border),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Center(
-                                      child: Text(
-                                        "Document Preview Component\n(To be implemented)",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(color: AppColors.gray),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              if (_isExpanded) ...[
+                                const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: DocumentInformationPresentation(),
+                                ),
+                                const Divider(color: AppColors.divider, thickness: 1, height: 1),
+                              ],
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  height: 500,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: AppColors.border),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
+                                    ],
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "Document Preview Component\n(To be implemented)",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: AppColors.gray),
                                     ),
                                   ),
                                 ),
                               ),
+                              const Divider(color: AppColors.divider, thickness: 1, height: 1),
+                              DocumentCommentPresentation(
+                                documentId: documentId,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
