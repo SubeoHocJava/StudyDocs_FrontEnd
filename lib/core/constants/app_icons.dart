@@ -8,17 +8,26 @@ class AppAssets {
   // Common Actions
   static const markAsRead = '$_base/mark_as_read.png';
   static const moreHoriz  = '$_base/more_horiz.png';
+  static const like       = '$_base/like.png';
   static const download   = '$_base/download.png';
   static const bin        = '$_base/bin.png';
   static const upload     = '$_base/upload.png';
 
   // Like
-  static const like        = '$_base/like.png';
-  static const outlineLike = '$_base/like.png';      // giữ để backward compatibility
+  static const outlineLike = '$_base/like.png'; 
   static const fullLike    = '$_base/full_like.png';
 
   // Navigation / UI
   static const chevronDown = '$_base/chevron_down.png';
+
+  // Notification Icons
+  static const notiLike        = '$_base/noti_like.png';
+  static const notiComment     = '$_base/noti_comment.png';
+  static const notiDownload    = '$_base/noti_download.png';
+  static const notiSaved       = '$_base/noti_saved.png';
+  static const notiMarkAsRead  = '$_base/noti_markasread.png';
+  static const notiTrash       = '$_base/noti_trash.png';
+  static const notiRestore     = '$_base/noti_restore.png';
 
   // Domain Icons
   static const folder   = '$_base/folder.png';
@@ -34,13 +43,4 @@ class AppAssets {
 
   // Comment
   static const cmt = '$_base/cmt.png';
-
-  // Notification Icons
-  static const notiLike        = '$_base/noti_like.png';
-  static const notiComment     = '$_base/noti_comment.png';
-  static const notiDownload    = '$_base/noti_download.png';
-  static const notiSaved       = '$_base/noti_saved.png';
-  static const notiRestore     = '$_base/noti_restore.png';
-  static const notiTrash       = '$_base/noti_trash.png';
-  static const notiMarkAsRead  = '$_base/noti_markasread.png';
 }

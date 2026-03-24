@@ -1,109 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
-import '../domain/entity/notification_model.dart';
+import '../../../../constants/app_colors.dart';
+import '../../../../constants/app_icons.dart';
+import '../../domain/entity/notification_model.dart';
+import '../../utils/time_utils.dart';
 import '../utils/notification_ui_mapper.dart';
 
 class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
-  final VoidCallback onNotificationTap;
+  final VoidCallback onTap;
   final VoidCallback onMoreTap;
-  final VoidCallback onDeleteTap;
+  final VoidCallback? onDeleteTap;
 
   const NotificationItemWidget({
-    super.key,
+    Key? key,
     required this.notification,
-    required this.onNotificationTap,
+    required this.onTap,
     required this.onMoreTap,
-    required this.onDeleteTap,
-  });
+    this.onDeleteTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final uiConfig = NotificationUIMapper.getConfig(notification.type);
-    
+    final config = NotificationUIMapper.getConfig(notification.type);
+    final isUnread = !notification.isRead;
+
     return Slidable(
       key: ValueKey(notification.id),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        extentRatio: 0.25,
-        children: [
-          SlidableAction(
-            onPressed: (_) => onDeleteTap(),
-            backgroundColor: const Color(0xFFFE4A49),
-            foregroundColor: Colors.white,
-            icon: Icons.delete_outline,
-            label: 'Xóa',
+      enabled: onDeleteTap != null,
+      endActionPane: onDeleteTap != null
+          ? ActionPane(
+              motion: const ScrollMotion(),
+              extentRatio: 0.25,
+              children: [
+                SlidableAction(
+                  onPressed: (_) => onDeleteTap?.call(),
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete_outline,
+                  label: 'Xóa',
+                ),
+              ],
+            )
+          : null,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isUnread
+                ? AppColors.notificationUnreadLight
+                : AppColors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.border.withValues(alpha: 0.5),
+              ),
+            ),
           ),
-        ],
-      ),
-      child: ListTile(
-        onTap: onNotificationTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        tileColor: notification.isRead ? Colors.transparent : AppColors.primary.withOpacity(0.05),
-        leading: Stack(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundImage: NetworkImage(notification.avatarUrl),
-              backgroundColor: Colors.grey[200],
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxType.circle,
-                ),
-                child: Image.asset(
-                  uiConfig['iconAsset'],
-                  width: 14,
-                  height: 14,
-                  color: uiConfig['iconColor'],
-                ),
-              ),
-            ),
-          ],
-        ),
-        title: RichText(
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-            style: const TextStyle(color: Colors.black87, fontSize: 14),
+          child: Row(
             children: [
-              TextSpan(
-                text: notification.title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Image.asset(
+                config['iconAsset'],
+                width: 36,
+                height: 36,
               ),
-              const TextSpan(text: ' '),
-              TextSpan(text: uiConfig['actionVerb']),
-              const TextSpan(text: ' '),
-              TextSpan(text: notification.content),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Montserrat',
+                          height: 1.4,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: notification.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimaryLight,
+                            ),
+                          ),
+                          if (notification.content.isNotEmpty)
+                            TextSpan(
+                              text: " ${notification.content}",
+                              style: const TextStyle(
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      TimeUtils.formatTimeAgo(notification.receivedAt),
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 12,
+                        color: isUnread
+                            ? AppColors.primary
+                            : AppColors.textSecondaryLight,
+                        fontWeight:
+                            isUnread ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_horiz,
+                    color: AppColors.textSecondaryLight),
+                onPressed: onMoreTap,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
+              ),
             ],
           ),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.top(4),
-          child: Text(
-            _formatTime(notification.receivedAt),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-          ),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.more_horiz),
-          onPressed: onMoreTap,
-        ),
       ),
     );
-  }
-
-  String _formatTime(DateTime time) {
-    final diff = DateTime.now().difference(time);
-    if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
-    if (diff.inHours < 24) return '${diff.inHours} giờ trước';
-    return '${diff.inDays} ngày trước';
   }
 }
