@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/core/feat/notification/presentation/demo/notification_header_demo.dart';
+import 'core/feat/notification/presentation/demo/notification_notice_demo.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: NotificationHeaderDemo(),
+      home: NotificationNoticeDemo(),
     );
   }
 }
