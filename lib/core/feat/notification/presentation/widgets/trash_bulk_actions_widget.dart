@@ -12,69 +12,71 @@ class TrashBulkActionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
+          // Restore All Button
           Expanded(
-            child: _buildButton(
-              icon: Icons.restore_from_trash,
-              label: 'Khôi phục tất cả',
-              color: const Color(0xFFE3F2FD),
-              textColor: const Color(0xFF1976D2),
+            child: InkWell(
               onTap: onRestoreAll,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE3F2FD), // Light blue
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.restore, color: Color(0xFF1976D2), size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Khôi phục tất cả',
+                      style: TextStyle(
+                        color: Color(0xFF1976D2),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          // Vertical Divider
+          Container(width: 1, height: 48, color: Colors.blue[200]),
+          // Delete All Button
           Expanded(
-            child: _buildButton(
-              icon: Icons.delete_sweep,
-              label: 'Xóa tất cả',
-              color: const Color(0xFFFFEBEE),
-              textColor: const Color(0xFFD32F2F),
+            child: InkWell(
               onTap: onDeleteAll,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFEBEE), // Light red
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(12)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.delete_forever, color: Color(0xFF1A237E), size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Xóa tất cả',
+                      style: TextStyle(
+                        color: Color(0xFF1A237E),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color textColor,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: textColor.withOpacity(0.2)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: textColor, size: 20),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  fontFamily: 'Montserrat',
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
