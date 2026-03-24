@@ -7,28 +7,27 @@ class NotificationMarkAllReadDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Demo: Mark All Read'),
-      ),
-      body: Center(
+      backgroundColor: Colors.grey[100],
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Tính năng: Đánh dấu tất cả là đã đọc',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                '❖ Đánh dấu thông báo',
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
+             const Spacer(),
             MarkAllReadWidget(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Marked all as read')),
-                );
-              },
+              onTap: () {},
             ),
+            const Spacer(),
           ],
         ),
       ),
