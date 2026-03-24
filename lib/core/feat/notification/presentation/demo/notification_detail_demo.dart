@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/notification_options_bottom_sheet.dart';
+import '../widgets/notification_detail_widget.dart';
 import '../../domain/entity/notification_model.dart';
 
 class NotificationDetailDemo extends StatelessWidget {
@@ -7,37 +7,36 @@ class NotificationDetailDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mockNotification = NotificationModel(
-      id: '3',
-      title: 'Tuấn Dũng',
-      content: 'đã bình luận về tài liệu của bạn: Cho mình xin thêm chương mới về phần socket của môn này được không bạn.',
-      avatarUrl: 'https://i.pravatar.cc/150?u=3',
-      type: NotificationType.comment,
-      receivedAt: DateTime.now().subtract(const Duration(minutes: 10)),
-      isRead: false,
-    );
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Demo: Notification Detail'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      backgroundColor: Colors.grey[200],
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                '❖ Chi tiết thông báo',
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-              builder: (ctx) => NotificationOptionsBottomSheet(
-                notification: mockNotification,
-                onMarkAsRead: () {},
-                onDelete: () {},
+            ),
+            const Spacer(),
+            NotificationDetailWidget(
+              notification: NotificationModel(
+                id: '1',
+                title: 'Tuấn Dũng',
+                content: 'đã bình luận về tài liệu của bạn: Cho mình xin thêm chương mới về phần socket của môn này được không bạn.',
+                type: NotificationType.comment,
+                receivedAt: DateTime.now(),
+                isRead: true,
+                avatarUrl: '',
               ),
-            );
-          },
-          child: const Text('Show Notification Options'),
+            ),
+          ],
         ),
       ),
     );
