@@ -10,9 +10,19 @@ class NotificationHeaderDemo extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            // The isolated feature
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                '❖ Header thông báo',
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
             NotificationHeader(
               title: 'Thông báo',
               onMoreTap: () {

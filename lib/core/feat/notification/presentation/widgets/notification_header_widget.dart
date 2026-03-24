@@ -24,13 +24,14 @@ class NotificationHeaderWidget extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
+              color: Color(0xFF1976D2), // Blue color from screenshot
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.more_horiz),
+            icon: const Icon(Icons.more_horiz, color: Color(0xFF1976D2)),
             onPressed: onMoreTap,
           ),
         ],
