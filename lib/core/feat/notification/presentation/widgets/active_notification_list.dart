@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../constants/app_colors.dart';
 import '../../domain/entity/notification_model.dart';
 import 'notification_item.dart';
 
@@ -10,52 +11,87 @@ class ActiveNotificationList extends StatelessWidget {
   final VoidCallback onGlobalMoreTap;
 
   const ActiveNotificationList({
-    super.key,
+    Key? key,
     required this.notifications,
     required this.onTrashTap,
     required this.onNotificationTap,
     required this.onMoreTap,
     required this.onGlobalMoreTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (notifications.isEmpty) {
-      return const Center(child: Text('Không có thông báo nào'));
+      return const Center(child: Text("Không có thông báo mới"));
     }
 
-    return Column(
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final todayNotes = notifications.where((n) {
+      final noteDate = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return noteDate == today;
+    }).toList();
+
+    final earlierNotes = notifications.where((n) {
+      final noteDate = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return noteDate.isBefore(today);
+    }).toList();
+
+    return ListView(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Mới nhất',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              IconButton(
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: onGlobalMoreTap,
-              ),
-            ],
+        // ===== TODAY =====
+        if (todayNotes.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Hôm nay",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textPrimaryLight,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_horiz, color: AppColors.primary),
+                  onPressed: onGlobalMoreTap,
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.separated(
-            itemCount: notifications.length,
-            separatorBuilder: (ctx, idx) => Divider(height: 1, color: Colors.grey[200]),
-            itemBuilder: (ctx, idx) {
-              return NotificationItemWidget(
-                notification: notifications[idx],
-                onNotificationTap: () => onNotificationTap(notifications[idx]),
-                onMoreTap: () => onMoreTap(notifications[idx]),
-                onDeleteTap: onTrashTap,
-              );
-            },
+          ...todayNotes.map((note) => NotificationItemWidget(
+                notification: note,
+                onTap: () => onNotificationTap(note), // giữ style ver2
+                onMoreTap: () => onMoreTap(note),
+                onDeleteTap: onTrashTap, // 🔥 merge từ feature
+              )),
+        ],
+
+        // ===== EARLIER =====
+        if (earlierNotes.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: const Text(
+              "Trước đó",
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColors.textPrimaryLight,
+              ),
+            ),
           ),
-        ),
+          ...earlierNotes.map((note) => NotificationItemWidget(
+                notification: note,
+                onTap: () => onNotificationTap(note),
+                onMoreTap: () => onMoreTap(note),
+                onDeleteTap: onTrashTap, 
+              )),
+        ],
       ],
     );
   }
