@@ -54,5 +54,17 @@ class AppAssets {
 
   static const cmt = '$_base/cmt.png';
   static const upload = '$_base/upload.png';
+
+  // Specific Notification Icons
+  static const notiLike = '$_base/noti_like.png';
+  static const notiComment = '$_base/noti_comment.png';
+  static const notiDownload = '$_base/noti_download.png';
+  static const notiSaved = '$_base/noti_saved.png';
+  static const notiRestore = '$_base/noti_restore.png';
+  static const notiTrash = '$_base/noti_trash.png';
+  static const notiMarkAsRead = '$_base/noti_markasread.png';
+  
+  static const fullLike = '$_base/full_like.png';
+  static const like = '$_base/like.png';
 }
 >>>>>>> origin/ver2/feature

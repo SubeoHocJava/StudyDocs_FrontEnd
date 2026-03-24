@@ -22,6 +22,12 @@ class NotificationItemWidget extends StatelessWidget {
     final config = NotificationUIMapper.getConfig(notification.type);
     final isUnread = !notification.isRead;
 
+    // Determine icon asset based on read state (Matches screenshot)
+    String iconAsset = config['iconAsset'];
+    if (!isUnread && notification.type == NotificationType.like) {
+      iconAsset = AppAssets.fullLike; // Assuming fullLike is just the blue thumb up
+    }
+
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -33,11 +39,11 @@ class NotificationItemWidget extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Notification Icon (Matches Trash)
+            // Notification Icon
             Image.asset(
-              config['iconAsset'],
-              width: 36,
-              height: 36,
+              iconAsset,
+              width: isUnread ? 36 : 28, // Seen icon appears slightly smaller in screenshot
+              height: isUnread ? 36 : 28,
             ),
             const SizedBox(width: 12),
             // Content
