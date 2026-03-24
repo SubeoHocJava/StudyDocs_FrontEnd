@@ -1,100 +1,90 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/core/feat/notification/domain/entity/notification_model.dart';
-import 'package:studydocs/core/feat/notification/presentation/utils/notification_ui_mapper.dart';
+import '../../../../constants/app_colors.dart';
+import '../../domain/entity/notification_model.dart';
+import '../utils/notification_ui_mapper.dart';
 
 class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
-  final VoidCallback onNotificationTap;
+  final VoidCallback onTap;
   final VoidCallback onMoreTap;
-  final VoidCallback onDeleteTap;
 
   const NotificationItemWidget({
     super.key,
     required this.notification,
-    required this.onNotificationTap,
+    required this.onTap,
     required this.onMoreTap,
-    required this.onDeleteTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final uiConfig = NotificationUIMapper.getConfig(notification.type);
+    final config = NotificationUIMapper.getConfig(notification.type);
     
-    return Slidable(
-      key: ValueKey(notification.id),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        extentRatio: 0.25,
-        children: [
-          SlidableAction(
-            onPressed: (_) => onDeleteTap(),
-            backgroundColor: const Color(0xFFFE4A49),
-            foregroundColor: Colors.white,
-            icon: Icons.delete_outline,
-            label: 'Xóa',
-          ),
-        ],
-      ),
-      child: ListTile(
-        onTap: onNotificationTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        tileColor: notification.isRead ? Colors.transparent : AppColors.primary.withOpacity(0.05),
-        leading: Stack(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          color: notification.isRead ? Colors.transparent : const Color(0xFFF5F6FF),
+          border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.1))),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundImage: NetworkImage(notification.avatarUrl),
-              backgroundColor: Colors.grey[200],
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Image.asset(
-                  uiConfig['iconAsset'],
-                  width: 14,
-                  height: 14,
-                  color: uiConfig['iconColor'],
-                ),
+            // Icon instead of Avatar
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: notification.isRead ? Colors.transparent : const Color(0xFFE8EAF6),
+                shape: BoxShape.circle,
               ),
+              child: Image.asset(
+                config['iconAsset'],
+                width: 24,
+                height: 24,
+                color: const Color(0xFF1A237E),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontFamily: 'Montserrat',
+                        height: 1.4,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: notification.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(text: ' ${notification.content}'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatTime(notification.receivedAt),
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // More Button
+            IconButton(
+              icon: const Icon(Icons.more_horiz, color: Color(0xFF1A237E)),
+              onPressed: onMoreTap,
             ),
           ],
-        ),
-        title: RichText(
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          text: TextSpan(
-            style: const TextStyle(color: Colors.black87, fontSize: 14),
-            children: [
-              TextSpan(
-                text: notification.title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const TextSpan(text: ' '),
-              TextSpan(text: uiConfig['actionVerb']),
-              const TextSpan(text: ' '),
-              TextSpan(text: notification.content),
-            ],
-          ),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            _formatTime(notification.receivedAt),
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-          ),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.more_horiz),
-          onPressed: onMoreTap,
         ),
       ),
     );
