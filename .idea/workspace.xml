@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="temp">
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="merge feature/notification-detail">
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774965868011</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="merge feature/notification-detail">
+      <option name="closed" value="true" />
+      <created>1774966201000</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1774966201000</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -108,7 +116,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="ver2/feature" />
+                        <option value="fix/ver2" />
                       </list>
                     </value>
                   </entry>
@@ -122,6 +130,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="temp" />
-    <option name="LAST_COMMIT_MESSAGE" value="temp" />
+    <MESSAGE value="merge feature/notification-detail" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge feature/notification-detail" />
   </component>
 </project>
