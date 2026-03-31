@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="merge feature/notification-notice" />
+    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="merge feature/notification-header">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/feat/notification/presentation/widgets/notification_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/feat/notification/presentation/widgets/notification_item.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -108,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774966834385</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="merge feature/notification-header">
+      <option name="closed" value="true" />
+      <created>1774967192615</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1774967192615</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -138,6 +149,7 @@
     <MESSAGE value="temp" />
     <MESSAGE value="merge feature/notification-detail" />
     <MESSAGE value="merge feature/notification-notice" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge feature/notification-notice" />
+    <MESSAGE value="merge feature/notification-header" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge feature/notification-header" />
   </component>
 </project>

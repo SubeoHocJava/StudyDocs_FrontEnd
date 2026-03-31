@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_icons.dart';
 import '../../domain/entity/notification_model.dart';
-import '../../../../core/constants/app_icons.dart';
+
 
 class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -97,7 +98,7 @@ class NotificationItemWidget extends StatelessWidget {
         return AppAssets.notiComment;
       case NotificationType.download:
         return AppAssets.notiDownload;
-      case NotificationType.saved:
+      case NotificationType.save:
         return AppAssets.notiSaved;
       default:
         return AppAssets.notiLike;
