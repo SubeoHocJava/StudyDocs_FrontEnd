@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../../constants/app_colors.dart';
+import '../../../../constants/app_icons.dart';
 import '../../domain/entity/notification_model.dart';
 import '../../utils/time_utils.dart';
 import '../utils/notification_ui_mapper.dart';
@@ -9,14 +10,14 @@ class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
   final VoidCallback onMoreTap;
-  final VoidCallback onDeleteTap;
+  final VoidCallback? onDeleteTap;
 
   const NotificationItemWidget({
     Key? key,
     required this.notification,
     required this.onTap,
     required this.onMoreTap,
-    required this.onDeleteTap,
+    this.onDeleteTap,
   }) : super(key: key);
 
   @override
@@ -26,19 +27,22 @@ class NotificationItemWidget extends StatelessWidget {
 
     return Slidable(
       key: ValueKey(notification.id),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        extentRatio: 0.25,
-        children: [
-          SlidableAction(
-            onPressed: (_) => onDeleteTap(),
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            icon: Icons.delete_outline,
-            label: 'Xóa',
-          ),
-        ],
-      ),
+      enabled: onDeleteTap != null,
+      endActionPane: onDeleteTap != null
+          ? ActionPane(
+              motion: const ScrollMotion(),
+              extentRatio: 0.25,
+              children: [
+                SlidableAction(
+                  onPressed: (_) => onDeleteTap?.call(),
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete_outline,
+                  label: 'Xóa',
+                ),
+              ],
+            )
+          : null,
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -61,25 +65,32 @@ class NotificationItemWidget extends StatelessWidget {
                 height: 36,
               ),
               const SizedBox(width: 12),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
                       text: TextSpan(
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
-                          color: AppColors.textPrimaryLight,
                           fontFamily: 'Montserrat',
+                          height: 1.4,
                         ),
                         children: [
                           TextSpan(
                             text: notification.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimaryLight,
+                            ),
                           ),
                           if (notification.content.isNotEmpty)
-                            TextSpan(text: " ${notification.content}"),
+                            TextSpan(
+                              text: " ${notification.content}",
+                              style: const TextStyle(
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -87,6 +98,7 @@ class NotificationItemWidget extends StatelessWidget {
                     Text(
                       TimeUtils.formatTimeAgo(notification.receivedAt),
                       style: TextStyle(
+                        fontFamily: 'Montserrat',
                         fontSize: 12,
                         color: isUnread
                             ? AppColors.primary
@@ -98,10 +110,13 @@ class NotificationItemWidget extends StatelessWidget {
                   ],
                 ),
               ),
-
               IconButton(
-                icon: const Icon(Icons.more_horiz),
+                icon: const Icon(Icons.more_horiz,
+                    color: AppColors.textSecondaryLight),
                 onPressed: onMoreTap,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),

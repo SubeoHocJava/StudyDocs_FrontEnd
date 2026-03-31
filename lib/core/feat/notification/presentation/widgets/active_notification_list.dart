@@ -29,50 +29,67 @@ class ActiveNotificationList extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
 
     final todayNotes = notifications.where((n) {
-      final d = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
-      return d == today;
+      final noteDate = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return noteDate == today;
     }).toList();
 
     final earlierNotes = notifications.where((n) {
-      final d = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
-      return d.isBefore(today);
+      final noteDate = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return noteDate.isBefore(today);
     }).toList();
 
     return ListView(
       children: [
         if (todayNotes.isNotEmpty) ...[
-          _header("Hôm nay"),
-          ...todayNotes.map((n) => NotificationItemWidget(
-                notification: n,
-                onTap: () => onNotificationTap(n),
-                onMoreTap: () => onMoreTap(n),
-                onDeleteTap: () => onTrashTap(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Hôm nay",
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textPrimaryLight,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_horiz, color: AppColors.primary),
+                  onPressed: onGlobalMoreTap,
+                ),
+              ],
+            ),
+          ),
+          ...todayNotes.map((note) => NotificationItemWidget(
+                notification: note,
+                onTap: () => onNotificationTap(note),
+                onMoreTap: () => onMoreTap(note),
+                onDeleteTap: onTrashTap,
               )),
         ],
         if (earlierNotes.isNotEmpty) ...[
-          _header("Trước đó"),
-          ...earlierNotes.map((n) => NotificationItemWidget(
-                notification: n,
-                onTap: () => onNotificationTap(n),
-                onMoreTap: () => onMoreTap(n),
-                onDeleteTap: () => onTrashTap(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: const Text(
+              "Trước đó",
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColors.textPrimaryLight,
+              ),
+            ),
+          ),
+          ...earlierNotes.map((note) => NotificationItemWidget(
+                notification: note,
+                onTap: () => onNotificationTap(note),
+                onMoreTap: () => onMoreTap(note),
+                onDeleteTap: onTrashTap,
               )),
         ],
       ],
-    );
-  }
-
-  Widget _header(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: AppColors.textPrimaryLight,
-        ),
-      ),
     );
   }
 }
