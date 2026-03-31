@@ -1,0 +1,39 @@
+Index: lib/app.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import 'package:flutter/material.dart';\r\nimport 'package:flutter_bloc/flutter_bloc.dart';\r\nimport 'package:studydocs/core/feat/notification/logic/notification_bloc.dart';\r\nimport 'package:studydocs/core/feat/notification/logic/notification_event.dart';\r\nimport 'package:studydocs/core/feat/notification/logic/notification_state.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/repository/notification_repository.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/repository/mock_notification_repository.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/delete_permanently_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/get_notifications_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/get_trash_notifications_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/mark_as_read_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/move_to_trash_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/domain/usecase/restore_from_trash_usecase.dart';\r\nimport 'package:studydocs/core/feat/notification/presentation/widgets/trash_notification_list.dart';\r\n\r\nclass MyApp extends StatelessWidget {\r\n  final dynamic router;\r\n  const MyApp({super.key, this.router});\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return MaterialApp(\r\n      debugShowCheckedModeBanner: false,\r\n      home: MultiRepositoryProvider(\r\n        providers: [RepositoryProvider<NotificationRepository>(create: (_) => MockNotificationRepositoryImpl())],\r\n        child: MultiBlocProvider(\r\n          providers: [\r\n            BlocProvider<NotificationBloc>(\r\n              create: (c) => NotificationBloc(\r\n                getNotifications: GetNotificationsUseCaseImpl(c.read<NotificationRepository>()),\r\n                getTrashNotifications: GetTrashNotificationsUseCaseImpl(c.read<NotificationRepository>()),\r\n                markAsReadUseCase: MarkAsReadUseCaseImpl(c.read<NotificationRepository>()),\r\n                moveToTrashUseCase: MoveToTrashUseCaseImpl(c.read<NotificationRepository>()),\r\n                restoreFromTrashUseCase: RestoreFromTrashUseCaseImpl(c.read<NotificationRepository>()),\r\n                deletePermanentlyUseCase: DeletePermanentlyUseCaseImpl(c.read<NotificationRepository>()),\r\n              )..add(FetchNotificationsEvent()),\r\n            ),\r\n          ],\r\n          child: BlocBuilder<NotificationBloc, NotificationState>(\r\n            builder: (context, state) {\r\n              if (state is NotificationLoaded) {\r\n                return Scaffold(\r\n                   backgroundColor: const Color(0xFFF7F7F7),\r\n                   appBar: AppBar(title: const Text('XÃ³a hÃ ng loáº¡t'), elevation: 0),\r\n                   body: TrashNotificationList(trashList: state.trashNotifications, selectedTrashIds: state.trashNotifications.take(2).map((e) => e.id).toList(), onToggleSelection: (_) {}, onRestore: (_) {}, onDelete: (_) {}, onRestoreAllSelected: () {}, onDeleteAllSelected: () {})\r\n                );\r\n              }\r\n              return const Scaffold(body: Center(child: CircularProgressIndicator()));\r\n            },\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/app.dart b/lib/app.dart
+--- a/lib/app.dart	(revision 91f5ac44f4c51dc4096298705c2a1886bcbab6c9)
++++ b/lib/app.dart	(date 1773679537981)
+@@ -40,7 +40,7 @@
+               if (state is NotificationLoaded) {
+                 return Scaffold(
+                    backgroundColor: const Color(0xFFF7F7F7),
+-                   appBar: AppBar(title: const Text('XÃ³a hÃ ng loáº¡t'), elevation: 0),
++                   appBar: AppBar(title: const Text('Xóa hàng loạt'), elevation: 0),
+                    body: TrashNotificationList(trashList: state.trashNotifications, selectedTrashIds: state.trashNotifications.take(2).map((e) => e.id).toList(), onToggleSelection: (_) {}, onRestore: (_) {}, onDelete: (_) {}, onRestoreAllSelected: () {}, onDeleteAllSelected: () {})
+                 );
+               }
+Index: android/local.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>flutter.buildMode=debug\r\nflutter.sdk=D:\\\\LTMobile\\\\flutter_windows_3.29.0-stable\\\\flutter\r\nflutter.versionCode=1\r\nflutter.versionName=1.0.0\r\nsdk.dir=D:\\\\DevTool\\\\for_android_studio
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/android/local.properties b/android/local.properties
+--- a/android/local.properties	(revision 91f5ac44f4c51dc4096298705c2a1886bcbab6c9)
++++ b/android/local.properties	(date 1773678236001)
+@@ -1,5 +1,5 @@
+ flutter.buildMode=debug
+-flutter.sdk=D:\\LTMobile\\flutter_windows_3.29.0-stable\\flutter
++flutter.sdk=C:\\Users\\xieml\\AppData\\Local\\Flutter\\flutter_windows_3.35.2-stable\\flutter
+ flutter.versionCode=1
+ flutter.versionName=1.0.0
+-sdk.dir=D:\\DevTool\\for_android_studio
+\ No newline at end of file
++sdk.dir=C:\\Users\\xieml\\AppData\\Local\\Android\\sdk
+\ No newline at end of file
