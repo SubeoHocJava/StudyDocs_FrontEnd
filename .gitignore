@@ -64,3 +64,4 @@ shelf/
 Thumbs.db
 /android
 *.log
+*.java
