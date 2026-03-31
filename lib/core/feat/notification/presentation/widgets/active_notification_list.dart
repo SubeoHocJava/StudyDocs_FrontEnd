@@ -21,9 +21,7 @@ class ActiveNotificationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (notifications.isEmpty) {
-      return const Center(child: Text("Không có thông báo mới"));
-    }
+    if (notifications.isEmpty) return const Center(child: Text("Không có thông báo mới"));
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -42,19 +40,11 @@ class ActiveNotificationList extends StatelessWidget {
       children: [
         if (todayNotes.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Hôm nay",
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.textPrimaryLight,
-                  ),
-                ),
+                Text("Hôm nay", style: TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimaryLight)),
                 IconButton(
                   icon: const Icon(Icons.more_horiz, color: AppColors.primary),
                   onPressed: onGlobalMoreTap,
@@ -63,32 +53,22 @@ class ActiveNotificationList extends StatelessWidget {
             ),
           ),
           ...todayNotes.map((note) => NotificationItemWidget(
-                notification: note,
-                onTap: () => onNotificationTap(note),
-                onMoreTap: () => onMoreTap(note),
-                onDeleteTap: onTrashTap,
-              )),
+            notification: note,
+            onTap: () => onNotificationTap(note),
+            onMoreTap: () => onMoreTap(note),
+          )),
         ],
         if (earlierNotes.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: const Text(
-              "Trước đó",
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: AppColors.textPrimaryLight,
-              ),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Text("Trước đó", style: TextStyle(fontFamily: 'Montserrat', fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimaryLight)),
           ),
           ...earlierNotes.map((note) => NotificationItemWidget(
-                notification: note,
-                onTap: () => onNotificationTap(note),
-                onMoreTap: () => onMoreTap(note),
-                onDeleteTap: onTrashTap,
-              )),
-        ],
+            notification: note,
+            onTap: () => onNotificationTap(note),
+            onMoreTap: () => onMoreTap(note),
+          )),
+        ]
       ],
     );
   }
