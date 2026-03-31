@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:studydocs/core/feat/notification/presentation/demo/notification_detail_demo.dart';
 
-class MyApp extends StatefulWidget {
-  final GoRouter router;
-  const MyApp({super.key, required this.router});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: widget.router,
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: NotificationDetailDemo(),
     );
   }
 }
