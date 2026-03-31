@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../../constants/app_colors.dart';
-import '../../../../constants/app_icons.dart';
 import '../../domain/entity/notification_model.dart';
 import '../../utils/time_utils.dart';
 import '../utils/notification_ui_mapper.dart';
@@ -9,14 +9,14 @@ class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
   final VoidCallback onMoreTap;
-  final VoidCallback? onDeleteTap;
+  final VoidCallback onDeleteTap;
 
   const NotificationItemWidget({
     Key? key,
     required this.notification,
     required this.onTap,
     required this.onMoreTap,
-    this.onDeleteTap,
+    required this.onDeleteTap,
   }) : super(key: key);
 
   @override
@@ -24,100 +24,87 @@ class NotificationItemWidget extends StatelessWidget {
     final config = NotificationUIMapper.getConfig(notification.type);
     final isUnread = !notification.isRead;
 
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        decoration: BoxDecoration(
-          color: isUnread
-              ? AppColors.notificationUnreadLight
-              : AppColors.white,
-          border: Border(
-            bottom: BorderSide(
-              color: AppColors.border.withValues(alpha: 0.5),
+    return Slidable(
+      key: ValueKey(notification.id),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.25,
+        children: [
+          SlidableAction(
+            onPressed: (_) => onDeleteTap(),
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            icon: Icons.delete_outline,
+            label: 'Xóa',
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isUnread
+                ? AppColors.notificationUnreadLight
+                : AppColors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: AppColors.border.withValues(alpha: 0.5),
+              ),
             ),
           ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [ 
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: isUnread
-                    ? AppColors.primary.withValues(alpha: 0.1)
-                    : AppColors.border.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Image.asset(
+          child: Row(
+            children: [
+              Image.asset(
                 config['iconAsset'],
-                width: 20,
-                height: 20,
-                color: AppColors.primary,
+                width: 36,
+                height: 36,
               ),
-            ),
+              const SizedBox(width: 12),
 
-            const SizedBox(width: 12),
-
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Montserrat',
-                        height: 1.4,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: notification.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimaryLight,
-                          ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textPrimaryLight,
+                          fontFamily: 'Montserrat',
                         ),
-                        if (notification.content.isNotEmpty)
+                        children: [
                           TextSpan(
-                            text: " ${notification.content}",
-                            style: TextStyle(
-                              color: AppColors.textPrimaryLight,
-                            ),
+                            text: notification.title,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                      ],
+                          if (notification.content.isNotEmpty)
+                            TextSpan(text: " ${notification.content}"),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    TimeUtils.formatTimeAgo(notification.receivedAt),
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 12,
-                      color: isUnread
-                          ? AppColors.primary
-                          : AppColors.textSecondaryLight,
-                      fontWeight:
-                          isUnread ? FontWeight.w600 : FontWeight.normal,
+                    const SizedBox(height: 4),
+                    Text(
+                      TimeUtils.formatTimeAgo(notification.receivedAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isUnread
+                            ? AppColors.primary
+                            : AppColors.textSecondaryLight,
+                        fontWeight:
+                            isUnread ? FontWeight.w600 : FontWeight.normal,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // More button
-            IconButton(
-              icon: const Icon(
-                Icons.more_horiz,
-                color: AppColors.textSecondaryLight,
+              IconButton(
+                icon: const Icon(Icons.more_horiz),
+                onPressed: onMoreTap,
               ),
-              onPressed: onMoreTap,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              visualDensity: VisualDensity.compact,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
