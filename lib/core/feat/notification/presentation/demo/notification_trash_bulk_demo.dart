@@ -7,22 +7,30 @@ class NotificationTrashBulkDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trash Bulk Actions Demo')),
-      body: Column(
-        children: [
-          TrashBulkActionsWidget(
-            onRestoreAll: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Restored all items')),
-              );
-            },
-            onDeleteAll: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Deleted all items')),
-              );
-            },
-          ),
-        ],
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                '❖ Chọn nhiều thông báo thùng rác',
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const Spacer(),
+            TrashBulkActionsWidget(
+              onRestoreAll: () {},
+              onDeleteAll: () {},
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../constants/app_icons.dart';
 
 class TrashBulkActionsWidget extends StatelessWidget {
   final VoidCallback onRestoreAll;
@@ -14,70 +13,70 @@ class TrashBulkActionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            Expanded(
-              child: _buildButton(
-                iconAsset: AppAssets.notiRestore,
-                label: 'Khôi phục tất cả',
-                backgroundColor: const Color(0xFFE3F2FD),
-                textColor: const Color(0xFF1976D2),
-                onTap: onRestoreAll,
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          // Restore All Button
+          Expanded(
+            child: InkWell(
+              onTap: onRestoreAll,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE3F2FD), // Light blue
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.restore, color: Color(0xFF1976D2), size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Khôi phục tất cả',
+                      style: TextStyle(
+                        color: Color(0xFF1976D2),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const VerticalDivider(width: 16, color: Colors.transparent),
-            Expanded(
-              child: _buildButton(
-                iconAsset: AppAssets.notiTrash,
-                label: 'Xóa tất cả',
-                backgroundColor: const Color(0xFFFFEBEE),
-                textColor: const Color(0xFFD32F2F),
-                onTap: onDeleteAll,
+          ),
+          // Vertical Divider
+          Container(width: 1, height: 48, color: Colors.blue[200]),
+          // Delete All Button
+          Expanded(
+            child: InkWell(
+              onTap: onDeleteAll,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFEBEE), // Light red
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(12)),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.delete_forever, color: Color(0xFF1A237E), size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'Xóa tất cả',
+                      style: TextStyle(
+                        color: Color(0xFF1A237E),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildButton({
-    required String iconAsset,
-    required String label,
-    required Color backgroundColor,
-    required Color textColor,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(iconAsset, width: 24, height: 24),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                fontFamily: 'Montserrat',
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -29,36 +29,26 @@ class ActiveNotificationList extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
 
     final todayNotes = notifications.where((n) {
-      final noteDate = DateTime(
-        n.receivedAt.year,
-        n.receivedAt.month,
-        n.receivedAt.day,
-      );
-      return noteDate == today;
+      final d = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return d == today;
     }).toList();
 
     final earlierNotes = notifications.where((n) {
-      final noteDate = DateTime(
-        n.receivedAt.year,
-        n.receivedAt.month,
-        n.receivedAt.day,
-      );
-      return noteDate.isBefore(today);
+      final d = DateTime(n.receivedAt.year, n.receivedAt.month, n.receivedAt.day);
+      return d.isBefore(today);
     }).toList();
 
     return ListView(
       children: [
-        // ===== TODAY =====
         if (todayNotes.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   "Hôm nay",
                   style: TextStyle(
-                    fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: AppColors.textPrimaryLight,
@@ -71,33 +61,30 @@ class ActiveNotificationList extends StatelessWidget {
               ],
             ),
           ),
-          ...todayNotes.map((note) => NotificationItemWidget(
-                notification: note,
-                onTap: () => onNotificationTap(note),
-                onMoreTap: () => onMoreTap(note),
-                onDeleteTap: onTrashTap, // 🔥 merge từ feature
+          ...todayNotes.map((n) => NotificationItemWidget(
+                notification: n,
+                onTap: () => onNotificationTap(n),
+                onMoreTap: () => onMoreTap(n),
+                onDeleteTap: onTrashTap,
               )),
         ],
-
-        // ===== EARLIER =====
         if (earlierNotes.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Text(
               "Trước đó",
               style: TextStyle(
-                fontFamily: 'Montserrat',
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: AppColors.textPrimaryLight,
               ),
             ),
           ),
-          ...earlierNotes.map((note) => NotificationItemWidget(
-                notification: note,
-                onTap: () => onNotificationTap(note),
-                onMoreTap: () => onMoreTap(note),
-                onDeleteTap: onTrashTap, 
+          ...earlierNotes.map((n) => NotificationItemWidget(
+                notification: n,
+                onTap: () => onNotificationTap(n),
+                onMoreTap: () => onMoreTap(n),
+                onDeleteTap: onTrashTap,
               )),
         ],
       ],

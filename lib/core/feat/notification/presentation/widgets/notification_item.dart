@@ -10,7 +10,7 @@ class NotificationItemWidget extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
   final VoidCallback onMoreTap;
-  final VoidCallback? onDeleteTap; 
+  final VoidCallback? onDeleteTap;
 
   const NotificationItemWidget({
     Key? key,
@@ -43,11 +43,10 @@ class NotificationItemWidget extends StatelessWidget {
               ],
             )
           : null,
-
       child: InkWell(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isUnread
                 ? AppColors.notificationUnreadLight
@@ -59,28 +58,20 @@ class NotificationItemWidget extends StatelessWidget {
             ),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
                 config['iconAsset'],
                 width: 36,
                 height: 36,
               ),
-
               const SizedBox(width: 12),
-
-              // Content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Montserrat',
-                          height: 1.4,
-                        ),
+                        style: const TextStyle(fontSize: 14),
                         children: [
                           TextSpan(
                             text: notification.title,
@@ -103,29 +94,18 @@ class NotificationItemWidget extends StatelessWidget {
                     Text(
                       TimeUtils.formatTimeAgo(notification.receivedAt),
                       style: TextStyle(
-                        fontFamily: 'Montserrat',
                         fontSize: 12,
                         color: isUnread
                             ? AppColors.primary
                             : AppColors.textSecondaryLight,
-                        fontWeight:
-                            isUnread ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // More button
               IconButton(
-                icon: const Icon(
-                  Icons.more_horiz,
-                  color: AppColors.textSecondaryLight,
-                ),
+                icon: const Icon(Icons.more_horiz),
                 onPressed: onMoreTap,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                visualDensity: VisualDensity.compact,
               ),
             ],
           ),
