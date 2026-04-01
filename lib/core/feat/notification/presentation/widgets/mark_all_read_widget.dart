@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../constants/app_icons.dart';
 
 class MarkAllReadWidget extends StatelessWidget {
   final VoidCallback onTap;
@@ -13,37 +14,34 @@ class MarkAllReadWidget extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: Color(0xFF1A237E),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.email_outlined, color: Colors.white, size: 28),
+            Image.asset(
+              AppAssets.notiMarkAsRead,
+              width: 24,
+              height: 24,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             const Text(
               'Đánh dấu tất cả là đã đọc',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A237E),
+                color: Color(0xFF1A237E), // Dark navy
                 fontFamily: 'Montserrat',
               ),
             ),

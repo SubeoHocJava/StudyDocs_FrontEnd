@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/core/feat/notification/domain/entity/notification_model.dart';

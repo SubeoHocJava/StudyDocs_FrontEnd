@@ -40,7 +40,7 @@ class NotificationOptionsBottomSheet extends StatelessWidget {
           ),
           _buildOption(
             icon: AppAssets.notiTrash,
-            title: 'Gỡ thông báo này',
+            title: 'Xóa thông báo này',
             onTap: () {
               Navigator.pop(context);
               onDelete();

@@ -17,12 +17,14 @@ class NotificationLoaded extends NotificationState {
   final List<NotificationModel> trashNotifications;
   final bool isTrashMode;
   final List<String> selectedTrashIds;
+  final bool isSelectionMode;
 
   const NotificationLoaded({
     required this.activeNotifications,
     required this.trashNotifications,
     this.isTrashMode = false,
     this.selectedTrashIds = const [],
+    this.isSelectionMode = false,
   });
 
   NotificationLoaded copyWith({
@@ -30,17 +32,19 @@ class NotificationLoaded extends NotificationState {
     List<NotificationModel>? trashNotifications,
     bool? isTrashMode,
     List<String>? selectedTrashIds,
+    bool? isSelectionMode,
   }) {
     return NotificationLoaded(
       activeNotifications: activeNotifications ?? this.activeNotifications,
       trashNotifications: trashNotifications ?? this.trashNotifications,
       isTrashMode: isTrashMode ?? this.isTrashMode,
       selectedTrashIds: selectedTrashIds ?? this.selectedTrashIds,
+      isSelectionMode: isSelectionMode ?? this.isSelectionMode,
     );
   }
 
   @override
-  List<Object> get props => [activeNotifications, trashNotifications, isTrashMode, selectedTrashIds];
+  List<Object> get props => [activeNotifications, trashNotifications, isTrashMode, selectedTrashIds, isSelectionMode];
 }
 
 class NotificationError extends NotificationState {

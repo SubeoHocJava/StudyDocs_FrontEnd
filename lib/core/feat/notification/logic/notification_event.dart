@@ -54,3 +54,13 @@ class ToggleTrashSelectionEvent extends NotificationEvent {
 class RestoreAllSelectedEvent extends NotificationEvent {}
 
 class DeleteAllSelectedEvent extends NotificationEvent {}
+
+class ToggleSelectionModeEvent extends NotificationEvent {
+  final bool? isSelectionMode;
+  final String? initialId;
+  const ToggleSelectionModeEvent({this.isSelectionMode, this.initialId});
+  @override
+  List<Object> get props => [isSelectionMode ?? 'toggle', initialId ?? 'none'];
+}
+
+class ClearSelectionEvent extends NotificationEvent {}
