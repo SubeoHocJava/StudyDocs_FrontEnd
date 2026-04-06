@@ -29,7 +29,7 @@ class InforUserRepositoryMock implements InforUserRepository {
 
   @override
   Future<UserInforModel> getUserInfor(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    // await Future.delayed(const Duration(milliseconds: 300));
     return fakeDB[userId]!;
   }
 
