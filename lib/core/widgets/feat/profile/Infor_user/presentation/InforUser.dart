@@ -3,40 +3,44 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
+import '../../../../../router/app_router.dart';
+import '../../../../../router/app_routes_list.dart';
+import '../../setting/logic/setting_bloc.dart';
+import '../../setting/presentation/SettingDialog.dart';
 import '../logic/InforUserBloc.dart';
 import '../logic/InforUserEvent.dart';
 import '../logic/InforUserState.dart';
-
-
 
 class InforUser extends StatelessWidget {
   const InforUser({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InforUserBloc, InforUserState>(
-      builder: (context, state) {
-        if (state is InforUserLoading || state is InforUserInitial) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return
+    BlocBuilder<InforUserBloc, InforUserState>(
+        builder: (context, state) {
+          if (state is InforUserLoading || state is InforUserInitial) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is InforUserError) {
+            return Center(child: Text("Lỗi: ${state.message}"));
+          }
 
-        if (state is InforUserError) {
-          return Center(child: Text("Lỗi: ${state.message}"));
-        }
+          if (state is! InforUserLoaded) {
+            return const Center(child: Text("Không có dữ liệu"));
+          }
 
-        if (state is! InforUserLoaded) {
-          return const Center(child: Text("Không có dữ liệu"));
-        }
-
-        return _buildContent(context, state);
-      },
+          return _buildContent(context, state);
+        },
+      // ),
     );
   }
 
   Widget _buildContent(BuildContext context, InforUserLoaded state) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -68,10 +72,13 @@ class InforUser extends StatelessWidget {
 
           /// ============ SCHOOL =============
           Text(
-            state.school?.isNotEmpty == true ? state.school! : "Chưa có trường học",
+            state.school?.isNotEmpty == true
+                ? state.school!
+                : "Chưa có trường học",
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -87,16 +94,19 @@ class InforUser extends StatelessWidget {
     required bool isOwnProfile,
   }) {
     return GestureDetector(
-      onTap: isOwnProfile
-          ? () async {
-        final result = await FilePicker.platform.pickFiles(type: FileType.image);
-        if (result == null) return;
+      onTap:
+          isOwnProfile
+              ? () async {
+                final result = await FilePicker.platform.pickFiles(
+                  type: FileType.image,
+                );
+                if (result == null) return;
 
-        context.read<InforUserBloc>().add(
-          UpdateUserAvatar(result.files.single),
-        );
-      }
-          : null,
+                context.read<InforUserBloc>().add(
+                  UpdateUserAvatar(result.files.single),
+                );
+              }
+              : null,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -108,13 +118,14 @@ class InforUser extends StatelessWidget {
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
               image: _avatarImageProvider(avatarUrl),
             ),
-            child: (avatarUrl == null || avatarUrl.isEmpty)
-                ? Icon(
-              Icons.person,
-              size: 70,
-              color: Theme.of(context).iconTheme.color,
-            )
-                : null,
+            child:
+                (avatarUrl == null || avatarUrl.isEmpty)
+                    ? Icon(
+                      Icons.person,
+                      size: 70,
+                      color: Theme.of(context).iconTheme.color,
+                    )
+                    : null,
           ),
 
           if (isOwnProfile)
@@ -154,7 +165,12 @@ class InforUser extends StatelessWidget {
     if (state.isOwnProfile) {
       return TextButton.icon(
         onPressed: () {
-          _showSettingDialog(context);
+          showGlobalDialog(
+            BlocProvider(
+              create: (_) => SettingBloc(),
+              child: const SettingDialog(),
+            ),
+          );
         },
         icon: const Icon(Icons.settings, size: 18),
         label: const Text("Cài đặt"),
@@ -172,44 +188,30 @@ class InforUser extends StatelessWidget {
       icon: Icon(
         state.isFollowing ? Icons.person_remove : Icons.person_add,
         size: 18,
-        color: state.isFollowing
-            ? Theme.of(context).disabledColor
-            : Theme.of(context).colorScheme.primary,
+        color:
+            state.isFollowing
+                ? Theme.of(context).disabledColor
+                : Theme.of(context).colorScheme.primary,
       ),
       label: Text(
         state.isFollowing ? "Bỏ theo dõi" : "Theo dõi",
         style: TextStyle(
-          color: state.isFollowing
-              ? Theme.of(context).disabledColor
-              : Theme.of(context).colorScheme.primary,
+          color:
+              state.isFollowing
+                  ? Theme.of(context).disabledColor
+                  : Theme.of(context).colorScheme.primary,
         ),
       ),
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: state.isFollowing
-                ? Theme.of(context).disabledColor
-                : Theme.of(context).colorScheme.primary,
+            color:
+                state.isFollowing
+                    ? Theme.of(context).disabledColor
+                    : Theme.of(context).colorScheme.primary,
           ),
         ),
-      ),
-    );
-  }
-
-  // ================= SETTINGS DIALOG =================
-  void _showSettingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Cài đặt tài khoản"),
-        content: const Text("Bạn muốn mở trang cài đặt."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Đóng"),
-          )
-        ],
       ),
     );
   }

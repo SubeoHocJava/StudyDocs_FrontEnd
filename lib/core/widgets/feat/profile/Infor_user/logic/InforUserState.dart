@@ -44,7 +44,14 @@ class InforUserLoaded extends InforUserState {
   }
 
   @override
-  List<Object?> get props => [id, fullName, school, avatarUrl, isFollowing, isOwnProfile];
+  List<Object?> get props => [
+    id,
+    fullName,
+    school,
+    avatarUrl,
+    isFollowing,
+    isOwnProfile,
+  ];
 }
 
 class InforUserError extends InforUserState {
@@ -54,4 +61,11 @@ class InforUserError extends InforUserState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class OpenSettingDialogState extends InforUserState {
+  OpenSettingDialogState();
+
+  @override
+  List<Object?> get props => [];
 }

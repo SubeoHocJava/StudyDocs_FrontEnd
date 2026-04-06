@@ -1,13 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/widgets/feat/profile/statistic/data/repositories/mock_statistic_repository_impl.dart';
+import 'package:studydocs/core/widgets/feat/profile/statistic/domain/repositories/statistic_repository.dart';
 import '../domain/usecases/get_statistic_usecase.dart';
 import 'statistic_event.dart';
 import 'statistic_state.dart';
 
 
 class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
-  final GetStatisticUseCase getStatisticUseCase;
+  late final   StatisticRepository _repository;
+ late final GetStatisticUseCase getStatisticUseCase;
 
-  StatisticBloc({required this.getStatisticUseCase}) : super(StatisticInitial()) {
+  StatisticBloc() : super(StatisticInitial()) {
+    _repository = MockStatisticRepositoryImpl();
+    getStatisticUseCase= GetStatisticUseCase(_repository);
     on<LoadStatisticData>(_onLoadStatisticData);
   }
 
