@@ -31,9 +31,40 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
 
     return BlocConsumer<UpdateInforBloc, UpdateInforState>(
       listener: (context, state) {
-        if (state is UpdateSuccess) Navigator.pop(context);
+        if (state is UpdateSuccess) {
+          Navigator.of(context, rootNavigator: true).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Cập nhật thành công")),
+          );
+        }
+
+        if (state is UpdateError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
       },
       builder: (context, state) {
+        /// ===== INITIAL =====
+        if (state is UpdateInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        /// ===== LOADING =====
+        if (state is UpdateLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        /// ===== ERROR =====
+        if (state is UpdateError) {
+          return Center(
+            child: Text(
+              "Lỗi: ${state.message}",
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
         if (state is UpdateInforLoaded) model.loadFromProfile(state);
 
         return Center(
@@ -89,7 +120,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
             size: 35,
             color: AppColors.textPrimaryLight,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop()
         ),
       ],
     );

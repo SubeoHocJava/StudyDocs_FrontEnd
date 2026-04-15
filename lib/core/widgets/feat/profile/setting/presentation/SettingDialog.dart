@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:studydocs/core/widgets/feat/profile/update_infor_form/logic/update_infor_bloc.dart';
 
 import '../../../../../constants/app_colors.dart';
+import '../../../../../router/app_router.dart';
+import '../../myqr/presentation/my_qr_widget.dart';
+import '../../update_infor_form/logic/update_infor_event.dart';
 import '../../update_infor_form/presentation/UpdateInforDialog.dart';
 import '../logic/setting_bloc.dart';
 import '../logic/setting_event.dart';
@@ -13,64 +16,15 @@ class SettingDialog extends StatelessWidget {
 
   // ----- Mở hộp thoại cập nhật thông tin -----
   void _openUpdateDialog(BuildContext context) {
-    Navigator.pop(context);
-    Future.delayed(const Duration(milliseconds: 200), () {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const UpdateInforDialog(),
-      );
-    });
+    showGlobalDialog(BlocProvider(
+      create: (_) => UpdateInforBloc()..add(LoadUpdateInfor()),
+      child: const UpdateInforDialog(),
+    ),);
   }
 
   // ----- Popup QR -----
   void _showQRPopup(BuildContext context, String data) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.all(24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Mã QR của tôi',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: QrImageView(
-                data: data,
-                version: QrVersions.auto,
-                gapless: false,
-                foregroundColor: AppColors.primary,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-            const Text(
-              'Quét mã này để truy cập hồ sơ',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Đóng"),
-          ),
-        ],
-      ),
-    );
+    showGlobalDialog(MyQRWidget(userId: ''));
   }
 
   @override
@@ -85,9 +39,7 @@ class SettingDialog extends StatelessWidget {
 
             case "link_google":
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Đã gửi yêu cầu liên kết Google"),
-                ),
+                const SnackBar(content: Text("Đã gửi yêu cầu liên kết Google")),
               );
               break;
 
@@ -108,9 +60,9 @@ class SettingDialog extends StatelessWidget {
         }
 
         if (state is SettingError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       child: AlertDialog(
@@ -152,16 +104,17 @@ class SettingDialog extends StatelessWidget {
           children: [
             _buildButton(
               text: "Cập nhật thông tin",
-              onTap: () =>
-                  context.read<SettingBloc>().add(OpenUpdateInfoEvent()),
+              onTap:
+                  () => context.read<SettingBloc>().add(OpenUpdateInfoEvent()),
             ),
 
             const SizedBox(height: 12),
 
             _buildButton(
               text: "Liên kết tài khoản Google",
-              onTap: () =>
-                  context.read<SettingBloc>().add(LinkGoogleAccountEvent()),
+              onTap:
+                  () =>
+                      context.read<SettingBloc>().add(LinkGoogleAccountEvent()),
             ),
 
             const SizedBox(height: 12),
@@ -176,27 +129,20 @@ class SettingDialog extends StatelessWidget {
         // ----- ACTIONS -----
         actions: [
           TextButton.icon(
-            onPressed: () =>
-                context.read<SettingBloc>().add(LogoutEvent()),
+            onPressed: () => context.read<SettingBloc>().add(LogoutEvent()),
             icon: const Icon(Icons.logout, color: Colors.red),
             label: const Text(
               "Đăng xuất",
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
   // ----- Button style -----
-  Widget _buildButton({
-    required String text,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildButton({required String text, required VoidCallback onTap}) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(

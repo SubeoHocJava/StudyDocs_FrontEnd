@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
+
 import '../logic/follow_bloc.dart';
 import '../logic/follow_state.dart';
 
@@ -21,7 +23,8 @@ class Follow extends StatelessWidget {
         if (state is FollowLoadedState) {
           return Container(
             width: double.infinity,
-            padding: EdgeInsets.all(responsive.size.width * 0.04), // responsive.defaultPadding
+            padding: EdgeInsets.all(responsive.size.width * 0.04),
+            // responsive.defaultPadding
             alignment: Alignment.center,
             child: Column(
               children: [
@@ -29,22 +32,32 @@ class Follow extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Followers
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryTeal,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          bottomLeft: Radius.circular(16),
+                    GestureDetector(
+                      onTap: () {
+                        context.push('/followers');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
                         ),
-                        border: Border.all(color: AppColors.secondaryTeal.withOpacity(0.5)),
-                      ),
-                      child: Text(
-                        "${state.followData.numMeFollow} người theo dõi",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryTeal,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            bottomLeft: Radius.circular(16),
+                          ),
+                          border: Border.all(
+                            color: AppColors.secondaryTeal.withOpacity(0.5),
+                          ),
+                        ),
+                        child: Text(
+                          "${state.followData.numMeFollow} người theo dõi",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimaryLight,
+                          ),
                         ),
                       ),
                     ),
@@ -53,34 +66,44 @@ class Follow extends StatelessWidget {
                     SizedBox(
                       height: 40, // chỉnh tùy theo UI
                       child: VerticalDivider(
-                        width: 20,        // khoảng cách hai bên
-                        thickness: 1.2,   // độ dày line
+                        width: 20, // khoảng cách hai bên
+                        thickness: 1.2, // độ dày line
                         color: Colors.grey,
                       ),
                     ),
 
                     // Following
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryBlue,
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(16),
-                          bottomRight: Radius.circular(16),
+                    GestureDetector(
+                      onTap: () {
+                        context.push('/following');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
                         ),
-                        border: Border.all(color: AppColors.secondaryBlue.withOpacity(0.5)),
-                      ),
-                      child: Text(
-                        "${state.followData.numMeFollow} Đang theo dõi",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryBlue,
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          ),
+                          border: Border.all(
+                            color: AppColors.secondaryBlue.withOpacity(0.5),
+                          ),
+                        ),
+                        child: Text(
+                          "${state.followData.numMeFollow} Đang theo dõi",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimaryLight,
+                          ),
                         ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           );
@@ -94,6 +117,4 @@ class Follow extends StatelessWidget {
       },
     );
   }
-
-
 }

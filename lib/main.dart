@@ -8,4 +8,5 @@ void main() async {
   final router = initAppRouter();
   runApp(MyApp(router: router),
   );
+
 }
