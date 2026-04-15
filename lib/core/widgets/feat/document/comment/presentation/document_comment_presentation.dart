@@ -27,18 +27,9 @@ class _DocumentCommentPresentationState
   final FocusNode _focusNode = FocusNode();
   Comment? _replyingTo;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DocumentCommentBloc>().add(LoadCommentsRequested(widget.documentId));
-    });
-  }
-
   void _handleReply(Comment comment) {
     setState(() {
       _replyingTo = comment;
-      // No need to set _controller text anymore since we will have a separate text field inline
     });
   }
 
@@ -97,37 +88,47 @@ class _DocumentCommentPresentationState
           ),
         ),
         // Content
-        Expanded(
-          child: BlocBuilder<DocumentCommentBloc, DocumentCommentState>(
-            builder: (context, state) {
-              if (state is DocumentCommentLoaded) {
-                if (state.comments.isEmpty) {
-                  return Center(child: Text("Chưa có bình luận nào.", style: const TextStyle(fontFamily: 'Montserrat')));
-                }
-                
-                final comments = state.comments;
-
-                return ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: comments.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    return CommentBlock(
-                      node: comments[index],
-                      onReply: _handleReply,
-                      replyingToCommentId: _replyingTo?.id,
-                      onSubmitReply: _submitReply,
-                      onCancelReply: _cancelReply,
-                    );
-                  },
+        BlocBuilder<DocumentCommentBloc, DocumentCommentState>(
+          builder: (context, state) {
+            if (state is DocumentCommentLoaded) {
+              if (state.comments.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      "Chưa có bình luận nào.",
+                      style: TextStyle(fontFamily: 'Montserrat'),
+                    ),
+                  ),
                 );
               }
-              return Center(child: CircularProgressIndicator());
-            },
-          ),
+
+              final comments = state.comments;
+
+              return ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: comments.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  return CommentBlock(
+                    node: comments[index],
+                    onReply: _handleReply,
+                    replyingToCommentId: _replyingTo?.id,
+                    onSubmitReply: _submitReply,
+                    onCancelReply: _cancelReply,
+                  );
+                },
+              );
+            }
+            return const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          },
         ),
         // Input Area
-        // Hide input area if currently replying to a comment inline
         if (_replyingTo == null)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

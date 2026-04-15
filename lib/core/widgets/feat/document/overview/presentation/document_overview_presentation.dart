@@ -7,60 +7,77 @@ import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 
 class DocumentOverviewPresentation extends StatelessWidget {
-  const DocumentOverviewPresentation({super.key});
+  final bool isExpanded;
+  final VoidCallback onToggle;
+
+  const DocumentOverviewPresentation({
+    super.key,
+    required this.isExpanded,
+    required this.onToggle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentOverviewBloc, DocumentOverviewState>(
       builder: (context, state) {
         if (state is DocumentOverviewLoaded) {
-          return Card(
+          return Container(
             color: AppColors.white,
-            surfaceTintColor: AppColors.white,
-            elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Row(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: onToggle,
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Text(
                           state.documentOverview.title,
-                          style: TextStyle(
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.navy,
+                            fontFamily: 'Montserrat',
                           ),
                         ),
                       ),
-                      Image.asset(
-                        AppAssets.chevronDown,
-                        width: 30,
-                        height: 30,
+                      const SizedBox(width: 8),
+                      Icon(
+                        isExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        size: 32,
                         color: AppColors.black,
                       ),
                     ],
                   ),
+                ),
 
-                  SizedBox(height: 12),
-                  Divider(color: AppColors.divider),
-                  SizedBox(height: 12),
+                const SizedBox(height: 12),
+                const Divider(color: AppColors.divider, thickness: 1),
+                const SizedBox(height: 12),
 
-                  // Course
-                  Row(
-                    children: [
-                      Image.asset(
+                // Course
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Image.asset(
                         AppAssets.folder,
                         width: 20,
                         height: 20,
                         color: AppColors.black,
                       ),
-                      SizedBox(width: 8),
-                      InkWell(
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
                         onTap: () {
                           context.read<DocumentOverviewBloc>().add(
                             SchoolClicked(
@@ -70,23 +87,35 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         },
                         child: Text(
                           state.documentOverview.courseInfo.name,
-                          style: TextStyle(color: AppColors.secondaryBlue),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.secondaryBlue,
+                            fontFamily: 'Montserrat',
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  // School
-                  Row(
-                    children: [
-                      Image.asset(
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // School
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Image.asset(
                         AppAssets.school,
                         width: 20,
                         height: 20,
                         color: AppColors.black,
                       ),
-                      SizedBox(width: 8),
-                      InkWell(
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
                         onTap: () {
                           context.read<DocumentOverviewBloc>().add(
                             SchoolClicked(
@@ -96,80 +125,88 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         },
                         child: Text(
                           state.documentOverview.schoolInfo.name,
-                          style: TextStyle(color: AppColors.secondaryBlue),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: AppColors.secondaryBlue,
+                            fontFamily: 'Montserrat',
+                            fontSize: 16,
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  // Button
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Download
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Action Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Download Button
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
                         ),
-                        onPressed: () {
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.read<DocumentOverviewBloc>().add(
+                          DocumentDownloadRequested(
+                            id: state.documentOverview.id,
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.cloud_download_outlined,
+                        color: AppColors.white,
+                        size: 20,
+                      ),
+                      label: const Text(
+                        "Tải về",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat',
+                        ),
+                      ),
+                    ),
+                    // Bookmark Button
+                    IconButton(
+                      onPressed: () {
+                        if (state.documentOverview.isSaved) {
                           context.read<DocumentOverviewBloc>().add(
-                            DocumentDownloadRequested(
-                              id: state.documentOverview.id,
-                            ),
+                            DocumentUnSave(id: state.documentOverview.id),
                           );
-                        },
-                        icon: Image.asset(
-                          AppAssets.download,
-                          width: 20,
-                          height: 20,
-                          color: AppColors.white,
-                        ),
-                        label: Text(
-                          "Tải về",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        } else {
+                          context.read<DocumentOverviewBloc>().add(
+                            DocumentSave(id: state.documentOverview.id),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        state.documentOverview.isSaved
+                            ? Icons.bookmark
+                            : Icons.bookmark_outline,
+                        size: 30,
+                        color:
+                            state.documentOverview.isSaved
+                                ? AppColors.warning
+                                : AppColors.black,
                       ),
-                      //Bookmark
-                      IconButton(
-                        onPressed: () {
-                          if (state.documentOverview.isSaved) {
-                            context.read<DocumentOverviewBloc>().add(
-                              DocumentUnSave(id: state.documentOverview.id),
-                            );
-                          } else {
-                            context.read<DocumentOverviewBloc>().add(
-                              DocumentSave(id: state.documentOverview.id),
-                            );
-                          }
-                        },
-                        icon: Image.asset(
-                          state.documentOverview.isSaved
-                              ? AppAssets.saved
-                              : AppAssets.unsaved,
-                          width: 24,
-                          height: 24,
-                          color:
-                              state.documentOverview.isSaved
-                                  ? AppColors.warning
-                                  : AppColors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           );
         }
-        return Text("empty");
+        return const SizedBox.shrink();
       },
     );
   }
