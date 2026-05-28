@@ -1,8 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/feat/profile/follow/logic/follow_event.dart';
 import 'package:studydocs/core/widgets/feat/profile/statistic/logic/statistic_event.dart';
-
-
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart';
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserEvent.dart';
@@ -16,20 +15,30 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final InforUserBloc inforUserBloc;
   final FollowBloc followBloc;
   final StatisticBloc statisticBloc;
+  final UserDataSource userDataSource;
 
-  ProfileBloc( {required this.inforUserBloc,
-      required this.followBloc,
-      required this.statisticBloc,}) : super(ProfileInitialState()) {
+  ProfileBloc({
+    required this.inforUserBloc,
+    required this.followBloc,
+    required this.statisticBloc,
+    required this.userDataSource,
+  }) : super(ProfileInitialState()) {
     on<ProfileInitial>((event, emit) async {
 
       emit(ProfileLoadingState());
 
-      // gọi load data
-      inforUserBloc.add(LoadUserInfor(event.userId));
-      followBloc.add(LoadFollowDataEvent());
-      statisticBloc.add(LoadStatisticData());
+      try {
+        // gọi load data
+        final user = await userDataSource.getUser();
+        
+        inforUserBloc.add(LoadUserInfor(user));
+        followBloc.add(LoadFollowDataEvent(user));
+        statisticBloc.add(LoadStatisticData(user));
 
-      emit(ProfileLoadedState());
+        emit(ProfileLoadedState(user));
+      } catch (e) {
+        emit(ProfileErrorState(e.toString()));
+      }
     });
   }
 

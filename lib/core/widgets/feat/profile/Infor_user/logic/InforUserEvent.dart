@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:studydocs/data/model/user/User.dart';
 
 abstract class InforUserEvent extends Equatable {
   @override
@@ -8,12 +9,12 @@ abstract class InforUserEvent extends Equatable {
 
 /// Load thông tin user
 class LoadUserInfor extends InforUserEvent {
-  final String userId;
+  final User user;
 
-  LoadUserInfor(this.userId);
+  LoadUserInfor(this.user);
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [user];
 }
 
 class OpenSettingDialog extends InforUserEvent {

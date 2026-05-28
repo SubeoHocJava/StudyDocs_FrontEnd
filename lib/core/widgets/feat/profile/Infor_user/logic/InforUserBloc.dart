@@ -44,14 +44,14 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
       LoadUserInfor event, Emitter<InforUserState> emit) async {
     emit(InforUserLoading());
     try {
-      final data = await _getUserInforUseCase(event.userId);
+      final user = event.user;
       emit(InforUserLoaded(
-        id: data.id,
-        fullName: data.fullName,
-        school: data.school,
-        avatarUrl: data.avatarUrl,
-        isFollowing: data.isFollowing,
-        isOwnProfile: data.isOwnProfile,
+        id: user.id ?? "",
+        fullName: user.fullName ?? "",
+        school: user.school,
+        avatarUrl: user.avatarUrl,
+        isFollowing: false,
+        isOwnProfile: true,
       ));
     } catch (e) {
       emit(InforUserError(e.toString()));

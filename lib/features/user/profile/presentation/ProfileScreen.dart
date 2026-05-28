@@ -12,6 +12,7 @@ import '../../../../core/widgets/feat/profile/statistic/presentation/Statistical
 import '../logic/profile_bloc.dart';
 import '../logic/profile_event.dart';
 import '../logic/profile_state.dart';
+import 'package:studydocs/data/datasource/impl/user_datasource_impl.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -35,7 +36,8 @@ class ProfileScreen extends StatelessWidget {
           create: (context) => ProfileBloc(
             inforUserBloc: context.read<InforUserBloc>(),
             followBloc: context.read<FollowBloc>(),
-            statisticBloc: context.read<StatisticBloc>(),
+            statisticBloc: context.read<StatisticBloc>(), 
+            userDataSource: UserDatasourceImpl(),
           )..add(ProfileInitial("me")),
         ),
 

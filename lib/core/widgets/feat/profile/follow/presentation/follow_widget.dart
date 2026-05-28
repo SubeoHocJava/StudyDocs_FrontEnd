@@ -52,7 +52,7 @@ class Follow extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          "${state.followData.numMeFollow} người theo dõi",
+                          "${state.followData.numFollowMe} người theo dõi",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

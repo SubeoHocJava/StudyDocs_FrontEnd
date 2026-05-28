@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../domain/models/follow_entity.dart';
 import '../domain/usecases/get_follow_data_usecase.dart';
 import '../domain/repositories/follow_repository.dart';
 import 'follow_event.dart';
@@ -23,7 +24,11 @@ class FollowBloc extends Bloc<FollowEvent, FollowState> {
       ) async {
     emit(FollowLoadingState());
     try {
-      final followData = await _getFollowDataUseCase();
+      final user = event.user;
+      final followData = FollowEntity(
+        numFollowMe: user.followersCount,
+        numMeFollow: user.followingCount,
+      );
       emit(FollowLoadedState(followData));
     } catch (e) {
       emit(FollowErrorState(e.toString()));
