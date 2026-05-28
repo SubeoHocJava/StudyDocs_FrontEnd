@@ -1,4 +1,4 @@
-import 'author.dart';
+import 'author_info.dart';
 
 class DocumentInfo {
   final String id;
@@ -9,7 +9,7 @@ class DocumentInfo {
   final int dislikeCount;
   final bool isLiked;
   final bool isDisliked;
-  final Author author;
+  final AuthorInfo author;
 
   DocumentInfo({
     required this.id,
@@ -30,7 +30,7 @@ class DocumentInfo {
     int? pageNumber,
     int? likeCount,
     int? dislikeCount,
-    Author? author,
+    AuthorInfo? author,
     bool? isLiked,
     bool? isDisliked,
   }) {
