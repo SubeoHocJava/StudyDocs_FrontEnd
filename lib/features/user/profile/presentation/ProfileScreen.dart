@@ -46,6 +46,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           )..add(ProfileInitial("me")),
+
         ),
 
       ],
