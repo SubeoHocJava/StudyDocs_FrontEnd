@@ -7,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../menu/presentation/menu.dart';
 import '../../../../../../features/auth/presentation/widgets/auth_dialog.dart';
+import '../../../../../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../../../../../features/auth/presentation/cubit/auth_state.dart';
+import 'package:studydocs/core/constants/app_icons.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
@@ -198,35 +201,68 @@ class _HeaderState extends State<Header> {
 
   /// RIGHT ACTIONS
   Widget _buildActions(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min, // QUAN TRỌNG: Sửa lỗi Overflow
-      children: [
-        // Nút Đăng nhập
-        ElevatedButton(
-          onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.headerForeground,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          child: const Text('Đăng nhập', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        ),
-        const SizedBox(width: 12),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (authState is AuthAuthenticated)
+              _buildUserAction(context, authState)
+            else
+              ElevatedButton(
+                onPressed:
+                    widget.onLoginTap ?? () => _showLoginModal(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.headerForeground,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Đăng nhập',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ),
+            const SizedBox(width: 12),
         // Nút Đổi Theme
-        GestureDetector(
-          onTap: () {
-            // TODO: Toggle Theme
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Image.asset('assets/icons/sun.png', width: 28, height: 28),
-          ),
+            GestureDetector(
+              onTap: () {
+                // TODO: Toggle Theme
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Image.asset(
+                  'assets/icons/sun.png',
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildUserAction(BuildContext context, AuthAuthenticated authState) {
+    final label = authState.displayName ?? authState.username ?? 'User';
+
+    return GestureDetector(
+      onTap: widget.onProfileTap,
+      child: Tooltip(
+        message: label,
+        child: CircleAvatar(
+          radius: 20,
+          backgroundColor: AppColors.headerForeground.withValues(alpha: 0.12),
+          child: Image.asset(AppAssets.user, width: 24, height: 24),
         ),
-      ],
+      ),
     );
   }
 }

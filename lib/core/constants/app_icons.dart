@@ -31,6 +31,7 @@ class AppAssets {
 
   // User
   static const avt = '$_base/avatar.png';
+  static const user = '$_base/user.png';
 
   // Comment
   static const cmt = '$_base/cmt.png';

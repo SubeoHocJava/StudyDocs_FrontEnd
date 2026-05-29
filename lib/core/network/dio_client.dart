@@ -5,11 +5,14 @@ import 'package:flutter/foundation.dart';
 import '../../data/model/global/api_response.dart';
 import '../constants/api_constants.dart';
 import '../exceptions/api_exception.dart';
+import 'package:studydocs/features/auth/data/keycloak_auth_service.dart';
+
 import 'intercepter.dart';
 
 class DioClient {
   static DioClient? _instance;
   late final Dio _dio;
+  ApiInterceptor? _apiInterceptor;
 
   factory DioClient() {
     return _instance ??= DioClient._internal();
@@ -28,9 +31,6 @@ class DioClient {
       ),
     );
 
-    // Add interceptors
-    // _dio.interceptors.add(ApiInterceptor());
-
     // Logging (chỉ dùng trong development)
     if (kDebugMode) {
       _dio.interceptors.add(
@@ -40,6 +40,21 @@ class DioClient {
   }
 
   Dio get dio => _dio;
+
+  void configureAuth({
+    required KeycloakAuthService keycloakAuth,
+    void Function()? onSessionExpired,
+  }) {
+    if (_apiInterceptor != null) {
+      _dio.interceptors.remove(_apiInterceptor!);
+    }
+    _apiInterceptor = ApiInterceptor(
+      keycloakAuth: keycloakAuth,
+      onSessionExpired: onSessionExpired,
+      retryDio: _dio,
+    );
+    _dio.interceptors.insert(0, _apiInterceptor!);
+  }
 
   // Helper methods
   Future<ApiResponse<dynamic>> get(
