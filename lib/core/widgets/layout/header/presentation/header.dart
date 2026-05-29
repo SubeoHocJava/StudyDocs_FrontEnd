@@ -254,7 +254,7 @@ class _HeaderState extends State<Header> {
     final label = authState.displayName ?? authState.username ?? 'User';
 
     return GestureDetector(
-      onTap: widget.onProfileTap,
+      onTap: widget.onProfileTap ?? () => context.go('/profile'),
       child: Tooltip(
         message: label,
         child: CircleAvatar(
