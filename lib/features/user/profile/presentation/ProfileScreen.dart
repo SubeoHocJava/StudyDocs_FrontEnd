@@ -14,6 +14,9 @@ import '../logic/profile_event.dart';
 import '../logic/profile_state.dart';
 import 'package:studydocs/data/datasource/impl/user_datasource_impl.dart';
 
+import '../domain/repository/user_repository.dart';
+import '../domain/usecase/get_user_info_usecase.dart';
+
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,11 @@ class ProfileScreen extends StatelessWidget {
             inforUserBloc: context.read<InforUserBloc>(),
             followBloc: context.read<FollowBloc>(),
             statisticBloc: context.read<StatisticBloc>(), 
-            userDataSource: UserDatasourceImpl(),
+            getUserInfoUseCase: GetUserInfoUseCase(
+              userRepository: UserRepository(
+                userDataSource: UserDatasourceImpl(),
+              ),
+            ),
           )..add(ProfileInitial("me")),
         ),
 

@@ -4,30 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="merge: user profile">
-      <change afterPath="$PROJECT_DIR$/lib/core/constants/api/user_api.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/network/dio_client.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/network/intercepter.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/network/token_services.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/widgets/layout/bottom/bottom_nav.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/widgets/layout/header/presentation/header.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/widgets/layout/menu/presentation/menu.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/datasource/impl/user_datasource_impl.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/datasource/user_remote_datasource.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/model/user/User.dart" afterDir="false" />
+    <list default="true" id="22b23d8c-53d6-4d2f-93c3-b479d1851c57" name="Changes" comment="feature: connectApi">
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants/api_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/api_constants.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/Infor_user/logic/InforUserEvent.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/Infor_user/logic/InforUserEvent.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/logic/follow_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/logic/follow_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/logic/follow_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/logic/follow_event.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/presentation/follow_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/follow/presentation/follow_widget.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/statistic/logic/statistic_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/statistic/logic/statistic_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/widgets/feat/profile/statistic/logic/statistic_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/widgets/feat/profile/statistic/logic/statistic_event.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/user/profile/logic/profile_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/user/profile/logic/profile_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/user/profile/logic/profile_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/user/profile/logic/profile_state.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/user/profile/presentation/ProfileScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/user/profile/presentation/ProfileScreen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -192,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775489155824</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="feature: connectApi">
+      <option name="closed" value="true" />
+      <created>1779958117089</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1779958117089</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -227,6 +215,7 @@
     <MESSAGE value="merge feature/notification-trash" />
     <MESSAGE value="feature: follow page" />
     <MESSAGE value="merge: user profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge: user profile" />
+    <MESSAGE value="feature: connectApi" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: connectApi" />
   </component>
 </project>
