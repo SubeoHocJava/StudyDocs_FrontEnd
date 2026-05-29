@@ -1,67 +1,25 @@
-# ==============================
-# Flutter / Dart
-# ==============================
-
+# Flutter
 .dart_tool/
 .packages
-.pub/
+.pub-cache/
 build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
 
-# Generated files
-**/generated_plugin_registrant.dart
-
-# ==============================
 # Android
-# ==============================
-
-**/android/.gradle
-**/android/local.properties
-local.properties
-**/android/**/GeneratedPluginRegistrant.java
-**/android/**/GeneratedPluginRegistrant.kt
-**/android/app/debug
-**/android/app/profile
-**/android/app/release
-
-# Gradle
 .gradle/
-build/
+android/.gradle/
+android/local.properties
+android/app/build/
 
-# ==============================
-# iOS
-# ==============================
-
-ios/Flutter/Flutter.framework
-ios/Flutter/App.framework
-ios/Flutter/Flutter.podspec
-ios/Pods/
-ios/.symlinks/
-ios/Runner.xcworkspace/
-ios/Runner.xcodeproj/project.xcworkspace/
-
-# ==============================
-# IDE - Android Studio / IntelliJ
-# ==============================
-
+# IDE
 .idea/
-*.iml
-*.ipr
-*.iws
-workspace.xml
-shelf/
-
-# VSCode (nếu dùng)
 .vscode/
+*.iml
 
-# ==============================
-# OS files
-# ==============================
-
+# OS
 .DS_Store
 Thumbs.db
-/android
+
+# Logs
 *.log
-*.java
