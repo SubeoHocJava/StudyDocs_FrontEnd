@@ -14,6 +14,7 @@ class TokenStorageService {
   static const String _keyUserId = 'user_id';
   static const String _keyUsername = 'username';
   static const String _keyDisplayName = 'display_name';
+  static const String _keyIdToken = 'id_token';
 
   /// Kiểm tra xem Access Token sắp hết hạn chưa
   /// Trả về true nếu token null, invalid hoặc sắp hết hạn (còn < 1 phút)
@@ -81,6 +82,7 @@ class TokenStorageService {
     String? userId,
     String? username,
     String? displayName,
+    String? idToken,
     List<String>? roles,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -94,6 +96,7 @@ class TokenStorageService {
     if (displayName != null) {
       await prefs.setString(_keyDisplayName, displayName);
     }
+    if (idToken != null) await prefs.setString(_keyIdToken, idToken);
 
     // Lưu roles dưới dạng JSON string
     if (roles != null && roles.isNotEmpty) {
@@ -144,7 +147,13 @@ class TokenStorageService {
     await prefs.remove(_keyUserId);
     await prefs.remove(_keyUsername);
     await prefs.remove(_keyDisplayName);
+    await prefs.remove(_keyIdToken);
     await prefs.remove(_keyRoles);
+  }
+
+  Future<String?> getIdToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyIdToken);
   }
 
   /// Kiểm tra xem user đã login chưa

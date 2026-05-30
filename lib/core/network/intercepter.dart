@@ -1,104 +1,64 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show VoidCallback, kDebugMode;
+import 'package:studydocs/core/constants/api/auth_api.dart';
 import 'package:studydocs/core/network/token_services.dart';
+import 'package:studydocs/features/auth/data/auth_service.dart';
 
 import '../constants/api_constants.dart';
 
 class ApiInterceptor extends QueuedInterceptor {
-  final TokenStorageService _tokenStorage;
-  // Dio riêng dùng để Refresh Token (tránh Interceptor loop)
-  final Dio _refreshDio = Dio(
-    BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  static const _retryKey = 'auth_retry';
 
-  ApiInterceptor({TokenStorageService? tokenStorage})
-      : _tokenStorage = tokenStorage ?? TokenStorageService();
+  final TokenStorageService _tokenStorage;
+  final AuthService _authService;
+  final VoidCallback? onSessionExpired;
+  final Dio _retryDio;
+
+  ApiInterceptor({
+    TokenStorageService? tokenStorage,
+    AuthService? authService,
+    this.onSessionExpired,
+    Dio? retryDio,
+  })  : _tokenStorage = tokenStorage ?? TokenStorageService(),
+        _authService = authService ?? AuthService(),
+        _retryDio = retryDio ?? Dio();
+
+  static const _publicPaths = [
+    AuthApiEndpoints.register,
+    AuthApiEndpoints.login,
+    AuthApiEndpoints.refreshToken,
+    AuthApiEndpoints.logout,
+    AuthApiEndpoints.forgotPassword,
+    AuthApiEndpoints.googleLogin,
+    AuthApiEndpoints.googleCallback,
+    DocumentEndpoints.public,
+    AcademicEndpoints.public,
+    '/assets',
+  ];
 
   @override
   Future<void> onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) async {
-    // Danh sách các path không cần gửi kèm token (Public Endpoints)
-    const publicPaths = [
-      AuthEndpoints.loginLocal,
-      AuthEndpoints.loginGoogle,
-      AuthEndpoints.register,
-      AuthEndpoints.forgotPasswordRequest,
-      AuthEndpoints.forgotPasswordConfirm,
-      DocumentEndpoints.public,
-      AcademicEndpoints.public,
-      '/assets',
-    ];
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final isPublic = _isPublicPath(options.path, options.uri.path);
 
-    // Check path or full URI path
-    final isPublic = publicPaths.any(
-          (path) => options.path.contains(path) || options.uri.path.contains(path),
-    );
-
-    // Logic kiểm tra và refresh token trước khi gửi request (Áp dụng cho Authenticated Enpoint)
     if (!isPublic) {
-      bool isExpired = await _tokenStorage.isAccessTokenExpired();
-
-      if (isExpired) {
+      try {
+        await _authService.refreshTokensIfNeeded();
+      } catch (e) {
         if (kDebugMode) {
-          print(' AccessToken expired or near expiry. Attempting refresh...');
+          print('Refresh token failed before request: $e');
         }
-        final refreshToken = await _tokenStorage.getRefreshToken();
-
-        if (refreshToken != null) {
-          try {
-            // Gọi API Refresh Token
-            final response = await _refreshDio.post(
-              AuthEndpoints.refresh,
-              data: {'refreshToken': refreshToken}, // Body params
-            );
-
-            if (response.statusCode == 200 && response.data != null) {
-              final data = response.data['data'];
-              if (data != null) {
-                final newAccessToken = data['accessToken'];
-                final newRefreshToken = data['refreshToken'];
-
-                // Lưu token mới
-                await _tokenStorage.saveTokens(
-                  accessToken: newAccessToken,
-                  refreshToken: newRefreshToken,
-                  tokenType: data['tokenType'] ?? 'Bearer',
-                  role:
-                  await _tokenStorage.getRole() ??
-                      'user', // Giữ nguyên role cũ nếu API ko trả về
-                );
-
-                if (kDebugMode) {
-                  print('Refresh Token Success. New AccessToken obtained.');
-                }
-              }
-            }
-          } catch (e) {
-            if (kDebugMode) {
-              print('⚠️ Refresh Token Failed: $e');
-            }
-            // Auto logout khi cả access token và refresh token đều hết hạn
-            await _tokenStorage.clearTokens();
-            if (kDebugMode) {
-              print('🔒 Auto logout: Tokens cleared due to refresh failure');
-            }
-          }
-        }
+        await _tokenStorage.clearTokens();
+        onSessionExpired?.call();
       }
 
-      // Lấy lại AccessToken (có thể là mới hoặc cũ) để attach vào Header
       final authHeader = await _tokenStorage.getAuthorizationHeader();
       if (authHeader != null) {
         options.headers['Authorization'] = authHeader;
       }
     } else {
-      // Nếu là Public Endpoint, đảm bảo KHÔNG gửi kèm Authorization header để tránh lỗi 401 do token hết hạn
       options.headers.remove('Authorization');
     }
 
@@ -117,10 +77,48 @@ class ApiInterceptor extends QueuedInterceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     if (kDebugMode) {
       print('ERROR[${err.response?.statusCode}] => MESSAGE: ${err.message}');
     }
+
+    final statusCode = err.response?.statusCode;
+    final alreadyRetried = err.requestOptions.extra[_retryKey] == true;
+    final isPublic = _isPublicPath(
+      err.requestOptions.path,
+      err.requestOptions.uri.path,
+    );
+
+    if (statusCode == 401 && !alreadyRetried && !isPublic) {
+      try {
+        await _authService.refreshTokensIfNeeded(force: true);
+        final authHeader = await _tokenStorage.getAuthorizationHeader();
+        if (authHeader != null) {
+          err.requestOptions.headers['Authorization'] = authHeader;
+        }
+        err.requestOptions.extra[_retryKey] = true;
+
+        final response = await _retryDio.fetch(err.requestOptions);
+        return handler.resolve(response);
+      } catch (e) {
+        if (kDebugMode) {
+          print('401 refresh/retry failed: $e');
+        }
+        await _tokenStorage.clearTokens();
+        onSessionExpired?.call();
+      }
+    }
+
     super.onError(err, handler);
+  }
+
+  bool _isPublicPath(String path, String uriPath) {
+    return _publicPaths.any(
+      (publicPath) =>
+          path.contains(publicPath) || uriPath.contains(publicPath),
+    );
   }
 }

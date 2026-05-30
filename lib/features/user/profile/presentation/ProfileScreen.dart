@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart';
 import '../../../../core/widgets/feat/profile/Infor_user/presentation/InforUser.dart';
@@ -46,33 +44,42 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           )..add(ProfileInitial("me")),
+
         ),
 
       ],
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
+      child: BlocBuilder<ProfileBloc, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (state is ProfileLoadingState) {
-              return Center(child: CircularProgressIndicator());
-            }
+          if (state is ProfileLoadedState) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  InforUser(),
+                  Follow(),
+                  Statistics(),
+                ],
+              ),
+            );
+          }
 
-            if (state is ProfileLoadedState) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    InforUser(),
-                    Follow(),
-                    Statistics(),
-                  ],
+          if (state is ProfileErrorState) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  'Không tải được hồ sơ.\n${state.message}',
+                  textAlign: TextAlign.center,
                 ),
-              );
-            }
+              ),
+            );
+          }
 
-            return Container();
-          },
-        ),
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

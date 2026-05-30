@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:studydocs/features/auth/presentation/cubit/auth_state.dart';
 
 import '../domain/repository/menu_profile_repository.dart';
 import '../domain/usecase/get_menu_profile_usecase.dart';
@@ -162,6 +163,33 @@ class MenuDrawer extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, authState) {
+                    if (authState is! AuthAuthenticated) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                      child: _buildMenuItem(
+                        context,
+                        icon: Icons.logout,
+                        title: 'Đăng xuất',
+                        onTap: () async {
+                          onClose();
+                          await context.read<AuthCubit>().logout();
+                          if (context.mounted) {
+                            context.go('/home');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Đã đăng xuất'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
                 ),
               ],
             );

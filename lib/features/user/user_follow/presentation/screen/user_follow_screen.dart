@@ -16,37 +16,35 @@ class UserFollowScreen extends StatelessWidget {
     return BlocProvider(
       create:
           (context) =>
-              UserFollowBloc(UserFollowRepositoryImpl() as UserFollowRepository)..add(LoadUserFollowLists()),
-      child: Scaffold(
-        // appBar: const Header(isDefault: false, headerTitle: 'Theo dõi'),
-        body: BlocBuilder<UserFollowBloc, UserFollowState>(
-          builder: (context, state) {
-            if (state is UserFollowLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is UserFollowLoaded) {
-              return UserFollowWidget(
-                initialTab: initialTab,
-                followers: state.followers,
-                following: state.following,
-                onUnfollow: (userId) {
-                  context.read<UserFollowBloc>().add(UnfollowUserEvent(userId));
-                },
-                onRemoveFollower: (userId) {
-                  context.read<UserFollowBloc>().add(RemoveUserFollowerEvent(userId));
-                },
-                onFollow: (userId) {
-                  context.read<UserFollowBloc>().add(UserFollowUserEvent(userId));
-                },
-                onUserTap: (userId) {
-                  // context.push('${AppRoutes.profile}/$userId');
-                },
-              );
-            } else if (state is UserFollowError) {
-              return Center(child: Text('Lỗi: ${state.message}'));
-            }
-            return const Center(child: Text('Đang tải...'));
-          },
-        ),
+              UserFollowBloc(UserFollowRepositoryImpl() as UserFollowRepository)
+                ..add(LoadUserFollowLists()),
+      child: BlocBuilder<UserFollowBloc, UserFollowState>(
+        builder: (context, state) {
+          if (state is UserFollowLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is UserFollowLoaded) {
+            return UserFollowWidget(
+              initialTab: initialTab,
+              followers: state.followers,
+              following: state.following,
+              onUnfollow: (userId) {
+                context.read<UserFollowBloc>().add(UnfollowUserEvent(userId));
+              },
+              onRemoveFollower: (userId) {
+                context.read<UserFollowBloc>().add(RemoveUserFollowerEvent(userId));
+              },
+              onFollow: (userId) {
+                context.read<UserFollowBloc>().add(UserFollowUserEvent(userId));
+              },
+              onUserTap: (userId) {
+                // context.push('${AppRoutes.profile}/$userId');
+              },
+            );
+          } else if (state is UserFollowError) {
+            return Center(child: Text('Lỗi: ${state.message}'));
+          }
+          return const Center(child: Text('Đang tải...'));
+        },
       ),
     );
   }

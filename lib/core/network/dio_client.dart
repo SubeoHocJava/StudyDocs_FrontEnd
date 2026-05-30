@@ -5,11 +5,14 @@ import 'package:flutter/foundation.dart';
 import '../../data/model/global/api_response.dart';
 import '../constants/api_constants.dart';
 import '../exceptions/api_exception.dart';
+import 'package:studydocs/features/auth/data/auth_service.dart';
+
 import 'intercepter.dart';
 
 class DioClient {
   static DioClient? _instance;
   late final Dio _dio;
+  ApiInterceptor? _apiInterceptor;
 
   factory DioClient() {
     return _instance ??= DioClient._internal();
@@ -28,9 +31,6 @@ class DioClient {
       ),
     );
 
-    // Add interceptors
-    // _dio.interceptors.add(ApiInterceptor());
-
     // Logging (chỉ dùng trong development)
     if (kDebugMode) {
       _dio.interceptors.add(
@@ -40,6 +40,21 @@ class DioClient {
   }
 
   Dio get dio => _dio;
+
+  void configureAuth({
+    required AuthService authService,
+    void Function()? onSessionExpired,
+  }) {
+    if (_apiInterceptor != null) {
+      _dio.interceptors.remove(_apiInterceptor!);
+    }
+    _apiInterceptor = ApiInterceptor(
+      authService: authService,
+      onSessionExpired: onSessionExpired,
+      retryDio: _dio,
+    );
+    _dio.interceptors.insert(0, _apiInterceptor!);
+  }
 
   // Helper methods
   Future<ApiResponse<dynamic>> get(
@@ -122,19 +137,10 @@ class DioClient {
 
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode ?? 0;
-        final responseData = error.response?.data;
+        final parsed = _parseErrorBody(error.response?.data);
+        final message = _messageForStatus(statusCode, parsed.message);
+        final errorCode = parsed.errorCode;
 
-        // Parse error message từ backend (format: {message: "..."} hoặc {errorMessage: "..."})
-        String message = 'Có lỗi xảy ra từ server';
-        String? errorCode;
-        if (responseData is Map<String, dynamic>) {
-          message = responseData['message'] ??
-              responseData['errorMessage'] ??
-              message;
-          errorCode = responseData['errorCode']?.toString();
-        }
-
-        // Phân biệt Auth errors (401, 403)
         if (statusCode == 401 || statusCode == 403) {
           return AuthException(message, statusCode, code: errorCode);
         }
@@ -147,6 +153,55 @@ class DioClient {
       default:
         return NetworkException('Lỗi kết nối: ${error.message ?? "Unknown error"}');
     }
+  }
+
+  ({String message, String? errorCode}) _parseErrorBody(dynamic responseData) {
+    const fallback = 'Có lỗi xảy ra từ server';
+    if (responseData == null) {
+      return (message: fallback, errorCode: null);
+    }
+
+    Map<String, dynamic>? map;
+    if (responseData is Map<String, dynamic>) {
+      map = responseData;
+    } else if (responseData is Map) {
+      map = Map<String, dynamic>.from(responseData);
+    } else if (responseData is String && responseData.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(responseData);
+        if (decoded is Map) {
+          map = Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {}
+    }
+
+    if (map == null) {
+      return (message: responseData.toString(), errorCode: null);
+    }
+
+    final nested = map['data'];
+    final nestedMap =
+        nested is Map ? Map<String, dynamic>.from(nested) : null;
+
+    final message = map['message']?.toString() ??
+        map['errorMessage']?.toString() ??
+        nestedMap?['message']?.toString() ??
+        fallback;
+
+    final errorCode =
+        map['errorCode']?.toString() ?? nestedMap?['errorCode']?.toString();
+
+    return (message: message, errorCode: errorCode);
+  }
+
+  String _messageForStatus(int statusCode, String serverMessage) {
+    if (statusCode == 409) {
+      if (serverMessage != 'Có lỗi xảy ra từ server') {
+        return serverMessage;
+      }
+      return 'Tài khoản đã tồn tại. Vui lòng dùng tên đăng nhập khác hoặc đăng nhập.';
+    }
+    return serverMessage;
   }
 
   Future<ApiResponse<T>> fromResponse<T>(Response response) async {

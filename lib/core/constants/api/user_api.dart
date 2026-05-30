@@ -1,21 +1,16 @@
+/// User Service — business endpoints (cần Bearer token).
 class UserEndpoints {
-  static const String base = 'users/login';
+  UserEndpoints._();
 
-  static const String all = '$base/all';
-  static const String count = '$base/count';
-  static const String register = '$base/register';
-  static const String update = '$base/update';
-  static const String updateImage = '$base/updateImage';
-  static const String delete = '$base/delete';
-  static const String getById = '$base/getUserByID';
-  static const String isPrivate = '$base/isPrivate';
-  static const String exists = '$base/exists';
+  static const String base = 'users';
 
-  // Document interactions via User service
-  static const String documentSave = '$base/document/save';
-  static const String documentSaved = '$base/document/saved';
+  static const String me = '$base/me';
+  static const String all = base;
 
-  //admin
-  static const String updateUserByAdmin = '$base/update/admin';
-
+  static String byId(String userId) => '$base/$userId';
+  static String other(String userId) => '$base/$userId/other';
+  static String update(String userId) => '$base/$userId';
+  static String updateInfo(String userId) => '$base/$userId/info';
+  static String updateImage(String userId) => '$base/$userId/image';
+  static String delete(String userId) => '$base/$userId';
 }
