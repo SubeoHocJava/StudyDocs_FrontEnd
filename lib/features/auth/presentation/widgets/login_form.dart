@@ -40,12 +40,23 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
-          current is AuthAuthenticated || current is AuthFailure,
+          current is AuthAuthenticated ||
+          current is AuthFailure ||
+          current is AuthGooglePending,
       listener: (context, state) {
         if (state is AuthAuthenticated) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng nhập thành công')),
+          );
+        } else if (state is AuthGooglePending) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Hoàn tất đăng nhập Google trên trình duyệt, '
+                'sau đó quay lại app.',
+              ),
+            ),
           );
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -160,7 +171,10 @@ class _LoginFormState extends State<LoginForm> {
                   width: 24,
                   height: 24,
                 ),
-                onPressed: () {},
+                onPressed:
+                    isLoading
+                        ? () {}
+                        : () => context.read<AuthCubit>().loginWithGoogle(),
               ),
             ],
           ),

@@ -1,27 +1,15 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:studydocs/core/constants/api/keycloak_api.dart';
 
 class EnvConfig {
-  static String get keycloakBaseUrl =>
-      dotenv.env['KEYCLOAK_BASE_URL']?.trim() ?? '';
+  /// Ví dụ: `http://localhost:8090/api/v1` (không slash cuối cũng được).
+  static String get apiBaseUrl {
+    final raw =
+        dotenv.env['API_BASE_URL']?.trim() ??
+        'http://localhost:8090/api/v1';
+    final normalized = raw.replaceAll(RegExp(r'/+$'), '');
+    return '$normalized/';
+  }
 
-  static String get keycloakRealm =>
-      dotenv.env['KEYCLOAK_REALM']?.trim() ?? '';
-
-  static String get keycloakClientId =>
-      dotenv.env['KEYCLOAK_CLIENT_ID']?.trim() ?? '';
-
-  static String get keycloakClientSecret =>
-      dotenv.env['KEYCLOAK_CLIENT_SECRET']?.trim() ?? '';
-
-  static String get tokenEndpoint =>
-      KeycloakApi.tokenUrl(keycloakBaseUrl, keycloakRealm);
-
-  static String get logoutEndpoint =>
-      KeycloakApi.logoutUrl(keycloakBaseUrl, keycloakRealm);
-
-  static bool get isKeycloakConfigured =>
-      keycloakBaseUrl.isNotEmpty &&
-      keycloakRealm.isNotEmpty &&
-      keycloakClientId.isNotEmpty;
+  static String get googleRedirectUri =>
+      dotenv.env['GOOGLE_REDIRECT_URI']?.trim() ?? 'studydocs://callback';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:studydocs/core/widgets/feat/profile/update_infor_form/logic/update_infor_bloc.dart';
 
@@ -52,6 +53,7 @@ class SettingDialog extends StatelessWidget {
               context.read<AuthCubit>().logout().then((_) {
                 if (!context.mounted) return;
                 Navigator.pop(context);
+                context.go('/home');
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Đã đăng xuất'),

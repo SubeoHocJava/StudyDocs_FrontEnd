@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show VoidCallback, kDebugMode;
+import 'package:studydocs/core/constants/api/auth_api.dart';
 import 'package:studydocs/core/network/token_services.dart';
-import 'package:studydocs/features/auth/data/keycloak_auth_service.dart';
+import 'package:studydocs/features/auth/data/auth_service.dart';
 
 import '../constants/api_constants.dart';
 
@@ -9,43 +10,42 @@ class ApiInterceptor extends QueuedInterceptor {
   static const _retryKey = 'auth_retry';
 
   final TokenStorageService _tokenStorage;
-  final KeycloakAuthService _keycloakAuth;
+  final AuthService _authService;
   final VoidCallback? onSessionExpired;
   final Dio _retryDio;
 
   ApiInterceptor({
     TokenStorageService? tokenStorage,
-    KeycloakAuthService? keycloakAuth,
+    AuthService? authService,
     this.onSessionExpired,
     Dio? retryDio,
   })  : _tokenStorage = tokenStorage ?? TokenStorageService(),
-        _keycloakAuth = keycloakAuth ?? KeycloakAuthService(),
+        _authService = authService ?? AuthService(),
         _retryDio = retryDio ?? Dio();
+
+  static const _publicPaths = [
+    AuthApiEndpoints.register,
+    AuthApiEndpoints.login,
+    AuthApiEndpoints.refreshToken,
+    AuthApiEndpoints.logout,
+    AuthApiEndpoints.forgotPassword,
+    AuthApiEndpoints.googleLogin,
+    AuthApiEndpoints.googleCallback,
+    DocumentEndpoints.public,
+    AcademicEndpoints.public,
+    '/assets',
+  ];
 
   @override
   Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    const publicPaths = [
-      AuthEndpoints.loginLocal,
-      AuthEndpoints.loginGoogle,
-      AuthEndpoints.register,
-      AuthEndpoints.forgotPasswordRequest,
-      AuthEndpoints.forgotPasswordConfirm,
-      DocumentEndpoints.public,
-      AcademicEndpoints.public,
-      '/assets',
-    ];
-
-    final isPublic = publicPaths.any(
-      (path) =>
-          options.path.contains(path) || options.uri.path.contains(path),
-    );
+    final isPublic = _isPublicPath(options.path, options.uri.path);
 
     if (!isPublic) {
       try {
-        await _keycloakAuth.refreshTokensIfNeeded();
+        await _authService.refreshTokensIfNeeded();
       } catch (e) {
         if (kDebugMode) {
           print('Refresh token failed before request: $e');
@@ -87,11 +87,14 @@ class ApiInterceptor extends QueuedInterceptor {
 
     final statusCode = err.response?.statusCode;
     final alreadyRetried = err.requestOptions.extra[_retryKey] == true;
-    final isPublic = _isPublicPath(err.requestOptions);
+    final isPublic = _isPublicPath(
+      err.requestOptions.path,
+      err.requestOptions.uri.path,
+    );
 
     if (statusCode == 401 && !alreadyRetried && !isPublic) {
       try {
-        await _keycloakAuth.refreshTokensIfNeeded(force: true);
+        await _authService.refreshTokensIfNeeded(force: true);
         final authHeader = await _tokenStorage.getAuthorizationHeader();
         if (authHeader != null) {
           err.requestOptions.headers['Authorization'] = authHeader;
@@ -112,17 +115,10 @@ class ApiInterceptor extends QueuedInterceptor {
     super.onError(err, handler);
   }
 
-  bool _isPublicPath(RequestOptions options) {
-    const publicPaths = [
-      AuthEndpoints.loginLocal,
-      AuthEndpoints.loginGoogle,
-      AuthEndpoints.register,
-      DocumentEndpoints.public,
-      AcademicEndpoints.public,
-    ];
-    return publicPaths.any(
-      (path) =>
-          options.path.contains(path) || options.uri.path.contains(path),
+  bool _isPublicPath(String path, String uriPath) {
+    return _publicPaths.any(
+      (publicPath) =>
+          path.contains(publicPath) || uriPath.contains(publicPath),
     );
   }
 }

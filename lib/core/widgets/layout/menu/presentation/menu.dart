@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/core/router/app_router.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:studydocs/features/auth/presentation/cubit/auth_state.dart';
@@ -180,6 +179,7 @@ class MenuDrawer extends StatelessWidget {
                           onClose();
                           await context.read<AuthCubit>().logout();
                           if (context.mounted) {
+                            context.go('/home');
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Đã đăng xuất'),

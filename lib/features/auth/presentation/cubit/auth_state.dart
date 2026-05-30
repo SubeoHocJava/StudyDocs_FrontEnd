@@ -29,6 +29,14 @@ class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
+class AuthRegisterSuccess extends AuthState {
+  const AuthRegisterSuccess();
+}
+
+class AuthGooglePending extends AuthState {
+  const AuthGooglePending();
+}
+
 class AuthFailure extends AuthState {
   final String message;
 
