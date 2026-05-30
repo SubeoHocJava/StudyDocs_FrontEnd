@@ -74,10 +74,11 @@ class DioClient {
       String path, {
         dynamic data,
         Map<String, dynamic>? queryParameters,
+        Options? options,
       }) async {
     try {
       return fromResponse<dynamic>(
-        await _dio.post(path, data: data, queryParameters: queryParameters),
+        await _dio.post(path, data: data, queryParameters: queryParameters, options: options),
       );
     } on DioException catch (e) {
       throw _handleError(e);
