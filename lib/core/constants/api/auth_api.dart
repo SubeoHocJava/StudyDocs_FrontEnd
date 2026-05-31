@@ -3,7 +3,7 @@
 class AuthApiEndpoints {
   AuthApiEndpoints._();
 
-  static const String publicBase = 'users/public/auth';
+  static const String publicBase = 'auth/public/auth';
 
   static const String register = '$publicBase/register';
   static const String login = '$publicBase/login';
