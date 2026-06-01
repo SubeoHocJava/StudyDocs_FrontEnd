@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +98,7 @@ class InforUser extends StatelessWidget {
               ? () async {
                 final result = await FilePicker.platform.pickFiles(
                   type: FileType.image,
+                  withData: true,
                 );
                 if (result == null) return;
 
@@ -148,10 +148,6 @@ class InforUser extends StatelessWidget {
 
   DecorationImage? _avatarImageProvider(String? image) {
     if (image == null || image.isEmpty) return null;
-
-    if (image.startsWith("/")) {
-      return DecorationImage(image: FileImage(File(image)), fit: BoxFit.cover);
-    }
 
     if (image.startsWith("http")) {
       return DecorationImage(image: NetworkImage(image), fit: BoxFit.cover);

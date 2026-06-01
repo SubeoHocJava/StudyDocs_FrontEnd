@@ -18,7 +18,7 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
 
   InforUserBloc() : super(InforUserInitial()) {
     // Khởi tạo Repository
-    final repo = InforUserRepositoryMock();
+    final repo = InforUserRepositoryImpl();
 
     // Khởi tạo UseCase
     _getUserInforUseCase = GetUserInforUseCase(repo);
@@ -70,7 +70,7 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
 
       emit(current.copyWith(avatarUrl: newAvatar));
     } catch (e) {
-      emit(InforUserError("Không thể cập nhật avatar"));
+      emit(InforUserError(e.toString()));
     }
   }
 

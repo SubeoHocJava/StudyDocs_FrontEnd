@@ -76,3 +76,13 @@ class FollowEndpoints {
   static const String followers = '$base/followers';
   static const String following = '$base/following';
 }
+
+/// =================================================
+/// MEDIA
+/// =================================================
+class MediaEndpoints {
+  static const String base = 'media';
+  
+  static const String initUpload = '$base/init-upload';
+  static const String completeUpload = '$base/complete-upload'; // Append /{mediaId}/complete-upload
+}
