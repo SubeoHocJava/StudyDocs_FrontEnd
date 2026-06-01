@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 import 'dio_client.dart';
@@ -10,21 +10,21 @@ class MediaService {
 
   /// Trả về mediaId nếu upload thành công, null nếu thất bại
   Future<int?> uploadMedia({
-    required File file,
+    required PlatformFile file,
     required String ownerId,
     required String ownerType,
     required String mediaType, // 'IMAGE', 'VIDEO', 'DOCUMENT'
   }) async {
-    try {
-      final fileName = file.path.split('/').last;
+    final fileName = file.name;
       
       // 1. Gọi API Gateway -> Media Service để lấy URL Upload của Cloudinary
       final idempotencyKey = DateTime.now().millisecondsSinceEpoch.toString();
-      final initResponse = await _dioClient.post(
+      final initResponse = await _dioClient.dio.post(
         MediaEndpoints.initUpload,
         data: {
           'fileName': fileName,
-          'mediaType': mediaType,
+          'contentType': 'application/octet-stream', 
+          'sizeBytes': file.size,
           'ownerId': ownerId,
           'ownerType': ownerType,
         },
@@ -45,7 +45,7 @@ class MediaService {
 
       // 2. Upload trực tiếp file lên Cloudinary thông qua URL đã được ký
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(file.path, filename: fileName),
+        'file': MultipartFile.fromBytes(file.bytes!, filename: fileName),
       });
 
       // Tạo một instance Dio mới để gọi ra ngoài (không đính kèm Token của hệ thống)
@@ -63,12 +63,11 @@ class MediaService {
       }
 
       // 3. Gọi API xác nhận hoàn tất Upload
-      await _dioClient.put('${MediaEndpoints.completeUpload.replaceAll("complete-upload", "")}$mediaId/complete-upload');
+      await _dioClient.dio.put(
+        '${MediaEndpoints.completeUpload.replaceAll("complete-upload", "")}$mediaId/complete-upload',
+        data: uploadResponse.data,
+      );
 
       return mediaId;
-    } catch (e) {
-      print("Media upload error: $e");
-      return null;
-    }
   }
 }
