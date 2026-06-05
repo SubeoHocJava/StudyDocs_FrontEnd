@@ -11,6 +11,8 @@ build/
 android/.gradle/
 android/local.properties
 android/app/build/
+pubspec.lock
+
 
 # IDE
 .idea/

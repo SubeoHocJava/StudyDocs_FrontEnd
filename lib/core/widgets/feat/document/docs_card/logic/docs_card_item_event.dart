@@ -1,0 +1,24 @@
+import 'package:equatable/equatable.dart';
+
+abstract class DocsCardItemEvent extends Equatable {
+  const DocsCardItemEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class CardLiked extends DocsCardItemEvent {
+  const CardLiked();
+}
+
+class CardBookmarked extends DocsCardItemEvent {
+  const CardBookmarked();
+}
+
+class CardDownloaded extends DocsCardItemEvent {
+  const CardDownloaded();
+}
+
+class CardErrorCleared extends DocsCardItemEvent {
+  const CardErrorCleared();
+}
