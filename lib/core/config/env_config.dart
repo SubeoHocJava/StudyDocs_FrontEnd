@@ -5,7 +5,7 @@ class EnvConfig {
   static String get apiBaseUrl {
     final raw =
         dotenv.env['API_BASE_URL']?.trim() ??
-        'http://localhost:8090/api/v1';
+        'http://localhost:8080';
     final normalized = raw.replaceAll(RegExp(r'/+$'), '');
     return '$normalized/';
   }
