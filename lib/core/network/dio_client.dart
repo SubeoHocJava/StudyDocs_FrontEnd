@@ -219,6 +219,22 @@ class DioClient {
     if (responseData is String) {
       responseData = jsonDecode(responseData);
     }
-    return ApiResponse<T>.fromJson(responseData, null);
+    
+    // Check if response is raw/unwrapped (does not contain 'statusCode' at the root level)
+    if (responseData is Map && !responseData.containsKey('statusCode')) {
+      return ApiResponse<T>(
+        statusCode: response.statusCode ?? 200,
+        data: responseData as T,
+        errorCode: null,
+      );
+    } else if (responseData is List) {
+      return ApiResponse<T>(
+        statusCode: response.statusCode ?? 200,
+        data: responseData as T,
+        errorCode: null,
+      );
+    }
+
+    return ApiResponse<T>.fromJson(Map<String, dynamic>.from(responseData), null);
   }
 }

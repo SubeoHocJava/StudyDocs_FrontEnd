@@ -1,3 +1,5 @@
+import 'package:studydocs/core/network/dio_client.dart';
+
 abstract interface class ReviewRepository {
   Future<void> likeDocument(String documentId);
 
@@ -5,7 +7,17 @@ abstract interface class ReviewRepository {
 }
 
 class ReviewRepositoryImpl implements ReviewRepository {
-  Future<void> likeDocument(String documentId) async {}
+  final DioClient _dioClient;
 
-  Future<void> dislikeDocument(String documentId) async {}
+  ReviewRepositoryImpl({DioClient? dioClient}) : _dioClient = dioClient ?? DioClient();
+
+  @override
+  Future<void> likeDocument(String documentId) async {
+    await _dioClient.post('documents/$documentId/interactions', data: {'type': 'LIKE'});
+  }
+
+  @override
+  Future<void> dislikeDocument(String documentId) async {
+    await _dioClient.post('documents/$documentId/interactions', data: {'type': 'DISLIKE'});
+  }
 }

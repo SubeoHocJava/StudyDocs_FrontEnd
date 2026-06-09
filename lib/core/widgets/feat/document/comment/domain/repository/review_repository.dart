@@ -1,6 +1,8 @@
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/author.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/content.dart';
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/core/network/token_services.dart';
 
 abstract interface class ReviewRepository {
   //Chỉ xử lý cho text cho hiện tại
@@ -15,167 +17,100 @@ abstract interface class ReviewRepository {
 }
 
 class ReviewRepositoryImpl implements ReviewRepository {
-  @override
-  Future<void> comment(String documentId, String content) async {}
+  final DioClient _dioClient;
+  final TokenStorageService _tokenStorage;
+
+  ReviewRepositoryImpl({DioClient? dioClient, TokenStorageService? tokenStorage})
+      : _dioClient = dioClient ?? DioClient(),
+        _tokenStorage = tokenStorage ?? TokenStorageService();
 
   @override
-  Future<void> replyComment(String documentId, String commentId, String content) async {}
+  Future<void> comment(String documentId, String content) async {
+    await _dioClient.post('reviews', data: {
+      'documentId': documentId,
+      'documentTitle': 'Tài liệu',
+      'content': content,
+    });
+  }
+
+  @override
+  Future<void> replyComment(String documentId, String commentId, String content) async {
+    await _dioClient.post('reviews/$commentId/replies', data: {
+      'content': content,
+    });
+  }
 
   @override
   Future<List<Comment>> getComments(String documentId) async {
-    await Future.delayed(const Duration(seconds: 1));
-
-    return [
-      Comment(
-        id: 'root_A',
-        documentId: documentId,
-        contents: [TextBlock('Tài liệu này rất hữu ích, cảm ơn tác giả.')],
-        author: const Author(
-          id: 'author_A',
-          fullName: 'Người Dùng A',
-          avatarUrl: 'https://i.pravatar.cc/150?img=5',
-        ),
-        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-        likeCount: 5,
-        replyCount: 2, 
-      ),
-      Comment(
-        id: 'root_B',
-        documentId: documentId,
-        contents: [TextBlock('Xin hỏi ở phần 2 tác giả dùng công thức nào vậy?')],
-        author: const Author(
-          id: 'author_B',
-          fullName: 'Người Dùng B',
-          avatarUrl: 'https://i.pravatar.cc/150?img=8',
-        ),
-        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-        replyCount: 1,
-      ),
-    ];
+    final response = await _dioClient.get('documents/$documentId/reviews');
+    final data = response.data;
+    if (data == null) return [];
+    
+    final rawList = data['content'] as List? ?? [];
+    final currentUserId = await _tokenStorage.getUserId();
+    return rawList
+        .map((item) => _mapComment(Map<String, dynamic>.from(item), currentUserId))
+        .toList();
   }
 
   @override
   Future<List<Comment>> getReplies(String documentId, String commentId) async {
-    // Giả lập call API mất 1s
-    await Future.delayed(const Duration(seconds: 1));
+    final response = await _dioClient.get('reviews/$commentId/replies');
+    final data = response.data;
+    if (data == null) return [];
 
-    if (commentId == 'root_A') {
-      return [
-        Comment(
-          id: 'reply_mock_1_A',
-          documentId: documentId,
-          contents: [TextBlock('Tuyệt vời quá! Mình cũng nghĩ vậy.')],
-          author: const Author(
-            id: 'author_A1',
-            fullName: 'Trần Bình',
-            avatarUrl: 'https://i.pravatar.cc/150?img=11',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
-          replyToCommentId: commentId,
-        ),
-        Comment(
-          id: 'reply_mock_2_A',
-          documentId: documentId,
-          contents: [TextBlock('Bài viết rất chỉn chu.')],
-          author: const Author(
-            id: 'author_A2',
-            fullName: 'Nguyễn Văn C',
-            avatarUrl: 'https://i.pravatar.cc/150?img=12',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
-          replyToCommentId: commentId,
-        ),
-      ];
-    } else if (commentId == 'root_B') {
-      return [
-        Comment(
-          id: 'reply_mock_1_B',
-          documentId: documentId,
-          contents: [TextBlock('Tác giả dùng công thức ABC ở trang 10 đó bạn.')],
-          author: const Author(
-            id: 'author_B1',
-            fullName: 'Lê Cường',
-            avatarUrl: 'https://i.pravatar.cc/150?img=14',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
-          replyToCommentId: commentId,
-          replyCount: 1, // B1 có 1 reply
-          children: [
-            Comment(
-              id: 'reply_B1_1',
-              documentId: documentId,
-              contents: [TextBlock('Cảm ơn bạn nhiều!')],
-              author: const Author(
-                id: 'author_B',
-                fullName: 'Người Dùng B',
-                avatarUrl: 'https://i.pravatar.cc/150?img=8',
-              ),
-              createdAt: DateTime.now().subtract(const Duration(minutes: 1)),
-              replyToCommentId: 'reply_mock_1_B',
-            ),
-          ],
-        ),
-      ];
-    } else if (commentId == 'reply_mock_1_B') {
-      return [
-        Comment(
-          id: 'reply_nested_mock_1_B1',
-          documentId: documentId,
-          contents: [TextBlock('Không có gì, chia sẻ cùng học mà!')],
-          author: const Author(
-            id: 'author_B1',
-            fullName: 'Lê Cường',
-            avatarUrl: 'https://i.pravatar.cc/150?img=14',
-          ),
-          createdAt: DateTime.now().subtract(const Duration(seconds: 30)),
-          replyToCommentId: 'reply_mock_1_B',
-          replyCount: 1,
-          children: [
-            Comment(
-              id: 'reply_nested_mock_2_B2',
-              documentId: documentId,
-              contents: [TextBlock('Mình cũng thích phần 2.')],
-              author: const Author(
-                id: 'author_C',
-                fullName: 'Người Dùng C',
-                avatarUrl: 'https://i.pravatar.cc/150?img=2',
-              ),
-              createdAt: DateTime.now().subtract(const Duration(seconds: 15)),
-              replyToCommentId: 'reply_nested_mock_1_B1',
-              replyCount: 1,
-              children: [
-                Comment(
-                  id: 'reply_nested_mock_3_B3',
-                  documentId: documentId,
-                  contents: [TextBlock('Phần đó viết rất dễ hiểu.')],
-                  author: const Author(
-                    id: 'author_D',
-                    fullName: 'Người Dùng D',
-                    avatarUrl: 'https://i.pravatar.cc/150?img=3',
-                  ),
-                  createdAt: DateTime.now().subtract(const Duration(seconds: 5)),
-                  replyToCommentId: 'reply_nested_mock_2_B2',
-                  children: const [],
-                )
-              ],
-            )
-          ],
-        ),
-      ];
-    }
-    
-    return [];
+    final rawList = data['content'] as List? ?? [];
+    final currentUserId = await _tokenStorage.getUserId();
+    return rawList
+        .map((item) => _mapComment(Map<String, dynamic>.from(item), currentUserId))
+        .toList();
   }
 
   @override
-  Future<void> likeComment(String documentId, String commentId) async {}
+  Future<void> likeComment(String documentId, String commentId) async {
+    await _dioClient.post('reviews/$commentId/interactions', data: {'type': 'LIKE'});
+  }
 
   @override
-  Future<void> unlikeComment(String documentId, String commentId) async {}
+  Future<void> unlikeComment(String documentId, String commentId) async {
+    // In review-service, sending the same interaction type toggles it off
+    await _dioClient.post('reviews/$commentId/interactions', data: {'type': 'LIKE'});
+  }
 
   @override
-  Future<void> editComment(String documentId, String commentId, String content) async {}
+  Future<void> editComment(String documentId, String commentId, String content) async {
+    await _dioClient.put('reviews/$commentId', data: {'content': content});
+  }
 
   @override
-  Future<void> deleteComment(String documentId, String commentId) async {}
+  Future<void> deleteComment(String documentId, String commentId) async {
+    await _dioClient.delete('reviews/$commentId');
+  }
+
+  Comment _mapComment(Map<String, dynamic> json, String? currentUserId) {
+    final String authorId = json['userId']?.toString() ?? '';
+    return Comment(
+      id: json['id']?.toString() ?? '',
+      documentId: json['documentId']?.toString() ?? '',
+      contents: [TextBlock(json['content']?.toString() ?? '')],
+      author: Author(
+        id: authorId,
+        fullName: json['username']?.toString() ?? 'Anonymous',
+        avatarUrl: json['userAvatar']?.toString() ?? 'https://ui-avatars.com/api/?name=User',
+      ),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
+      likeCount: json['likeCount'] as int? ?? 0,
+      isLiked: false, 
+      isMine: currentUserId != null && currentUserId == authorId,
+      replyToCommentId: json['parentId']?.toString(),
+      replyCount: json['replyCount'] as int? ?? 0,
+      children: json['replies'] != null
+          ? (json['replies'] as List)
+              .map((item) => _mapComment(Map<String, dynamic>.from(item), currentUserId))
+              .toList()
+          : const [],
+    );
+  }
 }
