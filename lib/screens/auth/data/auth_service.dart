@@ -6,7 +6,7 @@ import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/utils/jwt_utils.dart';
 import 'package:studydocs/data/model/global/api_response.dart';
 import 'package:studydocs/data/model/user/User.dart';
-import 'package:studydocs/features/auth/data/models/auth_token_dto.dart';
+import 'package:studydocs/screens/auth/data/models/auth_token_dto.dart';
 
 class AuthServiceException implements Exception {
   final String message;

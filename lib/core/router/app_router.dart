@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/router/route_security.dart';
 import 'package:studydocs/core/widgets/layout/app_shell.dart';
-import 'package:studydocs/features/home/presentation/home_screen.dart';
-import 'package:studydocs/features/user/profile/presentation/ProfileScreen.dart';
-import 'package:studydocs/features/user/user_follow/presentation/screen/user_follow_screen.dart';
 import 'package:studydocs/screens/user/explore/presentation/explore_screen.dart';
 import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
 import 'package:studydocs/screens/user/library/presentation/library_subject_screen.dart';
 import 'package:studydocs/screens/user/notification/presentation/notification_screen.dart';
+
+import '../../screens/home/presentation/home_screen.dart';
+import '../../screens/profile/presentation/ProfileScreen.dart';
+import '../../screens/user_follow/presentation/screen/user_follow_screen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');

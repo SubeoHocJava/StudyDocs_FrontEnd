@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
-import 'package:studydocs/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:studydocs/features/auth/presentation/cubit/auth_state.dart';
 
+
+import '../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
+import '../../../../../screens/auth/presentation/cubit/auth_state.dart';
 import '../domain/repository/menu_profile_repository.dart';
 import '../domain/usecase/get_menu_profile_usecase.dart';
 import '../logic/menu_profile_bloc.dart';

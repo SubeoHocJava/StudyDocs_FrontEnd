@@ -4,8 +4,8 @@ import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository/document_repository.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
-import 'package:studydocs/features/home/domain/entity/home_documents_page.dart';
-import 'package:studydocs/features/home/domain/repository/home_repository.dart';
+import 'package:studydocs/screens/home/domain/entity/home_documents_page.dart';
+import 'package:studydocs/screens/home/domain/repository/home_repository.dart';
 
 class HomeRemoteRepository implements HomeRepository, DocumentRepository {
   final Dio _dio;

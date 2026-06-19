@@ -5,10 +5,11 @@ import 'package:studydocs/core/constants/app_colors.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
+import '../../../../../screens/auth/presentation/cubit/auth_state.dart';
+import '../../../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import '../../menu/presentation/menu.dart';
-import '../../../../../../features/auth/presentation/widgets/auth_dialog.dart';
-import '../../../../../../features/auth/presentation/cubit/auth_cubit.dart';
-import '../../../../../../features/auth/presentation/cubit/auth_state.dart';
+
 import 'package:studydocs/core/constants/app_icons.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {

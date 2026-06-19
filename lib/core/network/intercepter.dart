@@ -2,8 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show VoidCallback, kDebugMode;
 import 'package:studydocs/core/constants/api/auth_api.dart';
 import 'package:studydocs/core/network/token_services.dart';
-import 'package:studydocs/features/auth/data/auth_service.dart';
 
+
+import '../../screens/auth/data/auth_service.dart';
 import '../constants/api_constants.dart';
 
 class ApiInterceptor extends QueuedInterceptor {

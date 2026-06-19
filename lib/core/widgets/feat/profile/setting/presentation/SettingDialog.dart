@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:studydocs/core/widgets/feat/profile/update_infor_form/logic/update_infor_bloc.dart';
 
+import '../../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../../constants/app_colors.dart';
 import '../../../../../router/app_router.dart';
 import '../../myqr/presentation/my_qr_widget.dart';

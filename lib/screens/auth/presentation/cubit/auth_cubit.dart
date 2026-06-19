@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/utils/pkce_utils.dart';
-import 'package:studydocs/features/auth/data/auth_service.dart';
+import 'package:studydocs/screens/auth/data/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'auth_state.dart';
 

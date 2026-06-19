@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/features/home/domain/usecase/get_home_documents_usecase.dart';
-import 'package:studydocs/features/home/logic/home_event.dart';
-import 'package:studydocs/features/home/logic/home_state.dart';
+
+import '../domain/usecase/get_home_documents_usecase.dart';
+import 'home_event.dart';
+import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetHomeDocumentsUseCase _getHomeDocumentsUseCase;

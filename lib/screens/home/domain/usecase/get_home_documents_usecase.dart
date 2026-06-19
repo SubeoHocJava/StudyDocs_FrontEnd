@@ -1,5 +1,7 @@
-import 'package:studydocs/features/home/domain/entity/home_documents_page.dart';
-import 'package:studydocs/features/home/domain/repository/home_repository.dart';
+
+
+import '../entity/home_documents_page.dart';
+import '../repository/home_repository.dart';
 
 abstract interface class GetHomeDocumentsUseCase {
   Future<HomeDocumentsPage> call({

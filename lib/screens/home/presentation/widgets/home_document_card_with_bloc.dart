@@ -8,7 +8,8 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_i
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_event.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_state.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
-import 'package:studydocs/features/home/presentation/widgets/home_document_card.dart';
+
+import 'home_document_card.dart';
 
 class HomeDocumentCardWithBloc extends StatelessWidget {
   final DocumentSummaryModel doc;

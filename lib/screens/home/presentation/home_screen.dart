@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/datasource/home_remote_repository.dart';
-import 'package:studydocs/features/home/domain/usecase/get_home_documents_usecase.dart';
-import 'package:studydocs/features/home/logic/home_bloc.dart';
-import 'package:studydocs/features/home/logic/home_event.dart';
-import 'package:studydocs/features/home/logic/home_state.dart';
-import 'package:studydocs/features/home/presentation/widgets/home_document_card_with_bloc.dart';
+import 'package:studydocs/screens/home/presentation/widgets/home_document_card_with_bloc.dart';
+
+import '../domain/usecase/get_home_documents_usecase.dart';
+import '../logic/home_bloc.dart';
+import '../logic/home_event.dart';
+import '../logic/home_state.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

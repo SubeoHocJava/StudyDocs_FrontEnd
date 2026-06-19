@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/widgets/layout/bottom/bottom_nav.dart';
-import 'package:studydocs/features/home/presentation/home_screen.dart';
+
 import 'package:studydocs/screens/user/explore/presentation/explore_screen.dart';
 import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
 import 'package:studydocs/screens/user/notification/presentation/notification_screen.dart';
+
+import '../home/presentation/home_screen.dart';
 
 class UserRootShell extends StatefulWidget {
   const UserRootShell({super.key});

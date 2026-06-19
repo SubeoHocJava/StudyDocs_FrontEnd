@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:studydocs/screens/auth/data/auth_service.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
 import 'app.dart';
 import 'core/network/dio_client.dart';
 import 'core/router/app_router.dart';
-import 'features/auth/data/auth_service.dart';
-import 'features/auth/presentation/cubit/auth_cubit.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../data/model/global/api_response.dart';
+import '../../screens/auth/data/auth_service.dart';
 import '../constants/api_constants.dart';
 import '../exceptions/api_exception.dart';
-import 'package:studydocs/features/auth/data/auth_service.dart';
+
 
 import 'intercepter.dart';
 
