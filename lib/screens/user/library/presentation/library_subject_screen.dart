@@ -5,7 +5,7 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_square_carousel.dart';
 import 'package:studydocs/core/widgets/feat/document/explore/presentation/explore_header_with_bloc.dart';
-import 'package:studydocs/data/datasource/mock_library_repository.dart';
+import 'package:studydocs/data/datasource/impl/library_remote_repository.dart';
 import 'package:studydocs/screens/user/library/domain/usecase/get_library_subject_page_usecase.dart';
 import 'package:studydocs/screens/user/library/logic/library_subject_bloc.dart';
 import 'package:studydocs/screens/user/library/logic/library_subject_event.dart';
@@ -21,14 +21,14 @@ class LibrarySubjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const repository = MockLibraryRepository();
+    final repository = LibraryRemoteRepository();
 
     return BlocProvider(
       create: (_) => LibrarySubjectBloc(
         getLibrarySubjectPageUseCase:
-            const GetLibrarySubjectPageUseCaseImpl(repository),
+            GetLibrarySubjectPageUseCaseImpl(repository),
       )..add(LibrarySubjectRequested(subjectId)),
-      child: const _LibrarySubjectView(documentRepository: repository),
+      child: _LibrarySubjectView(documentRepository: repository),
     );
   }
 }

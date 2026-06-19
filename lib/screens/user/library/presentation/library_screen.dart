@@ -7,7 +7,7 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_square_carousel.dart';
 import 'package:studydocs/core/widgets/feat/document/upload/presentation/upload_dropzone_tile.dart';
-import 'package:studydocs/data/datasource/mock_library_repository.dart';
+import 'package:studydocs/data/datasource/impl/library_remote_repository.dart';
 import 'package:studydocs/screens/user/library/domain/usecase/get_library_page_usecase.dart';
 import 'package:studydocs/screens/user/library/logic/library_bloc.dart';
 import 'package:studydocs/screens/user/library/logic/library_event.dart';
@@ -18,13 +18,13 @@ class LibraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const repository = MockLibraryRepository();
+    final repository = LibraryRemoteRepository();
 
     return BlocProvider(
       create: (_) => LibraryBloc(
-        getLibraryPageUseCase: const GetLibraryPageUseCaseImpl(repository),
+        getLibraryPageUseCase: GetLibraryPageUseCaseImpl(repository),
       )..add(const LibraryRequested()),
-      child: const _LibraryView(documentRepository: repository),
+      child: _LibraryView(documentRepository: repository),
     );
   }
 }
