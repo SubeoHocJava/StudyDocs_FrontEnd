@@ -27,22 +27,22 @@ class MenuDrawer extends StatelessWidget {
   void _navigateTo(BuildContext context, int index) {
     onClose();
 
-    // switch (index) {
-    //   case 0:
-    //     context.go(AppRoutes.home);
-    //     break;
-    //   case 1:
-    //     context.go(AppRoutes.library);
-    //     break;
-    //   case 2:
-    //     context.go(AppRoutes.explore);
-    //     break;
-    //   case 3:
-    //     context.go(AppRoutes.notifications);
-    //     break;
-    //   default:
-    //     context.go(AppRoutes.home);
-    // }
+    switch (index) {
+      case 0:
+        context.go("/home");
+        break;
+      case 1:
+        context.go("/library");
+        break;
+      case 2:
+        context.go("explore");
+        break;
+      case 3:
+        context.go("notifications");
+        break;
+      default:
+        context.go("/home");
+    }
   }
 
   @override

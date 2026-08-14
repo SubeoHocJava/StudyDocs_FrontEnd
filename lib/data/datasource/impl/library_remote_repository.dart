@@ -32,7 +32,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
     List<DocumentSummaryModel> saved = [];
 
     try {
-      final resSubjects = await _client.get('universities');
+      final resSubjects = await _client.get('education/universities');
       if (resSubjects.isSuccess && resSubjects.data != null) {
         final dataList = _extractList(resSubjects.data);
         if (dataList != null) {
@@ -49,7 +49,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
     } catch (_) {}
 
     try {
-      final resRecent = await _client.get('documents');
+      final resRecent = await _client.get('education/documents');
       if (resRecent.isSuccess && resRecent.data != null) {
         final dataList = _extractList(resRecent.data);
         if (dataList != null) {
@@ -66,7 +66,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
     } catch (_) {}
 
     try {
-      final resSaved = await _client.get('documents');
+      final resSaved = await _client.get('education/documents');
       if (resSaved.isSuccess && resSaved.data != null) {
         final dataList = _extractList(resSaved.data);
         if (dataList != null) {
@@ -107,7 +107,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
     String subjectName = 'Môn học';
 
     try {
-      final resSubjectInfo = await _client.get('universities/$subjectId');
+      final resSubjectInfo = await _client.get('education/universities/$subjectId');
       if (resSubjectInfo.isSuccess && resSubjectInfo.data != null) {
          final data = resSubjectInfo.data is Map ? resSubjectInfo.data['data'] ?? resSubjectInfo.data : resSubjectInfo.data;
          if (data is Map) {
@@ -120,7 +120,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
     List<DocumentSummaryModel> stored = [];
 
     try {
-       final resUserDocs = await _client.get('documents');
+       final resUserDocs = await _client.get('education/documents');
        if (resUserDocs.isSuccess && resUserDocs.data != null) {
           final dataList = _extractList(resUserDocs.data);
           if (dataList != null) {
@@ -170,7 +170,7 @@ class LibraryRemoteRepository implements LibraryRepository, DocumentRepository {
   @override
   Future<String?> like(String documentId) async {
     try {
-      final res = await _client.post('documents/$documentId/interactions', data: {'type': 'LIKE'});
+      final res = await _client.post('education/documents/$documentId/interactions', data: {'type': 'LIKE'});
       return res.isSuccess ? null : 'Failed to like';
     } catch (e) {
       return e.toString();

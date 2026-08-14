@@ -49,7 +49,7 @@ class HomeRemoteRepository implements HomeRepository, DocumentRepository {
   @override
   Future<String?> like(String documentId) async {
     try {
-      await _dio.post('documents/$documentId/interactions', data: {'type': 'LIKE'});
+      await _dio.post('education/documents/$documentId/interactions', data: {'type': 'LIKE'});
       return null;
     } catch (e) {
       return e.toString();

@@ -11,7 +11,7 @@ class ApiConstants {
 /// DOCUMENT
 /// =================================================
 class DocumentEndpoints {
-  static const String base = 'documents';
+  static const String base = 'education/documents';
   static const String public = '$base/public';
   static const String internal = '$base/internal';
   static const String user = '$base/user';
@@ -37,7 +37,7 @@ class DocumentEndpoints {
 /// REVIEW / REACTION
 /// =================================================
 class ReviewEndpoints {
-  static const String base = 'reviews';
+  static const String base = 'user/reviews';
 
   static const String documentStats = '$base/document';
   static const String documentReact = '$base/document';
@@ -53,7 +53,7 @@ class ReviewEndpoints {
 /// ACADEMIC
 /// =================================================
 class AcademicEndpoints {
-  static const String base = 'academics';
+  static const String base = 'education/academics';
   static const String public = '$base/public';
 
   static const String universitiesFilter = '$base/universities/filter';
@@ -71,7 +71,7 @@ class AcademicEndpoints {
 /// FOLLOW
 /// =================================================
 class FollowEndpoints {
-  static const String base = 'follows';
+  static const String base = 'user/follows';
 
   static const String followers = '$base/followers';
   static const String following = '$base/following';
@@ -81,7 +81,7 @@ class FollowEndpoints {
 /// MEDIA
 /// =================================================
 class MediaEndpoints {
-  static const String base = 'media';
+  static const String base = 'media/media';
   
   static const String initUpload = '$base/init-upload';
   static const String completeUpload = '$base/complete-upload'; // Append /{mediaId}/complete-upload
