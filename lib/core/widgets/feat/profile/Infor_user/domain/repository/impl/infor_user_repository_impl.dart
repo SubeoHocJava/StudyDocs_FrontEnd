@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 
+import '../../../../../../../../data/datasource/impl/user_datasource_impl.dart';
+import '../../../../../../../../data/datasource/user_remote_datasource.dart';
 import '../../model/user_infor_model.dart';
-
 import '../infor_user_repository.dart';
 
 
@@ -12,30 +13,22 @@ import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/constants/api/user_api.dart';
 
 class InforUserRepositoryImpl implements InforUserRepository {
-  /// Mock database
-  Map<String, UserInforModel> fakeDB = {
-    "123": UserInforModel(
-      id: "123",
-      fullName: "Nguyễn Văn A",
-      school: "Đại học Công nghệ",
-      avatarUrl: "assets/icons/avt.png",
-      isFollowing: false,
-      isOwnProfile: false,
-    ),
-    "me": UserInforModel(
-      id: "me",
-      fullName: "Tôi",
-      school: "ĐH Khoa học",
-      avatarUrl: "assets/icons/avt.png",
-      isFollowing: false,
-      isOwnProfile: true,
-    ),
-  };
+  final UserDataSource userDataSource;
+
+  InforUserRepositoryImpl({UserDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserDatasourceImpl();
 
   @override
   Future<UserInforModel> getUserInfor(String userId) async {
-    // await Future.delayed(const Duration(milliseconds: 300));
-    return fakeDB[userId] ?? fakeDB["me"]!;
+    final user = await userDataSource.getUser();
+    return UserInforModel(
+      id: user.id ?? "",
+      fullName: user.fullName ?? user.username ?? "",
+      school: user.school,
+      avatarUrl: user.avatarUrl,
+      isFollowing: false, // Wait, user object doesn't have isFollowing right now
+      isOwnProfile: userId == "me", // Assuming we fetched "me"
+    );
   }
 
   @override
@@ -78,13 +71,15 @@ class InforUserRepositoryImpl implements InforUserRepository {
 
   @override
   Future<bool> followUser(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return true;
+    final dioClient = DioClient();
+    final response = await dioClient.post('${UserEndpoints.base}/$userId/follow');
+    return response.isSuccess;
   }
 
   @override
   Future<bool> unfollowUser(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return true;
+    final dioClient = DioClient();
+    final response = await dioClient.delete('${UserEndpoints.base}/$userId/follow');
+    return response.isSuccess;
   }
 }

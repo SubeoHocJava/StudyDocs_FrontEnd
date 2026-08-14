@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:file_picker/file_picker.dart';
 
 import '../domain/repository/impl/infor_user_repository_impl.dart';
 import '../domain/usecae/follow_user_usecase.dart';
@@ -45,13 +44,17 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
     emit(InforUserLoading());
     try {
       final user = event.user;
+      final String nameToDisplay = (user.fullName != null && user.fullName!.trim().isNotEmpty) 
+          ? user.fullName! 
+          : (user.username ?? "");
+          
       emit(InforUserLoaded(
         id: user.id ?? "",
-        fullName: user.fullName ?? "",
+        fullName: nameToDisplay,
         school: user.school,
         avatarUrl: user.avatarUrl,
         isFollowing: false,
-        isOwnProfile: true,
+        isOwnProfile: true, // If we're visiting 'me', this is true
       ));
     } catch (e) {
       emit(InforUserError(e.toString()));

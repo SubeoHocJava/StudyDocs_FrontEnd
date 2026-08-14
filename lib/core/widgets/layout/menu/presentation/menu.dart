@@ -35,10 +35,10 @@ class MenuDrawer extends StatelessWidget {
         context.go("/library");
         break;
       case 2:
-        context.go("explore");
+        context.go("/explore");
         break;
       case 3:
-        context.go("notifications");
+        context.go("/notifications");
         break;
       default:
         context.go("/home");
@@ -56,9 +56,7 @@ class MenuDrawer extends StatelessWidget {
     return BlocProvider(
       create: (_) {
         final bloc = MenuProfileBloc(GetMenuProfileUseCase(MenuProfileRepositoryImpl()));
-        // if (userId.isNotEmpty) {
-        //   bloc.add(LoadMenuProfile(userId));
-        // }
+        bloc.add(LoadMenuProfile("me"));
         return bloc;
       },
       child: Material(

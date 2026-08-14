@@ -1,9 +1,11 @@
 
-import 'package:studydocs/screens/user/explore/presentation/explore_screen.dart';
-import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
-import 'package:studydocs/screens/user/notification/presentation/notification_screen.dart';
 
+import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
+
+
+import '../../screens/explore/presentation/explore_screen.dart';
 import '../../screens/home/presentation/home_screen.dart';
+import '../../screens/notification/presentation/notification_screen.dart';
 import '../../screens/profile/presentation/ProfileScreen.dart';
 import '../../screens/user_follow/presentation/screen/user_follow_screen.dart';
 import 'app_route_model.dart';

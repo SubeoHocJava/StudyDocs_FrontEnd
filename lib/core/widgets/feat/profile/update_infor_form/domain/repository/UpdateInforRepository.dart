@@ -1,6 +1,10 @@
 import 'dart:async';
+import '../../../../../../../data/datasource/impl/user_datasource_impl.dart';
+import '../../../../../../../data/datasource/user_remote_datasource.dart';
 import '../model/UserProfile.dart';
-
+import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/core/network/token_services.dart';
+import 'package:studydocs/core/constants/api/user_api.dart';
 abstract class UpdateInforRepository {
   Future<void> updateProfile({
     required String userName,
@@ -19,17 +23,10 @@ abstract class UpdateInforRepository {
 }
 
 class UpdateInforRepositoryImpl extends UpdateInforRepository {
-  // Mock local data
-  UserProfile _mockProfile = UserProfile(
-    userName: "duydev",
-    fullName: "Lâm Bảo Duy",
-    email: "duy@example.com",
-    phoneNumber: "0123456789",
-    address: "TP. Hồ Chí Minh",
-    gender: "Nam",
-    birthDate: DateTime(2002, 10, 15),
-    school: "Đại học Công nghệ TP.HCM",
-  );
+  final UserDataSource userDataSource;
+
+  UpdateInforRepositoryImpl({UserDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserDatasourceImpl();
 
   final List<String> _mockSchoolList = [
     "Đại học Công nghệ TP.HCM",
@@ -42,9 +39,17 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
 
   @override
   Future<UserProfile> getProfile() async {
-    await Future.delayed(const Duration(milliseconds: 500)); // giả lập API
-
-    return _mockProfile;
+    final user = await userDataSource.getUser();
+    return UserProfile(
+      userName: user.username ?? "",
+      fullName: user.fullName ?? "",
+      email: user.email ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+      address: user.address ?? "",
+      gender: user.gender ?? "Khác",
+      birthDate: user.dateOfBirth,
+      school: user.school ?? "",
+    );
   }
 
   @override
@@ -65,18 +70,27 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
     required DateTime? birthDate,
     required String? school,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 600)); // giả lập API PUT
-
-    // Cập nhật dữ liệu mock
-    _mockProfile = UserProfile(
-      userName: userName,
-      fullName: fullName,
-      email: email,
-      phoneNumber: phoneNumber,
-      address: address,
-      gender: gender,
-      birthDate: birthDate,
-      school: school,
+    final dioClient = DioClient();
+    final tokenService = TokenStorageService();
+    final userId = await tokenService.getUserId();
+    if (userId == null) throw Exception("User not logged in");
+    
+    final response = await dioClient.patch(
+      UserEndpoints.updateInfo(userId),
+      data: {
+        'username': userName,
+        'fullName': fullName,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'address': address,
+        'gender': gender,
+        'dateOfBirth': birthDate?.toIso8601String(),
+        'school': school,
+      },
     );
+    
+    if (!response.isSuccess) {
+      throw Exception("Cập nhật thông tin thất bại");
+    }
   }
 }
