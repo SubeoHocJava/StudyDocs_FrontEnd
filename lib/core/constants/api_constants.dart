@@ -81,7 +81,7 @@ class FollowEndpoints {
 /// MEDIA
 /// =================================================
 class MediaEndpoints {
-  static const String base = 'media/media';
+  static const String base = 'media';
   
   static const String initUpload = '$base/init-upload';
   static const String completeUpload = '$base/complete-upload'; // Append /{mediaId}/complete-upload

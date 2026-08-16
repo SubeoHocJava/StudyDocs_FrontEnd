@@ -2,7 +2,7 @@
 class UserEndpoints {
   UserEndpoints._();
 
-  static const String base = 'user/users';
+  static const String base = 'user';
 
   static const String me = '$base/me';
   static const String all = base;
