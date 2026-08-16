@@ -1,28 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
-import '../domain/usecase/get_notifications_usecase.dart';
-import '../domain/usecase/get_trash_notifications_usecase.dart';
-import '../domain/usecase/mark_as_read_usecase.dart';
-import '../domain/usecase/move_to_trash_usecase.dart';
-import '../domain/usecase/restore_from_trash_usecase.dart';
-import '../domain/usecase/delete_permanently_usecase.dart';
+import '../domain/repository/notification_repository.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  final GetNotificationsUseCase getNotifications;
-  final GetTrashNotificationsUseCase getTrashNotifications;
-  final MarkAsReadUseCase markAsReadUseCase;
-  final MoveToTrashUseCase moveToTrashUseCase;
-  final RestoreFromTrashUseCase restoreFromTrashUseCase;
-  final DeletePermanentlyUseCase deletePermanentlyUseCase;
+  final NotificationRepository repository;
 
   NotificationBloc({
-    required this.getNotifications,
-    required this.getTrashNotifications,
-    required this.markAsReadUseCase,
-    required this.moveToTrashUseCase,
-    required this.restoreFromTrashUseCase,
-    required this.deletePermanentlyUseCase,
+    required this.repository,
   }) : super(NotificationInitial()) {
     on<FetchNotificationsEvent>(_onFetchNotifications);
     on<ToggleTrashModeEvent>(_onToggleTrashMode);
@@ -46,8 +31,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
     
     try {
-      final activeList = await getNotifications();
-      final trashList = await getTrashNotifications();
+      final activeList = await repository.getNotifications();
+      final trashList = await repository.getTrashNotifications();
       if (state is NotificationLoaded) {
         final currentState = state as NotificationLoaded;
         emit(currentState.copyWith(
@@ -131,7 +116,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           : currentState.trashNotifications.map((n) => n.id).toList();
           
       for (var id in idsToDelete) {
-        await deletePermanentlyUseCase(id);
+        await repository.deletePermanently(id);
       }
       
       emit(currentState.copyWith(
@@ -150,7 +135,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           : currentState.trashNotifications.map((n) => n.id).toList();
 
       for (var id in idsToRestore) {
-        await restoreFromTrashUseCase(id);
+        await repository.restoreFromTrash(id);
       }
 
       emit(currentState.copyWith(
@@ -163,7 +148,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Future<void> _onMarkAsRead(MarkNotificationAsReadEvent event, Emitter<NotificationState> emit) async {
     try {
-      await markAsReadUseCase(event.id);
+      await repository.markAsRead(event.id);
       add(FetchNotificationsEvent());
     } catch (_) {}
   }
@@ -173,7 +158,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       final currentState = state as NotificationLoaded;
       for (var note in currentState.activeNotifications) {
         if (!note.isRead) {
-          await markAsReadUseCase(note.id);
+          await repository.markAsRead(note.id);
         }
       }
       add(FetchNotificationsEvent());
@@ -184,7 +169,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     if (state is NotificationLoaded) {
       final currentState = state as NotificationLoaded;
       for (var note in currentState.activeNotifications) {
-        await moveToTrashUseCase(note.id);
+        await repository.moveToTrash(note.id);
       }
       add(FetchNotificationsEvent());
     }
@@ -192,21 +177,21 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Future<void> _onMoveToTrash(MoveNotificationToTrashEvent event, Emitter<NotificationState> emit) async {
     try {
-      await moveToTrashUseCase(event.id);
+      await repository.moveToTrash(event.id);
       add(FetchNotificationsEvent());
     } catch (_) {}
   }
 
   Future<void> _onRestore(RestoreNotificationEvent event, Emitter<NotificationState> emit) async {
     try {
-      await restoreFromTrashUseCase(event.id);
+      await repository.restoreFromTrash(event.id);
       add(FetchNotificationsEvent());
     } catch (_) {}
   }
 
   Future<void> _onDelete(DeleteNotificationPermanentlyEvent event, Emitter<NotificationState> emit) async {
     try {
-      await deletePermanentlyUseCase(event.id);
+      await repository.deletePermanently(event.id);
       add(FetchNotificationsEvent());
     } catch (_) {}
   }

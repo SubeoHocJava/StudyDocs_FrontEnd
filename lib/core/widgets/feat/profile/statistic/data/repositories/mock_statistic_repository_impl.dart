@@ -1,14 +1,14 @@
 
-import '../../../../../../../data/datasource/impl/user_datasource_impl.dart';
-import '../../../../../../../data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import '../../domain/entities/statistic_entity.dart';
 import '../../domain/repositories/statistic_repository.dart';
 
 class MockStatisticRepositoryImpl implements StatisticRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  MockStatisticRepositoryImpl({UserDataSource? dataSource})
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  MockStatisticRepositoryImpl({UserRemoteDataSource? dataSource})
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
   @override
   Future<StatisticEntity> getStatisticData() async {

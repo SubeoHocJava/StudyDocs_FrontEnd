@@ -1,15 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/usecase/get_home_documents_usecase.dart';
+import '../domain/repository/home_repository.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final GetHomeDocumentsUseCase _getHomeDocumentsUseCase;
+  final HomeRepository _repository;
 
   HomeBloc({
-    required GetHomeDocumentsUseCase getHomeDocumentsUseCase,
-  })  : _getHomeDocumentsUseCase = getHomeDocumentsUseCase,
+    required HomeRepository repository,
+  })  : _repository = repository,
         super(const HomeState.initial()) {
     on<HomeStarted>(_onStarted);
     on<HomeNextPageRequested>(_onNextPageRequested);
@@ -32,7 +32,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     try {
-      final result = await _getHomeDocumentsUseCase(
+      final result = await _repository.getHomeDocuments(
         page: 1,
         pageSize: state.pageSize,
       );
@@ -68,7 +68,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(isLoadingMore: true, clearError: true));
 
     try {
-      final result = await _getHomeDocumentsUseCase(
+      final result = await _repository.getHomeDocuments(
         page: state.page + 1,
         pageSize: state.pageSize,
       );

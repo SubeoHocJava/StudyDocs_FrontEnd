@@ -1,6 +1,6 @@
 
-import '../../../../../../../data/datasource/impl/user_datasource_impl.dart';
-import '../../../../../../../data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import '../models/follow_entity.dart';
 
 abstract class FollowRepository {
@@ -8,10 +8,10 @@ abstract class FollowRepository {
 }
 
 class FollowRepositoryImpl implements FollowRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  FollowRepositoryImpl({UserDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  FollowRepositoryImpl({UserRemoteDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
   @override
   Future<FollowEntity> getFollowData() async {

@@ -5,7 +5,7 @@ import 'package:studydocs/core/widgets/feat/explore/presentation/widgets/explore
 import 'package:studydocs/core/widgets/feat/explore/presentation/widgets/explore_search_bar.dart';
 
 import '../data/repository/mock_explore_repository.dart';
-import '../domain/usecase/get_explore_data_usecase.dart';
+
 import '../logic/explore_bloc.dart';
 import '../logic/explore_event.dart';
 import '../logic/explore_state.dart';
@@ -19,7 +19,7 @@ class ExploreScreen extends StatelessWidget {
       create: (context) {
         final repository = MockExploreRepository();
         return ExploreBloc(
-          getExploreData: GetExploreDataUseCaseImpl(repository),
+          repository: repository,
         )..add(FetchExploreDataEvent());
       },
       child: const ExploreView(),

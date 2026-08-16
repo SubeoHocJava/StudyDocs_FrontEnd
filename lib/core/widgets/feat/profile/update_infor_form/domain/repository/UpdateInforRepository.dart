@@ -1,10 +1,7 @@
 import 'dart:async';
-import '../../../../../../../data/datasource/impl/user_datasource_impl.dart';
 import '../../../../../../../data/datasource/user_remote_datasource.dart';
+import '../../../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
 import '../model/UserProfile.dart';
-import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/core/network/token_services.dart';
-import 'package:studydocs/core/constants/api/user_api.dart';
 abstract class UpdateInforRepository {
   Future<void> updateProfile({
     required String userName,
@@ -23,10 +20,10 @@ abstract class UpdateInforRepository {
 }
 
 class UpdateInforRepositoryImpl extends UpdateInforRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  UpdateInforRepositoryImpl({UserDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  UpdateInforRepositoryImpl({UserRemoteDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
   final List<String> _mockSchoolList = [
     "Đại học Công nghệ TP.HCM",
@@ -41,14 +38,14 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
   Future<UserProfile> getProfile() async {
     final user = await userDataSource.getUser();
     return UserProfile(
-      userName: user.username ?? "",
-      fullName: user.fullName ?? "",
-      email: user.email ?? "",
-      phoneNumber: user.phoneNumber ?? "",
-      address: user.address ?? "",
-      gender: user.gender ?? "Khác",
-      birthDate: user.dateOfBirth,
-      school: user.school ?? "",
+      userName: user['username'] ?? "",
+      fullName: user['fullName'] ?? "",
+      email: user['email'] ?? "",
+      phoneNumber: user['phoneNumber'] ?? "",
+      address: user['address'] ?? "",
+      gender: user['gender'] ?? "Khác",
+      birthDate: user['dateOfBirth'] != null ? DateTime.tryParse(user['dateOfBirth'].toString()) : null,
+      school: user['school'] ?? "",
     );
   }
 
@@ -70,27 +67,15 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
     required DateTime? birthDate,
     required String? school,
   }) async {
-    final dioClient = DioClient();
-    final tokenService = TokenStorageService();
-    final userId = await tokenService.getUserId();
-    if (userId == null) throw Exception("User not logged in");
-    
-    final response = await dioClient.patch(
-      UserEndpoints.updateInfo(userId),
-      data: {
-        'username': userName,
-        'fullName': fullName,
-        'email': email,
-        'phoneNumber': phoneNumber,
-        'address': address,
-        'gender': gender,
-        'dateOfBirth': birthDate?.toIso8601String(),
-        'school': school,
-      },
-    );
-    
-    if (!response.isSuccess) {
-      throw Exception("Cập nhật thông tin thất bại");
-    }
+    await userDataSource.updateUser({
+      'username': userName,
+      'fullName': fullName,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'address': address,
+      'gender': gender,
+      'dateOfBirth': birthDate?.toIso8601String(),
+      'school': school,
+    });
   }
 }

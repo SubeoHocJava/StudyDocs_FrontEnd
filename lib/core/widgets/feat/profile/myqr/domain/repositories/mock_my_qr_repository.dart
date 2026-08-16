@@ -1,13 +1,13 @@
 
-import '../../../../../../../data/datasource/impl/user_datasource_impl.dart';
-import '../../../../../../../data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import 'my_qr_repository.dart';
 
 class MockMyQRRepository implements MyQRRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  MockMyQRRepository({UserDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  MockMyQRRepository({UserRemoteDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
   @override
   Future<String> getMyQRData(String userId) async {

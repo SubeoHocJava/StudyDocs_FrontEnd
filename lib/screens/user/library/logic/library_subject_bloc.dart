@@ -1,15 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/screens/user/library/domain/usecase/get_library_subject_page_usecase.dart';
+import 'package:studydocs/screens/user/library/domain/repository/library_repository.dart';
 import 'package:studydocs/screens/user/library/logic/library_subject_event.dart';
 import 'package:studydocs/screens/user/library/logic/library_subject_state.dart';
 
 class LibrarySubjectBloc
     extends Bloc<LibrarySubjectEvent, LibrarySubjectState> {
-  final GetLibrarySubjectPageUseCase _getLibrarySubjectPageUseCase;
+  final LibraryRepository _repository;
 
   LibrarySubjectBloc({
-    required GetLibrarySubjectPageUseCase getLibrarySubjectPageUseCase,
-  })  : _getLibrarySubjectPageUseCase = getLibrarySubjectPageUseCase,
+    required LibraryRepository repository,
+  })  : _repository = repository,
         super(const LibrarySubjectInitial()) {
     on<LibrarySubjectRequested>(_onRequested);
   }
@@ -20,7 +20,7 @@ class LibrarySubjectBloc
   ) async {
     emit(const LibrarySubjectLoading());
     try {
-      final data = await _getLibrarySubjectPageUseCase(event.subjectId);
+      final data = await _repository.getLibrarySubjectPage(event.subjectId);
       emit(LibrarySubjectLoaded(data));
     } catch (error) {
       emit(LibrarySubjectFailure(error.toString()));

@@ -12,13 +12,10 @@ import 'package:studydocs/core/widgets/feat/notification/presentation/widgets/no
 import 'package:studydocs/core/widgets/feat/notification/presentation/widgets/notification_detail_widget.dart';
 import 'package:studydocs/core/widgets/feat/notification/presentation/widgets/global_notification_options_bottom_sheet.dart';
 
-import '../data/repository/mock_notification_repository.dart';
-import '../domain/usecase/get_notifications_usecase.dart';
-import '../domain/usecase/get_trash_notifications_usecase.dart';
-import '../domain/usecase/mark_as_read_usecase.dart';
-import '../domain/usecase/move_to_trash_usecase.dart';
-import '../domain/usecase/restore_from_trash_usecase.dart';
-import '../domain/usecase/delete_permanently_usecase.dart';
+import '../data/repository/notification_remote_repository.dart';
+
+import 'package:studydocs/data/datasource/impl/notification_remote_datasource_impl.dart';
+
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -27,14 +24,10 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        final repository = MockNotificationRepository();
+        final dataSource = NotificationRemoteDataSourceImpl();
+        final repository = NotificationRemoteRepository(dataSource);
         return NotificationBloc(
-          getNotifications: GetNotificationsUseCaseImpl(repository),
-          getTrashNotifications: GetTrashNotificationsUseCaseImpl(repository),
-          markAsReadUseCase: MarkAsReadUseCaseImpl(repository),
-          moveToTrashUseCase: MoveToTrashUseCaseImpl(repository),
-          restoreFromTrashUseCase: RestoreFromTrashUseCaseImpl(repository),
-          deletePermanentlyUseCase: DeletePermanentlyUseCaseImpl(repository),
+          repository: repository,
         )..add(FetchNotificationsEvent());
       },
       child: const NotificationView(),

@@ -1,5 +1,6 @@
-import '../../../../../../data/datasource/impl/user_datasource_impl.dart';
-import '../../../../../../data/datasource/user_remote_datasource.dart';
+
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import '../model/menu_profile.dart';
 
 abstract class MenuProfileRepository {
@@ -7,10 +8,10 @@ abstract class MenuProfileRepository {
 }
 
 class MenuProfileRepositoryImpl implements MenuProfileRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  MenuProfileRepositoryImpl({UserDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  MenuProfileRepositoryImpl({UserRemoteDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
   @override
   Future<MenuProfile> getMenuProfile(String userId) async {

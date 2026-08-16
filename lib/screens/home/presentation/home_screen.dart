@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import 'package:studydocs/data/datasource/home_remote_repository.dart';
 import 'package:studydocs/screens/home/presentation/widgets/home_document_card_with_bloc.dart';
 
-import '../domain/usecase/get_home_documents_usecase.dart';
+import 'package:studydocs/screens/home/data/repository/mock_home_repository.dart';
 import '../logic/home_bloc.dart';
 import '../logic/home_event.dart';
 import '../logic/home_state.dart';
@@ -15,11 +14,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = HomeRemoteRepository();
+    final repository = MockHomeRepository();
 
     return BlocProvider(
       create: (_) => HomeBloc(
-        getHomeDocumentsUseCase: GetHomeDocumentsUseCaseImpl(repository),
+        repository: repository,
       )..add(const HomeStarted()),
       child: _HomeContent(repository: repository),
     );
@@ -27,7 +26,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _HomeContent extends StatefulWidget {
-  final HomeRemoteRepository repository;
+  final MockHomeRepository repository;
 
   const _HomeContent({
     required this.repository,

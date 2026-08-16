@@ -1,31 +1,33 @@
 import 'dart:async';
 import 'package:file_picker/file_picker.dart';
 
-import '../../../../../../../../data/datasource/impl/user_datasource_impl.dart';
 import '../../../../../../../../data/datasource/user_remote_datasource.dart';
+import '../../../../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
+import '../../../../../../../../data/datasource/follow_remote_datasource.dart';
+import '../../../../../../../../data/datasource/impl/follow_remote_datasource_impl.dart';
 import '../../model/user_infor_model.dart';
 import '../infor_user_repository.dart';
-
 
 import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/network/media_service.dart';
 import 'package:studydocs/core/network/token_services.dart';
-import 'package:studydocs/core/constants/api/user_api.dart';
 
 class InforUserRepositoryImpl implements InforUserRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
+  final FollowRemoteDataSource followDataSource;
 
-  InforUserRepositoryImpl({UserDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserDatasourceImpl();
+  InforUserRepositoryImpl({UserRemoteDataSource? userDs, FollowRemoteDataSource? followDs}) 
+      : userDataSource = userDs ?? UserRemoteDataSourceImpl(),
+        followDataSource = followDs ?? FollowRemoteDataSourceImpl();
 
   @override
   Future<UserInforModel> getUserInfor(String userId) async {
     final user = await userDataSource.getUser();
     return UserInforModel(
-      id: user.id ?? "",
-      fullName: user.fullName ?? user.username ?? "",
-      school: user.school,
-      avatarUrl: user.avatarUrl,
+      id: user['id'] ?? "",
+      fullName: user['fullName'] ?? user['username'] ?? "",
+      school: user['school'],
+      avatarUrl: user['avatarUrl'],
       isFollowing: false, // Wait, user object doesn't have isFollowing right now
       isOwnProfile: userId == "me", // Assuming we fetched "me"
     );
@@ -49,21 +51,14 @@ class InforUserRepositoryImpl implements InforUserRepository {
     
     if (mediaId == null) throw Exception("MediaService returned null mediaId!");
     
-    final response = await dioClient.patch(
-      UserEndpoints.updateImage(userId),
-      data: {
-        'avatarId': mediaId,
-        'avatarUrl': '' 
-      },
-    );
     
-    if (!response.isSuccess) {
-      throw Exception("Failed to update avatar in user service");
-    }
+    final updatedUser = await userDataSource.updateUser({
+      'avatarId': mediaId,
+      'avatarUrl': '' 
+    });
     
-    final data = response.data;
-    if (data != null && data['avatarUrl'] != null) {
-      return data['avatarUrl'];
+    if (updatedUser != null && updatedUser['avatarUrl'] != null) {
+      return updatedUser['avatarUrl'];
     }
     
     throw Exception("Failed to retrieve new avatar URL");
@@ -71,15 +66,21 @@ class InforUserRepositoryImpl implements InforUserRepository {
 
   @override
   Future<bool> followUser(String userId) async {
-    final dioClient = DioClient();
-    final response = await dioClient.post('${UserEndpoints.base}/$userId/follow');
-    return response.isSuccess;
+    try {
+      await followDataSource.followUser(userId);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
   Future<bool> unfollowUser(String userId) async {
-    final dioClient = DioClient();
-    final response = await dioClient.delete('${UserEndpoints.base}/$userId/follow');
-    return response.isSuccess;
+    try {
+      await followDataSource.unfollowUser(userId);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 }

@@ -1,12 +1,16 @@
-import '../../../../../data/datasource/user_remote_datasource.dart';
+
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 import '../../../../../data/model/user/User.dart';
 
 class UserRepository {
-  final UserDataSource userDataSource;
+  final UserRemoteDataSource userDataSource;
 
-  UserRepository({required this.userDataSource});
+  UserRepository({UserRemoteDataSource? dataSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
 
-  Future<User> getUser() {
-    return userDataSource.getUser();
+  Future<User> getUser() async {
+    final userData = await userDataSource.getUser();
+    return User.fromJson(userData);
   }
 }

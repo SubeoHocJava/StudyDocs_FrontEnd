@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/screens/user/library/domain/usecase/get_library_page_usecase.dart';
+import 'package:studydocs/screens/user/library/domain/repository/library_repository.dart';
 import 'package:studydocs/screens/user/library/logic/library_event.dart';
 import 'package:studydocs/screens/user/library/logic/library_state.dart';
 
 class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
-  final GetLibraryPageUseCase _getLibraryPageUseCase;
+  final LibraryRepository _repository;
 
   LibraryBloc({
-    required GetLibraryPageUseCase getLibraryPageUseCase,
-  })  : _getLibraryPageUseCase = getLibraryPageUseCase,
+    required LibraryRepository repository,
+  })  : _repository = repository,
         super(const LibraryInitial()) {
     on<LibraryRequested>(_onRequested);
   }
@@ -19,7 +19,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   ) async {
     emit(const LibraryLoading());
     try {
-      final data = await _getLibraryPageUseCase();
+      final data = await _repository.getLibraryPage();
       emit(LibraryLoaded(data));
     } catch (error) {
       emit(LibraryFailure(error.toString()));

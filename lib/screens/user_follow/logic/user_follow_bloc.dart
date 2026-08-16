@@ -22,10 +22,6 @@ class UserFollowBloc extends Bloc<UserFollowEvent, UserFollowState> {
     emit(UserFollowLoading());
     try {
       final userId = "await TokenStorageService().getUserId()";
-      if (userId == null) {
-        emit(const UserFollowError("Không tìm thấy thông tin người dùng"));
-        return;
-      }
       
       final followers = await repository.getFollowers(userId);
       final following = await repository.getFollowing(userId);

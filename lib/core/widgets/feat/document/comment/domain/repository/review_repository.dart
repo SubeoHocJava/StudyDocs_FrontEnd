@@ -1,7 +1,8 @@
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/author.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/content.dart';
-import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/review_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/review_remote_datasource_impl.dart';
 import 'package:studydocs/core/network/token_services.dart';
 
 abstract interface class ReviewRepository {
@@ -17,33 +18,26 @@ abstract interface class ReviewRepository {
 }
 
 class ReviewRepositoryImpl implements ReviewRepository {
-  final DioClient _dioClient;
+  final ReviewRemoteDataSource _dataSource;
   final TokenStorageService _tokenStorage;
 
-  ReviewRepositoryImpl({DioClient? dioClient, TokenStorageService? tokenStorage})
-      : _dioClient = dioClient ?? DioClient(),
+  ReviewRepositoryImpl({ReviewRemoteDataSource? dataSource, TokenStorageService? tokenStorage})
+      : _dataSource = dataSource ?? ReviewRemoteDataSourceImpl(),
         _tokenStorage = tokenStorage ?? TokenStorageService();
 
   @override
   Future<void> comment(String documentId, String content) async {
-    await _dioClient.post('reviews', data: {
-      'documentId': documentId,
-      'documentTitle': 'Tài liệu',
-      'content': content,
-    });
+    await _dataSource.addReview(documentId, content, 5); // Default rating 5 for now
   }
 
   @override
   Future<void> replyComment(String documentId, String commentId, String content) async {
-    await _dioClient.post('reviews/$commentId/replies', data: {
-      'content': content,
-    });
+    await _dataSource.replyToReview(commentId, content);
   }
 
   @override
   Future<List<Comment>> getComments(String documentId) async {
-    final response = await _dioClient.get('documents/$documentId/reviews');
-    final data = response.data;
+    final data = await _dataSource.getReviewsForDocument(documentId);
     if (data == null) return [];
     
     final rawList = data['content'] as List? ?? [];
@@ -55,8 +49,7 @@ class ReviewRepositoryImpl implements ReviewRepository {
 
   @override
   Future<List<Comment>> getReplies(String documentId, String commentId) async {
-    final response = await _dioClient.get('reviews/$commentId/replies');
-    final data = response.data;
+    final data = await _dataSource.getRepliesForReview(commentId);
     if (data == null) return [];
 
     final rawList = data['content'] as List? ?? [];
@@ -68,23 +61,23 @@ class ReviewRepositoryImpl implements ReviewRepository {
 
   @override
   Future<void> likeComment(String documentId, String commentId) async {
-    await _dioClient.post('reviews/$commentId/interactions', data: {'type': 'LIKE'});
+    await _dataSource.interactWithReview(commentId, 'LIKE');
   }
 
   @override
   Future<void> unlikeComment(String documentId, String commentId) async {
     // In review-service, sending the same interaction type toggles it off
-    await _dioClient.post('reviews/$commentId/interactions', data: {'type': 'LIKE'});
+    await _dataSource.interactWithReview(commentId, 'LIKE');
   }
 
   @override
   Future<void> editComment(String documentId, String commentId, String content) async {
-    await _dioClient.put('reviews/$commentId', data: {'content': content});
+    await _dataSource.updateReview(commentId, content);
   }
 
   @override
   Future<void> deleteComment(String documentId, String commentId) async {
-    await _dioClient.delete('reviews/$commentId');
+    await _dataSource.deleteReview(commentId);
   }
 
   Comment _mapComment(Map<String, dynamic> json, String? currentUserId) {

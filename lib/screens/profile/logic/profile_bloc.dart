@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/feat/profile/follow/logic/follow_event.dart';
 import 'package:studydocs/core/widgets/feat/profile/statistic/logic/statistic_event.dart';
-import '../domain/usecase/get_user_info_usecase.dart';
+import '../domain/repository/user_repository.dart';
 
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserBloc.dart';
 import '../../../../core/widgets/feat/profile/Infor_user/logic/InforUserEvent.dart';
@@ -15,13 +15,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final InforUserBloc inforUserBloc;
   final FollowBloc followBloc;
   final StatisticBloc statisticBloc;
-  final GetUserInfoUseCase getUserInfoUseCase;
+  final UserRepository userRepository;
 
   ProfileBloc({
     required this.inforUserBloc,
     required this.followBloc,
     required this.statisticBloc,
-    required this.getUserInfoUseCase,
+    required this.userRepository,
   }) : super(ProfileInitialState()) {
     on<ProfileInitial>((event, emit) async {
 
@@ -29,7 +29,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
         // gọi load data
-        final user = await getUserInfoUseCase();
+        final user = await userRepository.getUser();
         
         inforUserBloc.add(LoadUserInfor(user));
         followBloc.add(LoadFollowDataEvent(user));

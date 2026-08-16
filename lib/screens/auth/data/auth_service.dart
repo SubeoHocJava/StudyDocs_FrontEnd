@@ -1,12 +1,12 @@
-import 'package:studydocs/core/constants/api/auth_api.dart';
-import 'package:studydocs/core/constants/api/user_api.dart';
 import 'package:studydocs/core/config/env_config.dart';
-import 'package:studydocs/core/network/dio_client.dart';
 import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/utils/jwt_utils.dart';
-import 'package:studydocs/data/model/global/api_response.dart';
 import 'package:studydocs/data/model/user/User.dart';
 import 'package:studydocs/screens/auth/data/models/auth_token_dto.dart';
+import 'package:studydocs/data/datasource/auth_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/auth_remote_datasource_impl.dart';
+import 'package:studydocs/data/datasource/user_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
 
 class AuthServiceException implements Exception {
   final String message;
@@ -17,7 +17,8 @@ class AuthServiceException implements Exception {
 }
 
 class AuthService {
-  final DioClient _dioClient;
+  final AuthRemoteDataSource _authDataSource;
+  final UserRemoteDataSource _userDataSource;
   final TokenStorageService _tokenStorage;
   Future<void>? _refreshInFlight;
 
@@ -25,22 +26,18 @@ class AuthService {
   String? pendingGoogleCodeVerifier;
 
   AuthService({
-    DioClient? dioClient,
+    AuthRemoteDataSource? authDataSource,
+    UserRemoteDataSource? userDataSource,
     TokenStorageService? tokenStorage,
-  })  : _dioClient = dioClient ?? DioClient(),
+  })  : _authDataSource = authDataSource ?? AuthRemoteDataSourceImpl(),
+        _userDataSource = userDataSource ?? UserRemoteDataSourceImpl(),
         _tokenStorage = tokenStorage ?? TokenStorageService();
 
   Future<void> login({
     required String username,
     required String password,
   }) async {
-    final response = await _dioClient.post(
-      AuthApiEndpoints.login,
-      data: {
-        'username': username.trim(),
-        'password': password,
-      },
-    );
+    final response = await _authDataSource.login(username.trim(), password);
     await _handleAuthResponse(response);
     await syncCurrentUser();
   }
@@ -58,12 +55,10 @@ class AuthService {
       body['fullName'] = fullName.trim();
     }
 
-    final response = await _dioClient.post(
-      AuthApiEndpoints.register,
-      data: body,
-    );
-    if (!response.isSuccess) {
-      if (response.statusCode == 409) {
+    try {
+      await _authDataSource.register(body);
+    } catch (e) {
+      if (e.toString().contains('409') || e.toString().contains('Tài khoản đã tồn tại')) {
         throw AuthServiceException(
           'Tài khoản đã tồn tại. Vui lòng dùng tên đăng nhập khác hoặc đăng nhập.',
         );
@@ -93,10 +88,7 @@ class AuthService {
       throw AuthServiceException('Không có refresh token');
     }
 
-    final response = await _dioClient.post(
-      AuthApiEndpoints.refreshToken,
-      data: {'refreshToken': refreshToken},
-    );
+    final response = await _authDataSource.refreshToken(refreshToken);
     await _handleAuthResponse(response);
   }
 
@@ -104,10 +96,7 @@ class AuthService {
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
-        await _dioClient.post(
-          AuthApiEndpoints.logout,
-          data: {'refreshToken': refreshToken},
-        );
+        await _authDataSource.logout();
       } catch (_) {
         // Best-effort — vẫn xóa local
       }
@@ -120,24 +109,16 @@ class AuthService {
     required String codeChallenge,
     String codeChallengeMethod = 'S256',
   }) async {
-    final response = await _dioClient.post(
-      AuthApiEndpoints.googleLogin,
-      data: {
-        'redirectUri': EnvConfig.googleRedirectUri,
-        'codeChallenge': codeChallenge,
-        'codeChallengeMethod': codeChallengeMethod,
-      },
-    );
-    if (!response.isSuccess || response.data == null) {
+    try {
+      final data = await _authDataSource.startGoogleLogin(codeChallenge, codeChallengeMethod, EnvConfig.googleRedirectUri);
+      final dto = GoogleAuthUrlDto.fromJson(data as Map<String, dynamic>);
+      if (dto.authorizationUrl.isEmpty) {
+        throw AuthServiceException('URL đăng nhập Google không hợp lệ');
+      }
+      return dto.authorizationUrl;
+    } catch (_) {
       throw AuthServiceException('Không lấy được URL đăng nhập Google');
     }
-    final dto = GoogleAuthUrlDto.fromJson(
-      response.data as Map<String, dynamic>,
-    );
-    if (dto.authorizationUrl.isEmpty) {
-      throw AuthServiceException('URL đăng nhập Google không hợp lệ');
-    }
-    return dto.authorizationUrl;
   }
 
   /// Bước 2 Google OAuth: đổi code lấy token.
@@ -145,14 +126,7 @@ class AuthService {
     required String code,
     required String codeVerifier,
   }) async {
-    final response = await _dioClient.post(
-      AuthApiEndpoints.googleCallback,
-      data: {
-        'code': code,
-        'codeVerifier': codeVerifier,
-        'redirectUri': EnvConfig.googleRedirectUri,
-      },
-    );
+    final response = await _authDataSource.completeGoogleLogin(code, codeVerifier, EnvConfig.googleRedirectUri);
     await _handleAuthResponse(response);
     await syncCurrentUser();
     pendingGoogleCodeVerifier = null;
@@ -160,11 +134,8 @@ class AuthService {
 
   /// GET /users/me — lưu userId, tên hiển thị sau login/refresh session.
   Future<User> syncCurrentUser() async {
-    final response = await _dioClient.get(UserEndpoints.me);
-    if (!response.isSuccess || response.data == null) {
-      throw AuthServiceException('Không lấy được thông tin người dùng');
-    }
-    final user = User.fromJson(response.data as Map<String, dynamic>);
+    final userData = await _userDataSource.getUser();
+    final user = User.fromJson(userData as Map<String, dynamic>);
 
     final accessToken = await _tokenStorage.getAccessToken();
     final refreshToken = await _tokenStorage.getRefreshToken();
@@ -190,15 +161,12 @@ class AuthService {
     return user;
   }
 
-  Future<void> _handleAuthResponse(ApiResponse<dynamic> response) async {
-    if (!response.isSuccess) {
-      throw AuthServiceException('Xác thực thất bại');
-    }
-    if (response.data == null) {
+  Future<void> _handleAuthResponse(dynamic responseData) async {
+    if (responseData == null) {
       throw AuthServiceException('Phản hồi token không hợp lệ');
     }
     final token = AuthTokenDto.fromJson(
-      response.data as Map<String, dynamic>,
+      responseData as Map<String, dynamic>,
     );
     await _persistToken(token);
   }

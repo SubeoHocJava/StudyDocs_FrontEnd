@@ -1,4 +1,5 @@
-import 'package:studydocs/core/network/dio_client.dart';
+import 'package:studydocs/data/datasource/document_remote_datasource.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 
 abstract interface class ReviewRepository {
   Future<void> likeDocument(String documentId);
@@ -7,17 +8,17 @@ abstract interface class ReviewRepository {
 }
 
 class ReviewRepositoryImpl implements ReviewRepository {
-  final DioClient _dioClient;
+  final DocumentRemoteDataSource _dataSource;
 
-  ReviewRepositoryImpl({DioClient? dioClient}) : _dioClient = dioClient ?? DioClient();
+  ReviewRepositoryImpl({DocumentRemoteDataSource? dataSource}) : _dataSource = dataSource ?? DocumentRemoteDataSourceImpl();
 
   @override
   Future<void> likeDocument(String documentId) async {
-    await _dioClient.post('documents/$documentId/interactions', data: {'type': 'LIKE'});
+    await _dataSource.interactWithDocument(documentId, 'LIKE');
   }
 
   @override
   Future<void> dislikeDocument(String documentId) async {
-    await _dioClient.post('documents/$documentId/interactions', data: {'type': 'DISLIKE'});
+    await _dataSource.interactWithDocument(documentId, 'DISLIKE');
   }
 }
