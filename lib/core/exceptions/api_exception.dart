@@ -1,3 +1,5 @@
+import '../error/error_mapper.dart';
+
 /// Base exception cho tất cả API errors
 class ApiException implements Exception {
   final String message;
@@ -6,6 +8,9 @@ class ApiException implements Exception {
   
   ApiException(this.message, {this.code, this.statusCode});
   
+  /// Thông báo lỗi thân thiện dành cho giao diện người dùng
+  String get userMessage => ErrorMapper.map(code, defaultMessage: message);
+
   @override
   String toString() => 'ApiException: $message (code: $code, status: $statusCode)';
 }

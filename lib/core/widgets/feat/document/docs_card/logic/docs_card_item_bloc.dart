@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studydocs/core/error/error_mapper.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/usecase/bookmark_document_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/usecase/download_document_usecase.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/usecase/like_document_usecase.dart';
@@ -45,7 +46,10 @@ class DocsCardItemBloc extends Bloc<DocsCardItemEvent, DocsCardItemState> {
 
     final errorCode = await _likeUseCase(previous.id);
     if (errorCode != null) {
-      emit(state.copyWith(doc: previous, lastError: 'Like không thành công'));
+      emit(state.copyWith(
+        doc: previous,
+        lastError: ErrorMapper.map(errorCode, defaultMessage: 'Like không thành công'),
+      ));
     }
   }
 
@@ -62,7 +66,10 @@ class DocsCardItemBloc extends Bloc<DocsCardItemEvent, DocsCardItemState> {
 
     final errorCode = await _bookmarkUseCase(previous.id);
     if (errorCode != null) {
-      emit(state.copyWith(doc: previous, lastError: 'Lưu không thành công'));
+      emit(state.copyWith(
+        doc: previous,
+        lastError: ErrorMapper.map(errorCode, defaultMessage: 'Lưu không thành công'),
+      ));
     }
   }
 
@@ -72,7 +79,9 @@ class DocsCardItemBloc extends Bloc<DocsCardItemEvent, DocsCardItemState> {
   ) async {
     final errorCode = await _downloadUseCase(state.doc.id);
     if (errorCode != null) {
-      emit(state.copyWith(lastError: 'Tải không thành công'));
+      emit(state.copyWith(
+        lastError: ErrorMapper.map(errorCode, defaultMessage: 'Tải không thành công'),
+      ));
     }
   }
 

@@ -9,7 +9,7 @@
 /// }
 class ApiResponse<T> {
   final int statusCode;
-  final int? errorCode;
+  final String? errorCode;
   final T? data;
   final String? traceId;
 
@@ -21,9 +21,9 @@ class ApiResponse<T> {
   });
 
   /// Kiểm tra xem response có thành công không
-  /// Success khi (errorCode = null hoặc 0) và statusCode 2xx
+  /// Success khi (errorCode == null hoặc 'SUCCESS' hoặc '0') và statusCode 2xx
   bool get isSuccess =>
-      (errorCode == null || errorCode == 0) &&
+      (errorCode == null || errorCode == 'SUCCESS' || errorCode == '0') &&
       statusCode >= 200 &&
       statusCode < 300;
 
@@ -33,7 +33,7 @@ class ApiResponse<T> {
   ) {
     return ApiResponse<T>(
       statusCode: json['statusCode'] ?? 0,
-      errorCode: json['errorCode'] as int?,
+      errorCode: json['errorCode']?.toString(),
       data: json['data'] != null
           ? (fromJsonT != null
               ? fromJsonT(json['data'] as Map<String, dynamic>)
