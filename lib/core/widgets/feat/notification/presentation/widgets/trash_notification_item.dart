@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../constants/app_colors.dart';
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import '../../utils/time_utils.dart';
 import '../utils/notification_ui_mapper.dart';
 

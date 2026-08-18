@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../domain/repositories/mock_my_qr_repository.dart';
+import '../data/repositories/my_qr_repository_impl.dart';
 import '../domain/usecases/get_my_qr_usecase.dart';
 import '../logic/my_qr_bloc.dart';
 
@@ -15,7 +15,7 @@ class MyQRWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        final repository = MockMyQRRepository();
+        final repository = MyQRRepositoryImpl();
         final usecase = GetMyQRUseCase(repository);
         return MyQRBloc(getMyQRUseCase: usecase)..add(MyQRStarted(userId));
       },

@@ -4,7 +4,7 @@ import '../../../../../constants/app_icons.dart';
 import 'trash_bulk_actions_widget.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import 'trash_notification_item.dart';
 
 

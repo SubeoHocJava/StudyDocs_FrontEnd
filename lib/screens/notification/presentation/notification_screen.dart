@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
-import '../domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import '../logic/notification_bloc.dart';
 import '../logic/notification_event.dart';
 import '../logic/notification_state.dart';

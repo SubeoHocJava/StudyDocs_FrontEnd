@@ -1,4 +1,4 @@
-import '../entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import '../repository/notification_repository.dart';
 
 abstract interface class GetNotificationsUseCase {

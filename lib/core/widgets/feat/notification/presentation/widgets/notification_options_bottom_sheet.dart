@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 
 class NotificationOptionsBottomSheet extends StatelessWidget {

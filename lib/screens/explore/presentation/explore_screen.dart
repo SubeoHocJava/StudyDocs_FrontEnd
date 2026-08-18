@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/widgets/feat/explore/presentation/widgets/explore_header.dart';
 import 'package:studydocs/core/widgets/feat/explore/presentation/widgets/explore_search_bar.dart';
 
-import '../data/repository/mock_explore_repository.dart';
+import '../data/repository/explore_repository_impl.dart';
 
 import '../logic/explore_bloc.dart';
 import '../logic/explore_event.dart';
@@ -17,7 +17,7 @@ class ExploreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        final repository = MockExploreRepository();
+        final repository = ExploreRepositoryImpl();
         return ExploreBloc(
           repository: repository,
         )..add(FetchExploreDataEvent());

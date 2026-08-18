@@ -5,7 +5,8 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_square_carousel.dart';
 import 'package:studydocs/core/widgets/feat/document/explore/presentation/explore_header_with_bloc.dart';
-import 'package:studydocs/screens/user/library/data/repository/mock_library_repository.dart';
+import 'package:studydocs/screens/user/library/data/repository/library_repository_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 
 import 'package:studydocs/screens/user/library/logic/library_subject_bloc.dart';
 import 'package:studydocs/screens/user/library/logic/library_subject_event.dart';
@@ -21,7 +22,7 @@ class LibrarySubjectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = MockLibraryRepository();
+    final repository = LibraryRepositoryImpl(DocumentRemoteDataSourceImpl());
 
     return BlocProvider(
       create: (_) => LibrarySubjectBloc(

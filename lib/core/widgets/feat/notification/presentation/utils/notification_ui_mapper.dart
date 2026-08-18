@@ -1,7 +1,7 @@
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 
 
 class NotificationUIMapper {

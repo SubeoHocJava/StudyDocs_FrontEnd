@@ -1,6 +1,6 @@
 import 'package:studydocs/data/datasource/notification_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/notification_remote_datasource_impl.dart';
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import 'package:studydocs/screens/notification/domain/repository/notification_repository.dart';
 
 class NotificationRemoteRepository implements NotificationRepository {

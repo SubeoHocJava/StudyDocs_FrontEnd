@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../../../../constants/app_colors.dart';
-import 'package:studydocs/screens/notification/domain/entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 import 'notification_item.dart';
 import 'mark_all_read_widget.dart';
 

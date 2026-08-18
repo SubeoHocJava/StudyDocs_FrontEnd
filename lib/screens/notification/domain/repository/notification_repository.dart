@@ -1,4 +1,4 @@
-import '../entity/notification_model.dart';
+import 'package:studydocs/data/model/notification_model.dart';
 
 abstract interface class NotificationRepository {
   Future<List<NotificationModel>> getNotifications();
