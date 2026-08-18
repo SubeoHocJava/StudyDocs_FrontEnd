@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/model/global/api_response.dart';
 import '../../screens/auth/data/auth_service.dart';
 import '../constants/api_constants.dart';
+import '../error/error_mapper.dart';
 import '../exceptions/api_exception.dart';
 
 
@@ -135,25 +136,34 @@ class DioClient {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return NetworkException('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+        return NetworkException(
+          ErrorMapper.map('NETWORK_ERROR'),
+          code: 'NETWORK_ERROR',
+        );
 
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode ?? 0;
         final parsed = _parseErrorBody(error.response?.data);
-        final message = _messageForStatus(statusCode, parsed.message);
         final errorCode = parsed.errorCode;
+        final mappedMessage = ErrorMapper.map(errorCode, defaultMessage: parsed.message);
 
         if (statusCode == 401 || statusCode == 403) {
-          return AuthException(message, statusCode, code: errorCode);
+          return AuthException(mappedMessage, statusCode, code: errorCode);
         }
 
-        return ServerException(message, statusCode, code: errorCode);
+        return ServerException(mappedMessage, statusCode, code: errorCode);
 
       case DioExceptionType.cancel:
-        return ApiException('Request đã bị hủy', code: 'REQUEST_CANCELLED');
+        return ApiException(
+          ErrorMapper.map('REQUEST_CANCELLED'),
+          code: 'REQUEST_CANCELLED',
+        );
 
       default:
-        return NetworkException('Lỗi kết nối: ${error.message ?? "Unknown error"}');
+        return NetworkException(
+          ErrorMapper.map('NETWORK_ERROR', defaultMessage: error.message),
+          code: 'NETWORK_ERROR',
+        );
     }
   }
 
@@ -194,16 +204,6 @@ class DioClient {
         map['errorCode']?.toString() ?? nestedMap?['errorCode']?.toString();
 
     return (message: message, errorCode: errorCode);
-  }
-
-  String _messageForStatus(int statusCode, String serverMessage) {
-    if (statusCode == 409) {
-      if (serverMessage != 'Có lỗi xảy ra từ server') {
-        return serverMessage;
-      }
-      return 'Tài khoản đã tồn tại. Vui lòng dùng tên đăng nhập khác hoặc đăng nhập.';
-    }
-    return serverMessage;
   }
 
   Future<ApiResponse<T>> fromResponse<T>(Response response) async {
