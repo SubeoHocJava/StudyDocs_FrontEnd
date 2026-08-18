@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/model/document_model/response/document_compact_model.dart';
 
@@ -26,7 +27,7 @@ class DocumentCardCompact extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: onTap ?? () => context.push('/document/${doc.id}'),
       child: SizedBox(
         width: width,
         child: Column(

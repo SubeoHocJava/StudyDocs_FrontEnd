@@ -4,12 +4,14 @@ import 'package:studydocs/core/router/route_security.dart';
 import 'package:studydocs/core/widgets/layout/app_shell.dart';
 import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
 import 'package:studydocs/screens/user/library/presentation/library_subject_screen.dart';
+import 'package:studydocs/screens/document_detail/presentation/document_detail_screen.dart';
 
 import '../../screens/explore/presentation/explore_screen.dart';
 import '../../screens/home/presentation/home_screen.dart';
 import '../../screens/notification/presentation/notification_screen.dart';
 import '../../screens/profile/presentation/ProfileScreen.dart';
 import '../../screens/user_follow/presentation/screen/user_follow_screen.dart';
+import '../../screens/document_upload/presentation/document_upload_screen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -94,6 +96,28 @@ GoRouter initAppRouter() {
               key: state.pageKey,
               child: const UserFollowScreen(initialTab: 1),
             ),
+          ),
+          GoRoute(
+            path: '/document/:id',
+            parentNavigatorKey: shellNavigatorKey,
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: DocumentDetailScreen(documentId: id),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/upload',
+            parentNavigatorKey: shellNavigatorKey,
+            pageBuilder: (context, state) {
+              final initialFileName = state.extra as String?;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: DocumentUploadScreen(initialFileName: initialFileName),
+              );
+            },
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
@@ -23,7 +24,7 @@ class DocumentCardHorizontal extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: onTap ?? () => context.push('/document/${doc.id}'),
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8),
         elevation: 2,

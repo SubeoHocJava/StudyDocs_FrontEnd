@@ -170,7 +170,7 @@ class _DocumentCommentPresentationState
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        const FaIcon(
                           FontAwesomeIcons.paperPlane,
                           color: AppColors.white,
                           size: 16,

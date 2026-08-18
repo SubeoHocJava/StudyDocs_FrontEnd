@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/feat/common/folder_list/presentation/folder_list_vertical_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository/document_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_square_carousel.dart';
 import 'package:studydocs/core/widgets/feat/document/upload/presentation/upload_dropzone_tile.dart';
-import 'package:studydocs/screens/user/library/data/repository/mock_library_repository.dart';
+import 'package:studydocs/screens/user/library/data/repository/library_repository_impl.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 
 import 'package:studydocs/screens/user/library/logic/library_bloc.dart';
 import 'package:studydocs/screens/user/library/logic/library_event.dart';
@@ -18,7 +20,8 @@ class LibraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repository = MockLibraryRepository();
+    final dataSource = DocumentRemoteDataSourceImpl();
+    final repository = LibraryRepositoryImpl(dataSource);
 
     return BlocProvider(
       create: (_) => LibraryBloc(
@@ -63,7 +66,20 @@ class _LibraryView extends StatelessWidget {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
-                    child: const UploadDropzoneTile(),
+                    child: UploadDropzoneTile(
+                      onTap: () async {
+                        try {
+                          final result = await FilePicker.platform.pickFiles();
+                          if (result != null && result.files.isNotEmpty) {
+                            if (context.mounted) {
+                              context.push('/upload', extra: result.files.single.name);
+                            }
+                          }
+                        } catch (e) {
+                          debugPrint('Error picking file: $e');
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),

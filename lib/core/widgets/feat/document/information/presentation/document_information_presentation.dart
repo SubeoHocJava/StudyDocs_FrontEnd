@@ -70,6 +70,18 @@ class DocumentInformationPresentation extends StatelessWidget {
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 50,
+                            height: 50,
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                              size: 30,
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 12),
