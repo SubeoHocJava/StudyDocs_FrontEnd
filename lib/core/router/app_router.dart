@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/router/route_security.dart';
 import 'package:studydocs/core/widgets/layout/app_shell.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:studydocs/screens/user/library/presentation/library_screen.dart';
 import 'package:studydocs/screens/user/library/presentation/library_subject_screen.dart';
 import 'package:studydocs/screens/document_detail/presentation/document_detail_screen.dart';
@@ -123,10 +124,10 @@ GoRouter initAppRouter() {
             path: '/upload',
             parentNavigatorKey: shellNavigatorKey,
             pageBuilder: (context, state) {
-              final initialFileName = state.extra as String?;
+              final initialFile = state.extra as PlatformFile?;
               return NoTransitionPage(
                 key: state.pageKey,
-                child: DocumentUploadScreen(initialFileName: initialFileName),
+                child: DocumentUploadScreen(initialFile: initialFile),
               );
             },
           ),

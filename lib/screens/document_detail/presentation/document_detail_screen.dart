@@ -91,8 +91,8 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                 DocumentInformationDataReceived(
                   documentInfo: DocumentInfo(
                     id: data.id,
-                    startYear: int.tryParse(data.year.split('/').first) ?? 2024,
-                    endYear: int.tryParse(data.year.split('/').last) ?? 2025,
+                    startYear: int.tryParse(data.year.split('-').first.trim()) ?? 2024,
+                    endYear: int.tryParse(data.year.split('-').last.trim()) ?? 2025,
                     pageNumber: data.pageCount,
                     likeCount: data.likeCount,
                     dislikeCount: data.dislikeCount,

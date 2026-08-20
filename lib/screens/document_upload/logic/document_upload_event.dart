@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 
 abstract class DocumentUploadEvent extends Equatable {
   const DocumentUploadEvent();
@@ -8,8 +9,16 @@ abstract class DocumentUploadEvent extends Equatable {
 }
 
 class FileSelected extends DocumentUploadEvent {
+  final PlatformFile file;
+  const FileSelected(this.file);
+
+  @override
+  List<Object?> get props => [file];
+}
+
+class InitialFileSelected extends DocumentUploadEvent {
   final String fileName;
-  const FileSelected(this.fileName);
+  const InitialFileSelected(this.fileName);
 
   @override
   List<Object?> get props => [fileName];
@@ -18,19 +27,41 @@ class FileSelected extends DocumentUploadEvent {
 class FileRemoved extends DocumentUploadEvent {}
 
 class SchoolSelected extends DocumentUploadEvent {
+  final int universityId;
   final String schoolName;
-  const SchoolSelected(this.schoolName);
+  const SchoolSelected(this.universityId, this.schoolName);
 
   @override
-  List<Object?> get props => [schoolName];
+  List<Object?> get props => [universityId, schoolName];
 }
 
+class LoadUniversities extends DocumentUploadEvent {}
+
 class SubjectSelected extends DocumentUploadEvent {
+  final int subjectId;
   final String subjectName;
-  const SubjectSelected(this.subjectName);
+  const SubjectSelected(this.subjectId, this.subjectName);
 
   @override
-  List<Object?> get props => [subjectName];
+  List<Object?> get props => [subjectId, subjectName];
+}
+
+class FacultySelected extends DocumentUploadEvent {
+  final int facultyId;
+  final String facultyName;
+  const FacultySelected(this.facultyId, this.facultyName);
+
+  @override
+  List<Object?> get props => [facultyId, facultyName];
+}
+
+class DepartmentSelected extends DocumentUploadEvent {
+  final int departmentId;
+  final String departmentName;
+  const DepartmentSelected(this.departmentId, this.departmentName);
+
+  @override
+  List<Object?> get props => [departmentId, departmentName];
 }
 
 class DocumentNameChanged extends DocumentUploadEvent {

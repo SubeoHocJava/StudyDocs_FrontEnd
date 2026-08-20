@@ -5,23 +5,27 @@ import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/core/widgets/feat/document/upload/presentation/upload_dropzone_tile.dart';
 import 'package:studydocs/core/widgets/feat/document/subject/presentation/document_add_subject_dialog.dart';
+import 'package:studydocs/core/widgets/feat/document/upload/presentation/document_select_option_dialog.dart';
+
+import 'package:go_router/go_router.dart';
 
 import '../logic/document_upload_bloc.dart';
 import '../logic/document_upload_event.dart';
 import '../logic/document_upload_state.dart';
 
 class DocumentUploadScreen extends StatelessWidget {
-  final String? initialFileName;
+  final PlatformFile? initialFile;
 
-  const DocumentUploadScreen({super.key, this.initialFileName});
+  const DocumentUploadScreen({super.key, this.initialFile});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) {
         final bloc = DocumentUploadBloc();
-        if (initialFileName != null) {
-          bloc.add(FileSelected(initialFileName!));
+        bloc.add(LoadUniversities());
+        if (initialFile != null) {
+          bloc.add(FileSelected(initialFile!));
         }
         return bloc;
       },
@@ -35,11 +39,32 @@ class _DocumentUploadView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = context.read<DocumentUploadBloc>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
-        child: BlocBuilder<DocumentUploadBloc, DocumentUploadState>(
+        child: BlocConsumer<DocumentUploadBloc, DocumentUploadState>(
+          listenWhen: (previous, current) => 
+              previous.isSuccess != current.isSuccess || previous.errorMessage != current.errorMessage,
+          listener: (context, state) {
+            if (state.isSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Tải lên thành công!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              context.go('/library');
+            } else if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage!),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
           builder: (context, state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,15 +79,15 @@ class _DocumentUploadView extends StatelessWidget {
                       child: UploadDropzoneTile(
                         onTap: () async {
                           try {
-                            final result =
-                                await FilePicker.platform.pickFiles();
-                            if (result != null && result.files.isNotEmpty) {
-                              if (context.mounted) {
-                                context.read<DocumentUploadBloc>().add(
-                                  FileSelected(result.files.single.name),
-                                );
+                              final result =
+                                  await FilePicker.platform.pickFiles(withData: true);
+                              if (result != null && result.files.isNotEmpty) {
+                                if (context.mounted) {
+                                  context.read<DocumentUploadBloc>().add(
+                                    FileSelected(result.files.single),
+                                  );
+                                }
                               }
-                            }
                           } catch (e) {
                             debugPrint('Error picking file: $e');
                           }
@@ -114,113 +139,107 @@ class _DocumentUploadView extends StatelessWidget {
                 ],
 
                 // School Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          AppAssets.school,
-                          width: 20,
-                          height: 20,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Trường học',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // Action to edit school
-                      },
-                      child: const Text(
-                        'Chỉnh sửa',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  state.selectedSchoolName ?? 'Chưa chọn trường',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.primary, // Matching the blue text from UI
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Subject Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          AppAssets.folder,
-                          width: 20,
-                          height: 20,
-                          color: Colors.black,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Môn học',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return DocumentAddSubjectDialog(
-                              schoolName:
-                                  state.selectedSchoolName ??
-                                  'Chưa chọn trường',
-                              onAdd: (subjectName) {
-                                context.read<DocumentUploadBloc>().add(
-                                  SubjectSelected(subjectName),
-                                );
-                              },
-                            );
-                          },
+                _buildSelectionRow(
+                  context: context,
+                  title: 'Trường học',
+                  icon: AppAssets.school,
+                  selectedValue: state.selectedSchoolName,
+                  hintValue: 'Chưa chọn trường',
+                  isLoading: state.isLoadingUniversities,
+                  onEditTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        return DocumentSelectOptionDialog(
+                          title: 'Chọn trường học',
+                          hintText: 'Tìm trường học...',
+                          initialValueName: state.selectedSchoolName,
+                          options: state.universities,
+                          onSelected: (id, name) => context.read<DocumentUploadBloc>().add(SchoolSelected(id, name)),
                         );
                       },
-                      child: const Text(
-                        'Chỉnh sửa',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  state.selectedSubjectName ?? 'Chưa chọn môn học',
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.primary, // Matching the blue text from UI
-                  ),
+                
+                // Faculty Section
+                _buildSelectionRow(
+                  context: context,
+                  title: 'Khoa',
+                  icon: AppAssets.folder, // Use appropriate icon if available
+                  selectedValue: state.selectedFacultyName,
+                  hintValue: 'Chưa chọn khoa',
+                  isLoading: state.isLoadingFaculties,
+                  onEditTap: state.universityId == null
+                      ? () => _showWarning(context, 'Vui lòng chọn trường học trước')
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DocumentSelectOptionDialog(
+                                title: 'Chọn Khoa',
+                                hintText: 'Tìm khoa...',
+                                initialValueName: state.selectedFacultyName,
+                                options: state.faculties,
+                                onSelected: (id, name) => context.read<DocumentUploadBloc>().add(FacultySelected(id, name)),
+                              );
+                            },
+                          );
+                        },
+                ),
+                
+                // Department Section
+                _buildSelectionRow(
+                  context: context,
+                  title: 'Bộ môn',
+                  icon: AppAssets.folder,
+                  selectedValue: state.selectedDepartmentName,
+                  hintValue: 'Chưa chọn bộ môn',
+                  isLoading: state.isLoadingDepartments,
+                  onEditTap: state.facultyId == null
+                      ? () => _showWarning(context, 'Vui lòng chọn khoa trước')
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DocumentSelectOptionDialog(
+                                title: 'Chọn Bộ môn',
+                                hintText: 'Tìm bộ môn...',
+                                initialValueName: state.selectedDepartmentName,
+                                options: state.departments,
+                                onSelected: (id, name) => context.read<DocumentUploadBloc>().add(DepartmentSelected(id, name)),
+                              );
+                            },
+                          );
+                        },
                 ),
 
-                // Keep Thêm môn học as requested
+                // Subject Section
+                _buildSelectionRow(
+                  context: context,
+                  title: 'Môn học',
+                  icon: AppAssets.folder,
+                  selectedValue: state.selectedSubjectName,
+                  hintValue: 'Chưa chọn môn học',
+                  isLoading: state.isLoadingSubjects,
+                  onEditTap: state.departmentId == null
+                      ? () => _showWarning(context, 'Vui lòng chọn bộ môn trước')
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) {
+                              return DocumentSelectOptionDialog(
+                                title: 'Chọn môn học',
+                                hintText: 'Tìm môn học...',
+                                initialValueName: state.selectedSubjectName,
+                                options: state.subjects,
+                                onSelected: (id, name) => context.read<DocumentUploadBloc>().add(SubjectSelected(id, name)),
+                              );
+                            },
+                          );
+                        },
+                ),
+
                 const SizedBox(height: 8),
                 Align(
                   alignment: Alignment.centerRight,
@@ -228,14 +247,12 @@ class _DocumentUploadView extends StatelessWidget {
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) {
+                        builder: (BuildContext dialogContext) {
                           return DocumentAddSubjectDialog(
                             schoolName:
                                 state.selectedSchoolName ?? 'Chưa chọn trường',
                             onAdd: (subjectName) {
-                              context.read<DocumentUploadBloc>().add(
-                                SubjectSelected(subjectName),
-                              );
+                              bloc.add(SubjectSelected(-1, subjectName));
                             },
                           );
                         },
@@ -389,9 +406,42 @@ class _DocumentUploadView extends StatelessWidget {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<DocumentUploadBloc>().add(
-                          UploadSubmitted(),
-                        );
+                        if (state.selectedFile == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Vui lòng chọn file tài liệu!'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Validate Document Name
+                        final docName = state.documentName ?? state.selectedFileName ?? '';
+                        if (docName.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Vui lòng nhập tên tài liệu!'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Validate School Year
+                        final year = state.schoolYear ?? '';
+                        final yearRegex = RegExp(r'^\d+\s*-\s*\d+$');
+                        if (!yearRegex.hasMatch(year.trim())) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Năm học phải có định dạng số - số (VD: 2023 - 2024)'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        bloc.add(UploadSubmitted());
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0000C8),
@@ -427,6 +477,83 @@ class _DocumentUploadView extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  void _showWarning(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  Widget _buildSelectionRow({
+    required BuildContext context,
+    required String title,
+    required String icon,
+    required String? selectedValue,
+    required String hintValue,
+    required VoidCallback onEditTap,
+    bool isLoading = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Image.asset(
+                  icon,
+                  width: 20,
+                  height: 20,
+                  color: Colors.black,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (isLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+              ],
+            ),
+            GestureDetector(
+              onTap: onEditTap,
+              child: const Text(
+                'Chỉnh sửa',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          selectedValue ?? hintValue,
+          style: const TextStyle(
+            fontSize: 15,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }

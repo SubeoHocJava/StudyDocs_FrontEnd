@@ -69,10 +69,10 @@ class _LibraryView extends StatelessWidget {
                     child: UploadDropzoneTile(
                       onTap: () async {
                         try {
-                          final result = await FilePicker.platform.pickFiles();
+                          final result = await FilePicker.platform.pickFiles(withData: true);
                           if (result != null && result.files.isNotEmpty) {
                             if (context.mounted) {
-                              context.push('/upload', extra: result.files.single.name);
+                              context.push('/upload', extra: result.files.single);
                             }
                           }
                         } catch (e) {

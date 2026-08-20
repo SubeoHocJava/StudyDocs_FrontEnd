@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/data/model/document_model/response/document_compact_model.dart';
 
 class DocumentCardCompact extends StatelessWidget {
@@ -81,8 +82,17 @@ class DocumentCardCompact extends StatelessWidget {
             const Icon(Icons.picture_as_pdf, size: 36, color: Colors.grey),
       );
     }
+    
+    String imageUrl = thumb;
+    if (thumb.startsWith('/')) {
+      final baseUrl = ApiConstants.baseUrl.replaceAll(RegExp(r'/+$'), '');
+      imageUrl = '$baseUrl$thumb';
+    } else if (!thumb.startsWith('http')) {
+      imageUrl = '${ApiConstants.baseUrl}$thumb';
+    }
+
     return Image.network(
-      thumb,
+      imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) =>
           const Icon(Icons.picture_as_pdf, size: 36, color: Colors.grey),
