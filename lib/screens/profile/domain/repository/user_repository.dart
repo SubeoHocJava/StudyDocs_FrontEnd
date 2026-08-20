@@ -13,4 +13,9 @@ class UserRepository {
     final userData = await userDataSource.getUser();
     return User.fromJson(userData);
   }
+
+  Future<User> getUserProfile(String userId) async {
+    final userData = await userDataSource.getUserProfile(userId);
+    return User.fromJson(userData);
+  }
 }

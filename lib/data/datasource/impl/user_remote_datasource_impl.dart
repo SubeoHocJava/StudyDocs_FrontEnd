@@ -17,11 +17,47 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<dynamic> updateUser(Map<String, dynamic> data) async {
-    final response = await _client.patch(UserEndpoints.me, data: data);
+  Future<dynamic> getUserProfile(String userId) async {
+    final response = await _client.get(UserEndpoints.byId(userId));
+    if (response.isSuccess && response.data != null) {
+      return response.data;
+    }
+    throw Exception('Failed to load user profile');
+  }
+
+  @override
+  Future<dynamic> updateUser(String? userId, Map<String, dynamic> data) async {
+    final endpoint = userId == null ? UserEndpoints.me : UserEndpoints.update(userId);
+    final response = await _client.put(endpoint, data: data);
     if (response.isSuccess) {
       return response.data;
     }
     throw Exception('Failed to update user profile');
+  }
+
+  @override
+  Future<dynamic> updateProfileImage(String userId, Map<String, dynamic> data) async {
+    final response = await _client.post(UserEndpoints.updateImage(userId), data: data);
+    if (response.isSuccess) {
+      return response.data;
+    }
+    throw Exception('Failed to update profile image');
+  }
+
+  @override
+  Future<dynamic> searchUsers(String query) async {
+    final response = await _client.get(UserEndpoints.search(), queryParameters: {'q': query});
+    if (response.isSuccess && response.data != null) {
+      return response.data;
+    }
+    throw Exception('Failed to search users');
+  }
+
+  @override
+  Future<void> deleteUser(String userId) async {
+    final response = await _client.delete(UserEndpoints.delete(userId));
+    if (!response.isSuccess) {
+      throw Exception('Failed to delete user');
+    }
   }
 }

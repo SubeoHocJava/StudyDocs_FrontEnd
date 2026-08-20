@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
@@ -58,6 +59,7 @@ class DocumentInformationPresentation extends StatelessWidget {
                   context.read<DocumentInformationBloc>().add(
                     AuthorClick(state.documentInfo.author.id),
                   );
+                  context.push('/profile/${state.documentInfo.author.id}');
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,

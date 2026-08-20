@@ -67,7 +67,7 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
     required DateTime? birthDate,
     required String? school,
   }) async {
-    await userDataSource.updateUser({
+    await userDataSource.updateUser(null, {
       'username': userName,
       'fullName': fullName,
       'email': email,

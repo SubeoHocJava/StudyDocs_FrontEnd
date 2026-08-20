@@ -52,7 +52,7 @@ class InforUserRepositoryImpl implements InforUserRepository {
     if (mediaId == null) throw Exception("MediaService returned null mediaId!");
     
     
-    final updatedUser = await userDataSource.updateUser({
+    final updatedUser = await userDataSource.updateUser(null, {
       'avatarId': mediaId,
       'avatarUrl': '' 
     });

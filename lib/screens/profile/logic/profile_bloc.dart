@@ -29,7 +29,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
         // gọi load data
-        final user = await userRepository.getUser();
+        final user = event.userId == "me" 
+            ? await userRepository.getUser()
+            : await userRepository.getUserProfile(event.userId);
         
         inforUserBloc.add(LoadUserInfor(user));
         followBloc.add(LoadFollowDataEvent(user));

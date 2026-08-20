@@ -13,4 +13,5 @@ class UserEndpoints {
   static String updateInfo(String userId) => '$base/$userId/info';
   static String updateImage(String userId) => '$base/$userId/image';
   static String delete(String userId) => '$base/$userId';
+  static String search() => '$base/search';
 }

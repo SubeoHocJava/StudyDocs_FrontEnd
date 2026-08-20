@@ -14,7 +14,9 @@ import '../logic/profile_state.dart';
 import '../domain/repository/user_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final String? userId;
+
+  const ProfileScreen({super.key, this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
             followBloc: context.read<FollowBloc>(),
             statisticBloc: context.read<StatisticBloc>(), 
             userRepository: UserRepository(),
-          )..add(ProfileInitial("me")),
+          )..add(ProfileInitial(userId ?? "me")),
 
         ),
 

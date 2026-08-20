@@ -41,8 +41,19 @@ GoRouter initAppRouter() {
             redirect: authGuard,
             pageBuilder: (context, state) => NoTransitionPage(
               key: state.pageKey,
-              child: ProfileScreen(),
+              child: const ProfileScreen(),
             ),
+          ),
+          GoRoute(
+            path: '/profile/:id',
+            parentNavigatorKey: shellNavigatorKey,
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id'];
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: ProfileScreen(userId: id),
+              );
+            },
           ),
           GoRoute(
             path: '/library',
