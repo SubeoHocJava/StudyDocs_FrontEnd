@@ -40,7 +40,13 @@ class ReviewRepositoryImpl implements ReviewRepository {
     final data = await _dataSource.getReviewsForDocument(documentId);
     if (data == null) return [];
     
-    final rawList = data['content'] as List? ?? [];
+    List rawList = [];
+    if (data is List) {
+      rawList = data;
+    } else if (data is Map<String, dynamic>) {
+      rawList = data['content'] as List? ?? [];
+    }
+    
     final currentUserId = await _tokenStorage.getUserId();
     return rawList
         .map((item) => _mapComment(Map<String, dynamic>.from(item), currentUserId))
@@ -52,7 +58,13 @@ class ReviewRepositoryImpl implements ReviewRepository {
     final data = await _dataSource.getRepliesForReview(commentId);
     if (data == null) return [];
 
-    final rawList = data['content'] as List? ?? [];
+    List rawList = [];
+    if (data is List) {
+      rawList = data;
+    } else if (data is Map<String, dynamic>) {
+      rawList = data['content'] as List? ?? [];
+    }
+
     final currentUserId = await _tokenStorage.getUserId();
     return rawList
         .map((item) => _mapComment(Map<String, dynamic>.from(item), currentUserId))
@@ -85,7 +97,7 @@ class ReviewRepositoryImpl implements ReviewRepository {
     return Comment(
       id: json['id']?.toString() ?? '',
       documentId: json['documentId']?.toString() ?? '',
-      contents: [TextBlock(json['content']?.toString() ?? '')],
+      contents: [TextBlock((json['comment'] ?? json['content'])?.toString() ?? '')],
       author: Author(
         id: authorId,
         fullName: json['username']?.toString() ?? 'Anonymous',

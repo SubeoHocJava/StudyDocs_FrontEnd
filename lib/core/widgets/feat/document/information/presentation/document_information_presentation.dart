@@ -87,39 +87,47 @@ class DocumentInformationPresentation extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Tên người dùng
-                        Text(
-                          state.documentInfo.author.fullName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Tên người dùng
+                          Text(
+                            state.documentInfo.author.fullName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        //Tên trường
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Image.asset(
-                              AppAssets.school,
-                              width: 16,
-                              height: 16,
-                              color: AppColors.gray,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              state.documentInfo.author.school.name,
-                              style: const TextStyle(
+                          const SizedBox(height: 4),
+                          //Tên trường
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                AppAssets.school,
+                                width: 16,
+                                height: 16,
                                 color: AppColors.gray,
-                                fontSize: 13,
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  state.documentInfo.author.school.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: AppColors.gray,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

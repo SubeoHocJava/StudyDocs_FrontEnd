@@ -87,7 +87,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         },
                         child: Text(
                           state.documentOverview.courseInfo.name,
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.secondaryBlue,
@@ -125,7 +125,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         },
                         child: Text(
                           state.documentOverview.schoolInfo.name,
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: AppColors.secondaryBlue,
