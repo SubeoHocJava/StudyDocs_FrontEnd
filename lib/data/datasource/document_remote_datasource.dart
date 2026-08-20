@@ -8,4 +8,7 @@ abstract interface class DocumentRemoteDataSource {
   Future<dynamic> getMyHistoryDocuments();
   Future<dynamic> getMostLikedDocuments({int limit = 10});
   Future<dynamic> getNewestDocuments({int limit = 10});
+  Future<dynamic> uploadDocument(dynamic formData);
+  Future<dynamic> initiateDocumentUpload(Map<String, dynamic> data);
+  Future<dynamic> completeDocumentUpload(String documentId, {Map<String, dynamic>? data});
 }

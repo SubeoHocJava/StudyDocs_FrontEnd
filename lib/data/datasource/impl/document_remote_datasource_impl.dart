@@ -80,4 +80,25 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
     if (response.isSuccess) return response.data;
     throw Exception('Failed to load newest documents');
   }
+
+  @override
+  Future<dynamic> uploadDocument(dynamic formData) async {
+    final response = await _client.post('education/documents/upload', data: formData);
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to upload document');
+  }
+
+  @override
+  Future<dynamic> initiateDocumentUpload(Map<String, dynamic> data) async {
+    final response = await _client.post('education/documents/initiate', data: data);
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to initiate document upload');
+  }
+
+  @override
+  Future<dynamic> completeDocumentUpload(String documentId, {Map<String, dynamic>? data}) async {
+    final response = await _client.post('education/documents/$documentId/complete-upload', data: data ?? {});
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to complete document upload');
+  }
 }

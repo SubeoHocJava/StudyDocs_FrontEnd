@@ -37,4 +37,18 @@ class AcademicRemoteDataSourceImpl implements AcademicRemoteDataSource {
     if (response.isSuccess) return response.data;
     throw Exception('Failed to load subjects');
   }
+
+  @override
+  Future<dynamic> createUniversity(Map<String, dynamic> data) async {
+    final response = await _client.post('education/academics/universities', data: data);
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to create university');
+  }
+
+  @override
+  Future<dynamic> createSubject(Map<String, dynamic> data) async {
+    final response = await _client.post('education/academics/subjects', data: data);
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to create subject');
+  }
 }
