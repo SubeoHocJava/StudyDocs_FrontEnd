@@ -149,6 +149,7 @@ class AuthCubit extends Cubit<AuthState> {
       AuthAuthenticated(
         displayName: await _tokenStorage.getDisplayName(),
         username: await _tokenStorage.getUsername(),
+        avatarUrl: await _tokenStorage.getAvatarUrl(),
       ),
     );
   }

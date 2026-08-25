@@ -155,6 +155,7 @@ class AuthService {
       userId: user.id,
       username: user.username,
       displayName: user.fullName,
+      avatarUrl: user.avatarUrl,
       roles: roles.isNotEmpty ? roles : null,
       role: roles.isNotEmpty ? roles.first : 'user',
     );

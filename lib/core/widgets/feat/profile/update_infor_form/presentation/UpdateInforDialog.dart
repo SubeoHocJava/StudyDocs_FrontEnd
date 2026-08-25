@@ -31,6 +31,10 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
 
     return BlocConsumer<UpdateInforBloc, UpdateInforState>(
       listener: (context, state) {
+        if (state is UpdateInforLoaded) {
+          model.loadFromProfile(state);
+        }
+
         if (state is UpdateSuccess) {
           Navigator.of(context, rootNavigator: true).pop();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +69,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           );
         }
 
-        if (state is UpdateInforLoaded) model.loadFromProfile(state);
+
 
         return Center(
           child: Material(

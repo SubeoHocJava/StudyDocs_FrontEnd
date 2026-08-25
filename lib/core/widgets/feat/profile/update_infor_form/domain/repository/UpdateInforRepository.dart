@@ -1,6 +1,8 @@
 import 'dart:async';
 import '../../../../../../../data/datasource/user_remote_datasource.dart';
 import '../../../../../../../data/datasource/impl/user_remote_datasource_impl.dart';
+import '../../../../../../../data/datasource/academic_remote_datasource.dart';
+import '../../../../../../../data/datasource/impl/academic_remote_datasource_impl.dart';
 import '../model/UserProfile.dart';
 abstract class UpdateInforRepository {
   Future<void> updateProfile({
@@ -21,18 +23,11 @@ abstract class UpdateInforRepository {
 
 class UpdateInforRepositoryImpl extends UpdateInforRepository {
   final UserRemoteDataSource userDataSource;
+  final AcademicRemoteDataSource academicDataSource;
 
-  UpdateInforRepositoryImpl({UserRemoteDataSource? dataSource}) 
-      : userDataSource = dataSource ?? UserRemoteDataSourceImpl();
-
-  final List<String> _mockSchoolList = [
-    "Đại học Công nghệ TP.HCM",
-    "Đại học Bách Khoa",
-    "Đại học Khoa Học Tự Nhiên",
-    "Đại học Sư phạm Kỹ thuật",
-    "Đại học Văn Lang",
-    "Đại học FPT",
-  ];
+  UpdateInforRepositoryImpl({UserRemoteDataSource? dataSource, AcademicRemoteDataSource? academicSource}) 
+      : userDataSource = dataSource ?? UserRemoteDataSourceImpl(),
+        academicDataSource = academicSource ?? AcademicRemoteDataSourceImpl();
 
   @override
   Future<UserProfile> getProfile() async {
@@ -51,9 +46,18 @@ class UpdateInforRepositoryImpl extends UpdateInforRepository {
 
   @override
   Future<List<String>> getSchoolList() async {
-    await Future.delayed(const Duration(milliseconds: 400)); // giả lập API
-
-    return _mockSchoolList;
+    try {
+      final response = await academicDataSource.getUniversities();
+      if (response is List) {
+        return response.map((e) => e['name']?.toString() ?? '').where((name) => name.isNotEmpty).toList();
+      }
+      if (response is Map && response['content'] is List) {
+        return (response['content'] as List).map((e) => e['name']?.toString() ?? '').where((name) => name.isNotEmpty).toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
 
   @override

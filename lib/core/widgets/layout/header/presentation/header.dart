@@ -252,6 +252,7 @@ class _HeaderState extends State<Header> {
 
   Widget _buildUserAction(BuildContext context, AuthAuthenticated authState) {
     final label = authState.displayName ?? authState.username ?? 'User';
+    final avatarUrl = authState.avatarUrl;
 
     return GestureDetector(
       onTap: widget.onProfileTap ?? () => context.go('/profile'),
@@ -260,7 +261,19 @@ class _HeaderState extends State<Header> {
         child: CircleAvatar(
           radius: 20,
           backgroundColor: AppColors.headerForeground.withValues(alpha: 0.12),
-          child: Image.asset(AppAssets.user, width: 24, height: 24),
+          child: (avatarUrl != null && avatarUrl.isNotEmpty)
+              ? ClipOval(
+                  child: Image.network(
+                    avatarUrl,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(AppAssets.user, width: 24, height: 24);
+                    },
+                  ),
+                )
+              : Image.asset(AppAssets.user, width: 24, height: 24),
         ),
       ),
     );

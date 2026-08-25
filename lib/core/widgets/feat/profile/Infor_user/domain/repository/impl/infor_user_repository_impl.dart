@@ -9,8 +9,8 @@ import '../../model/user_infor_model.dart';
 import '../infor_user_repository.dart';
 
 import 'package:studydocs/core/network/dio_client.dart';
-import 'package:studydocs/core/network/media_service.dart';
 import 'package:studydocs/core/network/token_services.dart';
+import 'package:dio/dio.dart';
 
 class InforUserRepositoryImpl implements InforUserRepository {
   final UserRemoteDataSource userDataSource;
@@ -35,27 +35,20 @@ class InforUserRepositoryImpl implements InforUserRepository {
 
   @override
   Future<String> updateAvatar(PlatformFile file) async {
-    final dioClient = DioClient();
-    final mediaService = MediaService(dioClient);
     final tokenService = TokenStorageService();
     
     final userId = await tokenService.getUserId();
     if (userId == null) throw Exception("User not logged in");
     
-    final mediaId = await mediaService.uploadMedia(
-      file: file,
-      ownerId: userId,
-      ownerType: 'USER',
-      mediaType: 'IMAGE',
-    );
-    
-    if (mediaId == null) throw Exception("MediaService returned null mediaId!");
-    
-    
-    final updatedUser = await userDataSource.updateUser(null, {
-      'avatarId': mediaId,
-      'avatarUrl': '' 
+    final multipartFile = file.bytes != null 
+        ? MultipartFile.fromBytes(file.bytes!, filename: file.name)
+        : await MultipartFile.fromFile(file.path!, filename: file.name);
+
+    final formData = FormData.fromMap({
+      'file': multipartFile,
     });
+    
+    final updatedUser = await userDataSource.updateProfileImage(userId, formData);
     
     if (updatedUser != null && updatedUser['avatarUrl'] != null) {
       return updatedUser['avatarUrl'];

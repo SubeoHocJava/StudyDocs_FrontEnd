@@ -82,6 +82,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                     schoolInfo: overview_school.SchoolInfo(id: '', name: data.schoolName),
                     courseInfo: CourseInfo(id: '', name: data.categoryName),
                     isSaved: data.isBookmarked,
+                    fileUrl: data.fileUrl,
                   ),
                 ),
               );

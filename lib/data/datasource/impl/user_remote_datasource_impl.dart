@@ -36,7 +36,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<dynamic> updateProfileImage(String userId, Map<String, dynamic> data) async {
+  Future<dynamic> updateProfileImage(String userId, dynamic data) async {
     final response = await _client.post(UserEndpoints.updateImage(userId), data: data);
     if (response.isSuccess) {
       return response.data;

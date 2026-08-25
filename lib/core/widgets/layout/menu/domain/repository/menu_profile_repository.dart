@@ -1,6 +1,7 @@
 
 import 'package:studydocs/data/datasource/user_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/user_remote_datasource_impl.dart';
+import 'package:studydocs/data/model/user/User.dart';
 import '../model/menu_profile.dart';
 
 abstract class MenuProfileRepository {
@@ -15,7 +16,8 @@ class MenuProfileRepositoryImpl implements MenuProfileRepository {
 
   @override
   Future<MenuProfile> getMenuProfile(String userId) async {
-    final user = await userDataSource.getUser();
+    final userData = await userDataSource.getUser();
+    final user = User.fromJson(userData as Map<String, dynamic>);
     return MenuProfile(
       userId: user.id ?? userId,
       userName: user.username ?? 'Unknown',

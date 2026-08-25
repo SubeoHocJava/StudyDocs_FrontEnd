@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:html' as html;
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_event.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_state.dart';
@@ -18,7 +19,25 @@ class DocumentOverviewPresentation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DocumentOverviewBloc, DocumentOverviewState>(
+    return BlocConsumer<DocumentOverviewBloc, DocumentOverviewState>(
+      listenWhen: (previous, current) {
+        if (previous is DocumentOverviewLoaded && current is DocumentOverviewLoaded) {
+          return previous.downloadUrl != current.downloadUrl && current.downloadUrl == 'success';
+        }
+        return false;
+      },
+      listener: (context, state) {
+        if (state is DocumentOverviewLoaded && state.downloadUrl == 'success') {
+          final fileUrl = state.documentOverview.fileUrl;
+          if (fileUrl != null && fileUrl.isNotEmpty) {
+            html.window.open(fileUrl, '_blank');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Không tìm thấy đường dẫn tải về')),
+            );
+          }
+        }
+      },
       builder: (context, state) {
         if (state is DocumentOverviewLoaded) {
           return Container(

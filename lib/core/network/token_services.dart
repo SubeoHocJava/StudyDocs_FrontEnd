@@ -15,6 +15,7 @@ class TokenStorageService {
   static const String _keyUsername = 'username';
   static const String _keyDisplayName = 'display_name';
   static const String _keyIdToken = 'id_token';
+  static const String _keyAvatarUrl = 'avatar_url';
 
   /// Kiểm tra xem Access Token sắp hết hạn chưa
   /// Trả về true nếu token null, invalid hoặc sắp hết hạn (còn < 1 phút)
@@ -83,6 +84,7 @@ class TokenStorageService {
     String? username,
     String? displayName,
     String? idToken,
+    String? avatarUrl,
     List<String>? roles,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -97,6 +99,7 @@ class TokenStorageService {
       await prefs.setString(_keyDisplayName, displayName);
     }
     if (idToken != null) await prefs.setString(_keyIdToken, idToken);
+    if (avatarUrl != null) await prefs.setString(_keyAvatarUrl, avatarUrl);
 
     // Lưu roles dưới dạng JSON string
     if (roles != null && roles.isNotEmpty) {
@@ -149,6 +152,7 @@ class TokenStorageService {
     await prefs.remove(_keyDisplayName);
     await prefs.remove(_keyIdToken);
     await prefs.remove(_keyRoles);
+    await prefs.remove(_keyAvatarUrl);
   }
 
   Future<String?> getIdToken() async {
@@ -178,6 +182,12 @@ class TokenStorageService {
   Future<String?> getDisplayName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyDisplayName);
+  }
+
+  /// Lấy avatar url
+  Future<String?> getAvatarUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyAvatarUrl);
   }
 
   /// Lấy danh sách roles

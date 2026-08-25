@@ -100,11 +100,50 @@ class InforUser extends StatelessWidget {
                   type: FileType.image,
                   withData: true,
                 );
-                if (result == null) return;
+                if (result == null || result.files.isEmpty) return;
 
-                context.read<InforUserBloc>().add(
-                  UpdateUserAvatar(result.files.single),
+                final file = result.files.single;
+
+                if (!context.mounted) return;
+
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text("Xác nhận cập nhật ảnh đại diện"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (file.bytes != null)
+                          ClipOval(
+                            child: Image.memory(
+                              file.bytes!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        const SizedBox(height: 16),
+                        const Text("Bạn có muốn sử dụng ảnh này làm ảnh đại diện không?", textAlign: TextAlign.center),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text("Hủy"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text("Đồng ý"),
+                      ),
+                    ],
+                  ),
                 );
+
+                if (confirm == true && context.mounted) {
+                  context.read<InforUserBloc>().add(
+                    UpdateUserAvatar(file),
+                  );
+                }
               }
               : null,
       child: Stack(

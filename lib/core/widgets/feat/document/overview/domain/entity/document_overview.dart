@@ -8,6 +8,7 @@ class DocumentOverview extends Equatable {
   final SchoolInfo schoolInfo;
   final CourseInfo courseInfo;
   final bool isSaved;
+  final String? fileUrl;
 
   const DocumentOverview({
     required this.id,
@@ -15,6 +16,7 @@ class DocumentOverview extends Equatable {
     required this.schoolInfo,
     required this.courseInfo,
     required this.isSaved,
+    this.fileUrl,
   });
 
   DocumentOverview copyWith({
@@ -23,6 +25,7 @@ class DocumentOverview extends Equatable {
     SchoolInfo? schoolInfo,
     CourseInfo? courseInfo,
     bool? isSaved,
+    String? fileUrl,
   }) {
     return DocumentOverview(
       id: id ?? this.id,
@@ -30,9 +33,10 @@ class DocumentOverview extends Equatable {
       schoolInfo: schoolInfo ?? this.schoolInfo,
       courseInfo: courseInfo ?? this.courseInfo,
       isSaved: isSaved ?? this.isSaved,
+      fileUrl: fileUrl ?? this.fileUrl,
     );
   }
 
   @override
-  List<Object?> get props => [id, title, schoolInfo, courseInfo, isSaved];
+  List<Object?> get props => [id, title, schoolInfo, courseInfo, isSaved, fileUrl];
 }

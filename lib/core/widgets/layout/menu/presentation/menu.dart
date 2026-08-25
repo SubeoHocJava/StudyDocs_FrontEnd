@@ -208,14 +208,21 @@ class MenuDrawer extends StatelessWidget {
           },
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundImage:
-                (state.profile.avatarUrl != null && state.profile.avatarUrl!.isNotEmpty)
-                    ? NetworkImage(state.profile.avatarUrl!)
-                    : const AssetImage(AppAssets.avt) as ImageProvider,
-                child: null,
-              ),
+              (state.profile.avatarUrl != null && state.profile.avatarUrl!.isNotEmpty)
+                  ? ClipOval(
+                      child: Image.network(
+                        state.profile.avatarUrl!,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(AppAssets.user, width: 56, height: 56);
+                        },
+                      ),
+                    )
+                  : ClipOval(
+                      child: Image.asset(AppAssets.user, width: 56, height: 56),
+                    ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

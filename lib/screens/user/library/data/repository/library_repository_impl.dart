@@ -46,19 +46,31 @@ class LibraryRepositoryImpl implements LibraryRepository, DocumentRepository {
 
   @override
   Future<String?> like(String documentId) async {
-    await _remoteDataSource.interactWithDocument(documentId, 'LIKE');
-    return 'liked';
+    try {
+      await _remoteDataSource.interactWithDocument(documentId, 'LIKE');
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   @override
   Future<String?> bookmark(String documentId) async {
-    await _remoteDataSource.bookmarkDocument(documentId);
-    return 'bookmarked';
+    try {
+      await _remoteDataSource.bookmarkDocument(documentId);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   @override
   Future<String?> download(String documentId) async {
-    await _remoteDataSource.downloadDocument(documentId);
-    return 'downloaded';
+    try {
+      await _remoteDataSource.downloadDocument(documentId);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 }

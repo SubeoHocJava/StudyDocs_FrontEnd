@@ -54,11 +54,11 @@ class ApiInterceptor extends QueuedInterceptor {
         await _tokenStorage.clearTokens();
         onSessionExpired?.call();
       }
+    }
 
-      final authHeader = await _tokenStorage.getAuthorizationHeader();
-      if (authHeader != null) {
-        options.headers['Authorization'] = authHeader;
-      }
+    final authHeader = await _tokenStorage.getAuthorizationHeader();
+    if (authHeader != null) {
+      options.headers['Authorization'] = authHeader;
     } else {
       options.headers.remove('Authorization');
     }
