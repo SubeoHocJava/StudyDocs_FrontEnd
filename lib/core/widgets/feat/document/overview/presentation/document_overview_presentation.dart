@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_event.dart';
@@ -100,10 +101,11 @@ class DocumentOverviewPresentation extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           context.read<DocumentOverviewBloc>().add(
-                            SchoolClicked(
-                              schoolId: state.documentOverview.courseInfo.id,
+                            CourseClicked(
+                              courseId: state.documentOverview.courseInfo.id,
                             ),
                           );
+                          context.push('/library/${state.documentOverview.courseInfo.id}');
                         },
                         child: Text(
                           state.documentOverview.courseInfo.name,
@@ -142,6 +144,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                               schoolId: state.documentOverview.schoolInfo.id,
                             ),
                           );
+                          // context.push('/school/${state.documentOverview.schoolInfo.id}');
                         },
                         child: Text(
                           state.documentOverview.schoolInfo.name,

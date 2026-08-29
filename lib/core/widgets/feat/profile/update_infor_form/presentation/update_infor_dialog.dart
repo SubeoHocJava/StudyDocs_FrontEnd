@@ -208,35 +208,32 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
       builder:
           (state) => Column(
             children: [
-              Row(
-                children: [
-                  Radio(
-                    value: "Nam",
-                    groupValue: model.gender,
-                    activeColor: AppColors.primary,
-                    onChanged: (v) {
-                      setState(() => model.gender = v);
-                      state.didChange(v);
-                    },
-                  ),
-                  Text(
-                    "Nam",
-                    style: TextStyle(color: AppColors.textPrimaryLight),
-                  ),
-                  Radio(
-                    value: "Nữ",
-                    groupValue: model.gender,
-                    activeColor: AppColors.primary,
-                    onChanged: (v) {
-                      setState(() => model.gender = v);
-                      state.didChange(v);
-                    },
-                  ),
-                  Text(
-                    "Nữ",
-                    style: TextStyle(color: AppColors.textPrimaryLight),
-                  ),
-                ],
+              RadioGroup<String>(
+                groupValue: model.gender,
+                onChanged: (v) {
+                  setState(() => model.gender = v);
+                  state.didChange(v);
+                },
+                child: Row(
+                  children: [
+                    Radio<String>(
+                      value: "Nam",
+                      activeColor: AppColors.primary,
+                    ),
+                    Text(
+                      "Nam",
+                      style: TextStyle(color: AppColors.textPrimaryLight),
+                    ),
+                    Radio<String>(
+                      value: "Nữ",
+                      activeColor: AppColors.primary,
+                    ),
+                    Text(
+                      "Nữ",
+                      style: TextStyle(color: AppColors.textPrimaryLight),
+                    ),
+                  ],
+                ),
               ),
               if (state.hasError)
                 Padding(

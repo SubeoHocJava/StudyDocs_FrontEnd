@@ -76,10 +76,10 @@ class DocumentOverviewBloc
       );
     });
     on<SchoolClicked>((event, emit) {
-      // TODO: Handle school clicked
+      
     });
     on<CourseClicked>((event, emit) {
-      // TODO: Handle course clicked
+      
     });
   }
 }

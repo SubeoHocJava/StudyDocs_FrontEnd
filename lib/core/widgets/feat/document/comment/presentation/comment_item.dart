@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
@@ -35,6 +36,7 @@ class CommentItem extends StatelessWidget {
             context.read<DocumentCommentBloc>().add(
               AuthorClick(comment.author.id),
             );
+            context.push('/profile/${comment.author.id}');
           },
           child: CircleAvatar(
             radius: avatarRadius,

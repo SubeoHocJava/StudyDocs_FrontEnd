@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service để lưu trữ và quản lý tokens (accessToken, refreshToken) + user info
-/// Sử dụng SharedPreferences để lưu trữ tạm thời
-///
-/// TODO: Nếu cần bảo mật cao hơn, có thể dùng flutter_secure_storage
+/// Sử dụng FlutterSecureStorage cho Token và SharedPreferences cho thông tin không nhạy cảm
 class TokenStorageService {
+  final _secureStorage = const FlutterSecureStorage();
+
   static const String _keyAccessToken = 'access_token';
   static const String _keyRefreshToken = 'refresh_token';
   static const String _keyTokenType = 'token_type';
@@ -87,9 +88,13 @@ class TokenStorageService {
     String? avatarUrl,
     List<String>? roles,
   }) async {
+    // Lưu token bảo mật
+    await _secureStorage.write(key: _keyAccessToken, value: accessToken);
+    await _secureStorage.write(key: _keyRefreshToken, value: refreshToken);
+    if (idToken != null) await _secureStorage.write(key: _keyIdToken, value: idToken);
+
+    // Lưu thông tin user bằng SharedPreferences
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyAccessToken, accessToken);
-    await prefs.setString(_keyRefreshToken, refreshToken);
     await prefs.setString(_keyTokenType, tokenType);
     await prefs.setString(_keyRole, role);
 
@@ -98,7 +103,6 @@ class TokenStorageService {
     if (displayName != null) {
       await prefs.setString(_keyDisplayName, displayName);
     }
-    if (idToken != null) await prefs.setString(_keyIdToken, idToken);
     if (avatarUrl != null) await prefs.setString(_keyAvatarUrl, avatarUrl);
 
     // Lưu roles dưới dạng JSON string
@@ -109,14 +113,12 @@ class TokenStorageService {
 
   /// Lấy access token để dùng cho các request
   Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyAccessToken);
+    return await _secureStorage.read(key: _keyAccessToken);
   }
 
   /// Lấy refresh token
   Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyRefreshToken);
+    return await _secureStorage.read(key: _keyRefreshToken);
   }
 
   /// Lấy token type (thường là "Bearer")
@@ -142,22 +144,22 @@ class TokenStorageService {
 
   /// Xóa tất cả tokens + user info (khi logout)
   Future<void> clearTokens() async {
+    await _secureStorage.delete(key: _keyAccessToken);
+    await _secureStorage.delete(key: _keyRefreshToken);
+    await _secureStorage.delete(key: _keyIdToken);
+
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyAccessToken);
-    await prefs.remove(_keyRefreshToken);
     await prefs.remove(_keyTokenType);
     await prefs.remove(_keyRole);
     await prefs.remove(_keyUserId);
     await prefs.remove(_keyUsername);
     await prefs.remove(_keyDisplayName);
-    await prefs.remove(_keyIdToken);
     await prefs.remove(_keyRoles);
     await prefs.remove(_keyAvatarUrl);
   }
 
   Future<String?> getIdToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyIdToken);
+    return await _secureStorage.read(key: _keyIdToken);
   }
 
   /// Kiểm tra xem user đã login chưa

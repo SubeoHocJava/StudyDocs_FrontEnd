@@ -76,34 +76,34 @@ class _HeaderState extends State<Header> {
     _overlayEntry = OverlayEntry(
       builder:
           (context) => Stack(
-        children: [
-          // Barrier
-          Positioned.fill(
-            top:
-            widget.preferredSize.height +
-                MediaQuery.of(context).padding.top,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
-              onTap: _closeMenu,
-              child: Container(color: Colors.black.withValues(alpha: 0.3)),
-            ),
+            children: [
+              // Barrier
+              Positioned.fill(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
+                  onTap: _closeMenu,
+                  child: Container(color: Colors.black.withValues(alpha: 0.3)),
+                ),
+              ),
+              // Drawer Content
+              Positioned(
+                top:
+                    widget.preferredSize.height +
+                    MediaQuery.of(context).padding.top,
+                left: 0,
+                bottom: 0,
+                width: 300,
+                child: MenuDrawer(
+                  onClose: _closeMenu,
+                  onLogoTap: widget.onLogoTap,
+                  selectedIndex: widget.selectedIndex,
+                ),
+              ),
+            ],
           ),
-          // Drawer Content
-          Positioned(
-            top:
-            widget.preferredSize.height +
-                MediaQuery.of(context).padding.top,
-            left: 0,
-            bottom: 0,
-            width: 300,
-            child: MenuDrawer(
-              onClose: _closeMenu,
-              onLogoTap: widget.onLogoTap,
-              selectedIndex: widget.selectedIndex,
-            ),
-          ),
-        ],
-      ),
     );
 
     overlayState.insert(_overlayEntry!);
@@ -134,7 +134,8 @@ class _HeaderState extends State<Header> {
               children: [
                 // Left: Menu + Logo
                 Row(
-                  mainAxisSize: MainAxisSize.min, // QUAN TRỌNG: Sửa lỗi Overflow
+                  mainAxisSize:
+                      MainAxisSize.min, // QUAN TRỌNG: Sửa lỗi Overflow
                   children: [
                     _buildLeading(context),
                     const SizedBox(width: 8),
@@ -179,9 +180,7 @@ class _HeaderState extends State<Header> {
       onTap: widget.onLogoTap ?? () => context.go('/home'),
       child: Row(
         mainAxisSize: MainAxisSize.min, // QUAN TRỌNG: Sửa lỗi Overflow
-        children: [
-          Image.asset('assets/icons/logo.png', height: 40),
-        ],
+        children: [Image.asset('assets/icons/logo.png', height: 40)],
       ),
     );
   }
@@ -210,8 +209,7 @@ class _HeaderState extends State<Header> {
               _buildUserAction(context, authState)
             else
               ElevatedButton(
-                onPressed:
-                    widget.onLoginTap ?? () => _showLoginModal(context),
+                onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.headerForeground,
                   foregroundColor: Colors.white,
@@ -230,7 +228,7 @@ class _HeaderState extends State<Header> {
                 ),
               ),
             const SizedBox(width: 12),
-        // Nút Đổi Theme
+            // Nút Đổi Theme
             GestureDetector(
               onTap: () {
                 // TODO: Toggle Theme
@@ -261,19 +259,24 @@ class _HeaderState extends State<Header> {
         child: CircleAvatar(
           radius: 20,
           backgroundColor: AppColors.headerForeground.withValues(alpha: 0.12),
-          child: (avatarUrl != null && avatarUrl.isNotEmpty)
-              ? ClipOval(
-                  child: Image.network(
-                    avatarUrl,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(AppAssets.user, width: 24, height: 24);
-                    },
-                  ),
-                )
-              : Image.asset(AppAssets.user, width: 24, height: 24),
+          child:
+              (avatarUrl != null && avatarUrl.isNotEmpty)
+                  ? ClipOval(
+                    child: Image.network(
+                      avatarUrl,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          AppAssets.user,
+                          width: 24,
+                          height: 24,
+                        );
+                      },
+                    ),
+                  )
+                  : Image.asset(AppAssets.user, width: 24, height: 24),
         ),
       ),
     );

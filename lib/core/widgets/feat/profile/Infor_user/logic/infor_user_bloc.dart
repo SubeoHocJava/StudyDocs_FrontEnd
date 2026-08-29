@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/repository/impl/infor_user_repository_impl.dart';
 import '../domain/usecae/follow_user_usecase.dart';

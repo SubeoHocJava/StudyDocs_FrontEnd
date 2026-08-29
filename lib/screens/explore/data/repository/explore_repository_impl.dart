@@ -5,9 +5,6 @@ class ExploreRepositoryImpl implements ExploreRepository {
   @override
   Future<ExploreModel> getExploreData() async {
     // TODO: Implement actual API call
-    return const ExploreModel(
-      universityName: '',
-      hintText: '',
-    );
+    return const ExploreModel(universityName: '', hintText: '');
   }
 }

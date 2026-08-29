@@ -108,7 +108,7 @@ class DocumentInformationBloc
     });
 
     on<AuthorClick>((event, emit) {
-      // TODO: Handle navigation to author profile
+      
     });
   }
 }
