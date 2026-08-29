@@ -9,7 +9,7 @@ import '../logic/my_qr_bloc.dart';
 class MyQRWidget extends StatelessWidget {
   final String userId;
 
-  const MyQRWidget({Key? key, required this.userId}) : super(key: key);
+  const MyQRWidget({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MyQRWidget extends StatelessWidget {
 }
 
 class _MyQRView extends StatelessWidget {
-  const _MyQRView({Key? key}) : super(key: key);
+  const _MyQRView();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,8 @@ class _MyQRView extends StatelessWidget {
                       data: state.qrData,
                       version: QrVersions.auto,
                       backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF1E3A8A), // Same dark blue for the QR code
+                      eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF1E3A8A)),
+                      dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF1E3A8A)), // Same dark blue for the QR code
                       errorCorrectionLevel: QrErrorCorrectLevel.M,
                     ),
                   );

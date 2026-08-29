@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:html' as html;
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_event.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_state.dart';
@@ -30,7 +31,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
         if (state is DocumentOverviewLoaded && state.downloadUrl == 'success') {
           final fileUrl = state.documentOverview.fileUrl;
           if (fileUrl != null && fileUrl.isNotEmpty) {
-            html.window.open(fileUrl, '_blank');
+            launchUrl(Uri.parse(fileUrl));
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Không tìm thấy đường dẫn tải về')),

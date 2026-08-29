@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../domain/model/UserProfile.dart';
+import '../domain/model/user_profile.dart';
 
 abstract class UpdateInforState extends Equatable {
   @override
@@ -20,7 +20,6 @@ class UpdateInforLoaded extends UpdateInforState {
   @override
   List<Object?> get props => [profile, schoolList];
 }
-
 
 class UpdateSuccess extends UpdateInforState {}
 

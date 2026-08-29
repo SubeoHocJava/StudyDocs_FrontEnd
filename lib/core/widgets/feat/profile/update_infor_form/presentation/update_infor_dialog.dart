@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 import '../../../../../constants/app_colors.dart';
 import '../domain/model/update_infor_view_model.dart';
 import '../logic/update_infor_bloc.dart';
@@ -37,15 +36,15 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
 
         if (state is UpdateSuccess) {
           Navigator.of(context, rootNavigator: true).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Cập nhật thành công")),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Cập nhật thành công")));
         }
 
         if (state is UpdateError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       builder: (context, state) {
@@ -68,8 +67,6 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
             ),
           );
         }
-
-
 
         return Center(
           child: Material(
@@ -95,9 +92,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
       elevation: 0,
       insetPadding: EdgeInsets.zero,
       contentPadding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       actionsAlignment: MainAxisAlignment.center,
       title: _buildTitle(context),
       content: _buildForm(context),
@@ -124,7 +119,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
             size: 35,
             color: AppColors.textPrimaryLight,
           ),
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop()
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
         ),
       ],
     );
@@ -140,16 +135,26 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _label("Tên tài khoản"),
-            _input(model.userName, "Nhập tên tài khoản",
-                    (v) => model.validateRequired("tên tài khoản", v)),
+            _input(
+              model.userName,
+              "Nhập tên tài khoản",
+              (v) => model.validateRequired("tên tài khoản", v),
+            ),
 
             _label("Họ và tên"),
-            _input(model.fullName, "Nhập họ và tên",
-                    (v) => model.validateRequired("họ và tên", v)),
+            _input(
+              model.fullName,
+              "Nhập họ và tên",
+              (v) => model.validateRequired("họ và tên", v),
+            ),
 
             _label("Số điện thoại"),
-            _input(model.phone, "Nhập số điện thoại", model.validatePhone,
-                keyboardType: TextInputType.phone),
+            _input(
+              model.phone,
+              "Nhập số điện thoại",
+              model.validatePhone,
+              keyboardType: TextInputType.phone,
+            ),
 
             _label("Trường học"),
             _buildSchoolDropdown(),
@@ -161,8 +166,11 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
             _buildBirthDate(),
 
             _label("Địa chỉ"),
-            _input(model.address, "Nhập địa chỉ",
-                    (v) => model.validateRequired("địa chỉ", v)),
+            _input(
+              model.address,
+              "Nhập địa chỉ",
+              (v) => model.validateRequired("địa chỉ", v),
+            ),
           ],
         ),
       ),
@@ -173,16 +181,20 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
   Widget _buildSchoolDropdown() {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      value: model.school,
+      initialValue: model.school,
       dropdownColor: AppColors.white,
-      items: model.schoolList
-          .map(
-            (school) => DropdownMenuItem(
-          value: school,
-          child: Text(school, style: TextStyle(color: AppColors.textPrimaryLight)),
-        ),
-      )
-          .toList(),
+      items:
+          model.schoolList
+              .map(
+                (school) => DropdownMenuItem(
+                  value: school,
+                  child: Text(
+                    school,
+                    style: TextStyle(color: AppColors.textPrimaryLight),
+                  ),
+                ),
+              )
+              .toList(),
       onChanged: (value) => setState(() => model.school = value),
       validator: (v) => v == null ? "Vui lòng chọn trường học" : null,
       decoration: _inputDecoration("Chọn trường học"),
@@ -193,42 +205,49 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
   Widget _buildGenderSection() {
     return FormField<String>(
       validator: (_) => model.gender == null ? "Vui lòng chọn giới tính" : null,
-      builder: (state) => Column(
-        children: [
-          Row(
+      builder:
+          (state) => Column(
             children: [
-              Radio(
-                value: "Nam",
-                groupValue: model.gender,
-                activeColor: AppColors.primary,
-                onChanged: (v) {
-                  setState(() => model.gender = v);
-                  state.didChange(v);
-                },
+              Row(
+                children: [
+                  Radio(
+                    value: "Nam",
+                    groupValue: model.gender,
+                    activeColor: AppColors.primary,
+                    onChanged: (v) {
+                      setState(() => model.gender = v);
+                      state.didChange(v);
+                    },
+                  ),
+                  Text(
+                    "Nam",
+                    style: TextStyle(color: AppColors.textPrimaryLight),
+                  ),
+                  Radio(
+                    value: "Nữ",
+                    groupValue: model.gender,
+                    activeColor: AppColors.primary,
+                    onChanged: (v) {
+                      setState(() => model.gender = v);
+                      state.didChange(v);
+                    },
+                  ),
+                  Text(
+                    "Nữ",
+                    style: TextStyle(color: AppColors.textPrimaryLight),
+                  ),
+                ],
               ),
-              Text("Nam", style: TextStyle(color: AppColors.textPrimaryLight)),
-              Radio(
-                value: "Nữ",
-                groupValue: model.gender,
-                activeColor: AppColors.primary,
-                onChanged: (v) {
-                  setState(() => model.gender = v);
-                  state.didChange(v);
-                },
-              ),
-              Text("Nữ", style: TextStyle(color: AppColors.textPrimaryLight)),
+              if (state.hasError)
+                Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: Text(
+                    state.errorText!,
+                    style: TextStyle(color: AppColors.danger, fontSize: 12),
+                  ),
+                ),
             ],
           ),
-          if (state.hasError)
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Text(
-                state.errorText!,
-                style: TextStyle(color: AppColors.danger, fontSize: 12),
-              ),
-            ),
-        ],
-      ),
     );
   }
 
@@ -241,31 +260,34 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           initialDate: model.birthDate ?? DateTime(2000),
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
-          builder: (context, child) => Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: AppColors.primary,
-                onPrimary: AppColors.white,
-                surface: AppColors.surfaceLight,
-                onSurface: AppColors.textPrimaryLight,
+          builder:
+              (context, child) => Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: AppColors.primary,
+                    onPrimary: AppColors.white,
+                    surface: AppColors.surfaceLight,
+                    onSurface: AppColors.textPrimaryLight,
+                  ),
+                ),
+                child: child!,
               ),
-            ),
-            child: child!,
-          ),
         );
         if (picked != null) setState(() => model.birthDate = picked);
       },
       child: AbsorbPointer(
         child: TextFormField(
-          validator: (_) =>
-          model.birthDate == null ? "Vui lòng chọn ngày sinh" : null,
+          validator:
+              (_) => model.birthDate == null ? "Vui lòng chọn ngày sinh" : null,
           style: TextStyle(color: AppColors.textPrimaryLight),
           decoration: _inputDecoration(
             model.birthDate == null
                 ? "Chọn ngày sinh"
                 : "${model.birthDate!.day}/${model.birthDate!.month}/${model.birthDate!.year}",
-            suffixIcon: Icon(Icons.calendar_today,
-                color: AppColors.textPrimaryLight),
+            suffixIcon: Icon(
+              Icons.calendar_today,
+              color: AppColors.textPrimaryLight,
+            ),
           ),
         ),
       ),
@@ -297,8 +319,10 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           ),
         );
       },
-      child: Text("Cập nhật",
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.white)),
+      child: Text(
+        "Cập nhật",
+        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.white),
+      ),
     );
   }
 
@@ -332,11 +356,11 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
   }
 
   Widget _input(
-      TextEditingController controller,
-      String hint,
-      String? Function(String?) validator, {
-        TextInputType? keyboardType,
-      }) {
+    TextEditingController controller,
+    String hint,
+    String? Function(String?) validator, {
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,

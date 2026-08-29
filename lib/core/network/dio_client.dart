@@ -64,7 +64,7 @@ class DioClient {
         Map<String, dynamic>? queryParameters,
       }) async {
     try {
-      return fromResponse<dynamic>(
+      return await fromResponse<dynamic>(
         await _dio.get(path, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -79,7 +79,7 @@ class DioClient {
         Options? options,
       }) async {
     try {
-      return fromResponse<dynamic>(
+      return await fromResponse<dynamic>(
         await _dio.post(path, data: data, queryParameters: queryParameters, options: options),
       );
     } on DioException catch (e) {
@@ -93,7 +93,7 @@ class DioClient {
         Map<String, dynamic>? queryParameters,
       }) async {
     try {
-      return fromResponse<dynamic>(
+      return await fromResponse<dynamic>(
         await _dio.put(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -109,7 +109,7 @@ class DioClient {
         Map<String, dynamic>? queryParameters,
       }) async {
     try {
-      return fromResponse<dynamic>(
+      return await fromResponse<dynamic>(
         await _dio.patch(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {
@@ -123,7 +123,7 @@ class DioClient {
         Map<String, dynamic>? queryParameters,
       }) async {
     try {
-      return fromResponse<dynamic>(
+      return await fromResponse<dynamic>(
         await _dio.delete(path, data: data, queryParameters: queryParameters),
       );
     } on DioException catch (e) {

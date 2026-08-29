@@ -10,7 +10,7 @@ import 'package:studydocs/screens/document_detail/presentation/document_detail_s
 import '../../screens/explore/presentation/explore_screen.dart';
 import '../../screens/home/presentation/home_screen.dart';
 import '../../screens/notification/presentation/notification_screen.dart';
-import '../../screens/profile/presentation/ProfileScreen.dart';
+import '../../screens/profile/presentation/profile_screen.dart';
 import '../../screens/user_follow/presentation/screen/user_follow_screen.dart';
 import '../../screens/document_upload/presentation/document_upload_screen.dart';
 
@@ -31,19 +31,21 @@ GoRouter initAppRouter() {
           GoRoute(
             path: '/home',
             parentNavigatorKey: shellNavigatorKey,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const HomeScreen(),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const HomeScreen(),
+                ),
           ),
           GoRoute(
             path: '/profile',
             parentNavigatorKey: shellNavigatorKey,
             redirect: authGuard,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const ProfileScreen(),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const ProfileScreen(),
+                ),
           ),
           GoRoute(
             path: '/profile/:id',
@@ -59,10 +61,11 @@ GoRouter initAppRouter() {
           GoRoute(
             path: '/library',
             parentNavigatorKey: shellNavigatorKey,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const LibraryScreen(),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const LibraryScreen(),
+                ),
           ),
           GoRoute(
             path: '/library/:subjectId',
@@ -78,36 +81,40 @@ GoRouter initAppRouter() {
           GoRoute(
             path: '/explore',
             parentNavigatorKey: shellNavigatorKey,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const ExploreScreen(),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const ExploreScreen(),
+                ),
           ),
           GoRoute(
             path: '/notifications',
             parentNavigatorKey: shellNavigatorKey,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const NotificationScreen(),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const NotificationScreen(),
+                ),
           ),
           GoRoute(
             path: '/followers',
             parentNavigatorKey: shellNavigatorKey,
             redirect: authGuard,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const UserFollowScreen(initialTab: 0),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const UserFollowScreen(initialTab: 0),
+                ),
           ),
           GoRoute(
             path: '/following',
             parentNavigatorKey: shellNavigatorKey,
             redirect: authGuard,
-            pageBuilder: (context, state) => NoTransitionPage(
-              key: state.pageKey,
-              child: const UserFollowScreen(initialTab: 1),
-            ),
+            pageBuilder:
+                (context, state) => NoTransitionPage(
+                  key: state.pageKey,
+                  child: const UserFollowScreen(initialTab: 1),
+                ),
           ),
           GoRoute(
             path: '/document/:id',
@@ -140,9 +147,6 @@ GoRouter initAppRouter() {
 void showGlobalDialog(Widget dialog) {
   final context = rootNavigatorKey.currentContext;
   if (context != null) {
-    showDialog(
-      context: context,
-      builder: (_) => dialog,
-    );
+    showDialog(context: context, builder: (_) => dialog);
   }
 }

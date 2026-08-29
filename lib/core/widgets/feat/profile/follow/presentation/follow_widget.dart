@@ -48,7 +48,7 @@ class Follow extends StatelessWidget {
                             bottomLeft: Radius.circular(16),
                           ),
                           border: Border.all(
-                            color: AppColors.secondaryTeal.withOpacity(0.5),
+                            color: AppColors.secondaryTeal.withValues(alpha: 0.5),
                           ),
                         ),
                         child: Text(
@@ -89,7 +89,7 @@ class Follow extends StatelessWidget {
                             bottomRight: Radius.circular(16),
                           ),
                           border: Border.all(
-                            color: AppColors.secondaryBlue.withOpacity(0.5),
+                            color: AppColors.secondaryBlue.withValues(alpha: 0.5),
                           ),
                         ),
                         child: Text(

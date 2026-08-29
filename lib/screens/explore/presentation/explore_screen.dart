@@ -56,7 +56,7 @@ class ExploreView extends StatelessWidget {
                   ExploreSearchBar(
                     hintText: state.data.hintText,
                     onTap: () {
-                      print('Search'); // Mock search action as requested
+                      debugPrint('Search'); // Mock search action as requested
                     },
                   ),
                   // Space for future content

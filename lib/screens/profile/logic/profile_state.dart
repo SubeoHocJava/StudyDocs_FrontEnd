@@ -1,4 +1,4 @@
-import 'package:studydocs/data/model/user/User.dart';
+import 'package:studydocs/data/model/user/user.dart';
 
 abstract class ProfileState {}
 

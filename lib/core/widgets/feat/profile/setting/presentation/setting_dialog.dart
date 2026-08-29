@@ -8,7 +8,7 @@ import '../../../../../constants/app_colors.dart';
 import '../../../../../router/app_router.dart';
 import '../../myqr/presentation/my_qr_widget.dart';
 import '../../update_infor_form/logic/update_infor_event.dart';
-import '../../update_infor_form/presentation/UpdateInforDialog.dart';
+import '../../update_infor_form/presentation/update_infor_dialog.dart';
 import '../logic/setting_bloc.dart';
 import '../logic/setting_event.dart';
 import '../logic/setting_state.dart';
@@ -18,10 +18,12 @@ class SettingDialog extends StatelessWidget {
 
   // ----- Mở hộp thoại cập nhật thông tin -----
   void _openUpdateDialog(BuildContext context) {
-    showGlobalDialog(BlocProvider(
-      create: (_) => UpdateInforBloc()..add(LoadUpdateInfor()),
-      child: const UpdateInforDialog(),
-    ),);
+    showGlobalDialog(
+      BlocProvider(
+        create: (_) => UpdateInforBloc()..add(LoadUpdateInfor()),
+        child: const UpdateInforDialog(),
+      ),
+    );
   }
 
   // ----- Popup QR -----

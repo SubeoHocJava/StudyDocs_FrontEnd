@@ -17,18 +17,18 @@ class ApiException implements Exception {
 
 /// Network connectivity errors (timeout, no internet)
 class NetworkException extends ApiException {
-  NetworkException(String message, {String? code}) 
-      : super(message, code: code ?? 'NETWORK_ERROR');
+  NetworkException(super.message, {String? code}) 
+      : super(code: code ?? 'NETWORK_ERROR');
 }
 
 /// Server-side errors (4xx, 5xx responses)
 class ServerException extends ApiException {
-  ServerException(String message, int statusCode, {String? code}) 
-      : super(message, code: code ?? 'SERVER_ERROR', statusCode: statusCode);
+  ServerException(super.message, int statusCode, {String? code}) 
+      : super(code: code ?? 'SERVER_ERROR', statusCode: statusCode);
 }
 
 /// Authentication/Authorization errors
 class AuthException extends ApiException {
-  AuthException(String message, int statusCode, {String? code})
-      : super(message, code: code ?? 'AUTH_ERROR', statusCode: statusCode);
+  AuthException(super.message, int statusCode, {String? code})
+      : super(code: code ?? 'AUTH_ERROR', statusCode: statusCode);
 }

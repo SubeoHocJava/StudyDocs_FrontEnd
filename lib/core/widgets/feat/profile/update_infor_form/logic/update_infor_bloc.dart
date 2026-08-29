@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../domain/repository/UpdateInforRepository.dart';
-import '../domain/usecase/GetSchoolListUseCase.dart';
+import '../domain/repository/update_infor_repository.dart';
+import '../domain/usecase/get_school_list_usecase.dart';
 import '../domain/usecase/get_profile_usecase.dart';
 import '../domain/usecase/update_profile_usecase.dart';
 import 'update_infor_event.dart';
@@ -14,21 +14,20 @@ class UpdateInforBloc extends Bloc<UpdateInforEvent, UpdateInforState> {
   late final GetSchoolListUseCase _getSchoolListUseCase;
 
   UpdateInforBloc() : super(UpdateInitial()) {
-
     _repository = UpdateInforRepositoryImpl();
-
 
     _getProfileUseCase = GetProfileUseCase(_repository);
     _updateProfileUseCase = UpdateProfileUseCase(_repository);
     _getSchoolListUseCase = GetSchoolListUseCase(_repository);
-
 
     on<LoadUpdateInfor>(_onLoadInfor);
     on<SubmitUpdateInfor>(_onSubmitUpdate);
   }
 
   Future<void> _onLoadInfor(
-      LoadUpdateInfor event, Emitter<UpdateInforState> emit) async {
+    LoadUpdateInfor event,
+    Emitter<UpdateInforState> emit,
+  ) async {
     emit(UpdateLoading());
 
     try {
@@ -42,7 +41,9 @@ class UpdateInforBloc extends Bloc<UpdateInforEvent, UpdateInforState> {
   }
 
   Future<void> _onSubmitUpdate(
-      SubmitUpdateInfor event, Emitter<UpdateInforState> emit) async {
+    SubmitUpdateInfor event,
+    Emitter<UpdateInforState> emit,
+  ) async {
     emit(UpdateLoading());
 
     try {

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:studydocs/data/model/user/User.dart';
+import 'package:studydocs/data/model/user/user.dart';
 
 abstract class StatisticEvent extends Equatable {
   const StatisticEvent();
@@ -10,7 +10,7 @@ abstract class StatisticEvent extends Equatable {
 
 class LoadStatisticData extends StatisticEvent {
   final User user;
-  LoadStatisticData(this.user);
+  const LoadStatisticData(this.user);
 
   @override
   List<Object> get props => [user];

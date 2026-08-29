@@ -4,8 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/comment.dart';
-import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/author.dart';
-import 'package:studydocs/core/widgets/feat/document/comment/domain/entity/content.dart';
+
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_event.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_state.dart';

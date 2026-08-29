@@ -85,7 +85,7 @@ class _HeaderState extends State<Header> {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
               onTap: _closeMenu,
-              child: Container(color: Colors.black.withOpacity(0.3)),
+              child: Container(color: Colors.black.withValues(alpha: 0.3)),
             ),
           ),
           // Drawer Content

@@ -14,12 +14,12 @@ class NotificationItemWidget extends StatelessWidget {
   final VoidCallback? onDeleteTap;
 
   const NotificationItemWidget({
-    Key? key,
+    super.key,
     required this.notification,
     required this.onTap,
     required this.onMoreTap,
     this.onDeleteTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +69,11 @@ class NotificationItemWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: isUnread
-                ? const Color(0xFFE6EAFA).withOpacity(0.5)
+                ? const Color(0xFFE6EAFA).withValues(alpha: 0.5)
                 : AppColors.white,
             border: Border(
               bottom: BorderSide(
-                color: AppColors.border.withOpacity(0.5),
+                color: AppColors.border.withValues(alpha: 0.5),
               ),
             ),
           ),

@@ -1,6 +1,4 @@
-
-
-import '../repository/UpdateInforRepository.dart';
+import '../repository/update_infor_repository.dart';
 
 class UpdateProfileParams {
   final String userName;

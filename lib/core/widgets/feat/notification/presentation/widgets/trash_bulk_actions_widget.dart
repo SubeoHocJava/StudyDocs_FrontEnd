@@ -21,7 +21,7 @@ class TrashBulkActionsWidget extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -39,7 +39,7 @@ class TrashBulkActionsWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFE3F1FF), // Very light blue
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFF2196F3).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

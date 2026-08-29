@@ -1,38 +1,36 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../../../../../router/app_router.dart';
-import '../../../../../router/app_routes_list.dart';
+
 import '../../setting/logic/setting_bloc.dart';
-import '../../setting/presentation/SettingDialog.dart';
-import '../logic/InforUserBloc.dart';
-import '../logic/InforUserEvent.dart';
-import '../logic/InforUserState.dart';
+import '../../setting/presentation/setting_dialog.dart';
+import '../logic/infor_user_bloc.dart';
+import '../logic/infor_user_event.dart';
+import '../logic/infor_user_state.dart';
 
 class InforUser extends StatelessWidget {
   const InforUser({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return
-    BlocBuilder<InforUserBloc, InforUserState>(
-        builder: (context, state) {
-          if (state is InforUserLoading || state is InforUserInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is InforUserError) {
-            return Center(child: Text("Lỗi: ${state.message}"));
-          }
+    return BlocBuilder<InforUserBloc, InforUserState>(
+      builder: (context, state) {
+        if (state is InforUserLoading || state is InforUserInitial) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is InforUserError) {
+          return Center(child: Text("Lỗi: ${state.message}"));
+        }
 
-          if (state is! InforUserLoaded) {
-            return const Center(child: Text("Không có dữ liệu"));
-          }
+        if (state is! InforUserLoaded) {
+          return const Center(child: Text("Không có dữ liệu"));
+        }
 
-          return _buildContent(context, state);
-        },
+        return _buildContent(context, state);
+      },
       // ),
     );
   }
@@ -108,41 +106,43 @@ class InforUser extends StatelessWidget {
 
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text("Xác nhận cập nhật ảnh đại diện"),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (file.bytes != null)
-                          ClipOval(
-                            child: Image.memory(
-                              file.bytes!,
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
+                  builder:
+                      (ctx) => AlertDialog(
+                        title: const Text("Xác nhận cập nhật ảnh đại diện"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (file.bytes != null)
+                              ClipOval(
+                                child: Image.memory(
+                                  file.bytes!,
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              "Bạn có muốn sử dụng ảnh này làm ảnh đại diện không?",
+                              textAlign: TextAlign.center,
                             ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text("Hủy"),
                           ),
-                        const SizedBox(height: 16),
-                        const Text("Bạn có muốn sử dụng ảnh này làm ảnh đại diện không?", textAlign: TextAlign.center),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text("Hủy"),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text("Đồng ý"),
+                          ),
+                        ],
                       ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text("Đồng ý"),
-                      ),
-                    ],
-                  ),
                 );
 
                 if (confirm == true && context.mounted) {
-                  context.read<InforUserBloc>().add(
-                    UpdateUserAvatar(file),
-                  );
+                  context.read<InforUserBloc>().add(UpdateUserAvatar(file));
                 }
               }
               : null,

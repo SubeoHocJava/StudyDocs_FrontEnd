@@ -27,9 +27,8 @@ class UserProfile {
       phoneNumber: json['phoneNumber'],
       address: json['address'],
       gender: json['gender'],
-      birthDate: json['birthDate'] != null
-          ? DateTime.parse(json['birthDate'])
-          : null,
+      birthDate:
+          json['birthDate'] != null ? DateTime.parse(json['birthDate']) : null,
       school: json['school'],
     );
   }

@@ -2,15 +2,13 @@ import 'package:bloc/bloc.dart';
 
 import '../domain/repository/impl/infor_user_repository_impl.dart';
 import '../domain/usecae/follow_user_usecase.dart';
-import '../domain/usecae/get_user_infor_usecase.dart';
 import '../domain/usecae/unfollow_user_usecase.dart';
 import '../domain/usecae/update_avatar_usecase.dart';
 
-import 'InforUserEvent.dart';
-import 'InforUserState.dart';
+import 'infor_user_event.dart';
+import 'infor_user_state.dart';
 
 class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
-  late final GetUserInforUseCase _getUserInforUseCase;
   late final UpdateAvatarUseCase _updateAvatarUseCase;
   late final FollowUserUseCase _followUserUseCase;
   late final UnfollowUserUseCase _unfollowUserUseCase;
@@ -20,7 +18,6 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
     final repo = InforUserRepositoryImpl();
 
     // Khởi tạo UseCase
-    _getUserInforUseCase = GetUserInforUseCase(repo);
     _updateAvatarUseCase = UpdateAvatarUseCase(repo);
     _followUserUseCase = FollowUserUseCase(repo);
     _unfollowUserUseCase = UnfollowUserUseCase(repo);
@@ -32,30 +29,33 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
     on<UnfollowUserEvent>(_onUnfollowUser);
     on<OpenSettingDialog>(_onOpensetting);
   }
-  void _onOpensetting(
-      OpenSettingDialog event,
-      Emitter<InforUserState> emit,
-      ) {
+  void _onOpensetting(OpenSettingDialog event, Emitter<InforUserState> emit) {
     emit(OpenSettingDialogState());
   }
+
   /// ================= LOAD USER =================
   Future<void> _onLoadUserInfor(
-      LoadUserInfor event, Emitter<InforUserState> emit) async {
+    LoadUserInfor event,
+    Emitter<InforUserState> emit,
+  ) async {
     emit(InforUserLoading());
     try {
       final user = event.user;
-      final String nameToDisplay = (user.fullName != null && user.fullName!.trim().isNotEmpty) 
-          ? user.fullName! 
-          : (user.username ?? "");
-          
-      emit(InforUserLoaded(
-        id: user.id ?? "",
-        fullName: nameToDisplay,
-        school: user.school,
-        avatarUrl: user.avatarUrl,
-        isFollowing: false,
-        isOwnProfile: true, // If we're visiting 'me', this is true
-      ));
+      final String nameToDisplay =
+          (user.fullName != null && user.fullName!.trim().isNotEmpty)
+              ? user.fullName!
+              : (user.username ?? "");
+
+      emit(
+        InforUserLoaded(
+          id: user.id ?? "",
+          fullName: nameToDisplay,
+          school: user.school,
+          avatarUrl: user.avatarUrl,
+          isFollowing: false,
+          isOwnProfile: true, // If we're visiting 'me', this is true
+        ),
+      );
     } catch (e) {
       emit(InforUserError(e.toString()));
     }
@@ -63,7 +63,9 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
 
   /// ================= UPDATE AVATAR =================
   Future<void> _onUpdateAvatar(
-      UpdateUserAvatar event, Emitter<InforUserState> emit) async {
+    UpdateUserAvatar event,
+    Emitter<InforUserState> emit,
+  ) async {
     if (state is! InforUserLoaded) return;
 
     final current = state as InforUserLoaded;
@@ -79,7 +81,9 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
 
   /// ================= FOLLOW =================
   Future<void> _onFollowUser(
-      FollowUserEvent event, Emitter<InforUserState> emit) async {
+    FollowUserEvent event,
+    Emitter<InforUserState> emit,
+  ) async {
     if (state is! InforUserLoaded) return;
     final current = state as InforUserLoaded;
 
@@ -93,7 +97,9 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
 
   /// ================= UNFOLLOW =================
   Future<void> _onUnfollowUser(
-      UnfollowUserEvent event, Emitter<InforUserState> emit) async {
+    UnfollowUserEvent event,
+    Emitter<InforUserState> emit,
+  ) async {
     if (state is! InforUserLoaded) return;
     final current = state as InforUserLoaded;
 

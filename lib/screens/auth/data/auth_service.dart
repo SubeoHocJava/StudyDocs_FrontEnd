@@ -1,7 +1,7 @@
 import 'package:studydocs/core/config/env_config.dart';
 import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/utils/jwt_utils.dart';
-import 'package:studydocs/data/model/user/User.dart';
+import 'package:studydocs/data/model/user/user.dart';
 import 'package:studydocs/screens/auth/data/models/auth_token_dto.dart';
 import 'package:studydocs/data/datasource/auth_remote_datasource.dart';
 import 'package:studydocs/data/datasource/impl/auth_remote_datasource_impl.dart';
@@ -29,9 +29,9 @@ class AuthService {
     AuthRemoteDataSource? authDataSource,
     UserRemoteDataSource? userDataSource,
     TokenStorageService? tokenStorage,
-  })  : _authDataSource = authDataSource ?? AuthRemoteDataSourceImpl(),
-        _userDataSource = userDataSource ?? UserRemoteDataSourceImpl(),
-        _tokenStorage = tokenStorage ?? TokenStorageService();
+  }) : _authDataSource = authDataSource ?? AuthRemoteDataSourceImpl(),
+       _userDataSource = userDataSource ?? UserRemoteDataSourceImpl(),
+       _tokenStorage = tokenStorage ?? TokenStorageService();
 
   Future<void> login({
     required String username,
@@ -58,7 +58,8 @@ class AuthService {
     try {
       await _authDataSource.register(body);
     } catch (e) {
-      if (e.toString().contains('409') || e.toString().contains('Tài khoản đã tồn tại')) {
+      if (e.toString().contains('409') ||
+          e.toString().contains('Tài khoản đã tồn tại')) {
         throw AuthServiceException(
           'Tài khoản đã tồn tại. Vui lòng dùng tên đăng nhập khác hoặc đăng nhập.',
         );
@@ -110,7 +111,11 @@ class AuthService {
     String codeChallengeMethod = 'S256',
   }) async {
     try {
-      final data = await _authDataSource.startGoogleLogin(codeChallenge, codeChallengeMethod, EnvConfig.googleRedirectUri);
+      final data = await _authDataSource.startGoogleLogin(
+        codeChallenge,
+        codeChallengeMethod,
+        EnvConfig.googleRedirectUri,
+      );
       final dto = GoogleAuthUrlDto.fromJson(data as Map<String, dynamic>);
       if (dto.authorizationUrl.isEmpty) {
         throw AuthServiceException('URL đăng nhập Google không hợp lệ');
@@ -126,7 +131,11 @@ class AuthService {
     required String code,
     required String codeVerifier,
   }) async {
-    final response = await _authDataSource.completeGoogleLogin(code, codeVerifier, EnvConfig.googleRedirectUri);
+    final response = await _authDataSource.completeGoogleLogin(
+      code,
+      codeVerifier,
+      EnvConfig.googleRedirectUri,
+    );
     await _handleAuthResponse(response);
     await syncCurrentUser();
     pendingGoogleCodeVerifier = null;
@@ -166,9 +175,7 @@ class AuthService {
     if (responseData == null) {
       throw AuthServiceException('Phản hồi token không hợp lệ');
     }
-    final token = AuthTokenDto.fromJson(
-      responseData as Map<String, dynamic>,
-    );
+    final token = AuthTokenDto.fromJson(responseData as Map<String, dynamic>);
     await _persistToken(token);
   }
 

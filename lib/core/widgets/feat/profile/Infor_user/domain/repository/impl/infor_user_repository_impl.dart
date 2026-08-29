@@ -8,7 +8,7 @@ import '../../../../../../../../data/datasource/impl/follow_remote_datasource_im
 import '../../model/user_infor_model.dart';
 import '../infor_user_repository.dart';
 
-import 'package:studydocs/core/network/dio_client.dart';
+
 import 'package:studydocs/core/network/token_services.dart';
 import 'package:dio/dio.dart';
 

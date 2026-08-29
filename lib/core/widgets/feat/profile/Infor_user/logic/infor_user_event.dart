@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:studydocs/data/model/user/User.dart';
+import 'package:studydocs/data/model/user/user.dart';
 
 abstract class InforUserEvent extends Equatable {
   @override

@@ -272,7 +272,7 @@ class MenuDrawer extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        hoverColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+        hoverColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
@@ -283,7 +283,7 @@ class MenuDrawer extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: isActive ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).iconTheme.color?.withOpacity(0.7),
+                color: isActive ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).iconTheme.color?.withValues(alpha: 0.7),
                 size: 24,
               ),
               const SizedBox(width: 16),

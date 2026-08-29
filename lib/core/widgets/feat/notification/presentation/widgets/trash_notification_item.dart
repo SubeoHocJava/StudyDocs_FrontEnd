@@ -36,7 +36,7 @@ class TrashNotificationItemWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFFE3F2FD) : Colors.white,
-          border: Border(bottom: BorderSide(color: AppColors.border.withOpacity(0.5))),
+          border: Border(bottom: BorderSide(color: AppColors.border.withValues(alpha: 0.5))),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

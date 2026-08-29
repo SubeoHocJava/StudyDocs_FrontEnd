@@ -32,7 +32,6 @@ class NotificationUIMapper {
           'actionVerb': 'đã lưu',
         };
       case NotificationType.system:
-      default:
         return {
           'iconAsset': AppAssets.logo,
           'iconColor': AppColors.primary,
