@@ -254,10 +254,10 @@ class _ActionRow extends StatelessWidget {
         _IconTap(
           onTap: onLike,
           child: Image.asset(
-            AppAssets.outlineLike,
+            doc.isLiked ? AppAssets.fullLike : AppAssets.outlineLike,
             width: 20,
             height: 20,
-            color: likeColor,
+            color: doc.isLiked ? AppColors.primary : AppColors.docSmallText,
           ),
         ),
         const SizedBox(width: 3),
@@ -283,7 +283,7 @@ class _ActionRow extends StatelessWidget {
             bookmarkAsset,
             width: 30,
             height: 30,
-            color: AppColors.black,
+            color: doc.isBookmarked ? AppColors.warning : AppColors.black,
           ),
         ),
       ],

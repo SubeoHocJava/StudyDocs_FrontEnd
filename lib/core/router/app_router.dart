@@ -144,9 +144,10 @@ GoRouter initAppRouter() {
   );
 }
 
-void showGlobalDialog(Widget dialog) {
+Future<T?> showGlobalDialog<T>(Widget dialog) {
   final context = rootNavigatorKey.currentContext;
   if (context != null) {
-    showDialog(context: context, builder: (_) => dialog);
+    return showDialog<T>(context: context, builder: (_) => dialog);
   }
+  return Future.value(null);
 }

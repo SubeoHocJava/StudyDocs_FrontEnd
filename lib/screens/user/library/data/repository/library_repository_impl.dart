@@ -14,7 +14,7 @@ class LibraryRepositoryImpl implements LibraryRepository, DocumentRepository {
   @override
   Future<LibraryPageData> getLibraryPage() async {
     final historyResponse = await _remoteDataSource.getMyHistoryDocuments();
-    final myDocsResponse = await _remoteDataSource.getMyDocuments();
+    final myDocsResponse = await _remoteDataSource.getMySavedDocuments();
 
     final List<DocumentCompactModel> recentDocs = (historyResponse as List)
         .map((e) => DocumentCompactModel.fromJson(e as Map<String, dynamic>))

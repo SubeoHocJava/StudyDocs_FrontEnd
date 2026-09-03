@@ -22,3 +22,20 @@ class CardDownloaded extends DocsCardItemEvent {
 class CardErrorCleared extends DocsCardItemEvent {
   const CardErrorCleared();
 }
+
+class CardSyncUpdated extends DocsCardItemEvent {
+  final bool? isBookmarked;
+  final bool? isLiked;
+  final int? newLikeCount;
+  final int? newCommentCount;
+
+  const CardSyncUpdated({
+    this.isBookmarked,
+    this.isLiked,
+    this.newLikeCount,
+    this.newCommentCount,
+  });
+
+  @override
+  List<Object?> get props => [isBookmarked, isLiked, newLikeCount, newCommentCount];
+}

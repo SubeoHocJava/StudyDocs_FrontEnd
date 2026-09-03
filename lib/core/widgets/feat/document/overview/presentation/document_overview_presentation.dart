@@ -8,6 +8,9 @@ import 'package:studydocs/core/widgets/feat/document/overview/logic/document_ove
 import 'package:studydocs/core/widgets/feat/document/overview/logic/document_overview_state.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_state.dart';
+import 'package:studydocs/screens/auth/presentation/widgets/auth_dialog.dart';
 
 class DocumentOverviewPresentation extends StatelessWidget {
   final bool isExpanded;
@@ -180,6 +183,11 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
+                        final authState = context.read<AuthCubit>().state;
+                        if (authState is! AuthAuthenticated) {
+                          showAuthDialog(context);
+                          return;
+                        }
                         context.read<DocumentOverviewBloc>().add(
                           DocumentDownloadRequested(
                             id: state.documentOverview.id,
@@ -202,6 +210,11 @@ class DocumentOverviewPresentation extends StatelessWidget {
                     // Bookmark Button
                     IconButton(
                       onPressed: () {
+                        final authState = context.read<AuthCubit>().state;
+                        if (authState is! AuthAuthenticated) {
+                          showAuthDialog(context);
+                          return;
+                        }
                         if (state.documentOverview.isSaved) {
                           context.read<DocumentOverviewBloc>().add(
                             DocumentUnSave(id: state.documentOverview.id),

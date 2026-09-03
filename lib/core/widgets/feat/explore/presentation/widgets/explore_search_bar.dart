@@ -14,7 +14,7 @@ class ExploreSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8.0),

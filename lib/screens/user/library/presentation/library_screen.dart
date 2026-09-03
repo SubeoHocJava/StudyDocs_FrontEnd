@@ -96,34 +96,69 @@ class _LibraryView extends StatelessWidget {
               const SizedBox(height: 16),
               const _SectionTitle('Tài liệu gần đây'),
               const SizedBox(height: 8),
-              DocumentCardSquareCarousel(
-                docs: data.recentDocuments,
-                itemSize: 100,
-                padding: EdgeInsets.zero,
-              ),
+              if (data.recentDocuments.isEmpty)
+                const _EmptyState('Chưa có tài liệu gần đây')
+              else
+                DocumentCardSquareCarousel(
+                  docs: data.recentDocuments,
+                  itemSize: 100,
+                  padding: EdgeInsets.zero,
+                ),
               const SizedBox(height: 16),
               const _SectionTitle('Tài liệu lưu trữ'),
               const SizedBox(height: 8),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: data.savedDocuments.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final doc = data.savedDocuments[index];
-                  return SizedBox(
-                    height: 150,
-                    child: DocumentCardHorizontalWithBloc(
-                      doc: doc,
-                      repository: documentRepository,
-                    ),
-                  );
-                },
-              ),
+              if (data.savedDocuments.isEmpty)
+                const _EmptyState('Chưa có tài liệu lưu trữ')
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: data.savedDocuments.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final doc = data.savedDocuments[index];
+                    return SizedBox(
+                      height: 150,
+                      child: DocumentCardHorizontalWithBloc(
+                        doc: doc,
+                        repository: documentRepository,
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final String text;
+
+  const _EmptyState(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Center(
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: AppColors.gray,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 }

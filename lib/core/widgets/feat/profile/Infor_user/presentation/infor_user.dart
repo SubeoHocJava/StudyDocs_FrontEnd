@@ -10,6 +10,8 @@ import '../../setting/presentation/setting_dialog.dart';
 import '../logic/infor_user_bloc.dart';
 import '../logic/infor_user_event.dart';
 import '../logic/infor_user_state.dart';
+import 'package:studydocs/screens/profile/logic/profile_bloc.dart';
+import 'package:studydocs/screens/profile/logic/profile_event.dart';
 
 class InforUser extends StatelessWidget {
   const InforUser({super.key});
@@ -199,13 +201,16 @@ class InforUser extends StatelessWidget {
   Widget _buildActionButton(BuildContext context, InforUserLoaded state) {
     if (state.isOwnProfile) {
       return TextButton.icon(
-        onPressed: () {
-          showGlobalDialog(
+        onPressed: () async {
+          final result = await showGlobalDialog(
             BlocProvider(
               create: (_) => SettingBloc(),
               child: const SettingDialog(),
             ),
           );
+          if (result == true && context.mounted) {
+            context.read<ProfileBloc>().add(ProfileInitial("me"));
+          }
         },
         icon: const Icon(Icons.settings, size: 18),
         label: const Text("Cài đặt"),

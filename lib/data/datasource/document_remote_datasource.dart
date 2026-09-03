@@ -12,6 +12,7 @@ abstract interface class DocumentRemoteDataSource {
   Future<void> bookmarkDocument(String documentId);
   Future<void> downloadDocument(String documentId);
   Future<dynamic> getMyDocuments();
+  Future<dynamic> getMySavedDocuments();
   Future<dynamic> getMyNewestDocuments();
   Future<dynamic> getMyHistoryDocuments();
   Future<dynamic> getMyDocumentCount();

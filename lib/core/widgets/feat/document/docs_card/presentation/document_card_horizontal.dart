@@ -186,7 +186,7 @@ class DocumentCardHorizontal extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: onLike,
           child: Image.asset(
-            AppAssets.outlineLike,
+            doc.isLiked ? AppAssets.fullLike : AppAssets.outlineLike,
             width: 15,
             height: 15,
             color: likeColor,
@@ -227,7 +227,7 @@ class DocumentCardHorizontal extends StatelessWidget {
             bookmarkAsset,
             width: 22,
             height: 22,
-            color: AppColors.black,
+            color: doc.isBookmarked ? AppColors.warning : AppColors.black,
           ),
         ),
       ],

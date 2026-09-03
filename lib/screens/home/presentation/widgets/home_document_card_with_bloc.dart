@@ -8,6 +8,10 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_i
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_event.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_state.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_state.dart';
+import 'package:studydocs/screens/auth/presentation/widgets/auth_dialog.dart';
+import 'package:studydocs/core/widgets/feat/document/docs_card/logic/document_sync_cubit.dart' as studydocs_sync_cubit;
 
 import 'home_document_card.dart';
 
@@ -31,6 +35,7 @@ class HomeDocumentCardWithBloc extends StatelessWidget {
         bookmarkUseCase: BookmarkDocumentUseCaseImpl(repository),
         downloadUseCase: DownloadDocumentUseCaseImpl(repository),
         initialDoc: doc,
+        syncCubit: context.read<studydocs_sync_cubit.DocumentSyncCubit>(),
       ),
       child: _HomeCardBody(onTap: onTap),
     );
@@ -58,11 +63,21 @@ class _HomeCardBody extends StatelessWidget {
       child: BlocBuilder<DocsCardItemBloc, DocsCardItemState>(
         builder: (context, state) {
           final bloc = context.read<DocsCardItemBloc>();
+          
+          void performAction(VoidCallback action) {
+            final authState = context.read<AuthCubit>().state;
+            if (authState is! AuthAuthenticated) {
+              showAuthDialog(context);
+            } else {
+              action();
+            }
+          }
+
           return HomeDocumentCard(
             doc: state.doc,
-            onLike: () => bloc.add(const CardLiked()),
-            onBookmark: () => bloc.add(const CardBookmarked()),
-            onDownload: () => bloc.add(const CardDownloaded()),
+            onLike: () => performAction(() => bloc.add(const CardLiked())),
+            onBookmark: () => performAction(() => bloc.add(const CardBookmarked())),
+            onDownload: () => performAction(() => bloc.add(const CardDownloaded())),
             onTap: onTap,
           );
         },

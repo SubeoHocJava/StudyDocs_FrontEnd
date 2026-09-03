@@ -113,7 +113,6 @@ class NotificationPresentation extends StatelessWidget {
                 ],
               ),
             ),
-            bottomNavigationBar: _buildBottomNav(context, state.activeNotifications.where((n) => !n.isRead).length),
           );
         }
 
@@ -122,46 +121,6 @@ class NotificationPresentation extends StatelessWidget {
           body: const Center(child: Text("Đã có lỗi xảy ra")),
         );
       },
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context, int unreadCount) {
-    return BottomNavigationBar(
-      currentIndex: 3, // Notification tab
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primary,
-      unselectedItemColor: Colors.grey,
-      items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Trang chủ'),
-        const BottomNavigationBarItem(icon: Icon(Icons.library_books_outlined), label: 'Thư viện'),
-        const BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), label: 'Khám phá'),
-        BottomNavigationBarItem(
-          icon: Stack(
-            children: [
-              const Icon(Icons.notifications_outlined),
-              if (unreadCount > 0)
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
-                    child: Text(
-                      '$unreadCount',
-                      style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          label: 'Thông báo',
-        ),
-      ],
     );
   }
 }

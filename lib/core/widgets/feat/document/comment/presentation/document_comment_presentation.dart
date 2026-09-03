@@ -9,6 +9,7 @@ import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comm
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_event.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_state.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/presentation/comment_block.dart';
+import 'package:studydocs/core/widgets/feat/document/docs_card/logic/document_sync_cubit.dart' as studydocs_sync;
 
 class DocumentCommentPresentation extends StatefulWidget {
   final String documentId;
@@ -67,8 +68,28 @@ class _DocumentCommentPresentationState
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return BlocListener<DocumentCommentBloc, DocumentCommentState>(
+      listener: (context, state) {
+        if (state is DocumentCommentLoaded) {
+          int countComments(List<Comment> comments) {
+            int count = 0;
+            for (var c in comments) {
+              count += 1 + countComments(c.children);
+            }
+            return count;
+          }
+          final totalComments = countComments(state.comments);
+          
+          try {
+            final syncCubit = context.read<studydocs_sync.DocumentSyncCubit>();
+            syncCubit.updateCommentCount(widget.documentId, totalComments);
+          } catch (_) {
+            // DocumentSyncCubit might not be provided in this context, ignore
+          }
+        }
+      },
+      child: Column(
+        children: [
         // Title
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -191,6 +212,7 @@ class _DocumentCommentPresentationState
             ),
           ),
       ],
+    ),
     );
   }
 }

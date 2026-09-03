@@ -126,7 +126,10 @@ class ExploreView extends StatelessWidget {
                               separatorBuilder: (_, __) => const SizedBox(height: 8),
                               itemBuilder: (context, index) {
                                 final doc = state.data.newestDocuments[index];
-                                return DocumentCardHorizontal(doc: doc);
+                                return SizedBox(
+                                  height: 150,
+                                  child: DocumentCardHorizontal(doc: doc),
+                                );
                               },
                             ),
                           ],
