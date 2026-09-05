@@ -16,14 +16,15 @@ class AuthLoading extends AuthState {
 }
 
 class AuthAuthenticated extends AuthState {
+  final String? userId;
   final String? displayName;
   final String? username;
   final String? avatarUrl;
 
-  const AuthAuthenticated({this.displayName, this.username, this.avatarUrl});
+  const AuthAuthenticated({this.userId, this.displayName, this.username, this.avatarUrl});
 
   @override
-  List<Object?> get props => [displayName, username, avatarUrl];
+  List<Object?> get props => [userId, displayName, username, avatarUrl];
 }
 
 class AuthUnauthenticated extends AuthState {

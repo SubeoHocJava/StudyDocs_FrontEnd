@@ -8,6 +8,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
 
   ExploreBloc({required this.repository}) : super(ExploreInitial()) {
     on<FetchExploreDataEvent>(_onFetchExploreData);
+    on<SearchExploreEvent>(_onSearch);
   }
 
   Future<void> _onFetchExploreData(FetchExploreDataEvent event, Emitter<ExploreState> emit) async {
@@ -17,6 +18,21 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
       emit(ExploreLoaded(data));
     } catch (e) {
       emit(ExploreError("Đã có lỗi xảy ra khi tải dữ liệu khám phá"));
+    }
+  }
+
+  Future<void> _onSearch(SearchExploreEvent event, Emitter<ExploreState> emit) async {
+    if (event.query.trim().isEmpty) {
+      // Khi xoá hết query → quay lại trang khám phá
+      add(FetchExploreDataEvent());
+      return;
+    }
+    emit(ExploreSearching());
+    try {
+      final results = await repository.searchDocuments(event.query.trim());
+      emit(ExploreSearchResult(query: event.query.trim(), results: results));
+    } catch (e) {
+      emit(ExploreError("Không thể tìm kiếm, vui lòng thử lại"));
     }
   }
 }

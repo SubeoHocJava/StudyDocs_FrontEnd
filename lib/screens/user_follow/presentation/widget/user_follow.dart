@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/common/user_avatar.dart';
 import '../../domain/entity/user_follow_entity.dart';
 
 class UserFollowWidget extends StatefulWidget {
@@ -146,11 +147,11 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    UserAvatar(
+                      avatarUrl: user.avatarUrl,
                       radius: 24,
                       backgroundColor: AppColors.primaryLight,
-                      backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
-                      child: user.avatarUrl == null ? const Icon(Icons.person, color: AppColors.headerForeground) : null,
+                      iconColor: AppColors.headerForeground,
                     ),
                     const SizedBox(width: 14),
                     Expanded(

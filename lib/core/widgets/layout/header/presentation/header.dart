@@ -9,7 +9,7 @@ import '../../../../../screens/auth/presentation/cubit/auth_state.dart';
 import '../../../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import '../../menu/presentation/menu.dart';
 
-import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/widgets/common/user_avatar.dart';
 
 class Header extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onMenuTap;
@@ -256,27 +256,11 @@ class _HeaderState extends State<Header> {
       onTap: widget.onProfileTap ?? () => context.go('/profile'),
       child: Tooltip(
         message: label,
-        child: CircleAvatar(
+        child: UserAvatar(
+          avatarUrl: avatarUrl,
           radius: 20,
           backgroundColor: AppColors.headerForeground.withValues(alpha: 0.12),
-          child:
-              (avatarUrl != null && avatarUrl.isNotEmpty)
-                  ? ClipOval(
-                    child: Image.network(
-                      avatarUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          AppAssets.user,
-                          width: 24,
-                          height: 24,
-                        );
-                      },
-                    ),
-                  )
-                  : Image.asset(AppAssets.user, width: 24, height: 24),
+          iconColor: AppColors.headerForeground,
         ),
       ),
     );

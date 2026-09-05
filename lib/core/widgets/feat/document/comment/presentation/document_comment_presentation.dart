@@ -10,6 +10,7 @@ import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comm
 import 'package:studydocs/core/widgets/feat/document/comment/logic/document_comment_state.dart';
 import 'package:studydocs/core/widgets/feat/document/comment/presentation/comment_block.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/document_sync_cubit.dart' as studydocs_sync;
+import 'package:studydocs/core/utils/auth_helper.dart';
 
 class DocumentCommentPresentation extends StatefulWidget {
   final String documentId;
@@ -28,6 +29,7 @@ class _DocumentCommentPresentationState
   Comment? _replyingTo;
 
   void _handleReply(Comment comment) {
+    if (!AuthHelper.checkLogin(context)) return;
     setState(() {
       _replyingTo = comment;
     });
@@ -40,6 +42,7 @@ class _DocumentCommentPresentationState
   }
 
   void _submitReply(String commentId, String content) {
+    if (!AuthHelper.checkLogin(context)) return;
     context.read<DocumentCommentBloc>().add(
           CommentReplied(widget.documentId, commentId, content),
         );
@@ -49,6 +52,7 @@ class _DocumentCommentPresentationState
   }
 
   void _sendMessage() {
+    if (!AuthHelper.checkLogin(context)) return;
     final content = _controller.text.trim();
     if (content.isNotEmpty) {
       context.read<DocumentCommentBloc>().add(

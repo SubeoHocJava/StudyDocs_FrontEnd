@@ -45,6 +45,60 @@ class ExploreView extends StatelessWidget {
           );
         }
 
+        // ── Kết quả đang tải ──
+        if (state is ExploreSearching) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  ExploreSearchBar(hintText: 'Tìm kiếm tài liệu, môn học...'),
+                  const Expanded(child: Center(child: CircularProgressIndicator())),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // ── Kết quả tìm kiếm ──
+        if (state is ExploreSearchResult) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ExploreSearchBar(hintText: 'Tìm kiếm tài liệu, môn học...'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    child: Text(
+                      state.results.isEmpty
+                          ? 'Không tìm thấy kết quả cho "${state.query}"'
+                          : '${state.results.length} kết quả cho "${state.query}"',
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ),
+                  Expanded(
+                    child: state.results.isEmpty
+                        ? const Center(child: Text('Không có tài liệu phù hợp'))
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            itemCount: state.results.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                height: 150,
+                                child: DocumentCardHorizontal(doc: state.results[index]),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         if (state is ExploreLoaded) {
           return Scaffold(
             backgroundColor: Colors.white,
@@ -55,14 +109,9 @@ class ExploreView extends StatelessWidget {
                   ExploreHeader(
                     title: 'Khám phá',
                     subtitle: state.data.universityName,
-                    subtitleIcon: Icons.account_balance, // A school/building icon
+                    subtitleIcon: Icons.account_balance,
                   ),
-                  ExploreSearchBar(
-                    hintText: state.data.hintText,
-                    onTap: () {
-                      debugPrint('Search'); // Mock search action as requested
-                    },
-                  ),
+                  ExploreSearchBar(hintText: state.data.hintText),
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(vertical: 16),

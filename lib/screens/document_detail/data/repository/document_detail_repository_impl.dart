@@ -41,11 +41,10 @@ class DocumentDetailRepositoryImpl implements DocumentDetailRepository {
       // Mapped from uploader details
       authorId: data['uploaderId'] ?? '',
       authorName: data['uploaderName'] ?? 'Unknown User',
-      authorAvatar: 'https://i.pravatar.cc/150?u=${data['uploaderId'] ?? 'default'}', // mock avatar
+      authorAvatar: data['uploaderAvatarUrl'] ?? '',
       authorSchoolName: data['universityName'] ?? data['school'] ?? 'Unknown School',
-      // Mock remaining missing fields
-      dislikeCount: 0,
-      isDisliked: false,
+      dislikeCount: data['dislikeCount'] ?? 0,
+      isDisliked: data['isDisliked'] ?? false,
     );
   }
 }

@@ -79,8 +79,11 @@ class _DocumentUploadView extends StatelessWidget {
                       child: UploadDropzoneTile(
                         onTap: () async {
                           try {
-                              final result =
-                                  await FilePicker.platform.pickFiles(withData: true);
+                              final result = await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['pdf'],
+                                withData: true,
+                              );
                               if (result != null && result.files.isNotEmpty) {
                                 if (context.mounted) {
                                   context.read<DocumentUploadBloc>().add(

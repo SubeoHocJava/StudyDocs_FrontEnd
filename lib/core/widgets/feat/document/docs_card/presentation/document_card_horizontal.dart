@@ -4,6 +4,8 @@ import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
+import 'package:studydocs/core/utils/image_utils.dart';
+import 'package:studydocs/core/utils/auth_helper.dart';
 
 class DocumentCardHorizontal extends StatelessWidget {
   final DocumentSummaryModel doc;
@@ -43,7 +45,7 @@ class DocumentCardHorizontal extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(flex: 2, child: _buildRightSection()),
+              Expanded(flex: 2, child: _buildRightSection(context)),
             ],
           ),
         ),
@@ -64,7 +66,8 @@ class DocumentCardHorizontal extends StatelessWidget {
   }
 
   Widget _buildThumbnailImage() {
-    final thumb = doc.thumbnail;
+    String? processedThumb = ImageUtils.getPagePreview(doc.thumbnail, 1);
+    final thumb = processedThumb;
     if (thumb == null || thumb.isEmpty) {
       return _fallbackThumbnail();
     }
@@ -95,7 +98,7 @@ class DocumentCardHorizontal extends StatelessWidget {
     return const Icon(Icons.picture_as_pdf, size: 36, color: AppColors.gray);
   }
 
-  Widget _buildRightSection() {
+  Widget _buildRightSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,7 +107,7 @@ class DocumentCardHorizontal extends StatelessWidget {
             child: _buildInfoCluster(),
           ),
         ),
-        _buildActionRow(),
+        _buildActionRow(context),
       ],
     );
   }
@@ -176,7 +179,7 @@ class DocumentCardHorizontal extends StatelessWidget {
     );
   }
 
-  Widget _buildActionRow() {
+  Widget _buildActionRow(BuildContext context) {
     final likeColor = doc.isLiked ? AppColors.primary : AppColors.docSmallText;
     final bookmarkAsset = doc.isBookmarked ? AppAssets.saved : AppAssets.unsaved;
 
@@ -184,7 +187,11 @@ class DocumentCardHorizontal extends StatelessWidget {
       children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: onLike,
+          onTap: () {
+            if (AuthHelper.checkLogin(context) && onLike != null) {
+              onLike!();
+            }
+          },
           child: Image.asset(
             doc.isLiked ? AppAssets.fullLike : AppAssets.outlineLike,
             width: 15,
@@ -211,7 +218,11 @@ class DocumentCardHorizontal extends StatelessWidget {
         const Spacer(),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: onDownload,
+          onTap: () {
+            if (AuthHelper.checkLogin(context) && onDownload != null) {
+              onDownload!();
+            }
+          },
           child: Image.asset(
             AppAssets.download,
             width: 22,
@@ -222,7 +233,11 @@ class DocumentCardHorizontal extends StatelessWidget {
         const SizedBox(width: 10),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: onBookmark,
+          onTap: () {
+            if (AuthHelper.checkLogin(context) && onBookmark != null) {
+              onBookmark!();
+            }
+          },
           child: Image.asset(
             bookmarkAsset,
             width: 22,

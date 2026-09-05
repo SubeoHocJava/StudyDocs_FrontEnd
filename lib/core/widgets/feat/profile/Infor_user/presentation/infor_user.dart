@@ -12,13 +12,26 @@ import '../logic/infor_user_event.dart';
 import '../logic/infor_user_state.dart';
 import 'package:studydocs/screens/profile/logic/profile_bloc.dart';
 import 'package:studydocs/screens/profile/logic/profile_event.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_state.dart';
 
 class InforUser extends StatelessWidget {
   const InforUser({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InforUserBloc, InforUserState>(
+    return BlocConsumer<InforUserBloc, InforUserState>(
+      listener: (context, state) {
+        if (state is InforUserLoaded && state.isOwnProfile) {
+          final authState = context.read<AuthCubit>().state;
+          if (authState is AuthAuthenticated) {
+            // Update AuthCubit avatar if it has changed in InforUserBloc
+            if (state.avatarUrl != null && state.avatarUrl != authState.avatarUrl) {
+              context.read<AuthCubit>().updateUserAvatar(state.avatarUrl!);
+            }
+          }
+        }
+      },
       builder: (context, state) {
         if (state is InforUserLoading || state is InforUserInitial) {
           return const Center(child: CircularProgressIndicator());
@@ -33,7 +46,6 @@ class InforUser extends StatelessWidget {
 
         return _buildContent(context, state);
       },
-      // ),
     );
   }
 

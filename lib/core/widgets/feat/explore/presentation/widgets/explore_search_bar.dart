@@ -1,50 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:studydocs/screens/explore/logic/explore_bloc.dart';
+import 'package:studydocs/screens/explore/logic/explore_event.dart';
 
-class ExploreSearchBar extends StatelessWidget {
+class ExploreSearchBar extends StatefulWidget {
   final String hintText;
-  final VoidCallback onTap;
 
   const ExploreSearchBar({
     super.key,
     required this.hintText,
-    required this.onTap,
   });
+
+  @override
+  State<ExploreSearchBar> createState() => _ExploreSearchBarState();
+}
+
+class _ExploreSearchBarState extends State<ExploreSearchBar> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onSubmitted(String value) {
+    context.read<ExploreBloc>().add(SearchExploreEvent(value));
+  }
+
+  void _onClear() {
+    _controller.clear();
+    context.read<ExploreBloc>().add(SearchExploreEvent(''));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8.0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(8.0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+      child: TextField(
+        controller: _controller,
+        onSubmitted: _onSubmitted,
+        onChanged: (val) {
+          // Xoá hết → quay về trang mặc định ngay lập tức
+          if (val.isEmpty) _onClear();
+          setState(() {});
+        },
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: AppColors.primary, size: 22),
+          suffixIcon: _controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.close, size: 20, color: Colors.grey),
+                  onPressed: _onClear,
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade300),
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  hintText,
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.search,
-                color: AppColors.primary, // Using primary color for search icon as in image
-                size: 24,
-              ),
-            ],
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: AppColors.primary, width: 1.5),
           ),
         ),
       ),

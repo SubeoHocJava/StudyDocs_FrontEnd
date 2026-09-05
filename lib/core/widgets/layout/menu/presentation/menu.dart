@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/widgets/common/user_avatar.dart';
 
 
 import '../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
@@ -263,21 +264,10 @@ class MenuDrawer extends StatelessWidget {
           },
           child: Row(
             children: [
-              (state.profile.avatarUrl != null && state.profile.avatarUrl!.isNotEmpty)
-                  ? ClipOval(
-                      child: Image.network(
-                        state.profile.avatarUrl!,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(AppAssets.user, width: 56, height: 56);
-                        },
-                      ),
-                    )
-                  : ClipOval(
-                      child: Image.asset(AppAssets.user, width: 56, height: 56),
-                    ),
+              UserAvatar(
+                avatarUrl: state.profile.avatarUrl,
+                radius: 28,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
