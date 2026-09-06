@@ -5,6 +5,9 @@ import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../logic/follow_bloc.dart';
 import '../logic/follow_state.dart';
+import 'package:studydocs/screens/profile/logic/profile_bloc.dart';
+import 'package:studydocs/screens/profile/logic/profile_state.dart';
+import 'package:studydocs/screens/profile/logic/profile_event.dart';
 
 class Follow extends StatelessWidget {
   const Follow({super.key});
@@ -34,7 +37,13 @@ class Follow extends StatelessWidget {
                     // Followers
                     GestureDetector(
                       onTap: () {
-                        context.push('/followers');
+                        final profileState = context.read<ProfileBloc>().state;
+                        if (profileState is ProfileLoadedState) {
+                          final uid = profileState.user.id ?? "me";
+                          context.push('/followers/$uid').then((_) {
+                             context.read<ProfileBloc>().add(ProfileReloadSilent(uid));
+                          });
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -75,7 +84,13 @@ class Follow extends StatelessWidget {
                     // Following
                     GestureDetector(
                       onTap: () {
-                        context.push('/following');
+                        final profileState = context.read<ProfileBloc>().state;
+                        if (profileState is ProfileLoadedState) {
+                          final uid = profileState.user.id ?? "me";
+                          context.push('/following/$uid').then((_) {
+                             context.read<ProfileBloc>().add(ProfileReloadSilent(uid));
+                          });
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(

@@ -10,7 +10,7 @@ class UserFollowRepositoryImpl implements UserFollowRepository {
 
   @override
   Future<List<UserFollowEntity>> getFollowers(String userId) async {
-    final response = await _dioClient.get('/user/followers');
+    final response = await _dioClient.get('/user/public/$userId/followers');
     if (response.data != null) {
       final List<dynamic> data = response.data;
       return data.map((json) => UserFollowEntity(
@@ -25,7 +25,7 @@ class UserFollowRepositoryImpl implements UserFollowRepository {
 
   @override
   Future<List<UserFollowEntity>> getFollowing(String userId) async {
-    final response = await _dioClient.get('/user/following');
+    final response = await _dioClient.get('/user/public/$userId/following');
     if (response.data != null) {
       final List<dynamic> data = response.data;
       return data.map((json) => UserFollowEntity(

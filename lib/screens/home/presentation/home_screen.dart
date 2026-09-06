@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/screens/home/presentation/widgets/home_document_card_with_bloc.dart';
 
@@ -189,11 +190,18 @@ class _SearchBarMock extends StatefulWidget {
 
 class _SearchBarMockState extends State<_SearchBarMock> {
   final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void dispose() {
     _focusNode.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+
+  void _submitSearch(BuildContext context, String value) {
+    if (value.trim().isEmpty) return;
+    context.go('/explore', extra: value.trim());
   }
 
   @override
@@ -216,14 +224,13 @@ class _SearchBarMockState extends State<_SearchBarMock> {
                 color: Colors.transparent,
                 child: TextField(
                   focusNode: _focusNode,
-                  onTap: () {
-                    final authState = context.read<AuthCubit>().state;
-                    if (authState is! AuthAuthenticated) {
-                      _focusNode.unfocus();
-                      showAuthDialog(context);
-                    }
+                  controller: _controller,
+                  onSubmitted: (val) {
+                    _submitSearch(context, val);
                   },
+                  onTap: () {},
                   textAlignVertical: TextAlignVertical.center,
+                  textInputAction: TextInputAction.search,
                   decoration: const InputDecoration(
                     hintText: 'Tìm kiếm các khóa học, bài giảng, tài liệu',
                     hintStyle: TextStyle(
@@ -242,12 +249,7 @@ class _SearchBarMockState extends State<_SearchBarMock> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                final authState = context.read<AuthCubit>().state;
-                if (authState is! AuthAuthenticated) {
-                  showAuthDialog(context);
-                }
-              },
+              onPressed: () {},
               icon: const Icon(Icons.mic, color: AppColors.black, size: 26),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints.tightFor(width: 40, height: 40),

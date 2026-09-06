@@ -7,7 +7,7 @@ class UserEndpoints {
   static const String me = '$base/me';
   static const String all = base;
 
-  static String byId(String userId) => '$base/$userId';
+  static String byId(String userId) => '$base/public/profile/$userId';
   static String other(String userId) => '$base/$userId/other';
   static String update(String userId) => '$base/$userId';
   static String updateInfo(String userId) => '$base/$userId/info';

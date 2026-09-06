@@ -6,7 +6,10 @@ import 'package:studydocs/core/widgets/feat/explore/presentation/widgets/explore
 
 import 'package:studydocs/data/model/document_model/response/document_compact_model.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_compact.dart';
-import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal.dart';
+import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
+import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository/document_repository.dart';
+import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
+import 'package:studydocs/screens/home/data/repository/home_repository_impl.dart';
 
 import '../data/repository/explore_repository_impl.dart';
 
@@ -15,105 +18,130 @@ import '../logic/explore_event.dart';
 import '../logic/explore_state.dart';
 
 class ExploreScreen extends StatelessWidget {
-  const ExploreScreen({super.key});
+  final String? initialQuery;
+
+  const ExploreScreen({super.key, this.initialQuery});
 
   @override
   Widget build(BuildContext context) {
+    final docRepository = HomeRepositoryImpl(DocumentRemoteDataSourceImpl());
+
     return BlocProvider(
       create: (context) {
         final repository = ExploreRepositoryImpl();
-        return ExploreBloc(
+        final bloc = ExploreBloc(
           repository: repository,
-        )..add(FetchExploreDataEvent());
+        );
+
+        if (initialQuery != null && initialQuery!.isNotEmpty) {
+          bloc.add(SearchExploreEvent(initialQuery!));
+        } else {
+          bloc.add(FetchExploreDataEvent());
+        }
+
+        return bloc;
       },
-      child: const ExploreView(),
+      child: ExploreView(
+        initialQuery: initialQuery,
+        documentRepository: docRepository,
+      ),
     );
   }
 }
 
 class ExploreView extends StatelessWidget {
-  const ExploreView({super.key});
+  final String? initialQuery;
+  final DocumentRepository documentRepository;
+  
+  const ExploreView({
+    super.key, 
+    this.initialQuery,
+    required this.documentRepository,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExploreBloc, ExploreState>(
-      builder: (context, state) {
-        if (state is ExploreLoading) {
-          return const Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        // ── Kết quả đang tải ──
-        if (state is ExploreSearching) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  ExploreSearchBar(hintText: 'Tìm kiếm tài liệu, môn học...'),
-                  const Expanded(child: Center(child: CircularProgressIndicator())),
-                ],
-              ),
-            ),
-          );
-        }
-
-        // ── Kết quả tìm kiếm ──
-        if (state is ExploreSearchResult) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ExploreSearchBar(hintText: 'Tìm kiếm tài liệu, môn học...'),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: Text(
-                      state.results.isEmpty
-                          ? 'Không tìm thấy kết quả cho "${state.query}"'
-                          : '${state.results.length} kết quả cho "${state.query}"',
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
-                  ),
-                  Expanded(
-                    child: state.results.isEmpty
-                        ? const Center(child: Text('Không có tài liệu phù hợp'))
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: state.results.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                height: 150,
-                                child: DocumentCardHorizontal(doc: state.results[index]),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        if (state is ExploreLoaded) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ExploreHeader(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Header (Chỉ hiện khi ở trạng thái Loaded)
+            BlocBuilder<ExploreBloc, ExploreState>(
+              buildWhen: (previous, current) => 
+                  current is ExploreLoaded || current is ExploreSearching || current is ExploreSearchResult,
+              builder: (context, state) {
+                if (state is ExploreLoaded) {
+                  return ExploreHeader(
                     title: 'Khám phá',
                     subtitle: state.data.universityName,
                     subtitleIcon: Icons.account_balance,
-                  ),
-                  ExploreSearchBar(hintText: state.data.hintText),
-                  Expanded(
-                    child: SingleChildScrollView(
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+
+            // 2. Thanh tìm kiếm (Giữ nguyên không bị rebuild toàn bộ)
+            BlocBuilder<ExploreBloc, ExploreState>(
+              buildWhen: (previous, current) => current is ExploreLoaded,
+              builder: (context, state) {
+                final hint = (state is ExploreLoaded) 
+                    ? state.data.hintText 
+                    : 'Tìm kiếm tài liệu, môn học...';
+                return ExploreSearchBar(
+                  hintText: hint,
+                  initialQuery: initialQuery,
+                );
+              },
+            ),
+
+            // 3. Nội dung chính (Thay đổi theo trạng thái)
+            Expanded(
+              child: BlocBuilder<ExploreBloc, ExploreState>(
+                builder: (context, state) {
+                  if (state is ExploreLoading || state is ExploreSearching) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state is ExploreSearchResult) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          child: Text(
+                            state.results.isEmpty
+                                ? 'Không tìm thấy kết quả cho "${state.query}"'
+                                : '${state.results.length} kết quả cho "${state.query}"',
+                            style: const TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                        ),
+                        Expanded(
+                          child: state.results.isEmpty
+                              ? const Center(child: Text('Không có tài liệu phù hợp'))
+                              : ListView.separated(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  itemCount: state.results.length,
+                                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                                  itemBuilder: (context, index) {
+                                    return SizedBox(
+                                      height: 150,
+                                      child: DocumentCardHorizontalWithBloc(
+                                        doc: state.results[index],
+                                        repository: documentRepository,
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  if (state is ExploreLoaded) {
+                    return SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,33 +205,30 @@ class ExploreView extends StatelessWidget {
                                 final doc = state.data.newestDocuments[index];
                                 return SizedBox(
                                   height: 150,
-                                  child: DocumentCardHorizontal(doc: doc),
+                                  child: DocumentCardHorizontalWithBloc(
+                                    doc: doc,
+                                    repository: documentRepository,
+                                  ),
                                 );
                               },
                             ),
                           ],
                         ],
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  if (state is ExploreError) {
+                    return Center(child: Text(state.message));
+                  }
+
+                  return const SizedBox.shrink();
+                },
               ),
             ),
-          );
-        }
-
-        if (state is ExploreError) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(child: Text(state.message)),
-          );
-        }
-
-        return const Scaffold(
-          backgroundColor: Colors.white,
-          body: SizedBox.shrink(),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

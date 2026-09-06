@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/repository/user_follow_repository.dart';
 import '../../domain/repository/impl/user_follow_repository_impl.dart';
 import '../../logic/user_follow_bloc.dart';
@@ -9,7 +10,8 @@ import '../widget/user_follow.dart';
 
 class UserFollowScreen extends StatelessWidget {
   final int initialTab;
-  const UserFollowScreen({super.key, this.initialTab = 0});
+  final String userId;
+  const UserFollowScreen({super.key, this.initialTab = 0, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class UserFollowScreen extends StatelessWidget {
       create:
           (context) =>
               UserFollowBloc(UserFollowRepositoryImpl() as UserFollowRepository)
-                ..add(LoadUserFollowLists()),
+                ..add(LoadUserFollowLists(userId)),
       child: BlocBuilder<UserFollowBloc, UserFollowState>(
         builder: (context, state) {
           if (state is UserFollowLoading) {
@@ -27,6 +29,7 @@ class UserFollowScreen extends StatelessWidget {
               initialTab: initialTab,
               followers: state.followers,
               following: state.following,
+              isOwnProfile: state.isOwnProfile,
               onUnfollow: (userId) {
                 context.read<UserFollowBloc>().add(UnfollowUserEvent(userId));
               },
@@ -37,7 +40,7 @@ class UserFollowScreen extends StatelessWidget {
                 context.read<UserFollowBloc>().add(UserFollowUserEvent(userId));
               },
               onUserTap: (userId) {
-                // context.push('${AppRoutes.profile}/$userId');
+                context.push('/profile/$userId');
               },
             );
           } else if (state is UserFollowError) {

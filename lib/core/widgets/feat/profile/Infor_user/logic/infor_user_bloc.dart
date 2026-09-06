@@ -38,6 +38,9 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
     LoadUserInfor event,
     Emitter<InforUserState> emit,
   ) async {
+    final bool currentIsFollowing =
+        (state is InforUserLoaded) ? (state as InforUserLoaded).isFollowing : false;
+
     emit(InforUserLoading());
     try {
       final user = event.user;
@@ -52,8 +55,8 @@ class InforUserBloc extends Bloc<InforUserEvent, InforUserState> {
           fullName: nameToDisplay,
           school: user.school,
           avatarUrl: user.avatarUrl,
-          isFollowing: false,
-          isOwnProfile: true, // If we're visiting 'me', this is true
+          isFollowing: currentIsFollowing,
+          isOwnProfile: event.isOwnProfile,
         ),
       );
     } catch (e) {

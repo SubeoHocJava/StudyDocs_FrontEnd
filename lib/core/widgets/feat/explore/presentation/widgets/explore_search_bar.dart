@@ -6,10 +6,12 @@ import 'package:studydocs/screens/explore/logic/explore_event.dart';
 
 class ExploreSearchBar extends StatefulWidget {
   final String hintText;
+  final String? initialQuery;
 
   const ExploreSearchBar({
     super.key,
     required this.hintText,
+    this.initialQuery,
   });
 
   @override
@@ -17,7 +19,13 @@ class ExploreSearchBar extends StatefulWidget {
 }
 
 class _ExploreSearchBarState extends State<ExploreSearchBar> {
-  final TextEditingController _controller = TextEditingController();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialQuery);
+  }
 
   @override
   void dispose() {
