@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../data/repositories/my_qr_repository_impl.dart';
 import '../domain/usecases/get_my_qr_usecase.dart';
 import '../logic/my_qr_bloc.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class MyQRWidget extends StatelessWidget {
   final String userId;
@@ -33,7 +34,7 @@ class _MyQRView extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Column(
@@ -45,7 +46,7 @@ class _MyQRView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1E3A8A), // Dark blue tone based on the image
+                color: AppColors.customColor20, // Dark blue tone based on the image
               ),
             ),
             const SizedBox(height: 32),
@@ -64,9 +65,9 @@ class _MyQRView extends StatelessWidget {
                     child: QrImageView(
                       data: state.qrData,
                       version: QrVersions.auto,
-                      backgroundColor: Colors.white,
-                      eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF1E3A8A)),
-                      dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF1E3A8A)), // Same dark blue for the QR code
+                      backgroundColor: AppColors.white,
+                      eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: AppColors.customColor20),
+                      dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppColors.customColor20), // Same dark blue for the QR code
                       errorCorrectionLevel: QrErrorCorrectLevel.M,
                     ),
                   );
@@ -77,7 +78,7 @@ class _MyQRView extends StatelessWidget {
                     child: Center(
                       child: Text(
                         state.message,
-                        style: const TextStyle(color: Colors.red),
+                        style: const TextStyle(color: AppColors.red),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -102,7 +103,7 @@ class _MyQRView extends StatelessWidget {
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF1E3A8A),
+                  foregroundColor: AppColors.customColor20,
                 ),
                 child: const Text('Đóng'),
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../../../constants/app_colors.dart';
 import 'package:studydocs/data/model/notification_model.dart';

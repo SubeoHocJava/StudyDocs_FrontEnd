@@ -10,9 +10,6 @@ import '../logic/home_bloc.dart';
 import '../logic/home_event.dart';
 import '../logic/home_state.dart';
 
-import '../../auth/presentation/cubit/auth_cubit.dart';
-import '../../auth/presentation/cubit/auth_state.dart';
-import '../../auth/presentation/widgets/auth_dialog.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -119,8 +116,8 @@ class _HomeHero extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFF030B63),
-            Color(0xFF123CF1),
+            AppColors.customColor3,
+            AppColors.customColor6,
           ],
         ),
       ),
@@ -221,7 +218,7 @@ class _SearchBarMockState extends State<_SearchBarMock> {
             const SizedBox(width: 8),
             Expanded(
               child: Material(
-                color: Colors.transparent,
+                color: AppColors.transparent,
                 child: TextField(
                   focusNode: _focusNode,
                   controller: _controller,

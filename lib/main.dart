@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:studydocs/screens/auth/data/auth_service.dart';
 import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/document_sync_cubit.dart';
+import 'package:studydocs/core/theme/theme_cubit.dart';
 import 'app.dart';
 import 'core/network/dio_client.dart';
 import 'core/router/app_router.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
       providers: [
         BlocProvider.value(value: authCubit),
         BlocProvider(create: (_) => DocumentSyncCubit()),
+        BlocProvider(create: (_) => ThemeCubit()),
       ],
       child: MyApp(router: router),
     ),

@@ -62,7 +62,7 @@ class SettingDialog extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Đã đăng xuất'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.green,
                   ),
                 );
               });
@@ -141,10 +141,10 @@ class SettingDialog extends StatelessWidget {
         actions: [
           TextButton.icon(
             onPressed: () => context.read<SettingBloc>().add(LogoutEvent()),
-            icon: const Icon(Icons.logout, color: Colors.red),
+            icon: const Icon(Icons.logout, color: AppColors.red),
             label: const Text(
               "Đăng xuất",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+              style: TextStyle(color: AppColors.red, fontWeight: FontWeight.w600),
             ),
           ),
         ],

@@ -63,14 +63,14 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
           return Center(
             child: Text(
               "Lỗi: ${state.message}",
-              style: const TextStyle(color: Colors.red),
+              style: const TextStyle(color: AppColors.red),
             ),
           );
         }
 
         return Center(
           child: Material(
-            color: Colors.transparent,
+            color: AppColors.transparent,
             child: Container(
               width: screenWidth * 0.9,
               decoration: BoxDecoration(

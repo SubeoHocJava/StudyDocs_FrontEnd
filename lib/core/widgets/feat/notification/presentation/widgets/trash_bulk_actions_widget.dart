@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../constants/app_icons.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 
 class TrashBulkActionsWidget extends StatelessWidget {
@@ -18,10 +19,10 @@ class TrashBulkActionsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -37,9 +38,9 @@ class TrashBulkActionsWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE3F1FF), // Very light blue
+                  color: AppColors.customColor15, // Very light blue
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFF2196F3).withValues(alpha: 0.3)),
+                  border: Border.all(color: AppColors.customColor11.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +50,7 @@ class TrashBulkActionsWidget extends StatelessWidget {
                     const Text(
                       'Khôi phục tất cả',
                       style: TextStyle(
-                        color: Color(0xFF1A237E), // Dark navy
+                        color: AppColors.customColor7, // Dark navy
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         fontFamily: 'Montserrat',
@@ -69,7 +70,7 @@ class TrashBulkActionsWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFDDE1), // Pink/Light red
+                  color: AppColors.customColor2, // Pink/Light red
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
@@ -80,7 +81,7 @@ class TrashBulkActionsWidget extends StatelessWidget {
                     const Text(
                       'Xóa tất cả',
                       style: TextStyle(
-                        color: Color(0xFFD32F2F), // Red
+                        color: AppColors.customColor10, // Red
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         fontFamily: 'Montserrat',

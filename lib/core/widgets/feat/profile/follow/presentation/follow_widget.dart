@@ -41,6 +41,7 @@ class Follow extends StatelessWidget {
                         if (profileState is ProfileLoadedState) {
                           final uid = profileState.user.id ?? "me";
                           context.push('/followers/$uid').then((_) {
+                             if (!context.mounted) return;
                              context.read<ProfileBloc>().add(ProfileReloadSilent(uid));
                           });
                         }
@@ -77,7 +78,7 @@ class Follow extends StatelessWidget {
                       child: VerticalDivider(
                         width: 20, // khoảng cách hai bên
                         thickness: 1.2, // độ dày line
-                        color: Colors.grey,
+                        color: AppColors.grey,
                       ),
                     ),
 
@@ -88,6 +89,7 @@ class Follow extends StatelessWidget {
                         if (profileState is ProfileLoadedState) {
                           final uid = profileState.user.id ?? "me";
                           context.push('/following/$uid').then((_) {
+                             if (!context.mounted) return;
                              context.read<ProfileBloc>().add(ProfileReloadSilent(uid));
                           });
                         }

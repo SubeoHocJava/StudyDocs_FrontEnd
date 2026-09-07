@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/domain/repository/document_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal_with_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_square_carousel.dart';
@@ -123,8 +122,7 @@ class _SubjectSectionTitle extends StatelessWidget {
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: AppColors.black,
-      ),
+        ),
     );
   }
 }
@@ -144,7 +142,7 @@ class _SubjectErrorState extends StatelessWidget {
         child: Text(
           'Không tải được môn học.\n$message',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.black),
+          style: const TextStyle(),
         ),
       ),
     );

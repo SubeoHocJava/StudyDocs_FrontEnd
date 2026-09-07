@@ -118,15 +118,14 @@ class _CountChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppColors.black),
+        Icon(icon, size: 16, ),
         const SizedBox(width: 4),
         Text(
           '$value',
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.black,
-          ),
+            ),
         ),
       ],
     );
@@ -179,8 +178,7 @@ class _ExploreSearchFieldState extends State<_ExploreSearchField> {
         controller: _controller,
         style: const TextStyle(
           fontSize: 13,
-          color: AppColors.black,
-        ),
+          ),
         onChanged: widget.onChanged,
         decoration: InputDecoration(
           isDense: true,

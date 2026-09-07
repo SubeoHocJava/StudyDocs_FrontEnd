@@ -175,8 +175,7 @@ class _SectionTitle extends StatelessWidget {
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: AppColors.black,
-      ),
+        ),
     );
   }
 }
@@ -196,7 +195,7 @@ class _ErrorState extends StatelessWidget {
         child: Text(
           'Không tải được thư viện.\n$message',
           textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.black),
+          style: const TextStyle(),
         ),
       ),
     );

@@ -41,7 +41,7 @@ class _DocumentUploadView extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<DocumentUploadBloc>();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
         child: BlocConsumer<DocumentUploadBloc, DocumentUploadState>(
@@ -52,7 +52,7 @@ class _DocumentUploadView extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Tải lên thành công!'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.green,
                 ),
               );
               context.go('/library');
@@ -60,7 +60,7 @@ class _DocumentUploadView extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.errorMessage!),
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.red,
                 ),
               );
             }
@@ -109,12 +109,12 @@ class _DocumentUploadView extends StatelessWidget {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F2F5), // Light grey matching UI
+                      color: AppColors.customColor12, // Light grey matching UI
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.description, color: Colors.grey),
+                        const Icon(Icons.description, color: AppColors.grey),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -133,7 +133,7 @@ class _DocumentUploadView extends StatelessWidget {
                               FileRemoved(),
                             );
                           },
-                          child: const Icon(Icons.delete, color: Colors.red),
+                          child: const Icon(Icons.delete, color: AppColors.red),
                         ),
                       ],
                     ),
@@ -284,7 +284,7 @@ class _DocumentUploadView extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Nhập tên ngắn gọn và đúng nội dung',
                     hintStyle: const TextStyle(
-                      color: Colors.grey,
+                      color: AppColors.grey,
                       fontSize: 14,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -294,13 +294,13 @@ class _DocumentUploadView extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -326,7 +326,7 @@ class _DocumentUploadView extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Chọn năm học',
                     hintStyle: const TextStyle(
-                      color: Colors.grey,
+                      color: AppColors.grey,
                       fontSize: 14,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -336,13 +336,13 @@ class _DocumentUploadView extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -370,7 +370,7 @@ class _DocumentUploadView extends StatelessWidget {
                     hintText:
                         'Mô tả ngắn gọn về tài liệu nhưng đầy đủ thông tin cần thiết',
                     hintStyle: const TextStyle(
-                      color: Colors.grey,
+                      color: AppColors.grey,
                       fontSize: 14,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -380,13 +380,13 @@ class _DocumentUploadView extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha: 0.3),
+                        color: AppColors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -413,7 +413,7 @@ class _DocumentUploadView extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Vui lòng chọn file tài liệu!'),
-                              backgroundColor: Colors.red,
+                              backgroundColor: AppColors.red,
                             ),
                           );
                           return;
@@ -425,7 +425,7 @@ class _DocumentUploadView extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Vui lòng nhập tên tài liệu!'),
-                              backgroundColor: Colors.red,
+                              backgroundColor: AppColors.red,
                             ),
                           );
                           return;
@@ -438,7 +438,7 @@ class _DocumentUploadView extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Năm học phải có định dạng số - số (VD: 2023 - 2024)'),
-                              backgroundColor: Colors.red,
+                              backgroundColor: AppColors.red,
                             ),
                           );
                           return;
@@ -447,7 +447,7 @@ class _DocumentUploadView extends StatelessWidget {
                         bloc.add(UploadSubmitted());
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0000C8),
+                        backgroundColor: AppColors.customColor19,
                         // Deeper blue from screenshot
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
@@ -460,14 +460,14 @@ class _DocumentUploadView extends StatelessWidget {
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   strokeWidth: 2,
                                 ),
                               )
                               : const Text(
                                 'Xác nhận',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -487,7 +487,7 @@ class _DocumentUploadView extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.orange,
       ),
     );
   }
@@ -513,7 +513,7 @@ class _DocumentUploadView extends StatelessWidget {
                   icon,
                   width: 20,
                   height: 20,
-                  color: Colors.black,
+                  color: AppColors.black,
                 ),
                 const SizedBox(width: 8),
                 Text(

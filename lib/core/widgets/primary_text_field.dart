@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class PrimaryTextField extends StatefulWidget {
   final String label;
@@ -39,7 +40,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
+            color: AppColors.customColor5,
           ),
         ),
         const SizedBox(height: 8),
@@ -49,13 +50,13 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
           validator: widget.validator,
           decoration: InputDecoration(
             hintText: widget.hintText,
-            hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+            hintStyle: const TextStyle(color: AppColors.customColor1),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             suffixIcon: widget.obscureText
                 ? IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: const Color(0xFF94A3B8),
+                      color: AppColors.customColor1,
                       size: 20,
                     ),
                     onPressed: () {
@@ -67,19 +68,19 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
                 : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: AppColors.customColor8),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: AppColors.customColor8),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF0D1B99)), // Primary color
+              borderSide: const BorderSide(color: AppColors.customColor17), // Primary color
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
+              borderSide: const BorderSide(color: AppColors.red),
             ),
           ),
         ),

@@ -45,7 +45,7 @@ class _DocumentSelectOptionDialogState extends State<DocumentSelectOptionDialog>
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -69,8 +69,7 @@ class _DocumentSelectOptionDialogState extends State<DocumentSelectOptionDialog>
                   onTap: () => Navigator.of(context).pop(),
                   child: const Icon(
                     Icons.close,
-                    color: Colors.black,
-                  ),
+                    ),
                 ),
               ],
             ),
@@ -81,12 +80,12 @@ class _DocumentSelectOptionDialogState extends State<DocumentSelectOptionDialog>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                border: Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
                   isExpanded: true,
-                  hint: Text(widget.hintText, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                  hint: Text(widget.hintText, style: const TextStyle(color: AppColors.grey, fontSize: 14)),
                   value: _selectedId,
                   items: widget.options.map((opt) {
                     return DropdownMenuItem<int>(
@@ -126,7 +125,7 @@ class _DocumentSelectOptionDialogState extends State<DocumentSelectOptionDialog>
                 child: const Text(
                   'Xác nhận',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),

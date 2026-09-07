@@ -23,7 +23,6 @@ class CommentBody extends StatelessWidget {
       text: TextSpan(
         style: const TextStyle(
           fontFamily: 'Montserrat',
-          color: AppColors.black,
           fontSize: 14,
         ),
         children: [

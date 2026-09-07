@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../logic/statistic_bloc.dart';
 import '../logic/statistic_state.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class Statistics extends StatelessWidget {
   const Statistics({super.key});
@@ -54,7 +55,7 @@ class Statistics extends StatelessWidget {
                           "Đăng tải",
                         ),
                         VerticalDivider(
-                          color: Colors.grey[300],
+                          color: AppColors.grey[300],
                           thickness: 1,
                           width: 1,
                         ),
@@ -64,7 +65,7 @@ class Statistics extends StatelessWidget {
                           "Lượt thích",
                         ),
                         VerticalDivider(
-                          color: Colors.grey[300],
+                          color: AppColors.grey[300],
                           thickness: 1,
                           width: 1,
                         ),
@@ -90,12 +91,12 @@ class Statistics extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey[300]!, width: 1),
+        color: AppColors.white,
+        border: Border.all(color: AppColors.grey[300]!, width: 1),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: AppColors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -114,7 +115,7 @@ class Statistics extends StatelessWidget {
             value,
             style: const TextStyle(
               fontSize: 24,
-              color: Color(0xFF1D24C9), // Deep blue color matching the image
+              color: AppColors.customColor9, // Deep blue color matching the image
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -123,7 +124,7 @@ class Statistics extends StatelessWidget {
             label,
             style: const TextStyle(
               fontSize: 13,
-              color: Color(0xFF64748B), // Slate gray color for labels
+              color: AppColors.customColor14, // Slate gray color for labels
             ),
           ),
         ],

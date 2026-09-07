@@ -147,13 +147,12 @@ class DocumentInformationPresentation extends StatelessWidget {
                             height: 20,
                             color: state.documentInfo.isLiked
                                 ? AppColors.primary
-                                : AppColors.black,
+                                : Theme.of(context).iconTheme.color,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             state.documentInfo.likeCount.toString(),
                             style: const TextStyle(
-                              color: AppColors.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
@@ -191,14 +190,13 @@ class DocumentInformationPresentation extends StatelessWidget {
                               height: 20,
                               color: state.documentInfo.isDisliked
                                   ? AppColors.danger
-                                  : AppColors.black,
+                                  : Theme.of(context).iconTheme.color,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             state.documentInfo.dislikeCount.toString(),
                             style: const TextStyle(
-                              color: AppColors.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),

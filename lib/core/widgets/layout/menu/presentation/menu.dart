@@ -13,6 +13,7 @@ import '../domain/usecase/get_menu_profile_usecase.dart';
 import '../logic/menu_profile_bloc.dart';
 import 'widgets/activity_statistics.dart';
 import 'widgets/upload_box.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class MenuDrawer extends StatelessWidget {
   final VoidCallback onClose;
@@ -242,7 +243,7 @@ class MenuDrawer extends StatelessWidget {
                   "Đăng nhập ngay",
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.blue,
+                    color: AppColors.blue,
                     decoration: TextDecoration.underline,
                   ),
                 ),
@@ -321,7 +322,7 @@ class MenuDrawer extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: isActive ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+            color: isActive ? Theme.of(context).colorScheme.primaryContainer : AppColors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(

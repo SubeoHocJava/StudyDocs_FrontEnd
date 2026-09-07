@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class NotificationHeaderWidget extends StatelessWidget {
   final String title;
@@ -15,8 +16,8 @@ class NotificationHeaderWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+        color: AppColors.white,
+        border: Border(bottom: BorderSide(color: AppColors.grey[200]!)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -27,7 +28,7 @@ class NotificationHeaderWidget extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
-              color: Colors.black,
+              color: AppColors.black,
             ),
           ),
           IconButton(

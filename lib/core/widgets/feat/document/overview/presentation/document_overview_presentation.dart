@@ -76,8 +76,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                             ? Icons.keyboard_arrow_up
                             : Icons.keyboard_arrow_down,
                         size: 32,
-                        color: AppColors.black,
-                      ),
+                        ),
                     ],
                   ),
                 ),
@@ -96,8 +95,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         AppAssets.folder,
                         width: 20,
                         height: 20,
-                        color: AppColors.black,
-                      ),
+                        ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -135,8 +133,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         AppAssets.school,
                         width: 20,
                         height: 20,
-                        color: AppColors.black,
-                      ),
+                        ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -233,7 +230,7 @@ class DocumentOverviewPresentation extends StatelessWidget {
                         color:
                             state.documentOverview.isSaved
                                 ? AppColors.warning
-                                : AppColors.black,
+                                : Theme.of(context).iconTheme.color,
                       ),
                     ),
                   ],

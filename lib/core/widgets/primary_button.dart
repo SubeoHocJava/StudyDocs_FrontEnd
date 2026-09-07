@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -20,8 +21,8 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D1B99), // Example dark blue color from design
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.customColor17, // Example dark blue color from design
+          foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -32,7 +33,7 @@ class PrimaryButton extends StatelessWidget {
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: AppColors.white,
                   strokeWidth: 2,
                 ),
               )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class GlobalNotificationOptionsBottomSheet extends StatelessWidget {
   final VoidCallback onMarkAllAsRead;
@@ -24,7 +25,7 @@ class GlobalNotificationOptionsBottomSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: AppColors.grey[300],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -70,7 +71,7 @@ class GlobalNotificationOptionsBottomSheet extends StatelessWidget {
       title: Text(
         title,
         style: TextStyle(
-          color: isDestructive ? Colors.red : Colors.black87,
+          color: isDestructive ? AppColors.red : Colors.black87,
           fontWeight: FontWeight.w500,
         ),
       ),

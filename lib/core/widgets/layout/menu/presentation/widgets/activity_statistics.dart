@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class ActivityStatistics extends StatelessWidget {
   final int numMyUpload;
@@ -28,7 +29,7 @@ class ActivityStatistics extends StatelessWidget {
     return Column(
       children: [
         Text(value.toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(label, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
       ],
     );
   }

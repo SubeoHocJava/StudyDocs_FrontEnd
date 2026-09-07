@@ -28,7 +28,7 @@ class _DocumentAddSubjectDialogState extends State<DocumentAddSubjectDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -52,8 +52,7 @@ class _DocumentAddSubjectDialogState extends State<DocumentAddSubjectDialog> {
                   onTap: () => Navigator.of(context).pop(),
                   child: const Icon(
                     Icons.close,
-                    color: Colors.black,
-                  ),
+                    ),
                 ),
               ],
             ),
@@ -97,20 +96,20 @@ class _DocumentAddSubjectDialogState extends State<DocumentAddSubjectDialog> {
               decoration: InputDecoration(
                 hintText: 'Ví dụ: He he he hong có môn nè',
                 hintStyle: const TextStyle(
-                  color: Colors.grey,
+                  color: AppColors.grey,
                   fontSize: 14,
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: AppColors.grey.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: AppColors.grey.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -144,7 +143,7 @@ class _DocumentAddSubjectDialogState extends State<DocumentAddSubjectDialog> {
                 child: const Text(
                   'Thêm môn học',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),

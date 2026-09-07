@@ -57,24 +57,24 @@ class _ExploreSearchBarState extends State<ExploreSearchBar> {
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+          hintStyle: TextStyle(color: AppColors.grey.shade500, fontSize: 14),
           prefixIcon: Icon(Icons.search, color: AppColors.primary, size: 22),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close, size: 20, color: Colors.grey),
+                  icon: const Icon(Icons.close, size: 20, color: AppColors.grey),
                   onPressed: _onClear,
                 )
               : null,
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AppColors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide(color: AppColors.grey.shade300),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide(color: AppColors.grey.shade300),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),

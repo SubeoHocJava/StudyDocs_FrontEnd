@@ -35,7 +35,7 @@ class TrashNotificationItemWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE3F2FD) : Colors.white,
+          color: isSelected ? AppColors.customColor18 : AppColors.white,
           border: Border(bottom: BorderSide(color: AppColors.border.withValues(alpha: 0.5))),
         ),
         child: Row(
@@ -88,13 +88,13 @@ class TrashNotificationItemWidget extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFE0E0),
+                            color: AppColors.customColor13,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             'Đã xóa vào ${notification.deletedAt!.day}/${notification.deletedAt!.month}/${notification.deletedAt!.year}',
                             style: const TextStyle(
-                              color: Color(0xFFD32F2F),
+                              color: AppColors.customColor10,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),

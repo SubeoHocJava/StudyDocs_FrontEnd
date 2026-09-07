@@ -227,8 +227,7 @@ class DocumentCardHorizontal extends StatelessWidget {
             AppAssets.download,
             width: 22,
             height: 22,
-            color: AppColors.black,
-          ),
+            ),
         ),
         const SizedBox(width: 10),
         GestureDetector(
@@ -242,7 +241,7 @@ class DocumentCardHorizontal extends StatelessWidget {
             bookmarkAsset,
             width: 22,
             height: 22,
-            color: doc.isBookmarked ? AppColors.warning : AppColors.black,
+            color: doc.isBookmarked ? AppColors.warning : Theme.of(context).iconTheme.color,
           ),
         ),
       ],

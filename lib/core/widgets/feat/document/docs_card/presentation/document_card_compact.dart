@@ -59,7 +59,7 @@ class DocumentCardCompact extends StatelessWidget {
       width: width,
       height: thumbHeight,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: AppColors.grey[200],
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: AppColors.docTitleBorder.withValues(alpha: borderOpacity),
@@ -73,14 +73,14 @@ class DocumentCardCompact extends StatelessWidget {
 
   Widget _buildThumbnailImage(String? thumb) {
     if (thumb == null || thumb.isEmpty) {
-      return const Icon(Icons.picture_as_pdf, size: 36, color: Colors.grey);
+      return const Icon(Icons.picture_as_pdf, size: 36, color: AppColors.grey);
     }
     if (thumb.startsWith('assets/')) {
       return Image.asset(
         thumb,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) =>
-            const Icon(Icons.picture_as_pdf, size: 36, color: Colors.grey),
+            const Icon(Icons.picture_as_pdf, size: 36, color: AppColors.grey),
       );
     }
     
@@ -96,7 +96,7 @@ class DocumentCardCompact extends StatelessWidget {
       imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) =>
-          const Icon(Icons.picture_as_pdf, size: 36, color: Colors.grey),
+          const Icon(Icons.picture_as_pdf, size: 36, color: AppColors.grey),
     );
   }
 }

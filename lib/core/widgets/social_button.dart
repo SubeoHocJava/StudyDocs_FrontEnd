@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class SocialButton extends StatelessWidget {
   final String text;
@@ -25,11 +26,11 @@ class SocialButton extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
+            color: AppColors.customColor5,
           ),
         ),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFFE2E8F0)),
+          side: const BorderSide(color: AppColors.customColor8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),

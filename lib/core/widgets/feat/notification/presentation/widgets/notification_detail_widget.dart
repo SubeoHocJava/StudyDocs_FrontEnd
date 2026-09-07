@@ -3,6 +3,7 @@ import '../../../../../constants/app_icons.dart';
 import 'package:studydocs/data/model/notification_model.dart';
 import '../../utils/time_utils.dart';
 import '../utils/notification_ui_mapper.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class NotificationDetailWidget extends StatelessWidget {
   final NotificationModel notification;
@@ -18,7 +19,7 @@ class NotificationDetailWidget extends StatelessWidget {
     
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
       child: Column(
@@ -30,7 +31,7 @@ class NotificationDetailWidget extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: AppColors.grey[300],
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -52,7 +53,7 @@ class NotificationDetailWidget extends StatelessWidget {
                   text: TextSpan(
                     style: const TextStyle(
                       fontSize: 15,
-                      color: Color(0xFF1A237E),
+                      color: AppColors.customColor7,
                       fontFamily: 'Montserrat',
                       height: 1.5,
                     ),
@@ -70,13 +71,13 @@ class NotificationDetailWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFE0E0),
+                      color: AppColors.customColor13,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       'Đã xóa vào ${notification.deletedAt!.day}/${notification.deletedAt!.month}/${notification.deletedAt!.year}',
                       style: const TextStyle(
-                        color: Color(0xFFD32F2F),
+                        color: AppColors.customColor10,
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
                       ),
@@ -87,7 +88,7 @@ class NotificationDetailWidget extends StatelessWidget {
                 Text(
                   TimeUtils.formatTimeAgo(notification.receivedAt),
                   style: TextStyle(
-                    color: Colors.grey[500],
+                    color: AppColors.grey[500],
                     fontSize: 13,
                     fontFamily: 'Montserrat',
                   ),
@@ -106,7 +107,7 @@ class NotificationDetailWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A237E),
+                color: AppColors.customColor7,
                 fontFamily: 'Montserrat',
               ),
             ),
@@ -115,13 +116,13 @@ class NotificationDetailWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Image.asset(AppAssets.bin, width: 24, height: 24, color: const Color(0xFF1A237E)),
+            leading: Image.asset(AppAssets.bin, width: 24, height: 24, color: AppColors.customColor7),
             title: const Text(
               'Xóa thông báo này',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A237E),
+                color: AppColors.customColor7,
                 fontFamily: 'Montserrat',
               ),
             ),

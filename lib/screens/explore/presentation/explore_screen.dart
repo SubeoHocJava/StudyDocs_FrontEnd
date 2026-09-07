@@ -16,6 +16,7 @@ import '../data/repository/explore_repository_impl.dart';
 import '../logic/explore_bloc.dart';
 import '../logic/explore_event.dart';
 import '../logic/explore_state.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class ExploreScreen extends StatelessWidget {
   final String? initialQuery;
@@ -62,7 +63,7 @@ class ExploreView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +116,7 @@ class ExploreView extends StatelessWidget {
                             state.results.isEmpty
                                 ? 'Không tìm thấy kết quả cho "${state.query}"'
                                 : '${state.results.length} kết quả cho "${state.query}"',
-                            style: const TextStyle(fontSize: 13, color: Colors.grey),
+                            style: const TextStyle(fontSize: 13, color: AppColors.grey),
                           ),
                         ),
                         Expanded(

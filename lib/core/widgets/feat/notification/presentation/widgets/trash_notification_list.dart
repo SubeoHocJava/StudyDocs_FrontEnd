@@ -38,9 +38,9 @@ class TrashNotificationList extends StatelessWidget {
       return const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.delete_outline, size: 64, color: Colors.grey),
+          Icon(Icons.delete_outline, size: 64, color: AppColors.grey),
           SizedBox(height: 16),
-          Text('Thùng rác trống', style: TextStyle(color: Colors.grey, fontSize: 16)),
+          Text('Thùng rác trống', style: TextStyle(color: AppColors.grey, fontSize: 16)),
         ],
       );
     }
@@ -51,7 +51,7 @@ class TrashNotificationList extends StatelessWidget {
         if (isSelectionMode)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: const Color(0xFFE3F2FD), // Light blue background from Image 2
+            color: AppColors.customColor18, // Light blue background from Image 2
             child: Row(
               children: [
                 const Icon(Icons.check_circle, color: AppColors.primary, size: 22),
@@ -84,8 +84,8 @@ class TrashNotificationList extends StatelessWidget {
                     children: [
                       CustomSlidableAction(
                         onPressed: (_) => onRestore(note.id),
-                        backgroundColor: const Color(0xFFE3F1FF), // Light blue
-                        foregroundColor: const Color(0xFF1A237E), // Dark navy
+                        backgroundColor: AppColors.customColor15, // Light blue
+                        foregroundColor: AppColors.customColor7, // Dark navy
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -93,14 +93,14 @@ class TrashNotificationList extends StatelessWidget {
                               AppAssets.notiRestore, 
                               width: 24, 
                               height: 24, 
-                              color: const Color(0xFF1A237E),
+                              color: AppColors.customColor7,
                             ),
                             const SizedBox(height: 4),
                             const Text(
                               'Khôi phục', 
                               style: TextStyle(
                                 fontSize: 10, 
-                                color: Color(0xFF1A237E),
+                                color: AppColors.customColor7,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Montserrat',
                               ),
@@ -110,8 +110,8 @@ class TrashNotificationList extends StatelessWidget {
                       ),
                       CustomSlidableAction(
                         onPressed: (_) => onDelete(note.id),
-                        backgroundColor: const Color(0xFFFFDDE1), // Light pink/red
-                        foregroundColor: const Color(0xFFD32F2F), // Dark red
+                        backgroundColor: AppColors.customColor2, // Light pink/red
+                        foregroundColor: AppColors.customColor10, // Dark red
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -119,14 +119,14 @@ class TrashNotificationList extends StatelessWidget {
                               AppAssets.bin, 
                               width: 24, 
                               height: 24, 
-                              color: const Color(0xFFD32F2F),
+                              color: AppColors.customColor10,
                             ),
                             const SizedBox(height: 4),
                             const Text(
                               'Xóa', 
                               style: TextStyle(
                                 fontSize: 10, 
-                                color: Color(0xFFD32F2F),
+                                color: AppColors.customColor10,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Montserrat',
                               ),

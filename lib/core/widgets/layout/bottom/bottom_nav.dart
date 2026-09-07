@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -60,7 +61,7 @@ class BottomNav extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => onTap(index),
         child: Container(
-          color: Colors.transparent,
+          color: AppColors.transparent,
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,

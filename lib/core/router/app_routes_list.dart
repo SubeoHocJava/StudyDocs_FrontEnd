@@ -15,8 +15,8 @@ final List<AppRoute> appRoutes = [
   AppRoute(path: '/library', screen: const LibraryScreen()),
   AppRoute(path: '/explore', screen: const ExploreScreen()),
   AppRoute(path: '/notifications', screen: const NotificationScreen()),
-  AppRoute(path: '/followers', screen: const UserFollowScreen(initialTab: 0)),
-  AppRoute(path: '/following', screen: const UserFollowScreen(initialTab: 1)),
+  AppRoute(path: '/followers', screen: const UserFollowScreen(initialTab: 0, userId: '')),
+  AppRoute(path: '/following', screen: const UserFollowScreen(initialTab: 1, userId: '')),
   AppRoute(
     path: '/document/:id',
     screen: const DocumentDetailScreen(documentId: ''),

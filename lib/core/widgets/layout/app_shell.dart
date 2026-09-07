@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
-
 
 import '../../../screens/auth/presentation/cubit/auth_cubit.dart';
 import '../../../screens/auth/presentation/cubit/auth_state.dart';
@@ -27,7 +25,7 @@ class AppShell extends StatelessWidget {
         context.go('/home');
       },
       child: Scaffold(
-        backgroundColor: AppColors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         bottomNavigationBar: BottomNav(
           currentIndex: _selectedIndex(location),
           onTap: (index) => _onFooterTap(context, index),

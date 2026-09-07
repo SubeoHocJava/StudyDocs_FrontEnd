@@ -34,7 +34,7 @@ class ExploreHeader extends StatelessWidget {
               if (subtitleIcon != null) ...[
                 Icon(
                   subtitleIcon,
-                  color: Colors.grey[700],
+                  color: AppColors.grey[700],
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -45,7 +45,7 @@ class ExploreHeader extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
+                    color: AppColors.grey[700],
                   ),
                 ),
               ),

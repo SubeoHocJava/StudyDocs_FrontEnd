@@ -26,7 +26,6 @@ class CommentEditor extends StatelessWidget {
           maxLines: null,
           style: const TextStyle(
             fontFamily: 'Montserrat',
-            color: AppColors.black,
             fontSize: 14,
           ),
           decoration: InputDecoration(

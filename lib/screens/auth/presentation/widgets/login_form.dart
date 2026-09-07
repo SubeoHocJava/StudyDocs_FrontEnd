@@ -5,6 +5,7 @@ import '../../../../core/widgets/primary_text_field.dart';
 import '../../../../core/widgets/social_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class LoginForm extends StatefulWidget {
   final VoidCallback onSwitchToRegister;
@@ -77,7 +78,7 @@ class _LoginFormState extends State<LoginForm> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D1B99),
+                  color: AppColors.customColor17,
                 ),
               ),
               const SizedBox(height: 24),
@@ -114,7 +115,7 @@ class _LoginFormState extends State<LoginForm> {
                   child: const Text(
                     'Quên mật khẩu',
                     style: TextStyle(
-                      color: Color(0xFF0D1B99),
+                      color: AppColors.customColor17,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
@@ -133,14 +134,14 @@ class _LoginFormState extends State<LoginForm> {
                 children: [
                   const Text(
                     'Bạn chưa có tài khoản? ',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF1E293B)),
+                    style: TextStyle(fontSize: 13, color: AppColors.customColor5),
                   ),
                   GestureDetector(
                     onTap: isLoading ? null : widget.onSwitchToRegister,
                     child: const Text(
                       'Tạo tài khoản tại đây',
                       style: TextStyle(
-                        color: Color(0xFF0D1B99),
+                        color: AppColors.customColor17,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),
@@ -152,15 +153,15 @@ class _LoginFormState extends State<LoginForm> {
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Row(
                   children: [
-                    Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+                    Expanded(child: Divider(color: AppColors.customColor8)),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'hoặc',
-                        style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                        style: TextStyle(color: AppColors.customColor1, fontSize: 13),
                       ),
                     ),
-                    Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+                    Expanded(child: Divider(color: AppColors.customColor8)),
                   ],
                 ),
               ),

@@ -44,7 +44,6 @@ class UploadDropzoneTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.black,
                   height: 1.2,
                 ),
               ),

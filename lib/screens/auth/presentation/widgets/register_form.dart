@@ -4,6 +4,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/primary_text_field.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class RegisterForm extends StatefulWidget {
   final VoidCallback onSwitchToLogin;
@@ -70,7 +71,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D1B99),
+                  color: AppColors.customColor17,
                 ),
               ),
               const SizedBox(height: 24),
@@ -132,7 +133,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     child: const Text(
                       'Đăng nhập tại đây',
                       style: TextStyle(
-                        color: Color(0xFF0D1B99),
+                        color: AppColors.customColor17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

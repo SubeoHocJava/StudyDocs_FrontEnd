@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_form.dart';
 import 'register_form.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class AuthDialog extends StatefulWidget {
   const AuthDialog({super.key});
@@ -27,12 +28,12 @@ class _AuthDialogState extends State<AuthDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // Cách viền 2 bên rộng hơn chút
       child: Container(
         width: 400, // Cố định chiều rộng tối đa (cho tablet/web), trên mobile sẽ bị bóp theo insetPadding
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(24), // Bo góc mềm mại hơn theo thiết kế
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),

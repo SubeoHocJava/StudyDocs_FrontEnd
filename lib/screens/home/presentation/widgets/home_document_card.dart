@@ -179,7 +179,7 @@ class _InfoLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Image.asset(asset, width: 14, height: 14, color: AppColors.black),
+        Image.asset(asset, width: 14, height: 14, ),
         const SizedBox(width: 4),
         Expanded(
           child: Text(
@@ -245,8 +245,7 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final likeColor = doc.isLiked ? AppColors.primary : AppColors.black;
-    final bookmarkAsset = doc.isBookmarked ? AppAssets.saved : AppAssets.unsaved;
+        final bookmarkAsset = doc.isBookmarked ? AppAssets.saved : AppAssets.unsaved;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -273,8 +272,7 @@ class _ActionRow extends StatelessWidget {
             AppAssets.download,
             width: 30,
             height: 30,
-            color: AppColors.black,
-          ),
+            ),
         ),
         const SizedBox(width: 12),
         _IconTap(
@@ -283,7 +281,7 @@ class _ActionRow extends StatelessWidget {
             bookmarkAsset,
             width: 30,
             height: 30,
-            color: doc.isBookmarked ? AppColors.warning : AppColors.black,
+            color: doc.isBookmarked ? AppColors.warning : Theme.of(context).iconTheme.color,
           ),
         ),
       ],

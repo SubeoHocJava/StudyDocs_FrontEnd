@@ -32,8 +32,7 @@ class UserFollowWidget extends StatefulWidget {
 class _UserFollowWidgetState extends State<UserFollowWidget>
     with SingleTickerProviderStateMixin {
   late int _activeTab;
-  int? _expandedIndex;
-
+  
   @override
   void initState() {
     super.initState();
@@ -85,14 +84,14 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
     required String label,
     required int index,
     required Color activeColor,
-    Color activeText = Colors.white,
+    Color activeText = AppColors.white,
   }) {
     final bool isActive = _activeTab == index;
     return GestureDetector(
       onTap: () {
         setState(() {
           _activeTab = index;
-          _expandedIndex = null;
+          
         });
       },
       child: AnimatedContainer(
@@ -125,11 +124,11 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           )
@@ -164,7 +163,7 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
                 ),
                 if (widget.isOwnProfile)
                   IconButton(
-                    icon: const Icon(Icons.person_remove, color: Colors.redAccent),
+                    icon: const Icon(Icons.person_remove, color: AppColors.redAccent),
                     onPressed: () {
                       if (_activeTab == 0) {
                         widget.onRemoveFollower?.call(user.id);

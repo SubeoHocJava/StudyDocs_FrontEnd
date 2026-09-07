@@ -1,5 +1,6 @@
 ﻿import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 /// Widget avatar dùng chung — đồng nhất giao diện trên toàn app.
 /// Tự động cache ảnh, có fallback icon khi url null hoặc lỗi load.
@@ -21,7 +22,7 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? Colors.grey[200]!;
+    final bgColor = backgroundColor ?? AppColors.grey[200]!;
     final iSize = iconSize ?? radius * 0.9;
     final diameter = radius * 2;
 
@@ -52,7 +53,7 @@ class UserAvatar extends StatelessWidget {
       child: Icon(
         Icons.person,
         size: iSize,
-        color: iconColor ?? Colors.grey[500],
+        color: iconColor ?? AppColors.grey[500],
       ),
     );
   }

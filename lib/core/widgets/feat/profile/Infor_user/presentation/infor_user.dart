@@ -189,7 +189,7 @@ class InforUser extends StatelessWidget {
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                child: Icon(Icons.camera_alt, size: 18, color: AppColors.white),
               ),
             ),
         ],

@@ -8,6 +8,7 @@ import '../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../../screens/auth/presentation/cubit/auth_state.dart';
 import '../../../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import '../../menu/presentation/menu.dart';
+import '../../../../theme/theme_cubit.dart';
 
 import 'package:studydocs/core/widgets/common/user_avatar.dart';
 
@@ -85,7 +86,7 @@ class _HeaderState extends State<Header> {
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque, // ← THÊM DÒNG NÀY
                   onTap: _closeMenu,
-                  child: Container(color: Colors.black.withValues(alpha: 0.3)),
+                  child: Container(color: AppColors.black.withValues(alpha: 0.3)),
                 ),
               ),
               // Drawer Content
@@ -121,7 +122,7 @@ class _HeaderState extends State<Header> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.headerBackground,
+      color: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
       child: SafeArea(
         bottom: false,
@@ -168,7 +169,7 @@ class _HeaderState extends State<Header> {
     }
     return IconButton(
       icon: const Icon(Icons.arrow_back_ios_new),
-      color: AppColors.headerForeground,
+      color: Theme.of(context).appBarTheme.foregroundColor,
       onPressed: widget.onBack ?? () => Navigator.pop(context),
       iconSize: 24,
     );
@@ -189,10 +190,10 @@ class _HeaderState extends State<Header> {
   Widget _buildTitle() {
     return Text(
       widget.headerTitle ?? '',
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: AppColors.headerForeground,
+        color: Theme.of(context).appBarTheme.foregroundColor,
         fontFamily: 'Montserrat',
       ),
     );
@@ -211,8 +212,8 @@ class _HeaderState extends State<Header> {
               ElevatedButton(
                 onPressed: widget.onLoginTap ?? () => _showLoginModal(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.headerForeground,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).appBarTheme.foregroundColor,
+                  foregroundColor: Theme.of(context).appBarTheme.backgroundColor ?? AppColors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -229,18 +230,24 @@ class _HeaderState extends State<Header> {
               ),
             const SizedBox(width: 12),
             // Nút Đổi Theme
-            GestureDetector(
-              onTap: () {
-                // TODO: Toggle Theme
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Image.asset(
-                  'assets/icons/sun.png',
-                  width: 28,
-                  height: 28,
-                ),
-              ),
+            BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, themeMode) {
+                final isDark = themeMode == ThemeMode.dark;
+                return GestureDetector(
+                  onTap: () {
+                    context.read<ThemeCubit>().toggleTheme();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Image.asset(
+                      isDark ? 'assets/icons/moon.png' : 'assets/icons/sun.png',
+                      width: 28,
+                      height: 28,
+                      // color: AppColors.headerForeground, // Optional: apply color if needed
+                    ),
+                  ),
+                );
+              }
             ),
           ],
         );
@@ -259,8 +266,8 @@ class _HeaderState extends State<Header> {
         child: UserAvatar(
           avatarUrl: avatarUrl,
           radius: 20,
-          backgroundColor: AppColors.headerForeground.withValues(alpha: 0.12),
-          iconColor: AppColors.headerForeground,
+          backgroundColor: Theme.of(context).appBarTheme.foregroundColor?.withValues(alpha: 0.12) ?? AppColors.headerForeground.withValues(alpha: 0.12),
+          iconColor: Theme.of(context).appBarTheme.foregroundColor,
         ),
       ),
     );

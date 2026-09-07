@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/data/model/notification_model.dart';
 import '../logic/notification_bloc.dart';
 import '../logic/notification_event.dart';
@@ -99,7 +98,7 @@ class NotificationView extends StatelessWidget {
 
         if (state is NotificationLoaded) {
           return Scaffold(
-            backgroundColor: AppColors.backgroundLight,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             body: SafeArea(
               child: Column(
                 children: [

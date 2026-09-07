@@ -36,8 +36,8 @@ class NotificationItemWidget extends StatelessWidget {
               children: [
                 CustomSlidableAction(
                   onPressed: (_) => onDeleteTap?.call(),
-                  backgroundColor: const Color(0xFFFFDDE1), // Light pink/red
-                  foregroundColor: const Color(0xFFD32F2F), // Dark red
+                  backgroundColor: AppColors.customColor2, // Light pink/red
+                  foregroundColor: AppColors.customColor10, // Dark red
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -45,14 +45,14 @@ class NotificationItemWidget extends StatelessWidget {
                         AppAssets.bin, 
                         width: 28, 
                         height: 28, 
-                        color: const Color(0xFFD32F2F),
+                        color: AppColors.customColor10,
                       ),
                       const SizedBox(height: 4),
                       const Text(
                         'Xóa',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFFD32F2F),
+                          color: AppColors.customColor10,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Montserrat',
                         ),
@@ -77,7 +77,7 @@ class NotificationItemWidget extends StatelessWidget {
               ),
               left: isUnread
                   ? const BorderSide(color: AppColors.primary, width: 4)
-                  : const BorderSide(color: Colors.transparent, width: 4),
+                  : const BorderSide(color: AppColors.transparent, width: 4),
             ),
           ),
           child: Row(
@@ -146,7 +146,7 @@ class NotificationItemWidget extends StatelessWidget {
                       padding: const EdgeInsets.all(4),
                       child: const Icon(
                         Icons.more_horiz,
-                        color: Color(0xFF757575), // Đậm hơn một chút
+                        color: AppColors.customColor16, // Đậm hơn một chút
                         size: 24, // To hơn để dễ bấm
                       ),
                     ),

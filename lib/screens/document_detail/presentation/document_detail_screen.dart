@@ -79,7 +79,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocConsumer<DocumentDetailBloc, DocumentDetailState>(
           listener: (context, state) {
             if (state is DocumentDetailLoaded) {
@@ -155,7 +155,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                     // Information Block (Collapsible)
                     if (_isExpanded)
                       Container(
-                        color: AppColors.white,
+                        color: Theme.of(context).cardColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 8.0,
@@ -169,7 +169,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: AppColors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: AppColors.border),
                       ),
@@ -222,7 +222,7 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
       );
     }
 
-    if (fileUrl != null && fileUrl.toLowerCase().endsWith('.pdf')) {
+    if (fileUrl.toLowerCase().endsWith('.pdf')) {
       return SizedBox(
         width: double.infinity,
         height: 500, // Tăng chiều cao để xem PDF dễ hơn
@@ -252,17 +252,17 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
     return Container(
       width: double.infinity,
       height: 400,
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Icon(Icons.description_outlined, size: 80, color: Colors.grey),
+          Icon(Icons.description_outlined, size: 80, color: AppColors.grey),
           SizedBox(height: 16),
           Text(
             'Không thể xem trước tài liệu này',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: AppColors.grey),
           ),
         ],
       ),

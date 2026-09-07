@@ -18,7 +18,7 @@ class FolderListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor =
-        selected ? AppColors.primaryLight : const Color(0xFFEFF1F8);
+        selected ? AppColors.primaryLight : AppColors.customColor4;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../constants/app_icons.dart';
+import 'package:studydocs/core/constants/app_colors.dart';
 
 class MarkAllReadWidget extends StatelessWidget {
   final VoidCallback onTap;
@@ -18,11 +19,11 @@ class MarkAllReadWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -42,7 +43,7 @@ class MarkAllReadWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A237E), // Dark navy
+                color: AppColors.customColor7, // Dark navy
                 fontFamily: 'Montserrat',
               ),
             ),

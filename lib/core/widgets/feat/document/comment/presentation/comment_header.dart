@@ -17,8 +17,7 @@ class CommentHeader extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.bold,
-            color: AppColors.black,
-          ),
+            ),
         ),
         const SizedBox(width: 8),
         Text(
