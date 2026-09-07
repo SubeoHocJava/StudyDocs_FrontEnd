@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/widgets/common/user_avatar.dart';
 import '../../domain/entity/user_follow_entity.dart';
 
 class UserFollowWidget extends StatefulWidget {
   final int initialTab;
   final List<UserFollowEntity> followers;
   final List<UserFollowEntity> following;
+  final bool isOwnProfile;
   final Function(String)? onUnfollow;
   final Function(String)? onRemoveFollower;
   final Function(String)? onFollow;
@@ -16,6 +18,7 @@ class UserFollowWidget extends StatefulWidget {
     this.initialTab = 0,
     this.followers = const [],
     this.following = const [],
+    this.isOwnProfile = false,
     this.onUnfollow,
     this.onRemoveFollower,
     this.onFollow,
@@ -119,12 +122,8 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
   }
 
   Widget _buildUserItem(UserFollowEntity user, int index) {
-    final bool isExpanded = _expandedIndex == index;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -138,76 +137,45 @@ class _UserFollowWidgetState extends State<UserFollowWidget>
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
-        child: Stack(
-          children: [
-            InkWell(
-              onTap: () => widget.onUserTap?.call(user.id),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: AppColors.primaryLight,
-                      backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
-                      child: user.avatarUrl == null ? const Icon(Icons.person, color: AppColors.headerForeground) : null,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        user.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.profileName,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.more_horiz, color: AppColors.headerForeground),
-                      onPressed: () {
-                        setState(() {
-                          _expandedIndex = isExpanded ? null : index;
-                        });
-                      },
-                    ),
-                  ],
+        child: InkWell(
+          onTap: () => widget.onUserTap?.call(user.id),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Row(
+              children: [
+                UserAvatar(
+                  avatarUrl: user.avatarUrl,
+                  radius: 24,
+                  backgroundColor: AppColors.primaryLight,
+                  iconColor: AppColors.headerForeground,
                 ),
-              ),
-            ),
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 240),
-              curve: Curves.easeOut,
-              right: isExpanded ? 0 : -140,
-              top: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onTap: () {
-                  if (_activeTab == 0) {
-                    widget.onRemoveFollower?.call(user.id);
-                  } else {
-                    widget.onUnfollow?.call(user.id);
-                  }
-                  setState(() => _expandedIndex = null);
-                },
-                child: Container(
-                  width: 110,
-                  color: Colors.redAccent,
-                  alignment: Alignment.center,
+                const SizedBox(width: 14),
+                Expanded(
                   child: Text(
-                    _activeTab == 0 ? 'Xóa' : 'Bỏ theo dõi',
+                    user.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.profileName,
                     ),
                   ),
                 ),
-              ),
+                if (widget.isOwnProfile)
+                  IconButton(
+                    icon: const Icon(Icons.person_remove, color: Colors.redAccent),
+                    onPressed: () {
+                      if (_activeTab == 0) {
+                        widget.onRemoveFollower?.call(user.id);
+                      } else {
+                        widget.onUnfollow?.call(user.id);
+                      }
+                    },
+                  ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

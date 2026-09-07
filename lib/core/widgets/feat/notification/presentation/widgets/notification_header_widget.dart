@@ -27,11 +27,11 @@ class NotificationHeaderWidget extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
-              color: Color(0xFF1976D2), // Blue color from screenshot
+              color: Colors.black,
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.more_horiz, color: Color(0xFF1976D2)),
+            icon: const Icon(Icons.more_horiz, color: Colors.black54),
             onPressed: onMoreTap,
           ),
         ],

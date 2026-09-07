@@ -160,11 +160,8 @@ class _ExploreSearchFieldState extends State<_ExploreSearchField> {
   @override
   void didUpdateWidget(covariant _ExploreSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value && _controller.text != widget.value) {
-      _controller.text = widget.value;
-      _controller.selection = TextSelection.fromPosition(
-        TextPosition(offset: _controller.text.length),
-      );
+    if (oldWidget.value != widget.value && widget.value.isEmpty && _controller.text.isNotEmpty) {
+      _controller.clear();
     }
   }
 

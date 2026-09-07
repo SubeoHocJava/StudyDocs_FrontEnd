@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/widgets/common/user_avatar.dart';
 
 
 import '../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
 import '../../../../../screens/auth/presentation/cubit/auth_state.dart';
+import '../../../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import '../domain/repository/menu_profile_repository.dart';
 import '../domain/usecase/get_menu_profile_usecase.dart';
 import '../logic/menu_profile_bloc.dart';
@@ -25,6 +27,15 @@ class MenuDrawer extends StatelessWidget {
   });
 
   void _navigateTo(BuildContext context, int index) {
+    if (index == 1 || index == 3) {
+      final authState = context.read<AuthCubit>().state;
+      if (authState is! AuthAuthenticated) {
+        onClose();
+        showAuthDialog(context);
+        return;
+      }
+    }
+
     onClose();
 
     switch (index) {
@@ -47,16 +58,15 @@ class MenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final authState = context.read<AuthStatusCubit>().state;
-    // String userId = '';
-    // if (authState is AuthAuthenticated) {
-    //   userId = authState.userId;
-    // }
+    final authState = context.read<AuthCubit>().state;
+    final isLoggedIn = authState is AuthAuthenticated;
 
     return BlocProvider(
       create: (_) {
         final bloc = MenuProfileBloc(GetMenuProfileUseCase(MenuProfileRepositoryImpl()));
-        bloc.add(LoadMenuProfile("me"));
+        if (isLoggedIn) {
+          bloc.add(LoadMenuProfile("me"));
+        }
         return bloc;
       },
       child: Material(
@@ -79,22 +89,27 @@ class MenuDrawer extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (state is MenuProfileLoaded) _buildUserInfo(state),
-                        if (state is MenuProfileLoading)
-                          const Center(child: CircularProgressIndicator()),
-                        if (state is MenuProfileError)
-                          Text('Lỗi: ${state.message}'),
+                        if (isLoggedIn) ...[
+                          if (state is MenuProfileLoaded) _buildUserInfo(state),
+                          if (state is MenuProfileLoading)
+                            const Center(child: CircularProgressIndicator()),
+                          if (state is MenuProfileError)
+                            Text('Lỗi: ${state.message}'),
 
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                        if (state is MenuProfileLoaded)
-                          ActivityStatistics(
-                            numMyUpload: state.profile.numMyUpload,
-                            numMyLikes: state.profile.numMyLikes,
-                            numMyComment: state.profile.numMyComment,
-                          ),
+                          if (state is MenuProfileLoaded)
+                            ActivityStatistics(
+                              numMyUpload: state.profile.numMyUpload,
+                              numMyLikes: state.profile.numMyLikes,
+                              numMyComment: state.profile.numMyComment,
+                            ),
 
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
+                        ] else ...[
+                          _buildGuestInfo(context),
+                          const SizedBox(height: 24),
+                        ],
 
                         _buildMenuItem(
                           context,
@@ -198,6 +213,47 @@ class MenuDrawer extends StatelessWidget {
     );
   }
 
+  Widget _buildGuestInfo(BuildContext context) {
+    return Row(
+      children: [
+        ClipOval(
+          child: Image.asset(AppAssets.user, width: 56, height: 56),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Khách",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+              ),
+              const SizedBox(height: 4),
+              InkWell(
+                onTap: () {
+                  onClose();
+                  showAuthDialog(context);
+                },
+                child: const Text(
+                  "Đăng nhập ngay",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildUserInfo(MenuProfileLoaded state) {
     return Builder(
       builder: (context) {
@@ -208,21 +264,10 @@ class MenuDrawer extends StatelessWidget {
           },
           child: Row(
             children: [
-              (state.profile.avatarUrl != null && state.profile.avatarUrl!.isNotEmpty)
-                  ? ClipOval(
-                      child: Image.network(
-                        state.profile.avatarUrl!,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(AppAssets.user, width: 56, height: 56);
-                        },
-                      ),
-                    )
-                  : ClipOval(
-                      child: Image.asset(AppAssets.user, width: 56, height: 56),
-                    ),
+              UserAvatar(
+                avatarUrl: state.profile.avatarUrl,
+                radius: 28,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

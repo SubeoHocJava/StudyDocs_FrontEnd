@@ -192,6 +192,12 @@ class TokenStorageService {
     return prefs.getString(_keyAvatarUrl);
   }
 
+  /// Lưu/cập nhật avatar url
+  Future<void> saveAvatarUrl(String newUrl) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyAvatarUrl, newUrl);
+  }
+
   /// Lấy danh sách roles
   Future<List<String>> getRoles() async {
     final prefs = await SharedPreferences.getInstance();

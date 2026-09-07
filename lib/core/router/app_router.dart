@@ -81,11 +81,13 @@ GoRouter initAppRouter() {
           GoRoute(
             path: '/explore',
             parentNavigatorKey: shellNavigatorKey,
-            pageBuilder:
-                (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const ExploreScreen(),
-                ),
+            pageBuilder: (context, state) {
+              final initialQuery = state.extra as String?;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: ExploreScreen(initialQuery: initialQuery),
+              );
+            },
           ),
           GoRoute(
             path: '/notifications',
@@ -97,24 +99,26 @@ GoRouter initAppRouter() {
                 ),
           ),
           GoRoute(
-            path: '/followers',
+            path: '/followers/:id',
             parentNavigatorKey: shellNavigatorKey,
-            redirect: authGuard,
-            pageBuilder:
-                (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const UserFollowScreen(initialTab: 0),
-                ),
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: UserFollowScreen(initialTab: 0, userId: id),
+              );
+            },
           ),
           GoRoute(
-            path: '/following',
+            path: '/following/:id',
             parentNavigatorKey: shellNavigatorKey,
-            redirect: authGuard,
-            pageBuilder:
-                (context, state) => NoTransitionPage(
-                  key: state.pageKey,
-                  child: const UserFollowScreen(initialTab: 1),
-                ),
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: UserFollowScreen(initialTab: 1, userId: id),
+              );
+            },
           ),
           GoRoute(
             path: '/document/:id',
@@ -144,9 +148,10 @@ GoRouter initAppRouter() {
   );
 }
 
-void showGlobalDialog(Widget dialog) {
+Future<T?> showGlobalDialog<T>(Widget dialog) {
   final context = rootNavigatorKey.currentContext;
   if (context != null) {
-    showDialog(context: context, builder: (_) => dialog);
+    return showDialog<T>(context: context, builder: (_) => dialog);
   }
+  return Future.value(null);
 }

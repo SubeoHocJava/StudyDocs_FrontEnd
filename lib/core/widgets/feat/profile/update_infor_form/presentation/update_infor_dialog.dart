@@ -35,7 +35,7 @@ class _UpdateInforDialogState extends State<UpdateInforDialog> {
         }
 
         if (state is UpdateSuccess) {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context, rootNavigator: true).pop(true);
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text("Cập nhật thành công")));

@@ -2,10 +2,10 @@ import 'package:studydocs/core/widgets/feat/document/information/domain/entity/s
 
 class AuthorInfo {
   final String id;
-  final String avatarUrl;
+  final String? avatarUrl;
   final String fullName;
   final SchoolInfo school;
 
-  AuthorInfo({required this.id, required this.avatarUrl, required this.fullName, required this.school});
+  AuthorInfo({required this.id, this.avatarUrl, required this.fullName, required this.school});
 
 }

@@ -38,4 +38,16 @@ class ExploreRepositoryImpl implements ExploreRepository {
       );
     }
   }
+
+  @override
+  Future<List<DocumentSummaryModel>> searchDocuments(String query) async {
+    final response = await _dioClient.get(
+      'education/documents/search',
+      queryParameters: {'q': query},
+    );
+    final data = response.data as List<dynamic>? ?? [];
+    return data
+        .map((json) => DocumentSummaryModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
 }

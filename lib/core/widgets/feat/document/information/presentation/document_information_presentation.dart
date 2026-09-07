@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
+import 'package:studydocs/core/widgets/common/user_avatar.dart';
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_bloc.dart';
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_event.dart';
 import 'package:studydocs/core/widgets/feat/document/information/logic/document_information_state.dart';
+import 'package:studydocs/core/utils/auth_helper.dart';
 
 class DocumentInformationPresentation extends StatelessWidget {
   const DocumentInformationPresentation({super.key});
@@ -65,26 +67,9 @@ class DocumentInformationPresentation extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     //Ảnh đại diện
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: Image.network(
-                        state.documentInfo.author.avatarUrl,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 30,
-                            ),
-                          );
-                        },
-                      ),
+                    UserAvatar(
+                      avatarUrl: state.documentInfo.author.avatarUrl,
+                      radius: 25,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -140,9 +125,11 @@ class DocumentInformationPresentation extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        context.read<DocumentInformationBloc>().add(
-                          DocumentLikeRequested(state.documentInfo.id),
-                        );
+                        if (AuthHelper.checkLogin(context)) {
+                          context.read<DocumentInformationBloc>().add(
+                            DocumentLikeRequested(state.documentInfo.id),
+                          );
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -180,9 +167,11 @@ class DocumentInformationPresentation extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        context.read<DocumentInformationBloc>().add(
-                          DocumentDislikeRequested(state.documentInfo.id),
-                        );
+                        if (AuthHelper.checkLogin(context)) {
+                          context.read<DocumentInformationBloc>().add(
+                            DocumentDislikeRequested(state.documentInfo.id),
+                          );
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),

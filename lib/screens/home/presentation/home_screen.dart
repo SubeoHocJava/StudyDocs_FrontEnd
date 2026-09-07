@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/screens/home/presentation/widgets/home_document_card_with_bloc.dart';
 
@@ -8,6 +9,10 @@ import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.d
 import '../logic/home_bloc.dart';
 import '../logic/home_event.dart';
 import '../logic/home_state.dart';
+
+import '../../auth/presentation/cubit/auth_cubit.dart';
+import '../../auth/presentation/cubit/auth_state.dart';
+import '../../auth/presentation/widgets/auth_dialog.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -176,8 +181,28 @@ class _OutlinedTitle extends StatelessWidget {
   }
 }
 
-class _SearchBarMock extends StatelessWidget {
+class _SearchBarMock extends StatefulWidget {
   const _SearchBarMock();
+
+  @override
+  State<_SearchBarMock> createState() => _SearchBarMockState();
+}
+
+class _SearchBarMockState extends State<_SearchBarMock> {
+  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submitSearch(BuildContext context, String value) {
+    if (value.trim().isEmpty) return;
+    context.go('/explore', extra: value.trim());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,19 +219,37 @@ class _SearchBarMock extends StatelessWidget {
             const SizedBox(width: 10),
             const Icon(Icons.search, color: AppColors.primary, size: 30),
             const SizedBox(width: 8),
-            const Expanded(
-              child: Text(
-                'Tìm kiếm các khóa học, bài giảng, tài liệu',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: AppColors.gray,
-                  fontSize: 12,
+            Expanded(
+              child: Material(
+                color: Colors.transparent,
+                child: TextField(
+                  focusNode: _focusNode,
+                  controller: _controller,
+                  onSubmitted: (val) {
+                    _submitSearch(context, val);
+                  },
+                  onTap: () {},
+                  textAlignVertical: TextAlignVertical.center,
+                  textInputAction: TextInputAction.search,
+                  decoration: const InputDecoration(
+                    hintText: 'Tìm kiếm các khóa học, bài giảng, tài liệu',
+                    hintStyle: TextStyle(
+                      color: AppColors.gray,
+                      fontSize: 12,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  style: const TextStyle(
+                    color: AppColors.black,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
             IconButton(
-              onPressed: null,
+              onPressed: () {},
               icon: const Icon(Icons.mic, color: AppColors.black, size: 26),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints.tightFor(width: 40, height: 40),

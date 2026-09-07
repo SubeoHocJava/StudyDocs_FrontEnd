@@ -3,6 +3,7 @@ import 'package:studydocs/core/widgets/feat/profile/follow/logic/follow_event.da
 import 'package:studydocs/core/widgets/feat/profile/statistic/logic/statistic_event.dart';
 import '../domain/repository/user_repository.dart';
 
+import 'package:studydocs/core/network/token_services.dart';
 import '../../../core/widgets/feat/profile/Infor_user/logic/infor_user_bloc.dart';
 import '../../../core/widgets/feat/profile/Infor_user/logic/infor_user_event.dart';
 import '../../../../core/widgets/feat/profile/follow/logic/follow_bloc.dart';
@@ -32,13 +33,36 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
                 ? await userRepository.getUser()
                 : await userRepository.getUserProfile(event.userId);
 
-        inforUserBloc.add(LoadUserInfor(user));
+        final currentUserId = await TokenStorageService().getUserId();
+        final isOwnProfile = event.userId == "me" || (currentUserId != null && currentUserId == user.id);
+
+        inforUserBloc.add(LoadUserInfor(user, isOwnProfile: isOwnProfile));
         followBloc.add(LoadFollowDataEvent(user));
         statisticBloc.add(LoadStatisticData(user));
 
         emit(ProfileLoadedState(user));
       } catch (e) {
         emit(ProfileErrorState(e.toString()));
+      }
+    });
+
+    on<ProfileReloadSilent>((event, emit) async {
+      try {
+        final user =
+            event.userId == "me"
+                ? await userRepository.getUser()
+                : await userRepository.getUserProfile(event.userId);
+
+        final currentUserId = await TokenStorageService().getUserId();
+        final isOwnProfile = event.userId == "me" || (currentUserId != null && currentUserId == user.id);
+
+        inforUserBloc.add(LoadUserInfor(user, isOwnProfile: isOwnProfile));
+        followBloc.add(LoadFollowDataEvent(user));
+        statisticBloc.add(LoadStatisticData(user));
+
+        emit(ProfileLoadedState(user));
+      } catch (e) {
+        // do not emit error, just fail silently or log
       }
     });
   }

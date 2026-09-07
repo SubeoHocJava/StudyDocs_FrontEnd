@@ -1,3 +1,5 @@
+import 'package:studydocs/core/utils/image_utils.dart';
+
 class DocumentCompactModel {
   final String id;
   final String title;
@@ -13,7 +15,7 @@ class DocumentCompactModel {
     return DocumentCompactModel(
       id: json['id'] as String,
       title: json['title'] as String,
-      thumbnail: json['thumbnail'] as String?,
+      thumbnail: ImageUtils.fixPdfThumbnail(json['thumbnail'] as String?),
     );
   }
 

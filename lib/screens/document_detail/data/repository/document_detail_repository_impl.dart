@@ -2,6 +2,7 @@ import 'package:studydocs/data/datasource/document_remote_datasource.dart';
 
 import 'package:studydocs/screens/document_detail/domain/repository/document_detail_repository.dart';
 import 'package:studydocs/screens/document_detail/domain/entity/document_detail_data.dart';
+import 'package:studydocs/core/utils/image_utils.dart';
 
 class DocumentDetailRepositoryImpl implements DocumentDetailRepository {
   final DocumentRemoteDataSource _dataSource;
@@ -22,7 +23,7 @@ class DocumentDetailRepositoryImpl implements DocumentDetailRepository {
       fileUrl: data['fileUrl'] ?? '',
       fileSize: data['fileSize'] ?? 0,
       fileType: data['fileType'] ?? '',
-      thumbnail: data['thumbnail'],
+      thumbnail: ImageUtils.fixPdfThumbnail(data['thumbnail']),
       categoryName: data['category'] ?? '',
       schoolName: data['school'] ?? data['universityName'] ?? '',
       pageCount: data['pageCount'] ?? 0,
@@ -40,11 +41,10 @@ class DocumentDetailRepositoryImpl implements DocumentDetailRepository {
       // Mapped from uploader details
       authorId: data['uploaderId'] ?? '',
       authorName: data['uploaderName'] ?? 'Unknown User',
-      authorAvatar: 'https://i.pravatar.cc/150?u=${data['uploaderId'] ?? 'default'}', // mock avatar
+      authorAvatar: data['uploaderAvatarUrl'] ?? '',
       authorSchoolName: data['universityName'] ?? data['school'] ?? 'Unknown School',
-      // Mock remaining missing fields
-      dislikeCount: 0,
-      isDisliked: false,
+      dislikeCount: data['dislikeCount'] ?? 0,
+      isDisliked: data['isDisliked'] ?? false,
     );
   }
 }

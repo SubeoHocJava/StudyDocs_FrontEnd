@@ -79,8 +79,13 @@ class DioClient {
         Options? options,
       }) async {
     try {
+      // Nếu data là FormData, Dio cần tự quản lý Content-Type (multipart/form-data + boundary)
+      // Không được để header mặc định 'application/json' ghi đè
+      final resolvedOptions = options ?? (data is FormData
+          ? Options(contentType: 'multipart/form-data')
+          : null);
       return await fromResponse<dynamic>(
-        await _dio.post(path, data: data, queryParameters: queryParameters, options: options),
+        await _dio.post(path, data: data, queryParameters: queryParameters, options: resolvedOptions),
       );
     } on DioException catch (e) {
       throw _handleError(e);

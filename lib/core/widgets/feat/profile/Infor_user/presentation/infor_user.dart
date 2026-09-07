@@ -10,13 +10,29 @@ import '../../setting/presentation/setting_dialog.dart';
 import '../logic/infor_user_bloc.dart';
 import '../logic/infor_user_event.dart';
 import '../logic/infor_user_state.dart';
+import 'package:studydocs/screens/profile/logic/profile_bloc.dart';
+import 'package:studydocs/screens/profile/logic/profile_event.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_cubit.dart';
+import 'package:studydocs/screens/auth/presentation/cubit/auth_state.dart';
+import 'package:studydocs/screens/auth/presentation/widgets/auth_dialog.dart';
 
 class InforUser extends StatelessWidget {
   const InforUser({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InforUserBloc, InforUserState>(
+    return BlocConsumer<InforUserBloc, InforUserState>(
+      listener: (context, state) {
+        if (state is InforUserLoaded && state.isOwnProfile) {
+          final authState = context.read<AuthCubit>().state;
+          if (authState is AuthAuthenticated) {
+            // Update AuthCubit avatar if it has changed in InforUserBloc
+            if (state.avatarUrl != null && state.avatarUrl != authState.avatarUrl) {
+              context.read<AuthCubit>().updateUserAvatar(state.avatarUrl!);
+            }
+          }
+        }
+      },
       builder: (context, state) {
         if (state is InforUserLoading || state is InforUserInitial) {
           return const Center(child: CircularProgressIndicator());
@@ -31,24 +47,15 @@ class InforUser extends StatelessWidget {
 
         return _buildContent(context, state);
       },
-      // ),
     );
   }
 
   Widget _buildContent(BuildContext context, InforUserLoaded state) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          /// ============ NÚT ACTION =============
-          Align(
-            alignment: Alignment.topRight,
-            child: _buildActionButton(context, state),
-          ),
-
-          const SizedBox(height: 10),
-
           /// ============ AVATAR =============
           _buildAvatar(
             context: context,
@@ -79,6 +86,11 @@ class InforUser extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
+
+          const SizedBox(height: 16),
+
+          /// ============ NÚT ACTION =============
+          _buildActionButton(context, state),
         ],
       ),
     );
@@ -198,54 +210,81 @@ class InforUser extends StatelessWidget {
   // ================= ACTION BUTTON =================
   Widget _buildActionButton(BuildContext context, InforUserLoaded state) {
     if (state.isOwnProfile) {
-      return TextButton.icon(
-        onPressed: () {
-          showGlobalDialog(
+      return OutlinedButton.icon(
+        onPressed: () async {
+          final result = await showGlobalDialog(
             BlocProvider(
               create: (_) => SettingBloc(),
               child: const SettingDialog(),
             ),
           );
+          if (result == true && context.mounted) {
+            context.read<ProfileBloc>().add(ProfileInitial("me"));
+          }
         },
         icon: const Icon(Icons.settings, size: 18),
         label: const Text("Cài đặt"),
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       );
     }
 
-    return TextButton.icon(
-      onPressed: () {
-        if (state.isFollowing) {
+    final isAuthenticated = context.read<AuthCubit>().state is AuthAuthenticated;
+
+    if (state.isFollowing) {
+      return OutlinedButton.icon(
+        onPressed: () {
+          if (!isAuthenticated) {
+            showAuthDialog(context);
+            return;
+          }
           context.read<InforUserBloc>().add(UnfollowUserEvent(state.id));
-        } else {
-          context.read<InforUserBloc>().add(FollowUserEvent(state.id));
+        },
+        icon: Icon(
+          Icons.person_remove,
+          size: 18,
+          color: Theme.of(context).disabledColor,
+        ),
+        label: Text(
+          "Bỏ theo dõi",
+          style: TextStyle(color: Theme.of(context).disabledColor),
+        ),
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          side: BorderSide(color: Theme.of(context).disabledColor),
+        ),
+      );
+    }
+
+    return ElevatedButton.icon(
+      onPressed: () {
+        if (!isAuthenticated) {
+          showAuthDialog(context);
+          return;
         }
+        context.read<InforUserBloc>().add(FollowUserEvent(state.id));
       },
       icon: Icon(
-        state.isFollowing ? Icons.person_remove : Icons.person_add,
+        Icons.person_add,
         size: 18,
-        color:
-            state.isFollowing
-                ? Theme.of(context).disabledColor
-                : Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.onPrimary,
       ),
       label: Text(
-        state.isFollowing ? "Bỏ theo dõi" : "Theo dõi",
+        "Theo dõi",
         style: TextStyle(
-          color:
-              state.isFollowing
-                  ? Theme.of(context).disabledColor
-                  : Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onPrimary,
+          fontWeight: FontWeight.bold,
         ),
       ),
-      style: TextButton.styleFrom(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(
-            color:
-                state.isFollowing
-                    ? Theme.of(context).disabledColor
-                    : Theme.of(context).colorScheme.primary,
-          ),
         ),
       ),
     );

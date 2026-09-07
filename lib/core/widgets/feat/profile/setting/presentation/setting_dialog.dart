@@ -17,13 +17,16 @@ class SettingDialog extends StatelessWidget {
   const SettingDialog({super.key});
 
   // ----- Mở hộp thoại cập nhật thông tin -----
-  void _openUpdateDialog(BuildContext context) {
-    showGlobalDialog(
+  void _openUpdateDialog(BuildContext context) async {
+    final result = await showGlobalDialog(
       BlocProvider(
         create: (_) => UpdateInforBloc()..add(LoadUpdateInfor()),
         child: const UpdateInforDialog(),
       ),
     );
+    if (result == true && context.mounted) {
+      Navigator.of(context).pop(true);
+    }
   }
 
   // ----- Popup QR -----

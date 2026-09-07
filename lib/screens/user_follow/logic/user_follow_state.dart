@@ -16,22 +16,26 @@ class UserFollowLoading extends UserFollowState {}
 class UserFollowLoaded extends UserFollowState {
   final List<UserFollowEntity> followers;
   final List<UserFollowEntity> following;
+  final bool isOwnProfile;
 
   const UserFollowLoaded({
     this.followers = const [],
     this.following = const [],
+    this.isOwnProfile = false,
   });
 
   @override
-  List<Object> get props => [followers, following];
+  List<Object> get props => [followers, following, isOwnProfile];
   
   UserFollowLoaded copyWith({
     List<UserFollowEntity>? followers,
     List<UserFollowEntity>? following,
+    bool? isOwnProfile,
   }) {
     return UserFollowLoaded(
       followers: followers ?? this.followers,
       following: following ?? this.following,
+      isOwnProfile: isOwnProfile ?? this.isOwnProfile,
     );
   }
 }

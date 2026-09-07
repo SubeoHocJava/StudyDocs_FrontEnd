@@ -8,6 +8,7 @@ import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_i
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_event.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/logic/docs_card_item_state.dart';
 import 'package:studydocs/core/widgets/feat/document/docs_card/presentation/document_card_horizontal.dart';
+import 'package:studydocs/core/widgets/feat/document/docs_card/logic/document_sync_cubit.dart' as studydocs_sync_cubit;
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
 
 class DocumentCardHorizontalWithBloc extends StatelessWidget {
@@ -30,6 +31,7 @@ class DocumentCardHorizontalWithBloc extends StatelessWidget {
         bookmarkUseCase: BookmarkDocumentUseCaseImpl(repository),
         downloadUseCase: DownloadDocumentUseCaseImpl(repository),
         initialDoc: doc,
+        syncCubit: context.read<studydocs_sync_cubit.DocumentSyncCubit>(),
       ),
       child: _CardWithBlocBody(onTap: onTap),
     );

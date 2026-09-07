@@ -17,14 +17,21 @@ import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.d
 import 'package:studydocs/screens/document_detail/data/repository/document_detail_repository_impl.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/domain/repository/document_repository.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/domain/repository/library_repository.dart';
-import 'package:studydocs/core/widgets/feat/document/information/domain/repository/review_repository.dart' as info_review;
-import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart' as comment_review;
+import 'package:studydocs/core/widgets/feat/document/information/domain/repository/review_repository.dart'
+    as info_review;
+import 'package:studydocs/core/widgets/feat/document/comment/domain/repository/review_repository.dart'
+    as comment_review;
 import 'package:studydocs/core/widgets/feat/document/information/domain/entity/document_info.dart';
 import 'package:studydocs/core/widgets/feat/document/information/domain/entity/author_info.dart';
-import 'package:studydocs/core/widgets/feat/document/information/domain/entity/school_info.dart' as info_school;
+import 'package:studydocs/core/widgets/feat/document/information/domain/entity/school_info.dart'
+    as info_school;
 import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/document_overview.dart';
 import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/course_info.dart';
-import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/school_info.dart' as overview_school;
+import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/school_info.dart'
+    as overview_school;
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:studydocs/core/utils/image_utils.dart';
+import 'package:studydocs/screens/document_detail/domain/entity/document_detail_data.dart';
 
 class DocumentDetailScreen extends StatefulWidget {
   final String documentId;
@@ -41,30 +48,34 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final dataSource = DocumentRemoteDataSourceImpl();
-    
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => DocumentDetailBloc(
-            repository: DocumentDetailRepositoryImpl(dataSource),
-          )..add(DocumentDetailRequested(widget.documentId)),
+          create:
+              (_) => DocumentDetailBloc(
+                repository: DocumentDetailRepositoryImpl(dataSource),
+              )..add(DocumentDetailRequested(widget.documentId)),
         ),
         BlocProvider(
-          create: (_) => DocumentOverviewBloc(
-            documentRepository: DocumentRepositoryImpl(),
-            libraryRepository: LibraryRepositoryImpl(),
-          ),
+          create:
+              (_) => DocumentOverviewBloc(
+                documentRepository: DocumentRepositoryImpl(),
+                libraryRepository: LibraryRepositoryImpl(),
+              ),
         ),
         BlocProvider(
-          create: (_) => DocumentInformationBloc(
-            info_review.ReviewRepositoryImpl(dataSource: dataSource),
-          ),
+          create:
+              (_) => DocumentInformationBloc(
+                info_review.ReviewRepositoryImpl(dataSource: dataSource),
+              ),
         ),
         BlocProvider(
-          create: (_) => DocumentCommentBloc(
-            reviewRepository: comment_review.ReviewRepositoryImpl(),
-            documentId: widget.documentId,
-          )..add(LoadCommentsRequested(widget.documentId)),
+          create:
+              (_) => DocumentCommentBloc(
+                reviewRepository: comment_review.ReviewRepositoryImpl(),
+                documentId: widget.documentId,
+              )..add(LoadCommentsRequested(widget.documentId)),
         ),
       ],
       child: Scaffold(
@@ -79,7 +90,10 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                   documentOverview: DocumentOverview(
                     id: data.id,
                     title: data.title,
-                    schoolInfo: overview_school.SchoolInfo(id: '', name: data.schoolName),
+                    schoolInfo: overview_school.SchoolInfo(
+                      id: '',
+                      name: data.schoolName,
+                    ),
                     courseInfo: CourseInfo(id: '', name: data.categoryName),
                     isSaved: data.isBookmarked,
                     fileUrl: data.fileUrl,
@@ -92,8 +106,10 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                 DocumentInformationDataReceived(
                   documentInfo: DocumentInfo(
                     id: data.id,
-                    startYear: int.tryParse(data.year.split('-').first.trim()) ?? 2024,
-                    endYear: int.tryParse(data.year.split('-').last.trim()) ?? 2025,
+                    startYear:
+                        int.tryParse(data.year.split('-').first.trim()) ?? 2024,
+                    endYear:
+                        int.tryParse(data.year.split('-').last.trim()) ?? 2025,
                     pageNumber: data.pageCount,
                     likeCount: data.likeCount,
                     dislikeCount: data.dislikeCount,
@@ -103,7 +119,9 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                       id: data.authorId,
                       fullName: data.authorName,
                       avatarUrl: data.authorAvatar,
-                      school: info_school.SchoolInfo(name: data.authorSchoolName),
+                      school: info_school.SchoolInfo(
+                        name: data.authorSchoolName,
+                      ),
                     ),
                   ),
                 ),
@@ -111,7 +129,8 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
             }
           },
           builder: (context, state) {
-            if (state is DocumentDetailLoading || state is DocumentDetailInitial) {
+            if (state is DocumentDetailLoading ||
+                state is DocumentDetailInitial) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -132,18 +151,21 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                         });
                       },
                     ),
-                    
+
                     // Information Block (Collapsible)
                     if (_isExpanded)
                       Container(
                         color: AppColors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         child: const DocumentInformationPresentation(),
                       ),
-                      
+
                     const SizedBox(height: 16),
-                    
-                    // Document Preview (Mock image for now)
+
+                    // Document Preview
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
@@ -153,23 +175,14 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: state.data.thumbnail != null && state.data.thumbnail!.isNotEmpty
-                            ? Image.network(
-                                state.data.thumbnail!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                errorBuilder: (_, __, ___) => _buildMockPdfPreview(),
-                              )
-                            : _buildMockPdfPreview(),
+                        child: _buildDocumentPreview(state.data),
                       ),
                     ),
 
                     const SizedBox(height: 16),
-                    
+
                     // Comments Block
-                    DocumentCommentPresentation(
-                      documentId: widget.documentId,
-                    ),
+                    DocumentCommentPresentation(documentId: widget.documentId),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -183,7 +196,59 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
     );
   }
 
-  Widget _buildMockPdfPreview() {
+  Widget _buildDocumentPreview(DocumentDetailData data) {
+    String? fileUrl = data.fileUrl;
+    String? thumbnail = data.thumbnail;
+    int pageCount = data.pageCount > 0 ? data.pageCount : 1;
+
+    // Use page template if provided by BE
+    if (thumbnail != null && thumbnail.contains('<<pageNumber>>')) {
+      return SizedBox(
+        height: 600,
+        child: ListView.builder(
+          itemCount: pageCount,
+          itemBuilder: (context, index) {
+            String pageUrl = ImageUtils.getPagePreview(thumbnail, index + 1)!;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Image.network(
+                pageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => _buildMockPreview(),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    if (fileUrl != null && fileUrl.toLowerCase().endsWith('.pdf')) {
+      return SizedBox(
+        width: double.infinity,
+        height: 500, // Tăng chiều cao để xem PDF dễ hơn
+        child: SfPdfViewer.network(
+          fileUrl,
+          canShowScrollHead: false,
+          canShowScrollStatus: false,
+        ),
+      );
+    }
+
+    // Fallback sang thumbnail image (ImageUtils)
+    String? thumb = ImageUtils.getPagePreview(thumbnail ?? fileUrl, 1);
+    if (thumb != null && thumb.isNotEmpty) {
+      return Image.network(
+        thumb,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        errorBuilder: (_, __, ___) => _buildMockPreview(),
+      );
+    }
+
+    return _buildMockPreview();
+  }
+
+  Widget _buildMockPreview() {
     return Container(
       width: double.infinity,
       height: 400,
@@ -191,17 +256,14 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Text('BỘ GIÁO DỤC VÀ ĐÀO TẠO', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat')),
-          Text('TRƯỜNG ĐẠI HỌC NÔNG LÂM TP HCM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat')),
-          SizedBox(height: 40),
-          Icon(Icons.school, size: 80, color: Colors.green),
-          SizedBox(height: 40),
-          Text('ĐỒ ÁN CHUYÊN NGÀNH', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Montserrat')),
+          Icon(Icons.description_outlined, size: 80, color: Colors.grey),
           SizedBox(height: 16),
-          Text('Môn học: Lập trình .NET', style: TextStyle(fontSize: 16, fontFamily: 'Montserrat')),
-          SizedBox(height: 40),
-          Text('TRANG WEB BÁN RƯỢU', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.red, fontFamily: 'Montserrat')),
+          Text(
+            'Không thể xem trước tài liệu này',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
         ],
       ),
     );

@@ -144,9 +144,23 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> updateUserAvatar(String newUrl) async {
+    await _tokenStorage.saveAvatarUrl(newUrl);
+    if (state is AuthAuthenticated) {
+      final current = state as AuthAuthenticated;
+      emit(AuthAuthenticated(
+        userId: current.userId,
+        displayName: current.displayName,
+        username: current.username,
+        avatarUrl: newUrl,
+      ));
+    }
+  }
+
   Future<void> _emitAuthenticated() async {
     emit(
       AuthAuthenticated(
+        userId: await _tokenStorage.getUserId(),
         displayName: await _tokenStorage.getDisplayName(),
         username: await _tokenStorage.getUsername(),
         avatarUrl: await _tokenStorage.getAvatarUrl(),

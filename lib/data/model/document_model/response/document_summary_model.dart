@@ -1,3 +1,5 @@
+import 'package:studydocs/core/utils/image_utils.dart';
+
 class DocumentSummaryModel {
   final String id;
   final String title;
@@ -57,8 +59,8 @@ class DocumentSummaryModel {
     return DocumentSummaryModel(
       id: json['id'] as String,
       title: json['title'] as String,
-      thumbnail: json['thumbnail'] as String?,
-      category: json['category'] as String,
+      thumbnail: ImageUtils.fixPdfThumbnail(json['thumbnail'] as String?),
+      category: json['category'] as String? ?? '',
       school: json['school'] as String,
       pageCount: json['pageCount'] as int,
       year: json['year'] as String,

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/api_constants.dart';
 import 'package:studydocs/data/model/document_model/response/document_compact_model.dart';
+import 'package:studydocs/core/utils/image_utils.dart';
 
 class DocumentCardCompact extends StatelessWidget {
   final DocumentCompactModel doc;
@@ -53,7 +54,7 @@ class DocumentCardCompact extends StatelessWidget {
   }
 
   Widget _buildThumbnail() {
-    final thumb = doc.thumbnail;
+    final thumb = ImageUtils.getPagePreview(doc.thumbnail, 1);
     return Container(
       width: width,
       height: thumbHeight,

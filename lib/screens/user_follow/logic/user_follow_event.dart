@@ -7,7 +7,10 @@ abstract class UserFollowEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadUserFollowLists extends UserFollowEvent {}
+class LoadUserFollowLists extends UserFollowEvent {
+  final String userId;
+  const LoadUserFollowLists(this.userId);
+}
 
 class UserFollowUserEvent extends UserFollowEvent {
   final String userId;

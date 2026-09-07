@@ -87,6 +87,20 @@ class DocumentRemoteDataSourceImpl implements DocumentRemoteDataSource {
   }
 
   @override
+  Future<dynamic> getUserDocuments(String userId) async {
+    final response = await _client.get('education/documents/user/$userId');
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to load user documents for userId: $userId');
+  }
+
+  @override
+  Future<dynamic> getMySavedDocuments() async {
+    final response = await _client.get('education/documents/user/me/saved');
+    if (response.isSuccess) return response.data;
+    throw Exception('Failed to load saved documents');
+  }
+
+  @override
   Future<dynamic> getMyNewestDocuments() async {
     final response = await _client.get('education/documents/user/me/newest');
     if (response.isSuccess) return response.data;

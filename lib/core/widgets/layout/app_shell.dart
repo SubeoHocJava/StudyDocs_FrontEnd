@@ -6,6 +6,7 @@ import 'package:studydocs/core/constants/app_colors.dart';
 
 import '../../../screens/auth/presentation/cubit/auth_cubit.dart';
 import '../../../screens/auth/presentation/cubit/auth_state.dart';
+import '../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import 'bottom/bottom_nav.dart';
 import 'header/presentation/header.dart';
 
@@ -64,6 +65,16 @@ class AppShell extends StatelessWidget {
     if (index < 0 || index >= routes.length) return;
 
     final target = routes[index];
+
+    // Auth check for Library (index 1) and Notifications (index 3)
+    if (index == 1 || index == 3) {
+      final authState = context.read<AuthCubit>().state;
+      if (authState is! AuthAuthenticated) {
+        showAuthDialog(context);
+        return;
+      }
+    }
+
     final currentLocation = GoRouterState.of(context).uri.path;
     if (currentLocation == target) return;
 

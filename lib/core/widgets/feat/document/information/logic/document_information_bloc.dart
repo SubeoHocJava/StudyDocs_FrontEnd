@@ -32,7 +32,7 @@ class DocumentInformationBloc
 
       if (doc.isLiked) {
         // Bỏ like
-        newLikeCount--;
+        newLikeCount = (newLikeCount - 1 < 0) ? 0 : newLikeCount - 1;
         newIsLiked = false;
       } else {
         // Like
@@ -41,7 +41,7 @@ class DocumentInformationBloc
 
         // Nếu đang dislike thì bỏ dislike
         if (doc.isDisliked) {
-          newDislikeCount--;
+          newDislikeCount = (newDislikeCount - 1 < 0) ? 0 : newDislikeCount - 1;
           newIsDisliked = false;
         }
       }
@@ -75,7 +75,7 @@ class DocumentInformationBloc
 
       if (doc.isDisliked) {
         // Bỏ dislike
-        newDislikeCount--;
+        newDislikeCount = (newDislikeCount - 1 < 0) ? 0 : newDislikeCount - 1;
         newIsDisliked = false;
       } else {
         // Dislike
@@ -84,7 +84,7 @@ class DocumentInformationBloc
 
         // Nếu đang like thì bỏ like
         if (doc.isLiked) {
-          newLikeCount--;
+          newLikeCount = (newLikeCount - 1 < 0) ? 0 : newLikeCount - 1;
           newIsLiked = false;
         }
       }

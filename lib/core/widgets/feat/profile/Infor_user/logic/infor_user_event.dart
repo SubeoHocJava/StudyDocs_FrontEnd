@@ -10,11 +10,12 @@ abstract class InforUserEvent extends Equatable {
 /// Load thông tin user
 class LoadUserInfor extends InforUserEvent {
   final User user;
+  final bool isOwnProfile;
 
-  LoadUserInfor(this.user);
+  LoadUserInfor(this.user, {this.isOwnProfile = true});
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => [user, isOwnProfile];
 }
 
 class OpenSettingDialog extends InforUserEvent {
