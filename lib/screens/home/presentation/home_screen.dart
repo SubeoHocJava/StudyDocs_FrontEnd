@@ -62,7 +62,10 @@ class _HomeContentState extends State<_HomeContent> {
 
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent - 240) {
-      context.read<HomeBloc>().add(const HomeNextPageRequested());
+      final state = context.read<HomeBloc>().state;
+      if (!state.isLoadingMore && !state.isInitialLoading && state.hasMore) {
+        context.read<HomeBloc>().add(const HomeNextPageRequested());
+      }
     }
   }
 

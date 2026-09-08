@@ -8,7 +8,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
 
   @override
   Future<dynamic> getNotifications() async {
-    final response = await _client.get('notifications');
+    final response = await _client.get('user/notifications');
     if (response.isSuccess) {
       return response.data;
     }
