@@ -32,6 +32,7 @@ import 'package:studydocs/core/widgets/feat/document/overview/domain/entity/scho
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:studydocs/core/utils/image_utils.dart';
 import 'package:studydocs/screens/document_detail/domain/entity/document_detail_data.dart';
+import 'package:studydocs/core/constants/api_constants.dart';
 
 class DocumentDetailScreen extends StatefulWidget {
   final String documentId;
@@ -197,9 +198,33 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
   }
 
   Widget _buildDocumentPreview(DocumentDetailData data) {
-    String? fileUrl = data.fileUrl;
+    String fileUrl = data.fileUrl;
     String? thumbnail = data.thumbnail;
     int pageCount = data.pageCount > 0 ? data.pageCount : 1;
+
+    bool isPdf = data.fileType.toLowerCase().contains('pdf') || fileUrl.toLowerCase().endsWith('.pdf');
+
+    if (isPdf) {
+      String pdfUrl = fileUrl;
+      if (pdfUrl.startsWith('http://') && pdfUrl.contains('cloudinary.com')) {
+        pdfUrl = pdfUrl.replaceFirst('http://', 'https://');
+      } else if (pdfUrl.startsWith('/')) {
+        final baseUrl = ApiConstants.baseUrl.replaceAll(RegExp(r'/+$'), '');
+        pdfUrl = '$baseUrl$pdfUrl';
+      } else if (!pdfUrl.startsWith('http')) {
+        pdfUrl = '${ApiConstants.baseUrl}$pdfUrl';
+      }
+
+      return SizedBox(
+        width: double.infinity,
+        height: 600,
+        child: SfPdfViewer.network(
+          pdfUrl,
+          canShowScrollHead: false,
+          canShowScrollStatus: false,
+        ),
+      );
+    }
 
     // Use page template if provided by BE
     if (thumbnail != null && thumbnail.contains('<<pageNumber>>')) {
@@ -218,18 +243,6 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
               ),
             );
           },
-        ),
-      );
-    }
-
-    if (fileUrl.toLowerCase().endsWith('.pdf')) {
-      return SizedBox(
-        width: double.infinity,
-        height: 500, // Tăng chiều cao để xem PDF dễ hơn
-        child: SfPdfViewer.network(
-          fileUrl,
-          canShowScrollHead: false,
-          canShowScrollStatus: false,
         ),
       );
     }

@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/core/constants/app_icons.dart';
 import 'package:studydocs/data/model/document_model/response/document_summary_model.dart';
+import 'package:studydocs/core/constants/api_constants.dart';
+import 'package:studydocs/core/utils/image_utils.dart';
 
 class HomeDocumentCard extends StatelessWidget {
   final DocumentSummaryModel doc;
@@ -79,7 +81,8 @@ class _Thumbnail extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    final image = thumbnail;
+    String? processedThumb = ImageUtils.getPagePreview(thumbnail, 1);
+    final image = processedThumb;
     if (image == null || image.isEmpty) {
       return _fallback();
     }
@@ -90,8 +93,17 @@ class _Thumbnail extends StatelessWidget {
         errorBuilder: (_, __, ___) => _fallback(),
       );
     }
+    
+    String imageUrl = image;
+    if (image.startsWith('/')) {
+      final baseUrl = ApiConstants.baseUrl.replaceAll(RegExp(r'/+$'), '');
+      imageUrl = '$baseUrl$image';
+    } else if (!image.startsWith('http')) {
+      imageUrl = '${ApiConstants.baseUrl}$image';
+    }
+
     return Image.network(
-      image,
+      imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => _fallback(),
     );
