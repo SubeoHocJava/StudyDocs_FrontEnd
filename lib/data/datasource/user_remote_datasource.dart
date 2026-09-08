@@ -5,4 +5,6 @@ abstract interface class UserRemoteDataSource {
   Future<dynamic> updateProfileImage(String userId, dynamic data);
   Future<dynamic> searchUsers(String query);
   Future<void> deleteUser(String userId);
+  Future<dynamic> requestUpdateEmail(String email);
+  Future<dynamic> verifyAndUpdateEmail(String token);
 }

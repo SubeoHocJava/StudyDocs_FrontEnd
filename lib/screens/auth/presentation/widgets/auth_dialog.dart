@@ -7,6 +7,10 @@ import 'register_form.dart';
 import 'forgot_password_email_form.dart';
 import 'forgot_password_token_form.dart';
 import 'forgot_password_reset_form.dart';
+import 'update_email_request_form.dart';
+import 'update_email_verify_form.dart';
+import '../cubit/update_email_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum AuthDialogMode {
   login,
@@ -14,6 +18,8 @@ enum AuthDialogMode {
   forgotPasswordEmail,
   forgotPasswordToken,
   forgotPasswordReset,
+  updateEmailRequest,
+  updateEmailVerify,
 }
 
 class AuthDialog extends StatefulWidget {
@@ -32,6 +38,9 @@ class _AuthDialogState extends State<AuthDialog> {
   String _forgotEmail = '';
   String _forgotToken = '';
 
+  // Shared state for update email flow
+  String _updateEmail = '';
+
   @override
   void initState() {
     super.initState();
@@ -49,19 +58,22 @@ class _AuthDialogState extends State<AuthDialog> {
     return Dialog(
       backgroundColor: AppColors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Container(
-        width: 400,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: AnimatedSize(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          child: AnimatedSwitcher(
+      child: BlocProvider(
+        create: (context) => UpdateEmailCubit(),
+        child: Container(
+          width: 400,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
-            child: _buildContent(),
+            curve: Curves.easeInOut,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _buildContent(),
+            ),
           ),
         ),
       ),
@@ -115,6 +127,26 @@ class _AuthDialogState extends State<AuthDialog> {
             email: _forgotEmail,
             token: _forgotToken,
             onResetSuccess: () => _switchMode(AuthDialogMode.login),
+          ),
+        );
+      case AuthDialogMode.updateEmailRequest:
+        return SingleChildScrollView(
+          key: const ValueKey('update_email_request'),
+          child: UpdateEmailRequestForm(
+            onCancel: () => Navigator.of(context).pop(), // Close dialog
+            onEmailSubmitted: (email) {
+              _updateEmail = email;
+              _switchMode(AuthDialogMode.updateEmailVerify);
+            },
+          ),
+        );
+      case AuthDialogMode.updateEmailVerify:
+        return SingleChildScrollView(
+          key: const ValueKey('update_email_verify'),
+          child: UpdateEmailVerifyForm(
+            email: _updateEmail,
+            onCancel: () => _switchMode(AuthDialogMode.updateEmailRequest),
+            onSuccess: () => Navigator.of(context).pop(), // Close dialog on success
           ),
         );
     }

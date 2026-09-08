@@ -60,4 +60,22 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw Exception('Failed to delete user');
     }
   }
+
+  @override
+  Future<dynamic> requestUpdateEmail(String email) async {
+    final response = await _client.post(UserEndpoints.requestUpdateEmail, data: {'email': email});
+    if (response.isSuccess) {
+      return response.data;
+    }
+    throw Exception('Failed to request update email');
+  }
+
+  @override
+  Future<dynamic> verifyAndUpdateEmail(String token) async {
+    final response = await _client.post(UserEndpoints.verifyUpdateEmail, data: {'token': token});
+    if (response.isSuccess) {
+      return response.data;
+    }
+    throw Exception('Failed to verify and update email');
+  }
 }

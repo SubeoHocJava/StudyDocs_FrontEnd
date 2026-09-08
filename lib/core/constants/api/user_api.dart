@@ -14,4 +14,7 @@ class UserEndpoints {
   static String updateImage(String userId) => '$base/$userId/image';
   static String delete(String userId) => '$base/$userId';
   static String search() => '$base/search';
+  
+  static const String requestUpdateEmail = '$base/me/update-email/request';
+  static const String verifyUpdateEmail = '$base/me/update-email/verify';
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/widgets/feat/profile/update_infor_form/logic/update_infor_bloc.dart';
 
 import '../../../../../../screens/auth/presentation/cubit/auth_cubit.dart';
+import '../../../../../../screens/auth/presentation/widgets/auth_dialog.dart';
 import '../../../../../constants/app_colors.dart';
 import '../../../../../router/app_router.dart';
 import '../../myqr/presentation/my_qr_widget.dart';
@@ -45,9 +46,7 @@ class SettingDialog extends StatelessWidget {
               break;
 
             case "link_google":
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Đã gửi yêu cầu liên kết Google")),
-              );
+              showAuthDialog(context, initialMode: AuthDialogMode.updateEmailRequest);
               break;
 
             case "show_qr":
