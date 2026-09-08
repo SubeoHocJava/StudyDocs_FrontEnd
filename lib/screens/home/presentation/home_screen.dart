@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/screens/home/presentation/widgets/home_document_card_with_bloc.dart';
-
+import 'package:studydocs/core/widgets/feat/search/presentation/voice_search_bottom_sheet.dart';
 import 'package:studydocs/screens/home/data/repository/home_repository_impl.dart';
 import 'package:studydocs/data/datasource/impl/document_remote_datasource_impl.dart';
 import '../logic/home_bloc.dart';
@@ -70,8 +70,13 @@ class _HomeContentState extends State<_HomeContent> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        return ListView(
-          controller: _scrollController,
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<HomeBloc>().add(const HomeStarted());
+          },
+          child: ListView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           children: [
             const _HomeHero(),
@@ -98,7 +103,7 @@ class _HomeContentState extends State<_HomeContent> {
                 const SizedBox(height: 18),
             ],
           ],
-        );
+        ));
       },
     );
   }
@@ -246,8 +251,20 @@ class _SearchBarMockState extends State<_SearchBarMock> {
               ),
             ),
             IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.mic, color: AppColors.black, size: 26),
+              onPressed: () async {
+                final result = await showModalBottomSheet<String>(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => const VoiceSearchBottomSheet(),
+                );
+                if (!context.mounted) return;
+                
+                if (result != null && result.isNotEmpty) {
+                  _controller.text = result;
+                  _submitSearch(context, result);
+                }
+              },
+              icon: Icon(Icons.mic, color: Theme.of(context).iconTheme.color, size: 26),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints.tightFor(width: 40, height: 40),
             ),

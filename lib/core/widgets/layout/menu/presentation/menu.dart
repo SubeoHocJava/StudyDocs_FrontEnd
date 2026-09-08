@@ -148,7 +148,7 @@ class MenuDrawer extends StatelessWidget {
                           title: 'Quét QR',
                           onTap: () {
                             onClose();
-                            // context.push(AppRoutes.qrScan);
+                            context.push('/qrScan');
                           },
                         ),
 

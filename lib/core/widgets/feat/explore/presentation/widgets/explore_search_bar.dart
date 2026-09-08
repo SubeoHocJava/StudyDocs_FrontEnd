@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
 import 'package:studydocs/screens/explore/logic/explore_bloc.dart';
 import 'package:studydocs/screens/explore/logic/explore_event.dart';
+import 'package:studydocs/core/widgets/feat/search/presentation/voice_search_bottom_sheet.dart';
 
 class ExploreSearchBar extends StatefulWidget {
   final String hintText;
@@ -64,10 +65,25 @@ class _ExploreSearchBarState extends State<ExploreSearchBar> {
                   icon: const Icon(Icons.close, size: 20, color: AppColors.grey),
                   onPressed: _onClear,
                 )
-              : null,
+              : IconButton(
+                  icon: Icon(Icons.mic, size: 20, color: Theme.of(context).iconTheme.color),
+                  onPressed: () async {
+                    final result = await showModalBottomSheet<String>(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const VoiceSearchBottomSheet(),
+                    );
+                    if (!mounted) return;
+                    
+                    if (result != null && result.isNotEmpty) {
+                      _controller.text = result;
+                      _onSubmitted(result);
+                    }
+                  },
+                ),
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
           filled: true,
-          fillColor: AppColors.white,
+          fillColor: Theme.of(context).cardColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: AppColors.grey.shade300),

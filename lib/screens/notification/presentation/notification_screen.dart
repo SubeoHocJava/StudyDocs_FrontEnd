@@ -109,7 +109,11 @@ class NotificationView extends StatelessWidget {
                       : _showGlobalOptions(context),
                   ),
                   Expanded(
-                    child: state.isTrashMode
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<NotificationBloc>().add(FetchNotificationsEvent());
+                      },
+                      child: state.isTrashMode
                         ? TrashNotificationList(
                             trashList: state.trashNotifications,
                             selectedTrashIds: state.selectedTrashIds,
@@ -131,6 +135,7 @@ class NotificationView extends StatelessWidget {
                             onMoreTap: (note) => _showOptions(context, note),
                             onGlobalMoreTap: () => _showGlobalOptions(context),
                           ),
+                    ),
                   ),
                 ],
               ),

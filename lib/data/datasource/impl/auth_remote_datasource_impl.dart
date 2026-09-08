@@ -51,24 +51,41 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<dynamic> startGoogleLogin(String codeChallenge, String codeChallengeMethod, String redirectUri) async {
-    final response = await _client.post(AuthApiEndpoints.googleLogin, data: {
-      'redirectUri': redirectUri,
-      'codeChallenge': codeChallenge,
-      'codeChallengeMethod': codeChallengeMethod,
-    });
-    if (response.isSuccess) return response.data;
-    throw Exception('Failed to get Google login URL');
-  }
-
-  @override
-  Future<dynamic> completeGoogleLogin(String code, String codeVerifier, String redirectUri) async {
+  Future<dynamic> completeGoogleLoginWithIdToken(String idToken) async {
     final response = await _client.post(AuthApiEndpoints.googleCallback, data: {
-      'code': code,
-      'codeVerifier': codeVerifier,
-      'redirectUri': redirectUri,
+      'idToken': idToken,
     });
     if (response.isSuccess) return response.data;
     throw Exception('Failed to complete Google login');
+  }
+
+  @override
+  Future<dynamic> forgotPassword(String email) async {
+    final response = await _client.post(AuthApiEndpoints.forgotPassword, data: {
+      'email': email,
+    });
+    if (response.isSuccess) return response.data;
+    throw Exception('Forgot password failed');
+  }
+
+  @override
+  Future<dynamic> verifyResetToken(String email, String token) async {
+    final response = await _client.post(AuthApiEndpoints.verifyResetToken, data: {
+      'email': email,
+      'token': token,
+    });
+    if (response.isSuccess) return response.data;
+    throw Exception('Verify reset token failed');
+  }
+
+  @override
+  Future<dynamic> resetPassword(String email, String token, String newPassword) async {
+    final response = await _client.post(AuthApiEndpoints.resetPassword, data: {
+      'email': email,
+      'token': token,
+      'newPassword': newPassword,
+    });
+    if (response.isSuccess) return response.data;
+    throw Exception('Reset password failed');
   }
 }

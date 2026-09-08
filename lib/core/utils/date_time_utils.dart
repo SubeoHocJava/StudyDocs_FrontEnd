@@ -3,8 +3,15 @@ import 'package:intl/intl.dart';
 
 class DateTimeUtils {
   static String formatTimeAgo(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
+    final utcTime = dateTime.isUtc 
+        ? dateTime 
+        : DateTime.utc(dateTime.year, dateTime.month, dateTime.day, dateTime.hour, dateTime.minute, dateTime.second, dateTime.millisecond, dateTime.microsecond);
+    final now = DateTime.now().toUtc();
+    final difference = now.difference(utcTime);
+
+    if (difference.isNegative) {
+      return 'Vừa xong';
+    }
 
     if (difference.inDays > 365) {
       return DateFormat('dd/MM/yyyy').format(dateTime);

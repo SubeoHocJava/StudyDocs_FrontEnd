@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studydocs/core/exceptions/api_exception.dart';
 import 'package:studydocs/core/network/token_services.dart';
-import 'package:studydocs/core/utils/pkce_utils.dart';
+
 import 'package:studydocs/screens/auth/data/auth_service.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import 'auth_state.dart';
+import 'package:studydocs/core/config/env_config.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthService _authService;
@@ -85,52 +88,77 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> loginWithGoogle() async {
     emit(const AuthLoading());
     try {
-      final pkce = PkceUtils.generate();
-      _authService.pendingGoogleCodeVerifier = pkce.codeVerifier;
-
-      final url = await _authService.startGoogleLogin(
-        codeChallenge: pkce.codeChallenge,
-      );
-
-      final uri = Uri.parse(url);
-      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-        throw AuthServiceException(
-          'Không mở được trình duyệt đăng nhập Google',
-        );
+      if (kIsWeb) {
+        await _loginWithGoogleWeb();
+      } else {
+        await _loginWithGoogleMobile();
       }
-
-      emit(const AuthGooglePending());
     } on AuthServiceException catch (e) {
       emit(AuthFailure(e.message));
     } on ApiException catch (e) {
       emit(AuthFailure(e.message));
-    } catch (_) {
-      emit(const AuthFailure('Không thể bắt đầu đăng nhập Google'));
+    } catch (e) {
+      if (kDebugMode) {
+        print('Google login error: $e');
+      }
+      emit(AuthFailure('Đăng nhập Google thất bại: $e'));
     }
   }
 
-  /// Gọi từ deep link handler: `studydocs://callback?code=...`
-  Future<void> handleGoogleCallback(String code) async {
-    final verifier = _authService.pendingGoogleCodeVerifier;
-    if (verifier == null || verifier.isEmpty) {
-      emit(const AuthFailure('Phiên Google hết hạn, thử lại.'));
-      return;
-    }
+  Future<void> _loginWithGoogleWeb() async {
+    // Không dùng signIn() thủ công trên Web nữa do bị Google chặn lấy idToken
+    // UI sẽ hiển thị renderButton() và kết quả sẽ được xử lý qua handleWebGoogleAccount()
+    emit(const AuthFailure('Vui lòng sử dụng nút đăng nhập của Google'));
+  }
 
+  Future<void> handleWebGoogleAccount(GoogleSignInAccount account) async {
     emit(const AuthLoading());
     try {
-      await _authService.completeGoogleLogin(
-        code: code,
-        codeVerifier: verifier,
-      );
+      final GoogleSignInAuthentication googleAuth = await account.authentication;
+      final idToken = googleAuth.idToken;
+      
+      if (idToken == null || idToken.isEmpty) {
+        emit(const AuthFailure('Không lấy được xác thực từ Google'));
+        return;
+      }
+
+      await _authService.completeGoogleLoginWithIdToken(idToken);
       await _emitAuthenticated();
     } on AuthServiceException catch (e) {
       emit(AuthFailure(e.message));
     } on ApiException catch (e) {
       emit(AuthFailure(e.message));
-    } catch (_) {
-      emit(const AuthFailure('Đăng nhập Google thất bại'));
+    } catch (e) {
+      if (kDebugMode) {
+        print('Google login error: $e');
+      }
+      emit(AuthFailure('Đăng nhập Google thất bại: $e'));
     }
+  }
+
+  Future<void> _loginWithGoogleMobile() async {
+    final googleSignIn = GoogleSignIn(
+      clientId: EnvConfig.googleClientId,
+      serverClientId: EnvConfig.googleWebClientId,
+    );
+    
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      // User canceled the sign-in
+      emit(const AuthFailure('Đã huỷ đăng nhập Google'));
+      return;
+    }
+    
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    
+    if (idToken == null || idToken.isEmpty) {
+      emit(const AuthFailure('Không lấy được xác thực từ Google'));
+      return;
+    }
+
+    await _authService.completeGoogleLoginWithIdToken(idToken);
+    await _emitAuthenticated();
   }
 
   Future<void> logout() async {

@@ -122,7 +122,12 @@ class ExploreView extends StatelessWidget {
                         Expanded(
                           child: state.results.isEmpty
                               ? const Center(child: Text('Không có tài liệu phù hợp'))
-                              : ListView.separated(
+                              : RefreshIndicator(
+                                  onRefresh: () async {
+                                    context.read<ExploreBloc>().add(SearchExploreEvent(state.query));
+                                  },
+                                  child: ListView.separated(
+                                    physics: const AlwaysScrollableScrollPhysics(),
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   itemCount: state.results.length,
                                   separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -136,13 +141,19 @@ class ExploreView extends StatelessWidget {
                                     );
                                   },
                                 ),
+                              ),
                         ),
                       ],
                     );
                   }
 
                   if (state is ExploreLoaded) {
-                    return SingleChildScrollView(
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<ExploreBloc>().add(FetchExploreDataEvent());
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +227,7 @@ class ExploreView extends StatelessWidget {
                           ],
                         ],
                       ),
-                    );
+                    ));
                   }
 
                   if (state is ExploreError) {

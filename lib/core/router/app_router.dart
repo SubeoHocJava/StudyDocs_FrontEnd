@@ -10,9 +10,10 @@ import 'package:studydocs/screens/document_detail/presentation/document_detail_s
 import '../../screens/explore/presentation/explore_screen.dart';
 import '../../screens/home/presentation/home_screen.dart';
 import '../../screens/notification/presentation/notification_screen.dart';
-import '../../screens/profile/presentation/profile_screen.dart';
 import '../../screens/user_follow/presentation/screen/user_follow_screen.dart';
+import '../../screens/profile/presentation/profile_screen.dart';
 import '../../screens/document_upload/presentation/document_upload_screen.dart';
+import '../../screens/qr_scan/presentation/qr_scan_screen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -22,6 +23,13 @@ GoRouter initAppRouter() {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/home',
     routes: [
+      GoRoute(
+        path: '/qrScan',
+        pageBuilder: (context, state) => NoTransitionPage(
+          key: state.pageKey,
+          child: const QRScanScreen(),
+        ),
+      ),
       ShellRoute(
         navigatorKey: shellNavigatorKey,
         builder: (context, state, child) {

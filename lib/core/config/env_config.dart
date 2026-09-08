@@ -12,4 +12,10 @@ class EnvConfig {
 
   static String get googleRedirectUri =>
       dotenv.env['GOOGLE_REDIRECT_URI']?.trim() ?? 'studydocs://callback';
+
+  static String? get googleWebClientId =>
+      dotenv.env['GOOGLE_WEB_CLIENT_ID']?.trim();
+
+  static String? get googleClientId =>
+      dotenv.env['GOOGLE_CLIENT_ID']?.trim();
 }

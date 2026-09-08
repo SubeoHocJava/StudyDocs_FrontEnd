@@ -6,11 +6,20 @@ import '../../../../core/widgets/social_button.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import 'package:studydocs/core/constants/app_colors.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:studydocs/core/config/env_config.dart';
+import 'web_google_button/web_google_button.dart';
 
 class LoginForm extends StatefulWidget {
   final VoidCallback onSwitchToRegister;
+  final VoidCallback onSwitchToForgotPassword;
 
-  const LoginForm({super.key, required this.onSwitchToRegister});
+  const LoginForm({
+    super.key,
+    required this.onSwitchToRegister,
+    required this.onSwitchToForgotPassword,
+  });
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -20,6 +29,20 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  GoogleSignIn? _googleSignIn;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      _googleSignIn = GoogleSignIn(clientId: EnvConfig.googleWebClientId);
+      _googleSignIn!.onCurrentUserChanged.listen((account) {
+        if (account != null) {
+          context.read<AuthCubit>().handleWebGoogleAccount(account);
+        }
+      });
+    }
+  }
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
@@ -48,7 +71,10 @@ class _LoginFormState extends State<LoginForm> {
         if (state is AuthAuthenticated) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đăng nhập thành công')),
+            const SnackBar(
+              content: Text('Đăng nhập thành công', style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.green,
+            ),
           );
         } else if (state is AuthGooglePending) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -56,12 +82,17 @@ class _LoginFormState extends State<LoginForm> {
               content: Text(
                 'Hoàn tất đăng nhập Google trên trình duyệt, '
                 'sau đó quay lại app.',
+                style: TextStyle(color: Colors.white),
               ),
+              backgroundColor: Colors.blue,
             ),
           );
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(
+              content: Text(state.message, style: const TextStyle(color: Colors.white)),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
@@ -106,7 +137,7 @@ class _LoginFormState extends State<LoginForm> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: isLoading ? null : () {},
+                  onPressed: isLoading ? null : widget.onSwitchToForgotPassword,
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: Size.zero,
@@ -165,18 +196,28 @@ class _LoginFormState extends State<LoginForm> {
                   ],
                 ),
               ),
-              SocialButton(
-                text: 'Đăng nhập bằng Google',
-                icon: Image.asset(
-                  'assets/images/google.png',
-                  width: 24,
-                  height: 24,
+              if (kIsWeb)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: SizedBox(
+                    height: 48,
+                    width: double.infinity,
+                    child: buildWebGoogleButton(),
+                  ),
+                )
+              else
+                SocialButton(
+                  text: 'Đăng nhập bằng Google',
+                  icon: Image.asset(
+                    'assets/images/google.png',
+                    width: 24,
+                    height: 24,
+                  ),
+                  onPressed:
+                      isLoading
+                          ? () {}
+                          : () => context.read<AuthCubit>().loginWithGoogle(),
                 ),
-                onPressed:
-                    isLoading
-                        ? () {}
-                        : () => context.read<AuthCubit>().loginWithGoogle(),
-              ),
             ],
           ),
         );

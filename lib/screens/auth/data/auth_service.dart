@@ -1,4 +1,4 @@
-import 'package:studydocs/core/config/env_config.dart';
+
 import 'package:studydocs/core/network/token_services.dart';
 import 'package:studydocs/core/utils/jwt_utils.dart';
 import 'package:studydocs/data/model/user/user.dart';
@@ -105,40 +105,10 @@ class AuthService {
     await _tokenStorage.clearTokens();
   }
 
-  /// Bước 1 Google OAuth: lấy URL đăng nhập từ BE.
-  Future<String> startGoogleLogin({
-    required String codeChallenge,
-    String codeChallengeMethod = 'S256',
-  }) async {
-    try {
-      final data = await _authDataSource.startGoogleLogin(
-        codeChallenge,
-        codeChallengeMethod,
-        EnvConfig.googleRedirectUri,
-      );
-      final dto = GoogleAuthUrlDto.fromJson(data as Map<String, dynamic>);
-      if (dto.authorizationUrl.isEmpty) {
-        throw AuthServiceException('URL đăng nhập Google không hợp lệ');
-      }
-      return dto.authorizationUrl;
-    } catch (_) {
-      throw AuthServiceException('Không lấy được URL đăng nhập Google');
-    }
-  }
-
-  /// Bước 2 Google OAuth: đổi code lấy token.
-  Future<void> completeGoogleLogin({
-    required String code,
-    required String codeVerifier,
-  }) async {
-    final response = await _authDataSource.completeGoogleLogin(
-      code,
-      codeVerifier,
-      EnvConfig.googleRedirectUri,
-    );
+  Future<void> completeGoogleLoginWithIdToken(String idToken) async {
+    final response = await _authDataSource.completeGoogleLoginWithIdToken(idToken);
     await _handleAuthResponse(response);
     await syncCurrentUser();
-    pendingGoogleCodeVerifier = null;
   }
 
   /// GET /users/me — lưu userId, tên hiển thị sau login/refresh session.
@@ -203,5 +173,29 @@ class AuthService {
       roles: roles.isNotEmpty ? roles : null,
       role: roles.isNotEmpty ? roles.first : 'user',
     );
+  }
+
+  Future<void> forgotPassword(String email) async {
+    try {
+      await _authDataSource.forgotPassword(email.trim());
+    } catch (e) {
+      throw AuthServiceException('Không thể gửi yêu cầu đặt lại mật khẩu. Có thể email không tồn tại.');
+    }
+  }
+
+  Future<void> verifyResetToken(String email, String token) async {
+    try {
+      await _authDataSource.verifyResetToken(email.trim(), token.trim());
+    } catch (e) {
+      throw AuthServiceException('Mã xác nhận không hợp lệ hoặc đã hết hạn.');
+    }
+  }
+
+  Future<void> resetPassword(String email, String token, String newPassword) async {
+    try {
+      await _authDataSource.resetPassword(email.trim(), token.trim(), newPassword);
+    } catch (e) {
+      throw AuthServiceException('Không thể đặt lại mật khẩu. Vui lòng thử lại.');
+    }
   }
 }

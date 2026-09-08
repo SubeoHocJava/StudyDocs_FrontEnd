@@ -56,8 +56,13 @@ class _LibraryView extends StatelessWidget {
         }
 
         final data = state.data;
-        return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<LibraryBloc>().add(const LibraryRequested());
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(32, 16, 32, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -128,7 +133,7 @@ class _LibraryView extends StatelessWidget {
                 ),
             ],
           ),
-        );
+        ));
       },
     );
   }
