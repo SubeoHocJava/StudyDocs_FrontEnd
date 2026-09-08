@@ -30,4 +30,29 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       throw Exception('Failed to delete notification');
     }
   }
+
+  @override
+  Future<dynamic> getTrashNotifications() async {
+    final response = await _client.get('user/notifications/trash');
+    if (response.isSuccess) {
+      return response.data;
+    }
+    throw Exception('Failed to load trash notifications');
+  }
+
+  @override
+  Future<void> restoreNotification(String id) async {
+    final response = await _client.put('user/notifications/$id/restore');
+    if (!response.isSuccess) {
+      throw Exception('Failed to restore notification');
+    }
+  }
+
+  @override
+  Future<void> hardDeleteNotification(String id) async {
+    final response = await _client.delete('user/notifications/$id/hard-delete');
+    if (!response.isSuccess) {
+      throw Exception('Failed to permanently delete notification');
+    }
+  }
 }

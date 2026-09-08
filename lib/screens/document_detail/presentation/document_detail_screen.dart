@@ -202,6 +202,31 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
     String? thumbnail = data.thumbnail;
     int pageCount = data.pageCount > 0 ? data.pageCount : 1;
 
+    // Ưu tiên sử dụng template ảnh từng trang (như từ Cloudinary) vì nó ổn định hơn trên Web
+    if (thumbnail != null && thumbnail.contains('<<pageNumber>>')) {
+      return SizedBox(
+        height: 600,
+        child: ListView.builder(
+          itemCount: pageCount,
+          itemBuilder: (context, index) {
+            String pageUrl = ImageUtils.getPagePreview(thumbnail, index + 1)!;
+            // Đảm bảo dùng https
+            if (pageUrl.startsWith('http://') && pageUrl.contains('cloudinary.com')) {
+              pageUrl = pageUrl.replaceFirst('http://', 'https://');
+            }
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Image.network(
+                pageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => _buildMockPreview(),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
     bool isPdf = data.fileType.toLowerCase().contains('pdf') || fileUrl.toLowerCase().endsWith('.pdf');
 
     if (isPdf) {
@@ -222,27 +247,6 @@ class _DocumentDetailScreenState extends State<DocumentDetailScreen> {
           pdfUrl,
           canShowScrollHead: false,
           canShowScrollStatus: false,
-        ),
-      );
-    }
-
-    // Use page template if provided by BE
-    if (thumbnail != null && thumbnail.contains('<<pageNumber>>')) {
-      return SizedBox(
-        height: 600,
-        child: ListView.builder(
-          itemCount: pageCount,
-          itemBuilder: (context, index) {
-            String pageUrl = ImageUtils.getPagePreview(thumbnail, index + 1)!;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Image.network(
-                pageUrl,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => _buildMockPreview(),
-              ),
-            );
-          },
         ),
       );
     }

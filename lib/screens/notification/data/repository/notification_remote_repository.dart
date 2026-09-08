@@ -37,7 +37,27 @@ class NotificationRemoteRepository implements NotificationRepository {
 
   @override
   Future<List<NotificationModel>> getTrashNotifications() async {
-    // Backend doesn't support trash for notifications yet
+    try {
+      final responseData = await _dataSource.getTrashNotifications();
+      if (responseData != null) {
+        final dataList = _extractList(responseData);
+        if (dataList != null) {
+          return dataList.map((e) {
+            final map = Map<String, dynamic>.from(e as Map);
+            return NotificationModel(
+              id: map['id']?.toString() ?? '',
+              title: map['title']?.toString() ?? 'Thông báo',
+              content: map['content']?.toString() ?? '',
+              avatarUrl: 'https://i.pravatar.cc/150?u=${map['id']}',
+              receivedAt: _parseDate(map['createdAt']?.toString()),
+              type: NotificationType.system,
+              isRead: map['isRead'] as bool? ?? false,
+              isDeleted: true,
+            );
+          }).toList();
+        }
+      }
+    } catch (_) {}
     return [];
   }
 
@@ -50,7 +70,6 @@ class NotificationRemoteRepository implements NotificationRepository {
 
   @override
   Future<void> moveToTrash(String id) async {
-    // Backend only supports hard delete
     try {
       await _dataSource.deleteNotification(id);
     } catch (_) {}
@@ -58,13 +77,15 @@ class NotificationRemoteRepository implements NotificationRepository {
 
   @override
   Future<void> restoreFromTrash(String id) async {
-    // Not supported by backend
+    try {
+      await _dataSource.restoreNotification(id);
+    } catch (_) {}
   }
 
   @override
   Future<void> deletePermanently(String id) async {
     try {
-      await _dataSource.deleteNotification(id);
+      await _dataSource.hardDeleteNotification(id);
     } catch (_) {}
   }
 
